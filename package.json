@@ -7,8 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "export": "next build && next export",
-    "postinstall": "patch-package && typechain --target 'ethers-v5' --out-dir 'src/abis/types' 'src/abis/**/*.json'"
+    "export": "next build && next export"
   },
   "dependencies": {
     "@ethersproject/abi": "^5.6.4",
