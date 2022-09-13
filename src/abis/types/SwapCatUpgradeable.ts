@@ -20,7 +20,7 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
-interface SwapCatUpgradeableInterface extends ethers.utils.Interface {
+export interface SwapCatUpgradeableInterface extends ethers.utils.Interface {
   functions: {
     "DEFAULT_ADMIN_ROLE()": FunctionFragment;
     "UPGRADER_ROLE()": FunctionFragment;
@@ -347,7 +347,7 @@ export type TokenWhitelistedEvent = TypedEvent<[string] & { token: string }>;
 
 export type UpgradedEvent = TypedEvent<[string] & { implementation: string }>;
 
-export class SwapCatUpgradeable extends BaseContract {
+export interface SwapCatUpgradeable extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;

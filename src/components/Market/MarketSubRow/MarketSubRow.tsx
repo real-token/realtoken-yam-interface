@@ -10,7 +10,8 @@ import {
 
 import BigNumber from 'bignumber.js';
 
-import { Offer, useOffers } from 'src/hooks';
+import { useOffers } from 'src/hooks';
+import { Offer } from 'src/hooks/types';
 
 import { Table, TableSubRowProps } from '../../Table';
 

@@ -126,7 +126,6 @@ export const MarketSellWithPermit = () => {
     event.preventDefault();
     console.log('permitHandler');
     console.log('chainId: ', chainId);
-    console.log('token name: ', await bridgeToken.name());
     if (
       !account ||
       !connector ||
@@ -140,6 +139,8 @@ export const MarketSellWithPermit = () => {
     ) {
       return;
     }
+
+    console.log('token name: ', await bridgeToken.name());
 
     const permitAmount = BigNumber.from(enteredAmount);
     const currentDate = new Date();

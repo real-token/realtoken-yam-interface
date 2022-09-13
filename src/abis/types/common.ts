@@ -33,30 +33,3 @@ export type GetContractTypeFromFactory<F> = F extends MinEthersFactory<
 export type GetARGsTypeFromFactory<F> = F extends MinEthersFactory<any, any>
   ? Parameters<F["deploy"]>
   : never;
-
-
-
-// 	export interface TypedEvent<
-//   TArgsArray extends Array<any> = any,
-//   TArgsObject = any
-// > extends Event {
-//   args: TArgsArray & TArgsObject;
-// }
-
-// export interface TypedEventFilter<_TEvent extends TypedEvent>
-//   extends EventFilter {}
-
-// export interface TypedListener<TEvent extends TypedEvent> {
-//   (...listenerArg: [...__TypechainArgsArray<TEvent>, TEvent]): void;
-// }
-
-// export type PromiseOrValue<T> = T | Promise<T>;
-
-// export interface OnEvent<TRes> {
-// 	<TEvent extends TypedEvent>(
-// 		eventFilter: TypedEventFilter<TEvent>,
-// 		listener: TypedListener<TEvent>
-// 	): TRes;
-// 	(eventName: string, listener: Listener): TRes;
-// }
-	
