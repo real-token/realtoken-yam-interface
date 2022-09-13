@@ -1,0 +1,34 @@
+{
+  "userCopied": {
+    "title": "Copied 🎉",
+    "message": "Your address have been copied to clipboard."
+  },
+  "usersNotFound": {
+    "title": "Error",
+    "message": "{{ usersNotFound }} users couldn't be retrieved. Check your RPC or refresh the table."
+  },
+  "createOfferLoading": {
+    "title": "Waiting",
+    "message": "Your transaction is being validated."
+  },
+  "createOfferSuccess": {
+    "title": "Success",
+    "message": "Your transaction has been validated."
+  },
+  "createOfferError": {
+    "title": "Error",
+    "message": "Your transaction has been rejected."
+  },
+  "buyOfferLoading": {
+    "title": "Waiting",
+    "message": "Your transaction is being validated."
+  },
+  "buyOfferSuccess": {
+    "title": "Success",
+    "message": "Your transaction has been validated."
+  },
+  "buyOfferError": {
+    "title": "Error",
+    "message": "Your transaction has been rejected."
+  }
+}

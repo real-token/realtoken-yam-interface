@@ -1,0 +1,28 @@
+{
+  "table": {
+    "market": "Market",
+    "title": "RealToken Market",
+    "offerId": "Offer ID",
+    "offerTokenAddress": "Sell Token Address",
+    "offerTokenName": "Offer Token Name",
+    "buyerTokenAddress": "Buyer Token Address",
+    "buyerTokenName": "Buyer Token Name",
+    "sellerAddress": "Seller Address",
+    "price": "Price",
+    "amount": "Amount",
+    "address": "Address"
+  },
+  "subRow": {
+    "offerId": "Offer ID",
+    "offerTokenAddress": "Sell Token Address",
+    "offerTokenName": "Offer Token Name",
+    "buyerTokenAddress": "Buyer Token Address",
+    "buyerTokenName": "Buyer Token Name",
+    "sellerAddress": "Seller Address",
+    "price": "Price",
+    "amount": "Amount",
+    "address": "Address",
+    "name": "Name",
+    "value": "Value (~)"
+  }
+}

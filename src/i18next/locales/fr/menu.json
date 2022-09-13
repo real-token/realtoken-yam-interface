@@ -1,0 +1,17 @@
+{
+  "wallet": {
+    "control": "Connect wallet",
+    "copy": "Copy address",
+    "viewOn": "View on explorer",
+    "disconnect": "Disconnect",
+    "network": "Network"
+  },
+  "settings": {
+    "title": "Language",
+    "french": "French",
+    "english": "English",
+    "spanish": "Spanish",
+    "light": "Light",
+    "dark": "Dark"
+  }
+}

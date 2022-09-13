@@ -1,0 +1,20 @@
+{
+  "extends": [
+    "next/core-web-vitals",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
+  ],
+  "rules": {
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-unused-vars": ["warn"],
+    "object-shorthand": ["warn", "consistent-as-needed"],
+    "react/jsx-curly-brace-presence": ["warn", "always"],
+    "react/jsx-boolean-value": ["warn", "always"],
+    "react-hooks/exhaustive-deps": [
+      "warn",
+      {
+        "additionalHooks": "useAsync"
+      }
+    ]
+  }
+}

@@ -1,0 +1,65 @@
+.market_sells {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.market_sell label {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.market_sell input {
+  font: inherit;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  width: 23rem;
+  max-width: 100%;
+}
+
+.market_sell_actions {
+  text-align: left;
+}
+
+.new_offer {
+  background-color: #16861d;
+  padding: 1rem;
+  margin: 2rem auto;
+  width: 50rem;
+  max-width: 95%;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.25);
+}
+
+.new_offer button {
+  font: inherit;
+  cursor: pointer;
+  padding: 1rem 2rem;
+  border: 1px solid #40005d;
+  background-color: #40005d;
+  color: white;
+  border-radius: 12px;
+  margin-right: 1rem;
+}
+
+.new_offer button:hover,
+.new_offer button:active {
+  background-color: #510674;
+  border-color: #510674;
+}
+
+.new_offer button.alternative {
+  color: #220131;
+  border-color: transparent;
+  background-color: transparent;
+}
+
+.new_offer button.alternative:hover,
+.new_offer button.alternative:active {
+  background-color: #ddb3f8;
+}
