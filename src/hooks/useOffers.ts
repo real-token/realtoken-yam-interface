@@ -10,7 +10,7 @@ import { useAsync } from './useAsync';
 import { useContract } from './useContract';
 import { useWeb3React } from '@web3-react/core';
 import { useActiveChain } from './useActiveChain';
-import { ERC20, ERC20ABI } from 'src/abis';
+import { Erc20, Erc20ABI } from 'src/abis';
 import { Web3Provider } from '@ethersproject/providers';
 
 export const useOffers: UseOffers = () => {
@@ -74,8 +74,8 @@ export const useOffers: UseOffers = () => {
           amount,
         ] = await getOffer();
 
-				const offerTokenContract = getContract<ERC20>(offerTokenAddress, ERC20ABI, <Web3Provider>provider, account);
-				const buyerTokenContract = getContract<ERC20>(buyerTokenAddress, ERC20ABI, <Web3Provider>provider, account);
+				const offerTokenContract = getContract<Erc20>(offerTokenAddress, Erc20ABI, <Web3Provider>provider, account);
+				const buyerTokenContract = getContract<Erc20>(buyerTokenAddress, Erc20ABI, <Web3Provider>provider, account);
 				const offerTokenName = <string>(await offerTokenContract?.name());
 				const buyerTokenName = <string>(await buyerTokenContract?.name());
 
