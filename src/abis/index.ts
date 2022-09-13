@@ -1,6 +1,6 @@
-export { default as ERC20ABI } from './ERC20.json';
-export { default as bridgeTokenABI } from './bridgeToken.json';
-export { default as swapCatUpgradeableABI } from './SwapCatUpgradeable.json';
+export { default as ERC20ABI } from 'src/abis/ERC20.json';
+export { default as bridgeTokenABI } from 'src/abis/bridgeToken.json';
+export { default as swapCatUpgradeableABI } from 'src/abis/SwapCatUpgradeable.json';
 
-export * from './types';
-export * from './types/SwapCatUpgradeable';
+export * from 'src/abis/types';
+export * from 'src/abis/types/SwapCatUpgradeable';
