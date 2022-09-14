@@ -13,8 +13,10 @@ export type Offer = {
   offerId: string;
   offerTokenAddress: string;
   offerTokenName: string;
+  offerTokenDecimals: string;
   buyerTokenAddress: string;
   buyerTokenName: string;
+  buyerTokenDecimals: string;
   sellerAddress: string;
   price: string;
   amount: string;

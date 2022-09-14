@@ -29,6 +29,8 @@ export const BuyActions: FC<BuyActions> = ({ buyOffer, triggerRefresh }) => {
           offerId: offer.offerId,
           price: offer.price,
           amount: offer.amount,
+          offerTokenDecimals: offer.offerTokenDecimals,
+          buyerTokenDecimals: offer.buyerTokenDecimals,
           triggerTableRefresh: triggerRefresh,
         },
       });

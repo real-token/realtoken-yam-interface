@@ -8,6 +8,7 @@ import {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { Web3Provider } from '@ethersproject/providers';
 import {
   ActionIcon,
   Anchor,
@@ -28,9 +29,13 @@ import { showNotification, updateNotification } from '@mantine/notifications';
 import { IconQuestionMark } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
 
+import BigNumber from 'bignumber.js';
+
+import { Erc20, Erc20ABI } from 'src/abis';
 import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { useActiveChain, useContract, useOffers } from 'src/hooks';
 import { Offer } from 'src/hooks/types';
+import { getContract } from 'src/utils';
 
 import { AssetSelect } from '../../AssetSelect';
 import { NumberInput } from '../../NumberInput';
@@ -39,6 +44,8 @@ type BuyModalProps = {
   offerId: string;
   price: number;
   amount: number;
+  offerTokenDecimals: number;
+  buyerTokenDecimals: number;
   triggerTableRefresh: Dispatch<SetStateAction<boolean>>;
 };
 
@@ -46,12 +53,21 @@ type BuyFormValues = {
   offerId: string;
   price: number;
   amount: number;
+  offerTokenDecimals: number;
+  buyerTokenDecimals: number;
 };
 
 export const BuyModal: FC<ContextModalProps<BuyModalProps>> = ({
   context,
   id,
-  innerProps: { offerId, price, amount, triggerTableRefresh },
+  innerProps: {
+    offerId,
+    price,
+    amount,
+    offerTokenDecimals,
+    buyerTokenDecimals,
+    triggerTableRefresh,
+  },
 }) => {
   const { account, provider } = useWeb3React();
   const { getInputProps, onSubmit, reset, setFieldValue, values } =
@@ -60,6 +76,8 @@ export const BuyModal: FC<ContextModalProps<BuyModalProps>> = ({
         offerId: offerId,
         price: price,
         amount: amount,
+        offerTokenDecimals: offerTokenDecimals,
+        buyerTokenDecimals: buyerTokenDecimals,
       },
     });
 
@@ -119,8 +137,12 @@ export const BuyModal: FC<ContextModalProps<BuyModalProps>> = ({
 
         const transaction = await swapCatUpgradeable.buy(
           formValues.offerId,
-          formValues.price,
-          formValues.amount
+          new BigNumber(formValues.price.toString())
+            .shiftedBy(Number(buyerTokenDecimals))
+            .toString(),
+          new BigNumber(formValues.amount.toString())
+            .shiftedBy(Number(offerTokenDecimals))
+            .toString()
         );
 
         const notificationPayload = {
@@ -145,7 +167,7 @@ export const BuyModal: FC<ContextModalProps<BuyModalProps>> = ({
             )
           );
       } catch (e) {
-        console.error('ERROR here', e);
+        console.error('Error buy modal', e);
       } finally {
         setSubmitting(false);
         triggerTableRefresh(true);

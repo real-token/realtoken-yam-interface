@@ -8,14 +8,16 @@ export const UserPortfolio: FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [fetchedOffers, setFetchedOffers] = useState<Offer[]>([
     {
-      offerId: '100',
-      offerTokenAddress: 'string;',
-      offerTokenName: 'string;',
-      buyerTokenAddress: '	string;',
-      buyerTokenName: 'string;',
-      sellerAddress: '	string;',
-      price: '100',
-      amount: '100',
+      offerId: 'loading...',
+      offerTokenAddress: 'loading...',
+      offerTokenName: 'loading...',
+      offerTokenDecimals: 'loading...',
+      buyerTokenAddress: 'loading...',
+      buyerTokenName: 'loading...',
+      buyerTokenDecimals: 'loading...',
+      sellerAddress: 'loading...',
+      price: 'loading...',
+      amount: 'loading...',
     },
   ]);
   const { offers, refreshState } = useOffers();
@@ -44,8 +46,10 @@ export const UserPortfolio: FC = () => {
         offerId: offer.offerId,
         offerTokenAddress: offer.offerTokenAddress,
         offerTokenName: offer.offerTokenName,
+        offerTokenDecimals: offer.offerTokenDecimals,
         buyerTokenAddress: offer.buyerTokenAddress,
         buyerTokenName: offer.buyerTokenName,
+        buyerTokenDecimals: offer.buyerTokenDecimals,
         sellerAddress: offer.sellerAddress,
         price: offer.price,
         amount: offer.amount,

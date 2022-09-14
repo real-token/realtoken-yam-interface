@@ -12,6 +12,8 @@ import { useWeb3React } from '@web3-react/core';
 import { useActiveChain } from './useActiveChain';
 import { Erc20, Erc20ABI } from 'src/abis';
 import { Web3Provider } from '@ethersproject/providers';
+// import { BigNumber } from 'ethers';
+import BigNumber from 'bignumber.js';
 
 export const useOffersUser: UseOffers = () => {
   const [isRefreshing, triggerRefresh] = useState<boolean>(true);
@@ -20,8 +22,10 @@ export const useOffersUser: UseOffers = () => {
       offerId: 'loading...',
       offerTokenAddress: 'loading...',
       offerTokenName: 'loading...',
+			offerTokenDecimals: 'loading...',
       buyerTokenAddress: 'loading...',
       buyerTokenName: 'loading...',
+			buyerTokenDecimals: 'loading...',
       sellerAddress: 'loading...',
       price: 'loading...',
       amount: 'loading...',
@@ -72,19 +76,20 @@ export const useOffersUser: UseOffers = () => {
 					const buyerTokenContract = getContract<Erc20>(buyerTokenAddress, Erc20ABI, <Web3Provider>provider, account);
 					const offerTokenName = <string>(await offerTokenContract?.name());
 					const buyerTokenName = <string>(await buyerTokenContract?.name());
-	
-					// const offerTokenDecimals = <number>await offerTokenContract?.decimals();
-					// const buyerTokenDecimals = <number>await buyerTokenContract?.decimals();
+					const offerTokenDecimals = <number>await offerTokenContract?.decimals();
+					const buyerTokenDecimals = <number>await buyerTokenContract?.decimals();
 	
 					const offerData: Offer = {
 						offerId: i.toString(),
 						offerTokenAddress: offerTokenAddress,
 						offerTokenName: <string>offerTokenName,
+						offerTokenDecimals: offerTokenDecimals.toString(),
 						buyerTokenAddress: buyerTokenAddress,
 						buyerTokenName: <string>buyerTokenName,
+						buyerTokenDecimals: buyerTokenDecimals.toString(),
 						sellerAddress: sellerAddress,
-						price: price.toString(),
-						amount: amount.toString(),
+						price: (new BigNumber(price.toString())).shiftedBy(- buyerTokenDecimals).toString(),
+						amount: (new BigNumber(amount.toString()).shiftedBy(- offerTokenDecimals)).toString(),
 					};
 	
 					if (offerData.sellerAddress === account) {
