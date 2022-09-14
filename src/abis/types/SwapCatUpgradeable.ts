@@ -27,7 +27,7 @@ export interface SwapCatUpgradeableInterface extends ethers.utils.Interface {
     "admin()": FunctionFragment;
     "buy(uint256,uint256,uint256)": FunctionFragment;
     "buyWithPermit(uint256,uint256,uint256,uint256,uint8,bytes32,bytes32)": FunctionFragment;
-    "createOffer(address,address,uint256,uint256)": FunctionFragment;
+    "createOffer(address,address,uint256,uint256,uint256)": FunctionFragment;
     "createOfferWithPermit(address,address,uint256,uint256,uint256,uint256,uint8,bytes32,bytes32)": FunctionFragment;
     "deleteOffer(uint256)": FunctionFragment;
     "deleteOfferByAdmin(uint256)": FunctionFragment;
@@ -37,6 +37,7 @@ export interface SwapCatUpgradeableInterface extends ethers.utils.Interface {
     "hasRole(bytes32,address)": FunctionFragment;
     "initialize(address,address)": FunctionFragment;
     "isWhitelisted(address)": FunctionFragment;
+    "isWhitelistedUser(address)": FunctionFragment;
     "moderator()": FunctionFragment;
     "pricePreview(uint256,uint256)": FunctionFragment;
     "proxiableUUID()": FunctionFragment;
@@ -46,11 +47,13 @@ export interface SwapCatUpgradeableInterface extends ethers.utils.Interface {
     "showOffer(uint256)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "toggleWhitelist(address)": FunctionFragment;
+    "toggleWhitelistUser(address)": FunctionFragment;
     "tokenInfo(address)": FunctionFragment;
     "transferModerator(address)": FunctionFragment;
     "upgradeTo(address)": FunctionFragment;
     "upgradeToAndCall(address,bytes)": FunctionFragment;
     "whitelistedTokens(address)": FunctionFragment;
+    "whitelistedUsers(address)": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -80,7 +83,7 @@ export interface SwapCatUpgradeableInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "createOffer",
-    values: [string, string, BigNumberish, BigNumberish]
+    values: [string, string, BigNumberish, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "createOfferWithPermit",
@@ -128,6 +131,10 @@ export interface SwapCatUpgradeableInterface extends ethers.utils.Interface {
     functionFragment: "isWhitelisted",
     values: [string]
   ): string;
+  encodeFunctionData(
+    functionFragment: "isWhitelistedUser",
+    values: [string]
+  ): string;
   encodeFunctionData(functionFragment: "moderator", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "pricePreview",
@@ -161,6 +168,10 @@ export interface SwapCatUpgradeableInterface extends ethers.utils.Interface {
     functionFragment: "toggleWhitelist",
     values: [string]
   ): string;
+  encodeFunctionData(
+    functionFragment: "toggleWhitelistUser",
+    values: [string]
+  ): string;
   encodeFunctionData(functionFragment: "tokenInfo", values: [string]): string;
   encodeFunctionData(
     functionFragment: "transferModerator",
@@ -173,6 +184,10 @@ export interface SwapCatUpgradeableInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "whitelistedTokens",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "whitelistedUsers",
     values: [string]
   ): string;
 
@@ -221,6 +236,10 @@ export interface SwapCatUpgradeableInterface extends ethers.utils.Interface {
     functionFragment: "isWhitelisted",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "isWhitelistedUser",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "moderator", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "pricePreview",
@@ -248,6 +267,10 @@ export interface SwapCatUpgradeableInterface extends ethers.utils.Interface {
     functionFragment: "toggleWhitelist",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "toggleWhitelistUser",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "tokenInfo", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "transferModerator",
@@ -262,13 +285,17 @@ export interface SwapCatUpgradeableInterface extends ethers.utils.Interface {
     functionFragment: "whitelistedTokens",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "whitelistedUsers",
+    data: BytesLike
+  ): Result;
 
   events: {
     "AdminChanged(address,address)": EventFragment;
     "BeaconUpgraded(address)": EventFragment;
     "ModeratorTransferred(address,address)": EventFragment;
     "OfferAccepted(uint256,address,address,uint256,uint256)": EventFragment;
-    "OfferCreated(address,address,uint256,uint256)": EventFragment;
+    "OfferCreated(address,address,uint256,uint256,uint256)": EventFragment;
     "OfferDeleted(uint256)": EventFragment;
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
     "RoleGranted(bytes32,address,address)": EventFragment;
@@ -313,11 +340,12 @@ export type OfferAcceptedEvent = TypedEvent<
 >;
 
 export type OfferCreatedEvent = TypedEvent<
-  [string, string, BigNumber, BigNumber] & {
+  [string, string, BigNumber, BigNumber, BigNumber] & {
     offerToken: string;
     buyerToken: string;
     offerId: BigNumber;
     price: BigNumber;
+    amount: BigNumber;
   }
 >;
 
@@ -420,6 +448,7 @@ export interface SwapCatUpgradeable extends BaseContract {
       buyerToken: string,
       offerId: BigNumberish,
       price: BigNumberish,
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -473,6 +502,11 @@ export interface SwapCatUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
+    isWhitelistedUser(
+      user_: string,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     moderator(overrides?: CallOverrides): Promise<[string]>;
 
     pricePreview(
@@ -515,6 +549,11 @@ export interface SwapCatUpgradeable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    toggleWhitelistUser(
+      user_: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     tokenInfo(
       tokenaddr: string,
       overrides?: CallOverrides
@@ -537,6 +576,11 @@ export interface SwapCatUpgradeable extends BaseContract {
     ): Promise<ContractTransaction>;
 
     whitelistedTokens(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
+    whitelistedUsers(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
@@ -571,6 +615,7 @@ export interface SwapCatUpgradeable extends BaseContract {
     buyerToken: string,
     offerId: BigNumberish,
     price: BigNumberish,
+    amount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -621,6 +666,8 @@ export interface SwapCatUpgradeable extends BaseContract {
 
   isWhitelisted(token_: string, overrides?: CallOverrides): Promise<boolean>;
 
+  isWhitelistedUser(user_: string, overrides?: CallOverrides): Promise<boolean>;
+
   moderator(overrides?: CallOverrides): Promise<string>;
 
   pricePreview(
@@ -663,6 +710,11 @@ export interface SwapCatUpgradeable extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  toggleWhitelistUser(
+    user_: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   tokenInfo(
     tokenaddr: string,
     overrides?: CallOverrides
@@ -685,6 +737,8 @@ export interface SwapCatUpgradeable extends BaseContract {
   ): Promise<ContractTransaction>;
 
   whitelistedTokens(arg0: string, overrides?: CallOverrides): Promise<boolean>;
+
+  whitelistedUsers(arg0: string, overrides?: CallOverrides): Promise<boolean>;
 
   callStatic: {
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
@@ -716,6 +770,7 @@ export interface SwapCatUpgradeable extends BaseContract {
       buyerToken: string,
       offerId: BigNumberish,
       price: BigNumberish,
+      amount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -766,6 +821,11 @@ export interface SwapCatUpgradeable extends BaseContract {
 
     isWhitelisted(token_: string, overrides?: CallOverrides): Promise<boolean>;
 
+    isWhitelistedUser(
+      user_: string,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
     moderator(overrides?: CallOverrides): Promise<string>;
 
     pricePreview(
@@ -802,6 +862,11 @@ export interface SwapCatUpgradeable extends BaseContract {
 
     toggleWhitelist(token_: string, overrides?: CallOverrides): Promise<void>;
 
+    toggleWhitelistUser(
+      user_: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     tokenInfo(
       tokenaddr: string,
       overrides?: CallOverrides
@@ -827,6 +892,8 @@ export interface SwapCatUpgradeable extends BaseContract {
       arg0: string,
       overrides?: CallOverrides
     ): Promise<boolean>;
+
+    whitelistedUsers(arg0: string, overrides?: CallOverrides): Promise<boolean>;
   };
 
   filters: {
@@ -904,18 +971,20 @@ export interface SwapCatUpgradeable extends BaseContract {
       }
     >;
 
-    "OfferCreated(address,address,uint256,uint256)"(
+    "OfferCreated(address,address,uint256,uint256,uint256)"(
       offerToken?: string | null,
       buyerToken?: string | null,
       offerId?: BigNumberish | null,
-      price?: null
+      price?: null,
+      amount?: null
     ): TypedEventFilter<
-      [string, string, BigNumber, BigNumber],
+      [string, string, BigNumber, BigNumber, BigNumber],
       {
         offerToken: string;
         buyerToken: string;
         offerId: BigNumber;
         price: BigNumber;
+        amount: BigNumber;
       }
     >;
 
@@ -923,14 +992,16 @@ export interface SwapCatUpgradeable extends BaseContract {
       offerToken?: string | null,
       buyerToken?: string | null,
       offerId?: BigNumberish | null,
-      price?: null
+      price?: null,
+      amount?: null
     ): TypedEventFilter<
-      [string, string, BigNumber, BigNumber],
+      [string, string, BigNumber, BigNumber, BigNumber],
       {
         offerToken: string;
         buyerToken: string;
         offerId: BigNumber;
         price: BigNumber;
+        amount: BigNumber;
       }
     >;
 
@@ -1051,6 +1122,7 @@ export interface SwapCatUpgradeable extends BaseContract {
       buyerToken: string,
       offerId: BigNumberish,
       price: BigNumberish,
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1107,6 +1179,11 @@ export interface SwapCatUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    isWhitelistedUser(
+      user_: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     moderator(overrides?: CallOverrides): Promise<BigNumber>;
 
     pricePreview(
@@ -1149,6 +1226,11 @@ export interface SwapCatUpgradeable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    toggleWhitelistUser(
+      user_: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     tokenInfo(tokenaddr: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     transferModerator(
@@ -1168,6 +1250,11 @@ export interface SwapCatUpgradeable extends BaseContract {
     ): Promise<BigNumber>;
 
     whitelistedTokens(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    whitelistedUsers(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -1205,6 +1292,7 @@ export interface SwapCatUpgradeable extends BaseContract {
       buyerToken: string,
       offerId: BigNumberish,
       price: BigNumberish,
+      amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1261,6 +1349,11 @@ export interface SwapCatUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    isWhitelistedUser(
+      user_: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     moderator(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     pricePreview(
@@ -1303,6 +1396,11 @@ export interface SwapCatUpgradeable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    toggleWhitelistUser(
+      user_: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     tokenInfo(
       tokenaddr: string,
       overrides?: CallOverrides
@@ -1325,6 +1423,11 @@ export interface SwapCatUpgradeable extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     whitelistedTokens(
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    whitelistedUsers(
       arg0: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;

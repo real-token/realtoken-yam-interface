@@ -78,7 +78,8 @@ export const MarketSell = () => {
       enteredOfferToken,
       enteredBuyerToken,
       enteredOfferId,
-      enteredPrice
+      enteredPrice,
+      enteredAmount
     );
 
     // setEnteredOfferToken('');
