@@ -1,21 +1,16 @@
-import { useCallback, useRef, useState } from 'react';
+import { useState } from 'react';
 
-import { Web3Provider } from '@ethersproject/providers';
 import { useForm } from '@mantine/form';
 import { useWeb3React } from '@web3-react/core';
-import { Connector } from '@web3-react/types';
 
 import { BigNumber } from 'ethers';
-import { BigNumberish, Signature, Wallet, constants } from 'ethers';
-import { splitSignature } from 'ethers/lib/utils';
 import styles from 'styles/MarketSell.module.css';
 
-import { BridgeToken, bridgeTokenABI } from 'src/abis';
+import { Erc20, Erc20ABI } from 'src/abis';
 import { ContractsID } from 'src/constants';
 import { useActiveChain } from 'src/hooks';
-import { useAsync } from 'src/hooks/useAsync';
 import { useContract } from 'src/hooks/useContract';
-import { asyncRetry, getContract } from 'src/utils';
+import { getContract } from 'src/utils';
 
 type CreateOfferFormValues = {
   offerTokenAddress: string;
@@ -31,15 +26,9 @@ export const MarketSell = () => {
   const [enteredAmount, setEnteredAmount] = useState('');
   const [enteredOfferId, setEnteredOfferId] = useState('0');
 
-  const { connector, account, chainId, provider } = useWeb3React();
+  const { account, chainId, provider } = useWeb3React();
   const activeChain = useActiveChain();
   const swapCatUpgradeable = useContract(ContractsID.swapCatUpgradeable);
-  const bridgeToken = getContract<BridgeToken>(
-    enteredOfferToken,
-    bridgeTokenABI,
-    provider as Web3Provider,
-    account
-  );
 
   const offerTokenHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEnteredOfferToken(event.target.value);
@@ -74,12 +63,40 @@ export const MarketSell = () => {
       return;
     }
 
+    const offerTokenContract = getContract<Erc20>(
+      enteredOfferToken,
+      Erc20ABI,
+      provider,
+      account
+    );
+    const buyerTokenContract = getContract<Erc20>(
+      enteredBuyerToken,
+      Erc20ABI,
+      provider,
+      account
+    );
+
+    if (!offerTokenContract || !buyerTokenContract) {
+      console.log('offerTokenContract or buyerTokenContract not found');
+      return;
+    }
+
+    const offerTokenDecimals = await offerTokenContract.decimals();
+    const enteredAmountInWei = BigNumber.from(enteredAmount).mul(
+      BigNumber.from(10).pow(offerTokenDecimals)
+    );
+
+    const buyerTokenDecimals = await buyerTokenContract?.decimals();
+    const enteredPriceInWei = BigNumber.from(enteredPrice).mul(
+      BigNumber.from(10).pow(buyerTokenDecimals)
+    );
+
     await swapCatUpgradeable.createOffer(
       enteredOfferToken,
       enteredBuyerToken,
       enteredOfferId,
-      enteredPrice,
-      enteredAmount
+      enteredPriceInWei.toString(),
+      enteredAmountInWei.toString()
     );
 
     // setEnteredOfferToken('');
