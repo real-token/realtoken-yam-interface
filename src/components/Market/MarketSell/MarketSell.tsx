@@ -1,13 +1,15 @@
 import { useState } from 'react';
 
+import { Web3Provider } from '@ethersproject/providers';
 import { useForm } from '@mantine/form';
+import { showNotification, updateNotification } from '@mantine/notifications';
 import { useWeb3React } from '@web3-react/core';
 
 import { BigNumber } from 'ethers';
 import styles from 'styles/MarketSell.module.css';
 
-import { Erc20, Erc20ABI } from 'src/abis';
-import { ContractsID } from 'src/constants';
+import { BridgeToken, Erc20, Erc20ABI, bridgeTokenABI } from 'src/abis';
+import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { useActiveChain } from 'src/hooks';
 import { useContract } from 'src/hooks/useContract';
 import { getContract } from 'src/utils';
@@ -82,22 +84,71 @@ export const MarketSell = () => {
     }
 
     const offerTokenDecimals = await offerTokenContract.decimals();
-    const enteredAmountInWei = BigNumber.from(enteredAmount).mul(
-      BigNumber.from(10).pow(offerTokenDecimals)
-    );
+    const enteredAmountInWei = BigNumber.from(
+      Math.round(100 * parseFloat(enteredAmount))
+    ).mul(BigNumber.from(10).pow(offerTokenDecimals - 2));
 
     const buyerTokenDecimals = await buyerTokenContract?.decimals();
-    const enteredPriceInWei = BigNumber.from(enteredPrice).mul(
-      BigNumber.from(10).pow(buyerTokenDecimals)
+    const enteredPriceInWei = BigNumber.from(
+      Math.round(100 * parseFloat(enteredPrice))
+    ).mul(BigNumber.from(10).pow(buyerTokenDecimals - 2));
+
+    const tx1 = await offerTokenContract.approve(
+      swapCatUpgradeable.address,
+      enteredAmountInWei
     );
 
-    await swapCatUpgradeable.createOffer(
+    const notificationPayloadTx1 = {
+      key: tx1.hash,
+      href: `${activeChain?.blockExplorerUrl}tx/${tx1.hash}`,
+      hash: tx1.hash,
+    };
+
+    showNotification(
+      NOTIFICATIONS[NotificationsID.createOfferLoading](notificationPayloadTx1)
+    );
+
+    tx1
+      .wait()
+      .then(({ status }) =>
+        updateNotification(
+          NOTIFICATIONS[
+            status === 1
+              ? NotificationsID.createOfferSuccess
+              : NotificationsID.createOfferError
+          ](notificationPayload)
+        )
+      );
+
+    const tx2 = await swapCatUpgradeable.createOffer(
       enteredOfferToken,
       enteredBuyerToken,
       enteredOfferId,
       enteredPriceInWei.toString(),
       enteredAmountInWei.toString()
     );
+
+    const notificationPayload = {
+      key: tx2.hash,
+      href: `${activeChain?.blockExplorerUrl}tx/${tx2.hash}`,
+      hash: tx2.hash,
+    };
+
+    showNotification(
+      NOTIFICATIONS[NotificationsID.createOfferLoading](notificationPayload)
+    );
+
+    tx2
+      .wait()
+      .then(({ status }) =>
+        updateNotification(
+          NOTIFICATIONS[
+            status === 1
+              ? NotificationsID.createOfferSuccess
+              : NotificationsID.createOfferError
+          ](notificationPayload)
+        )
+      );
 
     // setEnteredOfferToken('');
     // setEnteredBuyerToken('');
@@ -159,7 +210,7 @@ export const MarketSell = () => {
         </div>
         <div className={styles.market_sell_actions}>
           <button onClick={submitHandler} type={'submit'}>
-            {'Create Offer'}
+            {'Approve and Create Offer'}
           </button>
         </div>
       </form>
