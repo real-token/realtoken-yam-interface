@@ -13,7 +13,7 @@ import { useActiveChain } from './useActiveChain';
 import { Erc20, Erc20ABI } from 'src/abis';
 import { Web3Provider } from '@ethersproject/providers';
 
-export const useOffers: UseOffers = () => {
+export const useOffersUser: UseOffers = () => {
   const [isRefreshing, triggerRefresh] = useState<boolean>(true);
   const [offers, setOffers] = useState<Offer[]>([
     {
@@ -74,30 +74,32 @@ export const useOffers: UseOffers = () => {
 						price,
 						amount,
 					] = await getOffer();
+	
 					const offerTokenContract = getContract<Erc20>(offerTokenAddress, Erc20ABI, <Web3Provider>provider, account);
-				const buyerTokenContract = getContract<Erc20>(buyerTokenAddress, Erc20ABI, <Web3Provider>provider, account);
-				const offerTokenName = <string>(await offerTokenContract?.name());
-				const buyerTokenName = <string>(await buyerTokenContract?.name());
-
-				// const offerTokenDecimals = <number>await offerTokenContract?.decimals();
-				// const buyerTokenDecimals = <number>await buyerTokenContract?.decimals();
-
-        const offerData: Offer = {
-          offerId: i.toString(),
-          offerTokenAddress: offerTokenAddress,
-          offerTokenName: <string>offerTokenName,
-          buyerTokenAddress: buyerTokenAddress,
-          buyerTokenName: <string>buyerTokenName,
-          sellerAddress: sellerAddress,
-					price: price.toString(),
-					amount: amount.toString(),
-          // price: (Number(price)/ 10 ** (buyerTokenDecimals)).toString(),
-          // amount: (Number(amount)/ 10 ** (offerTokenDecimals)).toString(),
-        };
-
-				if (price) {
-					offersData.push(offerData);
-				}
+					const buyerTokenContract = getContract<Erc20>(buyerTokenAddress, Erc20ABI, <Web3Provider>provider, account);
+					const offerTokenName = <string>(await offerTokenContract?.name());
+					const buyerTokenName = <string>(await buyerTokenContract?.name());
+	
+					// const offerTokenDecimals = <number>await offerTokenContract?.decimals();
+					// const buyerTokenDecimals = <number>await buyerTokenContract?.decimals();
+	
+					const offerData: Offer = {
+						offerId: i.toString(),
+						offerTokenAddress: offerTokenAddress,
+						offerTokenName: <string>offerTokenName,
+						buyerTokenAddress: buyerTokenAddress,
+						buyerTokenName: <string>buyerTokenName,
+						sellerAddress: sellerAddress,
+						price: price.toString(),
+						amount: amount.toString(),
+						// price: (Number(price)/ 10 ** (buyerTokenDecimals)).toString(),
+						// amount: (Number(amount)/ 10 ** (offerTokenDecimals)).toString(),
+					};
+	
+					if (offerData.sellerAddress === account) {
+						offersData.push(offerData);
+					}
+	
 				} catch (e) {
 					console.error(e);
 				}
@@ -116,7 +118,7 @@ export const useOffers: UseOffers = () => {
     },
     [isRefreshing, swapCatUpgradeable, offersData, offers]
   );
-  console.log('Offer returned: ', offers);
+  console.log('Offer returned filter: ', offers);
 
   return {
     offers: offers,

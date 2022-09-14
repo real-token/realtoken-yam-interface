@@ -19,6 +19,12 @@ export enum NotificationsID {
   approveOfferLoading = 'approveOfferLoading',
   approveOfferSuccess = 'approveOfferSuccess',
   approveOfferError = 'approveOfferError',
+  updateOfferLoading = 'updateOfferLoading',
+  updateOfferSuccess = 'updateOfferSuccess',
+  updateOfferError = 'updateOfferError',
+  deleteOfferLoading = 'deleteOfferLoading',
+  deleteOfferSuccess = 'deleteOfferSuccess',
+  deleteOfferError = 'deleteOfferError',
 }
 
 export const NOTIFICATIONS = asConst<
@@ -287,6 +293,164 @@ export const NOTIFICATIONS = asConst<
         {(t) => (
           <Stack spacing={1}>
             {`${t('approveOfferError.message')}`}
+            <Anchor component={NextLink} href={payload.href} target={'_blank'}>
+              <Text>{`(${shortenString(payload.hash)})`}</Text>
+            </Anchor>
+          </Stack>
+        )}
+      </Translation>
+    ),
+  }),
+  [NotificationsID.updateOfferLoading]: (payload: {
+    key: string;
+    hash: string;
+    href: string;
+  }) => ({
+    id: `update-offer-${payload.key}`,
+    loading: true,
+    autoClose: false,
+    disallowClose: true,
+    title: (
+      <Translation ns={'notifications'}>
+        {(t) => t('updateOfferLoading.title')}
+      </Translation>
+    ),
+    message: (
+      <Translation ns={'notifications'}>
+        {(t) => (
+          <Stack spacing={1}>
+            {`${t('updateOfferLoading.message')}`}
+            <Anchor component={NextLink} href={payload.href} target={'_blank'}>
+              <Text>{`(${shortenString(payload.hash)})`}</Text>
+            </Anchor>
+          </Stack>
+        )}
+      </Translation>
+    ),
+  }),
+  [NotificationsID.updateOfferSuccess]: (payload: {
+    key: string;
+    hash: string;
+    href: string;
+  }) => ({
+    id: `update-offer-${payload.key}`,
+    color: 'teal',
+    icon: <IconCheck size={16} />,
+    title: (
+      <Translation ns={'notifications'}>
+        {(t) => t('updateOfferSuccess.title')}
+      </Translation>
+    ),
+    message: (
+      <Translation ns={'notifications'}>
+        {(t) => (
+          <Stack spacing={1}>
+            {`${t('updateOfferSuccess.message')}`}
+            <Anchor component={NextLink} href={payload.href} target={'_blank'}>
+              <Text>{`(${shortenString(payload.hash)})`}</Text>
+            </Anchor>
+          </Stack>
+        )}
+      </Translation>
+    ),
+  }),
+  [NotificationsID.updateOfferError]: (payload: {
+    key: string;
+    hash: string;
+    href: string;
+  }) => ({
+    id: `update-offer-${payload.key}`,
+    color: 'red',
+    icon: <IconX size={14} />,
+    title: (
+      <Translation ns={'notifications'}>
+        {(t) => t('updateOfferError.title')}
+      </Translation>
+    ),
+    message: (
+      <Translation ns={'notifications'}>
+        {(t) => (
+          <Stack spacing={1}>
+            {`${t('updateOfferError.message')}`}
+            <Anchor component={NextLink} href={payload.href} target={'_blank'}>
+              <Text>{`(${shortenString(payload.hash)})`}</Text>
+            </Anchor>
+          </Stack>
+        )}
+      </Translation>
+    ),
+  }),
+  [NotificationsID.deleteOfferLoading]: (payload: {
+    key: string;
+    hash: string;
+    href: string;
+  }) => ({
+    id: `delete-offer-${payload.key}`,
+    loading: true,
+    autoClose: false,
+    disallowClose: true,
+    title: (
+      <Translation ns={'notifications'}>
+        {(t) => t('deleteOfferLoading.title')}
+      </Translation>
+    ),
+    message: (
+      <Translation ns={'notifications'}>
+        {(t) => (
+          <Stack spacing={1}>
+            {`${t('deleteOfferLoading.message')}`}
+            <Anchor component={NextLink} href={payload.href} target={'_blank'}>
+              <Text>{`(${shortenString(payload.hash)})`}</Text>
+            </Anchor>
+          </Stack>
+        )}
+      </Translation>
+    ),
+  }),
+  [NotificationsID.deleteOfferSuccess]: (payload: {
+    key: string;
+    hash: string;
+    href: string;
+  }) => ({
+    id: `delete-offer-${payload.key}`,
+    color: 'teal',
+    icon: <IconCheck size={16} />,
+    title: (
+      <Translation ns={'notifications'}>
+        {(t) => t('deleteOfferSuccess.title')}
+      </Translation>
+    ),
+    message: (
+      <Translation ns={'notifications'}>
+        {(t) => (
+          <Stack spacing={1}>
+            {`${t('deleteOfferSuccess.message')}`}
+            <Anchor component={NextLink} href={payload.href} target={'_blank'}>
+              <Text>{`(${shortenString(payload.hash)})`}</Text>
+            </Anchor>
+          </Stack>
+        )}
+      </Translation>
+    ),
+  }),
+  [NotificationsID.deleteOfferError]: (payload: {
+    key: string;
+    hash: string;
+    href: string;
+  }) => ({
+    id: `delete-offer-${payload.key}`,
+    color: 'red',
+    icon: <IconX size={14} />,
+    title: (
+      <Translation ns={'notifications'}>
+        {(t) => t('deleteOfferError.title')}
+      </Translation>
+    ),
+    message: (
+      <Translation ns={'notifications'}>
+        {(t) => (
+          <Stack spacing={1}>
+            {`${t('deleteOfferError.message')}`}
             <Anchor component={NextLink} href={payload.href} target={'_blank'}>
               <Text>{`(${shortenString(payload.hash)})`}</Text>
             </Anchor>

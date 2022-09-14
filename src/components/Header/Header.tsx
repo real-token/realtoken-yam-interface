@@ -73,7 +73,7 @@ export const Header: FC = () => {
             <a className={cssStyles.headerText}>{'Market'}</a>
           </Link>
           <Link href={'/transfers'}>
-            <a className={cssStyles.headerText}>{'Transfers'}</a>
+            <a className={cssStyles.headerText}>{'Your offers'}</a>
           </Link>
           <Link href={'/portfolio'}>
             <a className={cssStyles.headerText}>{'Portfolio'}</a>

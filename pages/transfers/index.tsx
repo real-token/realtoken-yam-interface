@@ -1,13 +1,13 @@
 import { Fragment } from 'react';
 
 import { MarketSellWithPermit } from 'src/components/Market';
-import { MarketTableRow } from 'src/components/Market/MarketTableRow';
+import { MarketTableRowUser } from 'src/components/Market/MarketTableRow';
 import UserTransfers from 'src/modules/transfers/UserTransfers';
 
 const TransfersPage = () => {
   return (
     <Fragment>
-      <MarketTableRow />
+      <MarketTableRowUser />
       <MarketSellWithPermit />
     </Fragment>
   );

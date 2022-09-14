@@ -3,37 +3,31 @@ import { useTranslation } from 'react-i18next';
 
 import { ActionIcon, Group, Title } from '@mantine/core';
 import { useModals } from '@mantine/modals';
-import { IconReceipt2 } from '@tabler/icons';
+import { IconTrashOff } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
-
-import { BigNumber } from 'bignumber.js';
 
 import { Offer } from 'src/hooks/types';
 
-type BuyOffer = {
-  offerId: BigNumber;
-  price: BigNumber;
-  amount: BigNumber;
-};
-type BuyActions = {
-  buyOffer: Offer;
+type DeleteActions = {
+  deleteOffer: Offer;
   triggerRefresh: Dispatch<SetStateAction<boolean>>;
 };
 
-export const BuyActions: FC<BuyActions> = ({ buyOffer, triggerRefresh }) => {
+export const DeleteActions: FC<DeleteActions> = ({
+  deleteOffer,
+  triggerRefresh,
+}) => {
   const { account } = useWeb3React();
   const modals = useModals();
 
   const { t } = useTranslation('modals');
 
-  const onOpenBuyModal = useCallback(
+  const onOpenDeleteModal = useCallback(
     (offer: Offer) => {
-      modals.openContextModal('buy', {
-        title: <Title order={3}>{t('buy.title')}</Title>,
+      modals.openContextModal('delete', {
+        title: <Title order={3}>{t('delete.title')}</Title>,
         innerProps: {
           offerId: offer.offerId,
-          price: offer.price,
-          amount: offer.amount,
           triggerTableRefresh: triggerRefresh,
         },
       });
@@ -52,12 +46,13 @@ export const BuyActions: FC<BuyActions> = ({ buyOffer, triggerRefresh }) => {
     <Group position={'center'}>
       {
         <ActionIcon
-          color={'green'}
+          color={'red'}
+          variant='filled'
           onClick={() =>
-            account ? onOpenBuyModal(buyOffer) : onOpenWalletModal()
+            account ? onOpenDeleteModal(deleteOffer) : onOpenWalletModal()
           }
         >
-          <IconReceipt2 size={16} />
+          <IconTrashOff size={16} />
         </ActionIcon>
       }
     </Group>

@@ -42,5 +42,29 @@
   "approveOfferError": {
     "title": "Error",
     "message": "Your transaction has been rejected."
+  },
+  "updateOfferLoading": {
+    "title": "Waiting",
+    "message": "Your transaction is being validated."
+  },
+  "updateOfferSuccess": {
+    "title": "Success",
+    "message": "Your transaction has been validated."
+  },
+  "updateOfferError": {
+    "title": "Error",
+    "message": "Your transaction has been rejected."
+  },
+  "deleteOfferLoading": {
+    "title": "Waiting",
+    "message": "Your transaction is being validated."
+  },
+  "deleteOfferSuccess": {
+    "title": "Success",
+    "message": "Your transaction has been validated."
+  },
+  "deleteOfferError": {
+    "title": "Error",
+    "message": "Your transaction has been rejected."
   }
 }

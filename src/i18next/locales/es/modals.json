@@ -15,5 +15,20 @@
     "amount": "Amount",
     "cancel": "Cancel",
     "confirm": "Confirm"
+  },
+  "delete": {
+    "title": "Buy",
+    "selectedOffer": "Selected offer",
+    "deletedOffer": "Selected offer to delete",
+    "offerId": "Offer ID",
+    "offerTokenAddress": "Sell Token Address",
+    "offerTokenName": "Offer Token Name",
+    "buyerTokenAddress": "Buyer Token Address",
+    "buyerTokenName": "Buyer Token Name",
+    "sellerAddress": "Seller Address",
+    "price": "Price",
+    "amount": "Amount",
+    "cancel": "Cancel",
+    "confirm": "Confirm"
   }
 }
