@@ -52,13 +52,6 @@ export const useOffersUser: UseOffers = () => {
     async (isActive) => {
       if (!swapCatUpgradeable || !isRefreshing) return undefined;
 
-      // const getEvents = () =>
-      //   swapCatUpgradeable.queryFilter(
-      //     swapCatUpgradeable.filters.OfferCreated(),
-      //     swapCatUpgradeable.metadata.fromBlock
-      //   );
-      // const events = await asyncRetry(getEvents);
-
       const offerCount = (
         await asyncRetry(() => swapCatUpgradeable.getOfferCount())
       ).toNumber();
@@ -92,8 +85,6 @@ export const useOffersUser: UseOffers = () => {
 						sellerAddress: sellerAddress,
 						price: price.toString(),
 						amount: amount.toString(),
-						// price: (Number(price)/ 10 ** (buyerTokenDecimals)).toString(),
-						// amount: (Number(amount)/ 10 ** (offerTokenDecimals)).toString(),
 					};
 	
 					if (offerData.sellerAddress === account) {

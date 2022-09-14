@@ -1,5 +1,5 @@
 const UserTransfers = () => {
-  return <div>User Transfers</div>;
+  return <div>Your offers</div>;
 };
 
 export default UserTransfers;

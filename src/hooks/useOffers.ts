@@ -52,13 +52,6 @@ export const useOffers: UseOffers = () => {
     async (isActive) => {
       if (!swapCatUpgradeable || !isRefreshing) return undefined;
 
-      // const getEvents = () =>
-      //   swapCatUpgradeable.queryFilter(
-      //     swapCatUpgradeable.filters.OfferCreated(),
-      //     swapCatUpgradeable.metadata.fromBlock
-      //   );
-      // const events = await asyncRetry(getEvents);
-
       const offerCount = (
         await asyncRetry(() => swapCatUpgradeable.getOfferCount())
       ).toNumber();
@@ -75,31 +68,31 @@ export const useOffers: UseOffers = () => {
 						amount,
 					] = await getOffer();
 					const offerTokenContract = getContract<Erc20>(offerTokenAddress, Erc20ABI, <Web3Provider>provider, account);
-				const buyerTokenContract = getContract<Erc20>(buyerTokenAddress, Erc20ABI, <Web3Provider>provider, account);
-				const offerTokenName = <string>(await offerTokenContract?.name());
-				const buyerTokenName = <string>(await buyerTokenContract?.name());
+					const buyerTokenContract = getContract<Erc20>(buyerTokenAddress, Erc20ABI, <Web3Provider>provider, account);
+					const offerTokenName = <string>(await offerTokenContract?.name());
+					const buyerTokenName = <string>(await buyerTokenContract?.name());
 
-				// const offerTokenDecimals = <number>await offerTokenContract?.decimals();
-				// const buyerTokenDecimals = <number>await buyerTokenContract?.decimals();
+					// const offerTokenDecimals = <number>await offerTokenContract?.decimals();
+					// const buyerTokenDecimals = <number>await buyerTokenContract?.decimals();
 
-        const offerData: Offer = {
-          offerId: i.toString(),
-          offerTokenAddress: offerTokenAddress,
-          offerTokenName: <string>offerTokenName,
-          buyerTokenAddress: buyerTokenAddress,
-          buyerTokenName: <string>buyerTokenName,
-          sellerAddress: sellerAddress,
-					price: price.toString(),
-					amount: amount.toString(),
-          // price: (Number(price)/ 10 ** (buyerTokenDecimals)).toString(),
-          // amount: (Number(amount)/ 10 ** (offerTokenDecimals)).toString(),
-        };
+					const offerData: Offer = {
+						offerId: i.toString(),
+						offerTokenAddress: offerTokenAddress,
+						offerTokenName: <string>offerTokenName,
+						buyerTokenAddress: buyerTokenAddress,
+						buyerTokenName: <string>buyerTokenName,
+						sellerAddress: sellerAddress,
+						price: price.toString(),
+						amount: amount.toString(),
+						// price: (Number(price)/ 10 ** (buyerTokenDecimals)).toString(),
+						// amount: (Number(amount)/ 10 ** (offerTokenDecimals)).toString(),
+					};
 
-				if (price) {
-					offersData.push(offerData);
-				}
+					if (amount.toString() !== '0') {
+						offersData.push(offerData);
+					}
 				} catch (e) {
-					console.error(e);
+					console.log("There is deleted offer");
 				}
       }
 
