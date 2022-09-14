@@ -178,7 +178,8 @@ export const MarketSellWithPermit = () => {
       enteredOfferToken,
       enteredBuyerToken,
       enteredOfferId,
-      enteredPrice
+      enteredPrice,
+      enteredAmount
     );
   };
 
@@ -203,7 +204,8 @@ export const MarketSellWithPermit = () => {
       enteredOfferToken,
       enteredBuyerToken,
       enteredOfferId,
-      enteredPrice
+      enteredPrice,
+      enteredAmount
     );
   };
 
