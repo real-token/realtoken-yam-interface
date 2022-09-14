@@ -139,9 +139,10 @@ export const NOTIFICATIONS = asConst<
     hash: string;
     href: string;
   }) => ({
-    id: `create-offer-${payload.key}`,
-    color: 'red',
-    icon: <IconX size={14} />,
+    id: `buy-offer-${payload.key}`,
+    loading: true,
+    autoClose: false,
+    disallowClose: true,
     title: (
       <Translation ns={'notifications'}>
         {(t) => t('buyOfferLoading.title')}
@@ -165,9 +166,9 @@ export const NOTIFICATIONS = asConst<
     hash: string;
     href: string;
   }) => ({
-    id: `create-offer-${payload.key}`,
-    color: 'red',
-    icon: <IconX size={14} />,
+    id: `buy-offer-${payload.key}`,
+    color: 'teal',
+    icon: <IconCheck size={16} />,
     title: (
       <Translation ns={'notifications'}>
         {(t) => t('buyOfferSuccess.title')}
@@ -191,7 +192,7 @@ export const NOTIFICATIONS = asConst<
     hash: string;
     href: string;
   }) => ({
-    id: `create-offer-${payload.key}`,
+    id: `buy-offer-${payload.key}`,
     color: 'red',
     icon: <IconX size={14} />,
     title: (
