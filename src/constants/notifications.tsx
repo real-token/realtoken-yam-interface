@@ -16,6 +16,9 @@ export enum NotificationsID {
   buyOfferLoading = 'buyOfferLoading',
   buyOfferSuccess = 'buyOfferSuccess',
   buyOfferError = 'buyOfferError',
+  approveOfferLoading = 'approveOfferLoading',
+  approveOfferSuccess = 'approveOfferSuccess',
+  approveOfferError = 'approveOfferError',
 }
 
 export const NOTIFICATIONS = asConst<
@@ -205,6 +208,85 @@ export const NOTIFICATIONS = asConst<
         {(t) => (
           <Stack spacing={1}>
             {`${t('buyOfferError.message')}`}
+            <Anchor component={NextLink} href={payload.href} target={'_blank'}>
+              <Text>{`(${shortenString(payload.hash)})`}</Text>
+            </Anchor>
+          </Stack>
+        )}
+      </Translation>
+    ),
+  }),
+  [NotificationsID.approveOfferLoading]: (payload: {
+    key: string;
+    hash: string;
+    href: string;
+  }) => ({
+    id: `approve-offer-${payload.key}`,
+    loading: true,
+    autoClose: false,
+    disallowClose: true,
+    title: (
+      <Translation ns={'notifications'}>
+        {(t) => t('approveOfferLoading.title')}
+      </Translation>
+    ),
+    message: (
+      <Translation ns={'notifications'}>
+        {(t) => (
+          <Stack spacing={1}>
+            {`${t('approveOfferLoading.message')}`}
+            <Anchor component={NextLink} href={payload.href} target={'_blank'}>
+              <Text>{`(${shortenString(payload.hash)})`}</Text>
+            </Anchor>
+          </Stack>
+        )}
+      </Translation>
+    ),
+  }),
+  [NotificationsID.approveOfferSuccess]: (payload: {
+    key: string;
+    hash: string;
+    href: string;
+  }) => ({
+    id: `approve-offer-${payload.key}`,
+    color: 'teal',
+    icon: <IconCheck size={16} />,
+    title: (
+      <Translation ns={'notifications'}>
+        {(t) => t('approveOfferSuccess.title')}
+      </Translation>
+    ),
+    message: (
+      <Translation ns={'notifications'}>
+        {(t) => (
+          <Stack spacing={1}>
+            {`${t('approveOfferSuccess.message')}`}
+            <Anchor component={NextLink} href={payload.href} target={'_blank'}>
+              <Text>{`(${shortenString(payload.hash)})`}</Text>
+            </Anchor>
+          </Stack>
+        )}
+      </Translation>
+    ),
+  }),
+  [NotificationsID.approveOfferError]: (payload: {
+    key: string;
+    hash: string;
+    href: string;
+  }) => ({
+    id: `approve-offer-${payload.key}`,
+    color: 'red',
+    icon: <IconX size={14} />,
+    title: (
+      <Translation ns={'notifications'}>
+        {(t) => t('approveOfferError.title')}
+      </Translation>
+    ),
+    message: (
+      <Translation ns={'notifications'}>
+        {(t) => (
+          <Stack spacing={1}>
+            {`${t('approveOfferError.message')}`}
             <Anchor component={NextLink} href={payload.href} target={'_blank'}>
               <Text>{`(${shortenString(payload.hash)})`}</Text>
             </Anchor>

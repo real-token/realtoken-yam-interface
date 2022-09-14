@@ -105,7 +105,7 @@ export const MarketSell = () => {
     };
 
     showNotification(
-      NOTIFICATIONS[NotificationsID.createOfferLoading](notificationPayloadTx1)
+      NOTIFICATIONS[NotificationsID.approveOfferLoading](notificationPayloadTx1)
     );
 
     tx1
@@ -114,8 +114,8 @@ export const MarketSell = () => {
         updateNotification(
           NOTIFICATIONS[
             status === 1
-              ? NotificationsID.createOfferSuccess
-              : NotificationsID.createOfferError
+              ? NotificationsID.approveOfferSuccess
+              : NotificationsID.approveOfferError
           ](notificationPayload)
         )
       );

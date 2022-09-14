@@ -30,5 +30,17 @@
   "buyOfferError": {
     "title": "Error",
     "message": "Your transaction has been rejected."
+  },
+  "approveOfferLoading": {
+    "title": "Waiting",
+    "message": "Your transaction is being validated."
+  },
+  "approveOfferSuccess": {
+    "title": "Success",
+    "message": "Your transaction has been validated."
+  },
+  "approveOfferError": {
+    "title": "Error",
+    "message": "Your transaction has been rejected."
   }
 }
