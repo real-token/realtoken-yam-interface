@@ -3,17 +3,15 @@ import type { Web3Provider } from '@ethersproject/providers';
 import type { Contract } from 'ethers';
 import { utils } from 'ethers';
 
-import { BridgeToken } from 'src/abis';
-
-const erc721PermitSignature = async (
+const erc20PermitSignature = async (
   owner: string,
   spender: string,
-  token: BridgeToken,
+  amount: string,
   contract: Contract,
   library: Web3Provider
 ) => {
   try {
-    const transactionDeadline = Date.now() + 20 * 60;
+    const transactionDeadline = Date.now() + 3600; // permit valable during 1h
     const nonce = await contract.nonces(owner);
     const contractName = await contract.name();
     const EIP712Domain = [
@@ -31,20 +29,17 @@ const erc721PermitSignature = async (
     const Permit = [
       { name: 'owner', type: 'address' },
       { name: 'spender', type: 'address' },
-      { name: 'token', type: 'uint256' },
+      { name: 'value', type: 'uint256' },
       { name: 'nonce', type: 'uint256' },
       { name: 'deadline', type: 'uint256' },
     ];
-    const tokenId = await token.name();
-    // eslint-disable-next-line object-shorthand
     const message = {
       owner,
       spender,
-      tokenId,
+      value: amount.toString(),
       nonce: nonce.toHexString(),
       deadline: transactionDeadline,
     };
-    // eslint-disable-next-line object-shorthand
     const data = JSON.stringify({
       types: {
         EIP712Domain,
@@ -58,7 +53,6 @@ const erc721PermitSignature = async (
     const signature = await library.send('eth_signTypedData_v4', [owner, data]);
     const signData = utils.splitSignature(signature as string);
     const { r, s, v } = signData;
-    // eslint-disable-next-line object-shorthand
     return {
       r,
       s,
@@ -66,8 +60,9 @@ const erc721PermitSignature = async (
       deadline: transactionDeadline,
     };
   } catch (e) {
-    throw Error(`${e}`);
+    console.log('Error getting permit signature: ', e);
+    return e;
   }
 };
 
-export default erc721PermitSignature;
+export default erc20PermitSignature;

@@ -4,6 +4,7 @@ import { splitSignature } from 'ethers/lib/utils';
 import { BridgeToken } from '../abis/types/BridgeToken';
 
 export async function getPermitSignature(
+  account: string,
   wallet: Wallet,
   token: BridgeToken,
   spender: string,
@@ -58,7 +59,7 @@ export async function getPermitSignature(
       },
       // eslint-disable-next-line object-shorthand
       {
-        owner: wallet.address,
+        owner: account,
         spender,
         value,
         nonce,

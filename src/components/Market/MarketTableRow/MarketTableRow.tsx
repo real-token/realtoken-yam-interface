@@ -22,7 +22,7 @@ import { useOffers } from 'src/hooks';
 import { Offer } from 'src/hooks/types';
 
 import { Table } from '../../Table';
-import { BuyActions } from '../BuyActions';
+import { BuyActions, BuyActionsWithPermit } from '../BuyActions';
 import { MarketSubRow } from '../MarketSubRow';
 
 type OfferTable = {
@@ -175,7 +175,7 @@ export const MarketTableRow: FC = () => {
             id: 'actions',
             header: undefined,
             cell: ({ row }) => (
-              <BuyActions
+              <BuyActionsWithPermit
                 buyOffer={row.original}
                 triggerRefresh={refreshState[1]}
               />
