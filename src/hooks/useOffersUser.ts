@@ -56,11 +56,21 @@ export const useOffersUser: UseOffers = () => {
     async (isActive) => {
       if (!swapCatUpgradeable || !isRefreshing) return undefined;
 
+			const getEvents = () =>
+			swapCatUpgradeable.queryFilter(
+				swapCatUpgradeable.filters.OfferDeleted(),
+				swapCatUpgradeable.metadata.fromBlock
+			);
+
+			const events = await asyncRetry(getEvents);
+			const offersDeleted = events.map(event => event.args.offerId.toNumber());
       const offerCount = (
         await asyncRetry(() => swapCatUpgradeable.getOfferCount())
       ).toNumber();
+			const offerCountArray = Array.from(Array(offerCount).keys());
+			const offersToFetch = offerCountArray.filter(x => !offersDeleted.includes(x));
 
-      for (let i = 0; i < offerCount + 1; i++) {
+      for (const i of offersToFetch) {
         const getOffer = () => swapCatUpgradeable.showOffer(i);
 
 				try {
