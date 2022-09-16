@@ -72,7 +72,6 @@ export const BuyModal: FC<ContextModalProps<BuyModalProps>> = ({
     offers,
     refreshState: [isRefreshing],
   } = useOffers();
-  console.log('Offers modal', offers);
 
   const { t } = useTranslation('modals', { keyPrefix: 'buy' });
 
@@ -99,7 +98,6 @@ export const BuyModal: FC<ContextModalProps<BuyModalProps>> = ({
   const onHandleSubmit = useCallback(
     async (formValues: BuyFormValues) => {
       try {
-        console.log('here');
         if (
           !account ||
           !provider ||

@@ -134,7 +134,6 @@ export const BuyModalWithPermit: FC<
         const amountInWei = new BigNumber(
           formValues.amount.toString()
         ).shiftedBy(Number(offerTokenDecimals));
-        console.log('amountInWei to String', amountInWei.toString());
 
         const priceInWei = new BigNumber(formValues.price.toString()).shiftedBy(
           Number(buyerTokenDecimals)
@@ -144,13 +143,6 @@ export const BuyModalWithPermit: FC<
           .multipliedBy(priceInWei)
           .shiftedBy(-offerTokenDecimals)
           .plus(1);
-
-        const currentDate = new Date();
-        const permitDeadline = new BigNumber(
-          Math.floor(currentDate.getTime() / 1000) + 60 * 60 * 24 * 365
-        );
-
-        console.log('buyerTokenAmount', buyerTokenAmount.toString());
 
         const { r, s, v, deadline }: any = await erc20PermitSignature(
           account,

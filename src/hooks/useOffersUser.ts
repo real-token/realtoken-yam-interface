@@ -47,8 +47,6 @@ export const useOffersUser: UseOffers = () => {
   }, [swapCatUpgradeable]);
 
   const { account, provider } = useWeb3React();
-  const activeChain = useActiveChain();
-
 
   const offersData: Offer[] = [];
 
@@ -107,24 +105,19 @@ export const useOffersUser: UseOffers = () => {
 					}
 	
 				} catch (e) {
-					console.error(e);
+					console.log("Error getting when fetching offers: ", e);
 				}
       }
 
-      console.log('Offers Data: ', offersData);
-
-
       if (isActive()) {
-        console.log('component is active');
         setOffers(offersData.filter(Boolean));
         triggerRefresh(false);
       }
 
       return offersData;
     },
-    [isRefreshing, swapCatUpgradeable, offersData, offers]
+    [swapCatUpgradeable, isRefreshing, offersData, provider, account]
   );
-  console.log('Offer returned filter: ', offers);
 
   return {
     offers: offers,

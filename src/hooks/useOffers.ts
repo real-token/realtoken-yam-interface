@@ -46,8 +46,6 @@ export const useOffers: UseOffers = () => {
   }, [swapCatUpgradeable]);
 
   const { account, provider } = useWeb3React();
-  const activeChain = useActiveChain();
-
 
   const offersData: Offer[] = [];
 
@@ -106,24 +104,19 @@ export const useOffers: UseOffers = () => {
 						offersData.push(offerData);
 					}
 				} catch (e) {
-					// console.log("There is deleted offer");
+					console.log("Error getting when fetching offers: ", e);
 				}
       }
 
-      console.log('Offers Data: ', offersData);
-
-
       if (isActive()) {
-        console.log('component is active');
         setOffers(offersData.filter(Boolean));
         triggerRefresh(false);
       }
 
       return offersData;
     },
-    [isRefreshing, swapCatUpgradeable, offersData, offers]
+    [swapCatUpgradeable, isRefreshing, offersData, provider, account]
   );
-  console.log('Offer returned: ', offers);
 
   return {
     offers: offers,

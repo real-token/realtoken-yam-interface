@@ -50,9 +50,6 @@ export const MarketSell = () => {
 
   const submitHandler = async (event: any) => {
     event.preventDefault();
-    console.log('offer token event');
-    console.log(event);
-
     if (
       !account ||
       !provider ||

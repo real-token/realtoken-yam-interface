@@ -48,7 +48,6 @@ export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
     offers,
     refreshState: [isRefreshing],
   } = useOffers();
-  console.log('Offers modal to delete', offers);
 
   const { t } = useTranslation('modals', { keyPrefix: 'delete' });
 
@@ -75,7 +74,6 @@ export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
   const onHandleSubmit = useCallback(
     async (formValues: DeleteFormValues) => {
       try {
-        console.log('here');
         if (
           !account ||
           !provider ||

@@ -58,8 +58,6 @@ export const UserPortfolio: FC = () => {
     setIsLoading(false);
   }, []);
 
-  console.log('Offer 2: ', offers);
-  console.log('Offer 3: ', fetchedOffers);
   if (isLoading) {
     return <div>{'Loading...'}</div>;
   }

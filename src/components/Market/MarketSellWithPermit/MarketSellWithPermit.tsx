@@ -124,8 +124,6 @@ export const MarketSellWithPermit = () => {
 
   const permitHandler = async (event: any) => {
     event.preventDefault();
-    console.log('permitHandler');
-    console.log('chainId: ', chainId);
     if (
       !account ||
       !connector ||
@@ -139,8 +137,6 @@ export const MarketSellWithPermit = () => {
     ) {
       return;
     }
-
-    console.log('token name: ', await bridgeToken.name());
 
     const permitAmount = BigNumber.from(enteredAmount);
     const currentDate = new Date();
@@ -162,7 +158,6 @@ export const MarketSellWithPermit = () => {
         version: '1',
       }
     );
-    console.log('BridgeToken: ', bridgeToken);
 
     // await bridgeToken.permit(
     //   account,
@@ -185,8 +180,6 @@ export const MarketSellWithPermit = () => {
 
   const submitHandler = async (event: any) => {
     event.preventDefault();
-    console.log('offer token event');
-    console.log(event);
 
     if (
       !account ||
@@ -273,40 +266,3 @@ export const MarketSellWithPermit = () => {
     </div>
   );
 };
-
-// const { getInputProps, onSubmit } = useForm({
-//   initialValues: {
-//     offerTokenAddress: '',
-//     buyererTokenAddress: '',
-//     price: '',
-//     offerId: '',
-//   },
-// });
-
-// const createOfferHandler = useCallback(
-//   async (formValues: CreateOfferFormValues) => {
-//     try {
-//       if (
-//         !account ||
-//         !provider ||
-//         !swapCatUpgradeable ||
-//         !formValues.offerTokenAddress ||
-//         !formValues.buyerTokenAddress ||
-//         !formValues.price ||
-//         !formValues.offerId
-//       ) {
-//         return;
-//       }
-//       const createOfferTransaction = await swapCatUpgradeable.createOffer(
-//         formValues.offerTokenAddress,
-//         formValues.buyerTokenAddress,
-//         formValues.price,
-//         formValues.offerId
-//       );
-//       console.log(formValues);
-//     } catch (error) {
-//       console.error(error);
-//     }
-//   },
-//   [account, activeChain, swapCatUpgradeable]
-// );

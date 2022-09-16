@@ -8,36 +8,17 @@ import {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Web3Provider } from '@ethersproject/providers';
-import {
-  ActionIcon,
-  Anchor,
-  Box,
-  Button,
-  Checkbox,
-  Container,
-  Group,
-  Input,
-  Popover,
-  Stack,
-  Text,
-} from '@mantine/core';
+import { Box, Button, Container, Group, Input, Stack } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { ContextModalProps } from '@mantine/modals';
-import { NextLink } from '@mantine/next';
 import { showNotification, updateNotification } from '@mantine/notifications';
-import { IconQuestionMark } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
 
 import BigNumber from 'bignumber.js';
 
-import { Erc20, Erc20ABI } from 'src/abis';
 import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { useActiveChain, useContract, useOffers } from 'src/hooks';
-import { Offer } from 'src/hooks/types';
-import { getContract } from 'src/utils';
 
-import { AssetSelect } from '../../AssetSelect';
 import { NumberInput } from '../../NumberInput';
 
 type UpdateModalProps = {
@@ -100,7 +81,6 @@ export const UpdateModal: FC<ContextModalProps<UpdateModalProps>> = ({
     offers,
     refreshState: [isRefreshing],
   } = useOffers();
-  console.log('Offers modal', offers);
 
   const { t } = useTranslation('modals', { keyPrefix: 'update' });
 
@@ -127,7 +107,6 @@ export const UpdateModal: FC<ContextModalProps<UpdateModalProps>> = ({
   const onHandleSubmit = useCallback(
     async (formValues: UpdateFormValues) => {
       try {
-        console.log('here');
         if (
           !account ||
           !provider ||
@@ -202,7 +181,6 @@ export const UpdateModal: FC<ContextModalProps<UpdateModalProps>> = ({
         <NumberInput
           label={t('price')}
           required={true}
-          // disabled={!amountMax}
           min={0}
           // max={amountMax}
           // step={amountMax}
