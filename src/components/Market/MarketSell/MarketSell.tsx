@@ -62,35 +62,35 @@ export const MarketSell = () => {
       return;
     }
 
-    const offerTokenContract = getContract<Erc20>(
+    const offerToken = getContract<Erc20>(
       enteredOfferToken,
       Erc20ABI,
       provider,
       account
     );
-    const buyerTokenContract = getContract<Erc20>(
+    const buyerToken = getContract<Erc20>(
       enteredBuyerToken,
       Erc20ABI,
       provider,
       account
     );
 
-    if (!offerTokenContract || !buyerTokenContract) {
-      console.log('offerTokenContract or buyerTokenContract not found');
+    if (!offerToken || !buyerToken) {
+      console.log('offerToken or buyerToken not found');
       return;
     }
 
-    const offerTokenDecimals = await offerTokenContract.decimals();
+    const offerTokenDecimals = await offerToken.decimals();
     const enteredAmountInWei = BigNumber.from(
       Math.round(100 * parseFloat(enteredAmount))
     ).mul(BigNumber.from(10).pow(offerTokenDecimals - 2));
 
-    const buyerTokenDecimals = await buyerTokenContract?.decimals();
+    const buyerTokenDecimals = await buyerToken.decimals();
     const enteredPriceInWei = BigNumber.from(
       Math.round(100 * parseFloat(enteredPrice))
     ).mul(BigNumber.from(10).pow(buyerTokenDecimals - 2));
 
-    const tx1 = await offerTokenContract.approve(
+    const tx1 = await offerToken.approve(
       swapCatUpgradeable.address,
       enteredAmountInWei
     );

@@ -137,7 +137,6 @@ export function MarketTable({ data }: TableSortProps) {
       <td>{row.amount}</td>
     </tr>
   ));
-  console.log('sorted data', sortedData);
 
   return (
     <ScrollArea>

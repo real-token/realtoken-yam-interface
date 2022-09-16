@@ -80,12 +80,12 @@ export const useOffersUser: UseOffers = () => {
 						amount,
 					] = await getOffer();
 	
-					const offerTokenContract = getContract<Erc20>(offerTokenAddress, Erc20ABI, <Web3Provider>provider, account);
-					const buyerTokenContract = getContract<Erc20>(buyerTokenAddress, Erc20ABI, <Web3Provider>provider, account);
-					const offerTokenName = <string>(await offerTokenContract?.name());
-					const buyerTokenName = <string>(await buyerTokenContract?.name());
-					const offerTokenDecimals = <number>await offerTokenContract?.decimals();
-					const buyerTokenDecimals = <number>await buyerTokenContract?.decimals();
+					const offerToken = getContract<Erc20>(offerTokenAddress, Erc20ABI, <Web3Provider>provider, account);
+					const buyerToken = getContract<Erc20>(buyerTokenAddress, Erc20ABI, <Web3Provider>provider, account);
+					const offerTokenName = <string>(await offerToken?.name());
+					const buyerTokenName = <string>(await buyerToken?.name());
+					const offerTokenDecimals = <number>await offerToken?.decimals();
+					const buyerTokenDecimals = <number>await buyerToken?.decimals();
 	
 					const offerData: Offer = {
 						offerId: i.toString(),

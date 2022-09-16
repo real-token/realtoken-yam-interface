@@ -186,7 +186,7 @@ export const BuyModalWithPermit: FC<
             )
           );
       } catch (e) {
-        console.error('Error modal Buy with permit not working', e);
+        console.error('Error in BuyModalWithPermit', e);
       } finally {
         setSubmitting(false);
         triggerTableRefresh(true);

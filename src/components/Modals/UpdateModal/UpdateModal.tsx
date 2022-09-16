@@ -154,7 +154,7 @@ export const UpdateModal: FC<ContextModalProps<UpdateModalProps>> = ({
             )
           );
       } catch (e) {
-        console.error('Error update modal', e);
+        console.error('Error UpdateModal', e);
       } finally {
         setSubmitting(false);
         triggerTableRefresh(true);

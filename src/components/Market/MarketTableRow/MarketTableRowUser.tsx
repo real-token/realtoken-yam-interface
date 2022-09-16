@@ -173,7 +173,7 @@ export const MarketTableRowUser: FC = () => {
             meta: { colSpan: 2 },
           },
           {
-            id: 'actions',
+            id: 'update',
             header: undefined,
             cell: ({ row }) => (
               <UpdateActions
@@ -184,7 +184,7 @@ export const MarketTableRowUser: FC = () => {
             meta: { colSpan: 0 },
           },
           {
-            id: 'actions',
+            id: 'delete',
             header: undefined,
             cell: ({ row }) => (
               <DeleteActions
