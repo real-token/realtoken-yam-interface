@@ -3,18 +3,20 @@ import { useTranslation } from 'react-i18next';
 
 import { ActionIcon, Group, Title } from '@mantine/core';
 import { useModals } from '@mantine/modals';
-import { IconTrash, IconTrashOff } from '@tabler/icons';
+import { IconEdit, IconShoppingCart } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
+
+import { BigNumber } from 'bignumber.js';
 
 import { Offer } from 'src/hooks/types';
 
-type DeleteActions = {
-  deleteOffer: Offer;
+type UpdateActions = {
+  updateOffer: Offer;
   triggerRefresh: Dispatch<SetStateAction<boolean>>;
 };
 
-export const DeleteActions: FC<DeleteActions> = ({
-  deleteOffer,
+export const UpdateActions: FC<UpdateActions> = ({
+  updateOffer,
   triggerRefresh,
 }) => {
   const { account } = useWeb3React();
@@ -22,12 +24,18 @@ export const DeleteActions: FC<DeleteActions> = ({
 
   const { t } = useTranslation('modals');
 
-  const onOpenDeleteModal = useCallback(
+  const onOpenUpdateModal = useCallback(
     (offer: Offer) => {
-      modals.openContextModal('delete', {
-        title: <Title order={3}>{t('delete.title')}</Title>,
+      modals.openContextModal('update', {
+        title: <Title order={3}>{t('update.title')}</Title>,
         innerProps: {
           offerId: offer.offerId,
+          price: offer.price,
+          amount: offer.amount,
+          offerTokenAddress: offer.offerTokenAddress,
+          offerTokenDecimals: offer.offerTokenDecimals,
+          buyerTokenAddress: offer.buyerTokenAddress,
+          buyerTokenDecimals: offer.buyerTokenDecimals,
           triggerTableRefresh: triggerRefresh,
         },
       });
@@ -46,13 +54,12 @@ export const DeleteActions: FC<DeleteActions> = ({
     <Group position={'center'}>
       {
         <ActionIcon
-          color={'red'}
-          variant='filled'
+          color={'green'}
           onClick={() =>
-            account ? onOpenDeleteModal(deleteOffer) : onOpenWalletModal()
+            account ? onOpenUpdateModal(updateOffer) : onOpenWalletModal()
           }
         >
-          <IconTrash size={16} />
+          <IconEdit size={16} />
         </ActionIcon>
       }
     </Group>

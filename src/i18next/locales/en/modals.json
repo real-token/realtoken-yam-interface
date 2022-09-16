@@ -3,7 +3,7 @@
     "title": "Connect wallet"
   },
   "buy": {
-    "title": "Buy",
+    "title": "Buy Offer",
     "selectedOffer": "Selected offer",
     "offerId": "Offer ID",
     "offerTokenAddress": "Sell Token Address",
@@ -17,9 +17,24 @@
     "confirm": "Confirm"
   },
   "delete": {
-    "title": "Buy",
+    "title": "Delete Offer",
     "selectedOffer": "Selected offer",
     "deletedOffer": "Selected offer to delete",
+    "offerId": "Offer ID",
+    "offerTokenAddress": "Sell Token Address",
+    "offerTokenName": "Offer Token Name",
+    "buyerTokenAddress": "Buyer Token Address",
+    "buyerTokenName": "Buyer Token Name",
+    "sellerAddress": "Seller Address",
+    "price": "Price",
+    "amount": "Amount",
+    "cancel": "Cancel",
+    "confirm": "Confirm"
+  },
+  "update": {
+    "title": "Update Offer",
+    "selectedOffer": "Selected offer",
+    "updatedOffer": "Selected offer to update",
     "offerId": "Offer ID",
     "offerTokenAddress": "Sell Token Address",
     "offerTokenName": "Offer Token Name",

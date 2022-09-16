@@ -9,23 +9,38 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import { Web3Provider } from '@ethersproject/providers';
-import { Box, Button, Container, Group, Input, Stack } from '@mantine/core';
+import {
+  ActionIcon,
+  Anchor,
+  Box,
+  Button,
+  Checkbox,
+  Container,
+  Group,
+  Input,
+  Popover,
+  Stack,
+  Text,
+} from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { ContextModalProps } from '@mantine/modals';
+import { NextLink } from '@mantine/next';
 import { showNotification, updateNotification } from '@mantine/notifications';
+import { IconQuestionMark } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
 
 import BigNumber from 'bignumber.js';
 
-import { BridgeToken, bridgeTokenABI } from 'src/abis';
+import { Erc20, Erc20ABI } from 'src/abis';
 import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { useActiveChain, useContract, useOffers } from 'src/hooks';
-import erc20PermitSignature from 'src/hooks/erc20PermitSignature';
+import { Offer } from 'src/hooks/types';
 import { getContract } from 'src/utils';
 
+import { AssetSelect } from '../../AssetSelect';
 import { NumberInput } from '../../NumberInput';
 
-type BuyModalWithPermitProps = {
+type UpdateModalProps = {
   offerId: string;
   price: number;
   amount: number;
@@ -36,7 +51,7 @@ type BuyModalWithPermitProps = {
   triggerTableRefresh: Dispatch<SetStateAction<boolean>>;
 };
 
-type BuyWithPermitFormValues = {
+type UpdateFormValues = {
   offerId: string;
   price: number;
   amount: number;
@@ -46,9 +61,7 @@ type BuyWithPermitFormValues = {
   buyerTokenDecimals: number;
 };
 
-export const BuyModalWithPermit: FC<
-  ContextModalProps<BuyModalWithPermitProps>
-> = ({
+export const UpdateModal: FC<ContextModalProps<UpdateModalProps>> = ({
   context,
   id,
   innerProps: {
@@ -64,7 +77,8 @@ export const BuyModalWithPermit: FC<
 }) => {
   const { account, provider } = useWeb3React();
   const { getInputProps, onSubmit, reset, setFieldValue, values } =
-    useForm<BuyWithPermitFormValues>({
+    useForm<UpdateFormValues>({
+      // eslint-disable-next-line object-shorthand
       initialValues: {
         offerId: offerId,
         price: price,
@@ -78,21 +92,17 @@ export const BuyModalWithPermit: FC<
 
   const [isSubmitting, setSubmitting] = useState<boolean>(false);
   const [amountMax, setAmountMax] = useState<number>();
-  const activeChain = useActiveChain();
 
+  const activeChain = useActiveChain();
   const swapCatUpgradeable = useContract(ContractsID.swapCatUpgradeable);
-  const buyerToken = getContract<BridgeToken>(
-    buyerTokenAddress,
-    bridgeTokenABI,
-    provider as Web3Provider,
-    account
-  );
 
   const {
     offers,
     refreshState: [isRefreshing],
   } = useOffers();
-  const { t } = useTranslation('modals', { keyPrefix: 'buy' });
+  console.log('Offers modal', offers);
+
+  const { t } = useTranslation('modals', { keyPrefix: 'update' });
 
   const onClose = useCallback(() => {
     reset();
@@ -115,59 +125,32 @@ export const BuyModalWithPermit: FC<
   }, [amountMax]);
 
   const onHandleSubmit = useCallback(
-    async (formValues: BuyWithPermitFormValues) => {
+    async (formValues: UpdateFormValues) => {
       try {
+        console.log('here');
         if (
           !account ||
           !provider ||
           !formValues.offerId ||
           !formValues.price ||
           !formValues.amount ||
-          !swapCatUpgradeable ||
-          !buyerToken
+          !swapCatUpgradeable
         ) {
           return;
         }
 
         setSubmitting(true);
 
-        const amountInWei = new BigNumber(
-          formValues.amount.toString()
-        ).shiftedBy(Number(offerTokenDecimals));
-        console.log('amountInWei to String', amountInWei.toString());
-
-        const priceInWei = new BigNumber(formValues.price.toString()).shiftedBy(
-          Number(buyerTokenDecimals)
-        );
-
-        const buyerTokenAmount = amountInWei
-          .multipliedBy(priceInWei)
-          .shiftedBy(-offerTokenDecimals)
-          .plus(1);
-
-        const currentDate = new Date();
-        const permitDeadline = new BigNumber(
-          Math.floor(currentDate.getTime() / 1000) + 60 * 60 * 24 * 365
-        );
-
-        console.log('buyerTokenAmount', buyerTokenAmount.toString());
-
-        const { r, s, v, deadline }: any = await erc20PermitSignature(
-          account,
-          swapCatUpgradeable.address,
-          buyerTokenAmount.toString(),
-          buyerToken,
-          provider
-        );
-
-        const transaction = await swapCatUpgradeable.buyWithPermit(
+        const transaction = await swapCatUpgradeable.createOffer(
+          formValues.offerTokenAddress,
+          formValues.buyerTokenAddress,
           formValues.offerId,
-          priceInWei.toString(),
-          amountInWei.toString(),
-          deadline.toString(),
-          v,
-          r,
-          s
+          new BigNumber(formValues.price.toString())
+            .shiftedBy(Number(buyerTokenDecimals))
+            .toString(),
+          new BigNumber(formValues.amount.toString())
+            .shiftedBy(Number(offerTokenDecimals))
+            .toString()
         );
 
         const notificationPayload = {
@@ -177,7 +160,7 @@ export const BuyModalWithPermit: FC<
         };
 
         showNotification(
-          NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationPayload)
+          NOTIFICATIONS[NotificationsID.updateOfferLoading](notificationPayload)
         );
 
         transaction
@@ -186,13 +169,13 @@ export const BuyModalWithPermit: FC<
             updateNotification(
               NOTIFICATIONS[
                 status === 1
-                  ? NotificationsID.buyOfferSuccess
-                  : NotificationsID.buyOfferError
+                  ? NotificationsID.updateOfferSuccess
+                  : NotificationsID.updateOfferError
               ](notificationPayload)
             )
           );
       } catch (e) {
-        console.error('Error modal Buy with permit not working', e);
+        console.error('Error update modal', e);
       } finally {
         setSubmitting(false);
         triggerTableRefresh(true);
@@ -216,10 +199,18 @@ export const BuyModalWithPermit: FC<
           <Input.Label>{t('selectedOffer')}</Input.Label>
           <Container>{offerId ? offerId : 'Offer not found'}</Container>
         </Box>
-        {/* <Box>
-          <Input.Label>{t('offerTokenName')}</Input.Label>
-          <Container>{offerTokenName ? offerTokenName : 'Offer not found'}</Container>
-        </Box> */}
+        <NumberInput
+          label={t('price')}
+          required={true}
+          // disabled={!amountMax}
+          min={0}
+          // max={amountMax}
+          // step={amountMax}
+          showMax={true}
+          placeholder={t('price')}
+          sx={{ flexGrow: 1 }}
+          {...getInputProps('price')}
+        />
         <NumberInput
           label={t('amount')}
           required={true}

@@ -8,32 +8,14 @@ import {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import {
-  ActionIcon,
-  Anchor,
-  Box,
-  Button,
-  Checkbox,
-  Container,
-  Group,
-  Input,
-  Popover,
-  Stack,
-  Text,
-} from '@mantine/core';
+import { Box, Button, Container, Group, Input, Stack } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { ContextModalProps } from '@mantine/modals';
-import { NextLink } from '@mantine/next';
 import { showNotification, updateNotification } from '@mantine/notifications';
-import { IconQuestionMark } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
 
 import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { useActiveChain, useContract, useOffers } from 'src/hooks';
-import { Offer } from 'src/hooks/types';
-
-import { AssetSelect } from '../../AssetSelect';
-import { NumberInput } from '../../NumberInput';
 
 type DeleteModalProps = {
   offerId: string;
@@ -50,12 +32,11 @@ export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
   innerProps: { offerId, triggerTableRefresh },
 }) => {
   const { account, provider } = useWeb3React();
-  const { getInputProps, onSubmit, reset, setFieldValue, values } =
-    useForm<DeleteFormValues>({
-      initialValues: {
-        offerId: offerId,
-      },
-    });
+  const { onSubmit, reset, setFieldValue, values } = useForm<DeleteFormValues>({
+    initialValues: {
+      offerId: offerId,
+    },
+  });
 
   const [isSubmitting, setSubmitting] = useState<boolean>(false);
   const [amountMax, setAmountMax] = useState<number>();
@@ -103,9 +84,6 @@ export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
         ) {
           return;
         }
-        console.log('here2');
-
-        console.log('form value', formValues);
 
         setSubmitting(true);
 
@@ -135,7 +113,7 @@ export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
             )
           );
       } catch (e) {
-        console.error('ERROR here', e);
+        console.error('Error in DeleteModal', e);
       } finally {
         setSubmitting(false);
         triggerTableRefresh(true);
