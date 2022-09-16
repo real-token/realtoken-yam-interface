@@ -143,11 +143,13 @@ export const BuyModalWithPermit: FC<
           .multipliedBy(priceInWei)
           .shiftedBy(-offerTokenDecimals)
           .plus(1);
+        const transactionDeadline = Date.now() + 3600; // permit valable during 1h
 
-        const { r, s, v, deadline }: any = await erc20PermitSignature(
+        const { r, s, v }: any = await erc20PermitSignature(
           account,
           swapCatUpgradeable.address,
           buyerTokenAmount.toString(),
+          transactionDeadline,
           buyerToken,
           provider
         );
@@ -156,7 +158,7 @@ export const BuyModalWithPermit: FC<
           formValues.offerId,
           priceInWei.toString(),
           amountInWei.toString(),
-          deadline.toString(),
+          transactionDeadline.toString(),
           v,
           r,
           s
@@ -208,10 +210,6 @@ export const BuyModalWithPermit: FC<
           <Input.Label>{t('selectedOffer')}</Input.Label>
           <Container>{offerId ? offerId : 'Offer not found'}</Container>
         </Box>
-        {/* <Box>
-          <Input.Label>{t('offerTokenName')}</Input.Label>
-          <Container>{offerTokenName ? offerTokenName : 'Offer not found'}</Container>
-        </Box> */}
         <NumberInput
           label={t('amount')}
           required={true}

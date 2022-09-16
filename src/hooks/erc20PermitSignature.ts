@@ -7,11 +7,12 @@ const erc20PermitSignature = async (
   owner: string,
   spender: string,
   amount: string,
+  transactionDeadline: number,
   contract: Contract,
   library: Web3Provider
 ) => {
   try {
-    const transactionDeadline = Date.now() + 3600; // permit valable during 1h
+    // const transactionDeadline = Date.now() + 3600; // permit valable during 1h
     const nonce = await contract.nonces(owner);
     const contractName = await contract.name();
     const EIP712Domain = [
@@ -57,7 +58,6 @@ const erc20PermitSignature = async (
       r,
       s,
       v,
-      deadline: transactionDeadline,
     };
   } catch (e) {
     console.log('Error getting permit signature: ', e);
