@@ -18,7 +18,7 @@ import {
 
 import BigNumber from 'bignumber.js';
 
-import { useOffers, useOffersUser } from 'src/hooks';
+import { useOffers } from 'src/hooks';
 import { Offer } from 'src/hooks/types';
 
 import { Table } from '../../Table';
@@ -35,7 +35,7 @@ type OfferTable = {
 };
 
 export const MarketTableRowUser: FC = () => {
-  const { offers, refreshState } = useOffersUser();
+  const { offers, refreshState } = useOffers(true); // add true to filter offers by user
 
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'offerId', desc: false },

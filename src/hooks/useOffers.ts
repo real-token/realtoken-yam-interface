@@ -14,7 +14,7 @@ import { Erc20, Erc20ABI } from 'src/abis';
 import { Web3Provider } from '@ethersproject/providers';
 import BigNumber from 'bignumber.js';
 
-export const useOffers: UseOffers = () => {
+export const useOffers: UseOffers = (isFiltered) => {
   const [isRefreshing, triggerRefresh] = useState<boolean>(true);
   const [offers, setOffers] = useState<Offer[]>([
     {
@@ -99,10 +99,21 @@ export const useOffers: UseOffers = () => {
 						// price: price.toString(),
 						// amount: amount.toString(),
 					};
-					
-					if (amount.toString() !== '0') {
-						offersData.push(offerData);
+
+					if (isFiltered) {
+						if (offerData.sellerAddress === account) {
+							offersData.push(offerData);
+						}
+					} else {
+						if (amount.toString() !== '0') {
+							offersData.push(offerData);
+						}
 					}
+
+					// if (amount.toString() !== '0') {
+					// 	offersData.push(offerData);
+					// }
+
 				} catch (e) {
 					console.log("Error getting when fetching offers: ", e);
 				}

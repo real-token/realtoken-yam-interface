@@ -22,7 +22,7 @@ export type Offer = {
   amount: string;
 };
 
-export type UseOffers = () => {
+export type UseOffers = (isFiltered?: boolean) => {
   offers: Offer[];
   refreshState: [boolean, Dispatch<SetStateAction<boolean>>];
 };
