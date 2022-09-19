@@ -28,7 +28,7 @@ export const MarketSell = () => {
   const [enteredAmount, setEnteredAmount] = useState('');
   const [enteredOfferId, setEnteredOfferId] = useState('0');
 
-  const { account, chainId, provider } = useWeb3React();
+  const { account, provider } = useWeb3React();
   const activeChain = useActiveChain();
   const swapCatUpgradeable = useContract(ContractsID.swapCatUpgradeable);
 
@@ -90,34 +90,7 @@ export const MarketSell = () => {
       Math.round(100 * parseFloat(enteredPrice))
     ).mul(BigNumber.from(10).pow(buyerTokenDecimals - 2));
 
-    const tx1 = await offerToken.approve(
-      swapCatUpgradeable.address,
-      enteredAmountInWei
-    );
-
-    const notificationPayloadTx1 = {
-      key: tx1.hash,
-      href: `${activeChain?.blockExplorerUrl}tx/${tx1.hash}`,
-      hash: tx1.hash,
-    };
-
-    showNotification(
-      NOTIFICATIONS[NotificationsID.approveOfferLoading](notificationPayloadTx1)
-    );
-
-    tx1
-      .wait()
-      .then(({ status }) =>
-        updateNotification(
-          NOTIFICATIONS[
-            status === 1
-              ? NotificationsID.approveOfferSuccess
-              : NotificationsID.approveOfferError
-          ](notificationPayload)
-        )
-      );
-
-    const tx2 = await swapCatUpgradeable.createOffer(
+    const tx1 = await swapCatUpgradeable.createOffer(
       enteredOfferToken,
       enteredBuyerToken,
       enteredOfferId,
@@ -126,13 +99,40 @@ export const MarketSell = () => {
     );
 
     const notificationPayload = {
+      key: tx1.hash,
+      href: `${activeChain?.blockExplorerUrl}tx/${tx1.hash}`,
+      hash: tx1.hash,
+    };
+
+    showNotification(
+      NOTIFICATIONS[NotificationsID.createOfferLoading](notificationPayload)
+    );
+
+    tx1
+      .wait()
+      .then(({ status }) =>
+        updateNotification(
+          NOTIFICATIONS[
+            status === 1
+              ? NotificationsID.createOfferSuccess
+              : NotificationsID.createOfferError
+          ](notificationPayload)
+        )
+      );
+
+    const tx2 = await offerToken.approve(
+      swapCatUpgradeable.address,
+      enteredAmountInWei
+    );
+
+    const notificationPayloadTx1 = {
       key: tx2.hash,
       href: `${activeChain?.blockExplorerUrl}tx/${tx2.hash}`,
       hash: tx2.hash,
     };
 
     showNotification(
-      NOTIFICATIONS[NotificationsID.createOfferLoading](notificationPayload)
+      NOTIFICATIONS[NotificationsID.approveOfferLoading](notificationPayloadTx1)
     );
 
     tx2
@@ -141,8 +141,8 @@ export const MarketSell = () => {
         updateNotification(
           NOTIFICATIONS[
             status === 1
-              ? NotificationsID.createOfferSuccess
-              : NotificationsID.createOfferError
+              ? NotificationsID.approveOfferSuccess
+              : NotificationsID.approveOfferError
           ](notificationPayload)
         )
       );
@@ -207,7 +207,7 @@ export const MarketSell = () => {
         </div>
         <div className={styles.market_sell_actions}>
           <button onClick={submitHandler} type={'submit'}>
-            {'Approve and Create Offer'}
+            {'Create offer then Approve'}
           </button>
         </div>
       </form>

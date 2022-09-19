@@ -1,25 +1,18 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 
-import {
-  JsonRpcProvider,
-  JsonRpcSigner,
-  Web3Provider,
-} from '@ethersproject/providers';
-import { useForm } from '@mantine/form';
+import { showNotification, updateNotification } from '@mantine/notifications';
 import { useWeb3React } from '@web3-react/core';
-import { Connector } from '@web3-react/types';
 
-import { BigNumber } from 'ethers';
-import { BigNumberish, Signature, Wallet, constants } from 'ethers';
-import { splitSignature } from 'ethers/lib/utils';
+import BigNumber from 'bignumber.js';
 import styles from 'styles/MarketSell.module.css';
 
-import { BridgeToken, bridgeTokenABI } from 'src/abis';
-import { ContractsID } from 'src/constants';
+import { BridgeToken, Erc20, Erc20ABI, bridgeTokenABI } from 'src/abis';
+import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { useActiveChain } from 'src/hooks';
-import { useAsync } from 'src/hooks/useAsync';
+import bridgeTokenPermitSignature from 'src/hooks/bridgeTokenPermitSignature';
+import erc20PermitSignature from 'src/hooks/erc20PermitSignature';
 import { useContract } from 'src/hooks/useContract';
-import { asyncRetry, getContract } from 'src/utils';
+import { getContract } from 'src/utils';
 
 type CreateOfferFormValues = {
   offerTokenAddress: string;
@@ -28,67 +21,6 @@ type CreateOfferFormValues = {
   offerId: string;
 };
 
-export async function getPermitSignature(
-  account: string,
-  wallet: JsonRpcSigner,
-  token: BridgeToken,
-  spender: string,
-  value: BigNumberish = constants.MaxUint256,
-  deadline = constants.MaxUint256,
-  permitConfig?: {
-    nonce?: BigNumberish;
-    name?: string;
-    chainId?: number;
-    version?: string;
-  }
-): Promise<Signature> {
-  const [nonce, name, version, chainId] = await Promise.all([
-    permitConfig?.nonce,
-    permitConfig?.name,
-    permitConfig?.version,
-    permitConfig?.chainId,
-  ]);
-
-  return splitSignature(
-    await wallet._signTypedData(
-      // eslint-disable-next-line object-shorthand
-      { name, version, chainId, verifyingContract: token.address },
-      {
-        Permit: [
-          {
-            name: 'owner',
-            type: 'address',
-          },
-          {
-            name: 'spender',
-            type: 'address',
-          },
-          {
-            name: 'value',
-            type: 'uint256',
-          },
-          {
-            name: 'nonce',
-            type: 'uint256',
-          },
-          {
-            name: 'deadline',
-            type: 'uint256',
-          },
-        ],
-      },
-      // eslint-disable-next-line object-shorthand
-      {
-        owner: account,
-        spender,
-        value,
-        nonce,
-        deadline,
-      }
-    )
-  );
-}
-
 export const MarketSellWithPermit = () => {
   const [enteredOfferToken, setEnteredOfferToken] = useState('');
   const [enteredBuyerToken, setEnteredBuyerToken] = useState('');
@@ -96,15 +28,9 @@ export const MarketSellWithPermit = () => {
   const [enteredAmount, setEnteredAmount] = useState('');
   const [enteredOfferId, setEnteredOfferId] = useState('0');
 
-  const { connector, account, chainId, provider } = useWeb3React();
+  const { account, provider } = useWeb3React();
   const activeChain = useActiveChain();
   const swapCatUpgradeable = useContract(ContractsID.swapCatUpgradeable);
-  const bridgeToken = getContract<BridgeToken>(
-    enteredOfferToken,
-    bridgeTokenABI,
-    provider as Web3Provider,
-    account
-  );
 
   const offerTokenHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEnteredOfferToken(event.target.value);
@@ -122,85 +48,113 @@ export const MarketSellWithPermit = () => {
     setEnteredOfferId(event.target.value);
   };
 
-  const permitHandler = async (event: any) => {
-    event.preventDefault();
-    if (
-      !account ||
-      !connector ||
-      !provider ||
-      !bridgeToken ||
-      !swapCatUpgradeable ||
-      !enteredOfferToken ||
-      !enteredBuyerToken ||
-      !enteredPrice ||
-      !enteredAmount
-    ) {
-      return;
-    }
-
-    const permitAmount = BigNumber.from(enteredAmount);
-    const currentDate = new Date();
-    const permitDeadline = BigNumber.from(
-      Math.floor(currentDate.getTime() / 1000) + 60 * 60 * 24 * 365
-    );
-
-    const { v, r, s } = await getPermitSignature(
-      account,
-      provider.getSigner(),
-      bridgeToken as BridgeToken,
-      swapCatUpgradeable.address,
-      permitAmount,
-      permitDeadline,
-      {
-        nonce: await bridgeToken.nonces(account),
-        name: await bridgeToken.name(),
-        chainId: chainId,
-        version: '1',
+  const submitHandler = useCallback(async () => {
+    try {
+      if (
+        !account ||
+        !provider ||
+        !swapCatUpgradeable ||
+        !enteredOfferToken ||
+        !enteredBuyerToken ||
+        !enteredPrice ||
+        !enteredAmount
+      ) {
+        return;
       }
-    );
 
-    // await bridgeToken.permit(
-    //   account,
-    //   swapCatUpgradeable.address,
-    //   permitAmount,
-    //   permitDeadline,
-    //   v,
-    //   r,
-    //   s
-    // );
+      const offerToken = getContract<BridgeToken>(
+        enteredOfferToken,
+        bridgeTokenABI,
+        provider,
+        account
+      );
+      const buyerToken = getContract<Erc20>(
+        enteredBuyerToken,
+        Erc20ABI,
+        provider,
+        account
+      );
 
-    await swapCatUpgradeable.createOffer(
-      enteredOfferToken,
-      enteredBuyerToken,
-      enteredOfferId,
-      enteredPrice,
-      enteredAmount
-    );
-  };
+      if (!offerToken || !buyerToken) {
+        console.log('offerToken or buyerToken not found');
+        return;
+      }
+      const offerTokenDecimals = await offerToken.decimals();
+      const buyerTokenDecimals = await buyerToken.decimals();
 
-  const submitHandler = async (event: any) => {
-    event.preventDefault();
+      const enteredAmountInWei = new BigNumber(enteredAmount).shiftedBy(
+        Number(offerTokenDecimals)
+      );
 
-    if (
-      !account ||
-      !provider ||
-      !swapCatUpgradeable ||
-      !enteredOfferToken ||
-      !enteredBuyerToken ||
-      !enteredPrice ||
-      !enteredAmount
-    ) {
-      return;
+      const enteredPriceInWei = new BigNumber(enteredPrice).shiftedBy(
+        Number(buyerTokenDecimals)
+      );
+
+      const transactionDeadline = Date.now() + 3600; // permit valable during 1h
+
+      const { r, s, v }: any = await bridgeTokenPermitSignature(
+        account,
+        swapCatUpgradeable.address,
+        enteredAmountInWei.toString(),
+        transactionDeadline,
+        offerToken,
+        provider
+      );
+      console.log(account);
+      console.log('r', r);
+      console.log('s', s);
+      console.log('v', v);
+      console.log('transaction deadline', transactionDeadline);
+      console.log('enteredAmountInWei', enteredAmountInWei.toString());
+      console.log('enteredPriceInWei', enteredPriceInWei.toString());
+
+      const tx1 = await swapCatUpgradeable.createOfferWithPermit(
+        enteredOfferToken,
+        enteredBuyerToken,
+        enteredOfferId,
+        enteredPriceInWei.toString(),
+        enteredAmountInWei.toString(),
+        transactionDeadline.toString(),
+        v,
+        r,
+        s
+      );
+
+      const notificationPayload = {
+        key: tx1.hash,
+        href: `${activeChain?.blockExplorerUrl}tx/${tx1.hash}`,
+        hash: tx1.hash,
+      };
+
+      showNotification(
+        NOTIFICATIONS[NotificationsID.createOfferLoading](notificationPayload)
+      );
+
+      tx1
+        .wait()
+        .then(({ status }) =>
+          updateNotification(
+            NOTIFICATIONS[
+              status === 1
+                ? NotificationsID.createOfferSuccess
+                : NotificationsID.createOfferError
+            ](notificationPayload)
+          )
+        );
+    } catch (error) {
+      console.log(error);
     }
-
-    await swapCatUpgradeable.createOffer(
-      enteredOfferToken,
-      enteredBuyerToken,
-      enteredOfferId,
-      enteredPrice,
-      enteredAmount
-    );
-  };
+  }, [
+    account,
+    provider,
+    swapCatUpgradeable,
+    enteredOfferToken,
+    enteredBuyerToken,
+    enteredPrice,
+    enteredAmount,
+    enteredOfferId,
+    activeChain?.blockExplorerUrl,
+  ]);
 
   return (
     <div className={styles.new_offer}>
@@ -255,11 +209,8 @@ export const MarketSellWithPermit = () => {
           </div>
         </div>
         <div className={styles.market_sell_actions}>
-          <button onClick={permitHandler} type={'submit'}>
-            {'Permit'}
-          </button>
           <button onClick={submitHandler} type={'submit'}>
-            {'Create Offer'}
+            {'Permit and Create Offer'}
           </button>
         </div>
       </form>
