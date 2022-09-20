@@ -19,7 +19,7 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
-export interface BridgeTokenInterface extends ethers.utils.Interface {
+export interface CoinBridgeTokenInterface extends ethers.utils.Interface {
   functions: {
     "APPROVE_WITH_AUTHORIZATION_TYPEHASH()": FunctionFragment;
     "CANCEL_AUTHORIZATION_TYPEHASH()": FunctionFragment;
@@ -28,6 +28,7 @@ export interface BridgeTokenInterface extends ethers.utils.Interface {
     "INCREASE_APPROVAL_WITH_AUTHORIZATION_TYPEHASH()": FunctionFragment;
     "PERMIT_TYPEHASH()": FunctionFragment;
     "TRANSFER_WITH_AUTHORIZATION_TYPEHASH()": FunctionFragment;
+    "VERSION()": FunctionFragment;
     "addAdministrator(address)": FunctionFragment;
     "addRealmAdministrator(address)": FunctionFragment;
     "addSeizer(address)": FunctionFragment;
@@ -114,6 +115,7 @@ export interface BridgeTokenInterface extends ethers.utils.Interface {
     functionFragment: "TRANSFER_WITH_AUTHORIZATION_TYPEHASH",
     values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "VERSION", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "addAdministrator",
     values: [string]
@@ -364,6 +366,7 @@ export interface BridgeTokenInterface extends ethers.utils.Interface {
     functionFragment: "TRANSFER_WITH_AUTHORIZATION_TYPEHASH",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "VERSION", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "addAdministrator",
     data: BytesLike
@@ -645,7 +648,7 @@ export type TrustedIntermediariesChangedEvent = TypedEvent<
   [string[]] & { newTrustedIntermediaries: string[] }
 >;
 
-export interface BridgeToken extends BaseContract {
+export interface CoinBridgeToken extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -686,7 +689,7 @@ export interface BridgeToken extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: BridgeTokenInterface;
+  interface: CoinBridgeTokenInterface;
 
   functions: {
     APPROVE_WITH_AUTHORIZATION_TYPEHASH(
@@ -710,6 +713,8 @@ export interface BridgeToken extends BaseContract {
     TRANSFER_WITH_AUTHORIZATION_TYPEHASH(
       overrides?: CallOverrides
     ): Promise<[string]>;
+
+    VERSION(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     addAdministrator(
       _administrator: string,
@@ -1042,6 +1047,8 @@ export interface BridgeToken extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
+  VERSION(overrides?: CallOverrides): Promise<BigNumber>;
+
   addAdministrator(
     _administrator: string,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -1369,6 +1376,8 @@ export interface BridgeToken extends BaseContract {
     TRANSFER_WITH_AUTHORIZATION_TYPEHASH(
       overrides?: CallOverrides
     ): Promise<string>;
+
+    VERSION(overrides?: CallOverrides): Promise<BigNumber>;
 
     addAdministrator(
       _administrator: string,
@@ -1925,6 +1934,8 @@ export interface BridgeToken extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    VERSION(overrides?: CallOverrides): Promise<BigNumber>;
+
     addAdministrator(
       _administrator: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -2255,6 +2266,8 @@ export interface BridgeToken extends BaseContract {
     TRANSFER_WITH_AUTHORIZATION_TYPEHASH(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    VERSION(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     addAdministrator(
       _administrator: string,

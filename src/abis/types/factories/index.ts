@@ -2,5 +2,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export { Erc20__factory } from "./Erc20__factory";
-export { BridgeToken__factory } from "./BridgeToken__factory";
+export { CoinBridgeToken__factory } from "./CoinBridgeToken__factory";
 export { SwapCatUpgradeable__factory } from "./SwapCatUpgradeable__factory";

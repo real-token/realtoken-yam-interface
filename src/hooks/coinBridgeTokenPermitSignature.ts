@@ -3,32 +3,36 @@ import type { Web3Provider } from '@ethersproject/providers';
 import type { Contract } from 'ethers';
 import { utils } from 'ethers';
 
-const bridgeTokenPermitSignature = async (
+import { CoinBridgeToken } from '../abis/types/CoinBridgeToken';
+
+const coinBridgeTokenPermitSignature = async (
   owner: string,
   spender: string,
   amount: string,
   transactionDeadline: number,
-  contract: Contract,
+  contract: CoinBridgeToken,
+  // contract: Contract,
   library: Web3Provider
 ) => {
   try {
-    // const transactionDeadline = Date.now() + 3600; // permit valable during 1h
     const nonce = await contract.nonces(owner);
-    console.log('nonce: ', nonce);
     const contractName = await contract.name();
-    console.log('token name: ', contractName);
+
     const EIP712Domain = [
       { name: 'name', type: 'string' },
       { name: 'version', type: 'string' },
       { name: 'chainId', type: 'uint256' },
       { name: 'verifyingContract', type: 'address' },
     ];
+
     const domain = {
       name: contractName,
-      version: '1',
+      version: (await contract.VERSION()).toString(), // get version of token since RealToken is upgraded to V2, otherwise wrong signature
       chainId: library.network.chainId,
       verifyingContract: contract.address,
     };
+    // console.log('domain: ', domain);
+
     const Permit = [
       { name: 'owner', type: 'address' },
       { name: 'spender', type: 'address' },
@@ -36,6 +40,7 @@ const bridgeTokenPermitSignature = async (
       { name: 'nonce', type: 'uint256' },
       { name: 'deadline', type: 'uint256' },
     ];
+
     const message = {
       owner,
       spender,
@@ -43,6 +48,8 @@ const bridgeTokenPermitSignature = async (
       nonce: nonce.toHexString(),
       deadline: transactionDeadline,
     };
+    // console.log('message: ', message);
+
     const data = JSON.stringify({
       types: {
         EIP712Domain,
@@ -67,4 +74,4 @@ const bridgeTokenPermitSignature = async (
   }
 };
 
-export default bridgeTokenPermitSignature;
+export default coinBridgeTokenPermitSignature;

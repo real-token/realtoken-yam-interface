@@ -17,7 +17,7 @@ import { useWeb3React } from '@web3-react/core';
 
 import BigNumber from 'bignumber.js';
 
-import { BridgeToken, bridgeTokenABI } from 'src/abis';
+import { CoinBridgeToken, coinBridgeTokenABI } from 'src/abis';
 import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { useActiveChain, useContract, useOffers } from 'src/hooks';
 import erc20PermitSignature from 'src/hooks/erc20PermitSignature';
@@ -81,9 +81,9 @@ export const BuyModalWithPermit: FC<
   const activeChain = useActiveChain();
 
   const swapCatUpgradeable = useContract(ContractsID.swapCatUpgradeable);
-  const buyerToken = getContract<BridgeToken>(
+  const buyerToken = getContract<CoinBridgeToken>(
     buyerTokenAddress,
-    bridgeTokenABI,
+    coinBridgeTokenABI,
     provider as Web3Provider,
     account
   );

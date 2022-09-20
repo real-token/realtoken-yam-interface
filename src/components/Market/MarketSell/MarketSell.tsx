@@ -8,7 +8,7 @@ import { useWeb3React } from '@web3-react/core';
 import { BigNumber } from 'ethers';
 import styles from 'styles/MarketSell.module.css';
 
-import { BridgeToken, Erc20, Erc20ABI, bridgeTokenABI } from 'src/abis';
+import { CoinBridgeToken, Erc20, Erc20ABI, coinBridgeTokenABI } from 'src/abis';
 import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { useActiveChain } from 'src/hooks';
 import { useContract } from 'src/hooks/useContract';
@@ -90,62 +90,69 @@ export const MarketSell = () => {
       Math.round(100 * parseFloat(enteredPrice))
     ).mul(BigNumber.from(10).pow(buyerTokenDecimals - 2));
 
-    const tx1 = await swapCatUpgradeable.createOffer(
-      enteredOfferToken,
-      enteredBuyerToken,
-      enteredOfferId,
-      enteredPriceInWei.toString(),
-      enteredAmountInWei.toString()
-    );
+    try {
+      const tx1 = await swapCatUpgradeable.createOffer(
+        enteredOfferToken,
+        enteredBuyerToken,
+        enteredOfferId,
+        enteredPriceInWei.toString(),
+        enteredAmountInWei.toString()
+      );
 
-    const notificationPayload = {
-      key: tx1.hash,
-      href: `${activeChain?.blockExplorerUrl}tx/${tx1.hash}`,
-      hash: tx1.hash,
-    };
+      const notificationPayload = {
+        key: tx1.hash,
+        href: `${activeChain?.blockExplorerUrl}tx/${tx1.hash}`,
+        hash: tx1.hash,
+      };
 
-    showNotification(
-      NOTIFICATIONS[NotificationsID.createOfferLoading](notificationPayload)
-    );
+      showNotification(
+        NOTIFICATIONS[NotificationsID.createOfferLoading](notificationPayload)
+      );
 
-    tx1
-      .wait()
-      .then(({ status }) =>
-        updateNotification(
-          NOTIFICATIONS[
-            status === 1
-              ? NotificationsID.createOfferSuccess
-              : NotificationsID.createOfferError
-          ](notificationPayload)
+      tx1
+        .wait()
+        .then(({ status }) =>
+          updateNotification(
+            NOTIFICATIONS[
+              status === 1
+                ? NotificationsID.createOfferSuccess
+                : NotificationsID.createOfferError
+            ](notificationPayload)
+          )
+        );
+
+      const tx2 = await offerToken.approve(
+        swapCatUpgradeable.address,
+        enteredAmountInWei
+      );
+
+      const notificationPayloadTx2 = {
+        key: tx2.hash,
+        href: `${activeChain?.blockExplorerUrl}tx/${tx2.hash}`,
+        hash: tx2.hash,
+      };
+
+      showNotification(
+        NOTIFICATIONS[NotificationsID.approveOfferLoading](
+          notificationPayloadTx2
         )
       );
 
-    const tx2 = await offerToken.approve(
-      swapCatUpgradeable.address,
-      enteredAmountInWei
-    );
-
-    const notificationPayloadTx1 = {
-      key: tx2.hash,
-      href: `${activeChain?.blockExplorerUrl}tx/${tx2.hash}`,
-      hash: tx2.hash,
-    };
-
-    showNotification(
-      NOTIFICATIONS[NotificationsID.approveOfferLoading](notificationPayloadTx1)
-    );
-
-    tx2
-      .wait()
-      .then(({ status }) =>
-        updateNotification(
-          NOTIFICATIONS[
-            status === 1
-              ? NotificationsID.approveOfferSuccess
-              : NotificationsID.approveOfferError
-          ](notificationPayload)
-        )
-      );
+      tx2
+        .wait()
+        .then(({ status }) =>
+          updateNotification(
+            NOTIFICATIONS[
+              status === 1
+                ? NotificationsID.approveOfferSuccess
+                : NotificationsID.approveOfferError
+            ](notificationPayload)
+          )
+        );
+    } catch (e) {
+      alert('You are not allowed to create offer');
+      console.error(e);
+    }
 
     // setEnteredOfferToken('');
     // setEnteredBuyerToken('');

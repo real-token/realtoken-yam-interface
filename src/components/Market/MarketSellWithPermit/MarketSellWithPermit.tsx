@@ -6,10 +6,10 @@ import { useWeb3React } from '@web3-react/core';
 import BigNumber from 'bignumber.js';
 import styles from 'styles/MarketSell.module.css';
 
-import { BridgeToken, Erc20, Erc20ABI, bridgeTokenABI } from 'src/abis';
+import { CoinBridgeToken, Erc20, Erc20ABI, coinBridgeTokenABI } from 'src/abis';
 import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { useActiveChain } from 'src/hooks';
-import bridgeTokenPermitSignature from 'src/hooks/bridgeTokenPermitSignature';
+import coinBridgeTokenPermitSignature from 'src/hooks/coinBridgeTokenPermitSignature';
 import erc20PermitSignature from 'src/hooks/erc20PermitSignature';
 import { useContract } from 'src/hooks/useContract';
 import { getContract } from 'src/utils';
@@ -48,7 +48,8 @@ export const MarketSellWithPermit = () => {
     setEnteredOfferId(event.target.value);
   };
 
-  const submitHandler = useCallback(async () => {
+  const permitHandler = async (event: any) => {
+    event.preventDefault();
     try {
       if (
         !account ||
@@ -62,9 +63,9 @@ export const MarketSellWithPermit = () => {
         return;
       }
 
-      const offerToken = getContract<BridgeToken>(
+      const offerToken = getContract<CoinBridgeToken>(
         enteredOfferToken,
-        bridgeTokenABI,
+        coinBridgeTokenABI,
         provider,
         account
       );
@@ -90,9 +91,9 @@ export const MarketSellWithPermit = () => {
         Number(buyerTokenDecimals)
       );
 
-      const transactionDeadline = Date.now() + 3600; // permit valable during 1h
+      const transactionDeadline = Date.now() + 60 * 60 * 24 * 365; // permit valable during 1 year
 
-      const { r, s, v }: any = await bridgeTokenPermitSignature(
+      const { r, s, v }: any = await coinBridgeTokenPermitSignature(
         account,
         swapCatUpgradeable.address,
         enteredAmountInWei.toString(),
@@ -100,13 +101,6 @@ export const MarketSellWithPermit = () => {
         offerToken,
         provider
       );
-      console.log(account);
-      console.log('r', r);
-      console.log('s', s);
-      console.log('v', v);
-      console.log('transaction deadline', transactionDeadline);
-      console.log('enteredAmountInWei', enteredAmountInWei.toString());
-      console.log('enteredPriceInWei', enteredPriceInWei.toString());
 
       const tx1 = await swapCatUpgradeable.createOfferWithPermit(
         enteredOfferToken,
@@ -144,21 +138,11 @@ export const MarketSellWithPermit = () => {
     } catch (error) {
       console.log(error);
     }
-  }, [
-    account,
-    provider,
-    swapCatUpgradeable,
-    enteredOfferToken,
-    enteredBuyerToken,
-    enteredPrice,
-    enteredAmount,
-    enteredOfferId,
-    activeChain?.blockExplorerUrl,
-  ]);
+  };
 
   return (
     <div className={styles.new_offer}>
-      <form onSubmit={submitHandler}>
+      <form onSubmit={permitHandler}>
         <div className={styles.market_sells}>
           <div className={styles.market_sell}>
             <label>{'Offer Token Address'}</label>
@@ -209,7 +193,7 @@ export const MarketSellWithPermit = () => {
           </div>
         </div>
         <div className={styles.market_sell_actions}>
-          <button onClick={submitHandler} type={'submit'}>
+          <button onClick={permitHandler} type={'submit'}>
             {'Permit and Create Offer'}
           </button>
         </div>

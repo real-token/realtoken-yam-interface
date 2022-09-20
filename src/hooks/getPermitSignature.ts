@@ -1,12 +1,12 @@
 import { BigNumberish, Signature, Wallet, constants } from 'ethers';
 import { splitSignature } from 'ethers/lib/utils';
 
-import { BridgeToken } from '../abis/types/BridgeToken';
+import { CoinBridgeToken } from '../abis/types/CoinBridgeToken';
 
 export async function getPermitSignature(
   account: string,
   wallet: Wallet,
-  token: BridgeToken,
+  token: CoinBridgeToken,
   spender: string,
   value: BigNumberish = constants.MaxUint256,
   deadline = constants.MaxUint256,
