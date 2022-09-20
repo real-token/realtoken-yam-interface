@@ -14,19 +14,11 @@ import coinBridgeTokenPermitSignature from 'src/hooks/coinBridgeTokenPermitSigna
 import { useContract } from 'src/hooks/useContract';
 import { getContract } from 'src/utils';
 
-type CreateOfferFormValues = {
-  offerTokenAddress: string;
-  buyerTokenAddress: string;
-  price: string;
-  offerId: string;
-};
-
 export const MarketSellWithPermit = () => {
   const [enteredOfferToken, setEnteredOfferToken] = useState('');
   const [enteredBuyerToken, setEnteredBuyerToken] = useState('');
   const [enteredPrice, setEnteredPrice] = useState('');
   const [enteredAmount, setEnteredAmount] = useState('');
-  const [enteredOfferId, setEnteredOfferId] = useState('0');
 
   const { account, provider } = useWeb3React();
   const activeChain = useActiveChain();
@@ -43,9 +35,6 @@ export const MarketSellWithPermit = () => {
   };
   const amountHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEnteredAmount(event.target.value);
-  };
-  const offerIdHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEnteredOfferId(event.target.value);
   };
 
   const permitHandler = async (event: any) => {
@@ -105,7 +94,7 @@ export const MarketSellWithPermit = () => {
       const tx1 = await swapCatUpgradeable.createOfferWithPermit(
         enteredOfferToken,
         enteredBuyerToken,
-        enteredOfferId,
+        '0', // offerId = 0 when creating a new offer
         enteredPriceInWei.toString(),
         enteredAmountInWei.toString(),
         transactionDeadline.toString(),
@@ -178,17 +167,6 @@ export const MarketSellWithPermit = () => {
               step={'0.01'}
               value={enteredAmount}
               onChange={amountHandler}
-            />
-          </div>
-
-          <div className={styles.market_sell}>
-            <label>{'OfferId'}</label>
-            <input
-              type={'number'}
-              min={'0'}
-              step={'1'}
-              value={enteredOfferId}
-              onChange={offerIdHandler}
             />
           </div>
         </div>
