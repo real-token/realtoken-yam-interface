@@ -1,5 +1,6 @@
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
+import { Modal } from '@mantine/core';
 import { showNotification, updateNotification } from '@mantine/notifications';
 import { useWeb3React } from '@web3-react/core';
 
@@ -10,7 +11,6 @@ import { CoinBridgeToken, Erc20, Erc20ABI, coinBridgeTokenABI } from 'src/abis';
 import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { useActiveChain } from 'src/hooks';
 import coinBridgeTokenPermitSignature from 'src/hooks/coinBridgeTokenPermitSignature';
-import erc20PermitSignature from 'src/hooks/erc20PermitSignature';
 import { useContract } from 'src/hooks/useContract';
 import { getContract } from 'src/utils';
 
@@ -136,7 +136,7 @@ export const MarketSellWithPermit = () => {
           )
         );
     } catch (error) {
-      console.log(error);
+      console.log('ERROR WHEN SELLING WITH PERMIT', error);
     }
   };
 
@@ -193,9 +193,7 @@ export const MarketSellWithPermit = () => {
           </div>
         </div>
         <div className={styles.market_sell_actions}>
-          <button onClick={permitHandler} type={'submit'}>
-            {'Permit and Create Offer'}
-          </button>
+          <button type={'submit'}>{'Permit and Create Offer'}</button>
         </div>
       </form>
     </div>

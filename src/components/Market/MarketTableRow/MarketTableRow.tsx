@@ -64,7 +64,7 @@ export const MarketTableRow: FC = () => {
             header: t('offerId'),
             cell: ({ row, getValue }) => (
               <Group noWrap={true} spacing={'xs'}>
-                {/* <ActionIcon
+                <ActionIcon
                   variant={'transparent'}
                   color={'brand'}
                   onClick={() => row.toggleExpanded()}
@@ -74,7 +74,7 @@ export const MarketTableRow: FC = () => {
                   ) : (
                     <IconChevronDown size={16} />
                   )}
-                </ActionIcon> */}
+                </ActionIcon>
                 <Text
                   size={'sm'}
                   sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}

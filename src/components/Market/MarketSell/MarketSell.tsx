@@ -149,7 +149,7 @@ export const MarketSell = () => {
             ](notificationPayload)
           )
         );
-    } catch (e) {
+    } catch (e: any) {
       alert('You are not allowed to create offer');
       console.error(e);
     }
@@ -213,9 +213,7 @@ export const MarketSell = () => {
           </div>
         </div>
         <div className={styles.market_sell_actions}>
-          <button onClick={submitHandler} type={'submit'}>
-            {'Create offer then Approve'}
-          </button>
+          <button type={'submit'}>{'Create offer then Approve'}</button>
         </div>
       </form>
     </div>
