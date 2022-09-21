@@ -22,23 +22,6 @@ export const UserPortfolio: FC = () => {
   ]);
   const { offers, refreshState } = useOffers();
 
-  // const renderedOffers = useMemo<Offer[]>(() => {
-  //   setFetchedOffers(
-  //     offers.map((offer) => ({
-  //       offerId: offer.offerId,
-  //       offerTokenAddress: offer.offerTokenAddress,
-  //       offerTokenName: offer.offerTokenName,
-  //       buyerTokenAddress: offer.buyerTokenAddress,
-  //       buyerTokenName: offer.buyerTokenName,
-  //       sellerAddress: offer.sellerAddress,
-  //       price: offer.price,
-  //       amount: offer.amount,
-  //     }))
-  //   );
-  //   setIsLoading(false);
-  //   return fetchedOffers;
-  // }, [refreshState]);
-
   useEffect(() => {
     setIsLoading(true);
     setFetchedOffers(

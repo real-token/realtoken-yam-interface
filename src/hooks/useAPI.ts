@@ -1,7 +1,8 @@
 import useSWR from 'swr';
 
-export const API = 'https://api.realt.community/v1/tokens';
-
+// export const API = 'https://api.realt.community/v1/token/'; // use this for mainnet
+export const API =
+  'https://react-demo-c79aa-default-rtdb.europe-west1.firebasedatabase.app/'; // for testing
 export type API = {
   fullName: string;
   shortName: string;
@@ -15,10 +16,10 @@ export type API = {
     timezone_type: number;
     timezone: string;
   };
-}[];
+};
 
-type UseAPI = () => {
-  api: API | undefined;
+type UseAPI = (tokenAddress: string) => {
+  api: API;
   isLoading: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   isError: any;
@@ -26,8 +27,8 @@ type UseAPI = () => {
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-export const useAPI: UseAPI = () => {
-  const { data, error } = useSWR(API, fetcher);
+export const useAPI: UseAPI = (tokenAddress: string) => {
+  const { data, error } = useSWR(API + tokenAddress + '.json', fetcher); // delete '.json' for mainnet
 
   return {
     api: data,

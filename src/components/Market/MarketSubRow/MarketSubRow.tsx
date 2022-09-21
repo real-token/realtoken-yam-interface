@@ -8,66 +8,104 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
-import BigNumber from 'bignumber.js';
-
-import { useOffers } from 'src/hooks';
+import { useTokenInfo } from 'src/hooks';
+import { TokenInfo } from 'src/hooks/';
 import { Offer } from 'src/hooks/types';
 
 import { Table, TableSubRowProps } from '../../Table';
 
+type TokenInfoShow = {
+  fullName: string;
+  initialPrice: string;
+  offerPrice: string;
+  priceDifference: string;
+};
 export const MarketSubRow: FC<TableSubRowProps<Offer>> = ({
   row: {
-    original: { offerId },
+    original: { offerTokenAddress, price },
   },
 }) => {
-  const {
-    offers,
-    refreshState: [isRefreshing],
-  } = useOffers();
-
   const { t } = useTranslation('buy', { keyPrefix: 'subRow' });
 
-  const columns = useMemo<ColumnDef<Offer>[]>(
+  const columns = useMemo<ColumnDef<TokenInfoShow>[]>(
     () => [
       {
-        id: 'offerId',
-        accessorKey: 'offerId',
-        header: () => <Title order={6}>{t('name')}</Title>,
+        id: 'fullName',
+        accessorKey: 'fullName',
+        header: () => <Title order={6}>{t('offerTokenName')}</Title>,
+        cell: ({ getValue }) => (
+          <Text
+            size={'sm'}
+            sx={{
+              fontVariantNumeric: 'tabular-nums',
+              textAlign: 'center',
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+            }}
+          >
+            {getValue()}
+          </Text>
+        ),
         enableSorting: false,
         meta: { colSpan: 1 },
       },
       {
-        id: 'offerTokenName',
-        accessorKey: 'offerTokenName',
-        header: () => <Title order={6}>{t('name')}</Title>,
+        id: 'initialPrice',
+        accessorKey: 'initialPrice',
+        header: () => <Title order={6}>{t('initialPrice')}</Title>,
+        cell: ({ getValue }) => (
+          <Text
+            size={'sm'}
+            sx={{
+              fontVariantNumeric: 'tabular-nums',
+              textAlign: 'center',
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+            }}
+          >
+            {getValue()}
+          </Text>
+        ),
         enableSorting: false,
         meta: { colSpan: 1 },
       },
       {
-        id: 'buyerTokenName',
-        accessorKey: 'buyerTokenName',
-        header: () => <Title order={6}>{t('name')}</Title>,
+        id: 'offerPrice',
+        accessorKey: 'offerPrice',
+        header: () => <Title order={6}>{t('offerPrice')}</Title>,
+        cell: ({ getValue }) => (
+          <Text
+            size={'sm'}
+            sx={{
+              fontVariantNumeric: 'tabular-nums',
+              textAlign: 'center',
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+            }}
+          >
+            {getValue()}
+          </Text>
+        ),
         enableSorting: false,
         meta: { colSpan: 1 },
       },
       {
-        id: 'sellerAddress',
-        accessorKey: 'sellerAddress',
-        header: () => <Title order={6}>{t('name')}</Title>,
-        enableSorting: false,
-        meta: { colSpan: 1 },
-      },
-      {
-        id: 'price',
-        accessorKey: 'price',
-        header: () => <Title order={6}>{t('name')}</Title>,
-        enableSorting: false,
-        meta: { colSpan: 1 },
-      },
-      {
-        id: 'amount',
-        accessorKey: 'amount',
-        header: () => <Title order={6}>{t('name')}</Title>,
+        id: 'priceDifference',
+        accessorKey: 'priceDifference',
+        header: () => <Title order={6}>{t('priceDifference')}</Title>,
+        cell: ({ getValue }) => (
+          <Text
+            size={'sm'}
+            sx={{
+              fontVariantNumeric: 'tabular-nums',
+              textAlign: 'center',
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+            }}
+          >
+            {getValue()}
+          </Text>
+        ),
         enableSorting: false,
         meta: { colSpan: 1 },
       },
@@ -75,24 +113,30 @@ export const MarketSubRow: FC<TableSubRowProps<Offer>> = ({
     [t]
   );
 
-  const data = useMemo(() => {
-    return [...offers];
-  }, [offers]);
+  const { tokenInfo } = useTokenInfo(offerTokenAddress);
+
+  const priceDifference = (
+    ((Number(price) - tokenInfo.tokenPrice) / tokenInfo.tokenPrice) *
+    100
+  ).toFixed(2);
+
+  const tokenInfoShow: TokenInfoShow = {
+    fullName: tokenInfo.fullName,
+    initialPrice: tokenInfo.tokenPrice.toString(),
+    offerPrice: price,
+    priceDifference: `${priceDifference} %`,
+  };
 
   const table = useReactTable({
-    data: data,
+    data: [tokenInfoShow],
     columns: columns,
     getCoreRowModel: getCoreRowModel(),
-    meta: { colSpan: 3 },
+    meta: { colSpan: 1 },
   });
 
   return (
     <>
-      {isRefreshing ? (
-        <Center py={'md'}>
-          <Loader size={'sm'} />
-        </Center>
-      ) : (
+      {
         <>
           <Table
             tableProps={{
@@ -103,7 +147,7 @@ export const MarketSubRow: FC<TableSubRowProps<Offer>> = ({
             table={table}
           />
         </>
-      )}
+      }
     </>
   );
 };
