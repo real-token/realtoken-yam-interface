@@ -66,5 +66,13 @@
   "deleteOfferError": {
     "title": "Error",
     "message": "Your transaction has been rejected."
+  },
+  "createOfferInvalid": {
+    "title": "Error",
+    "message": "You can create this offer. Please make sure: You are whitelisted for the offer token, the offer token is whitelisted and not in locking periode, you have the offer token in your wallet."
+  },
+  "buyOfferInvalid": {
+    "title": "Error",
+    "message": "You can not buy this offer. Please make sure: You are whitelisted for the offer token, the offer token is not in locking periode, you have enough buyer token balance in your wallet to pay the offer."
   }
 }

@@ -126,6 +126,7 @@ export const MarketSellWithPermit = () => {
         );
     } catch (error) {
       console.log('ERROR WHEN SELLING WITH PERMIT', error);
+      showNotification(NOTIFICATIONS[NotificationsID.createOfferInvalid]());
     }
   };
 

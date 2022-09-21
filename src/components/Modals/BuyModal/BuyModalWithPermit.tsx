@@ -9,10 +9,19 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import { Web3Provider } from '@ethersproject/providers';
-import { Box, Button, Container, Group, Input, Stack } from '@mantine/core';
+import {
+  Alert,
+  Box,
+  Button,
+  Container,
+  Group,
+  Input,
+  Stack,
+} from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { ContextModalProps } from '@mantine/modals';
 import { showNotification, updateNotification } from '@mantine/notifications';
+import { IconAlertCircle } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
 
 import BigNumber from 'bignumber.js';
@@ -65,6 +74,7 @@ export const BuyModalWithPermit: FC<
   const { account, provider } = useWeb3React();
   const { getInputProps, onSubmit, reset, setFieldValue, values } =
     useForm<BuyWithPermitFormValues>({
+      // eslint-disable-next-line object-shorthand
       initialValues: {
         offerId: offerId,
         price: price,
@@ -187,6 +197,7 @@ export const BuyModalWithPermit: FC<
           );
       } catch (e) {
         console.error('Error in BuyModalWithPermit', e);
+        showNotification(NOTIFICATIONS[NotificationsID.buyOfferInvalid]());
       } finally {
         setSubmitting(false);
         triggerTableRefresh(true);
@@ -195,11 +206,14 @@ export const BuyModalWithPermit: FC<
     },
     [
       account,
-      activeChain,
-      swapCatUpgradeable,
-      onClose,
       provider,
+      swapCatUpgradeable,
+      buyerToken,
+      offerTokenDecimals,
+      buyerTokenDecimals,
+      activeChain?.blockExplorerUrl,
       triggerTableRefresh,
+      onClose,
     ]
   );
 

@@ -5,7 +5,7 @@ import { useForm } from '@mantine/form';
 import { showNotification, updateNotification } from '@mantine/notifications';
 import { useWeb3React } from '@web3-react/core';
 
-import { BigNumber } from 'ethers';
+import BigNumber from 'bignumber.js';
 import styles from 'styles/MarketSell.module.css';
 
 import { CoinBridgeToken, Erc20, Erc20ABI, coinBridgeTokenABI } from 'src/abis';
@@ -81,14 +81,15 @@ export const MarketSell = () => {
     }
 
     const offerTokenDecimals = await offerToken.decimals();
-    const enteredAmountInWei = BigNumber.from(
-      Math.round(100 * parseFloat(enteredAmount))
-    ).mul(BigNumber.from(10).pow(offerTokenDecimals - 2));
-
     const buyerTokenDecimals = await buyerToken.decimals();
-    const enteredPriceInWei = BigNumber.from(
-      Math.round(100 * parseFloat(enteredPrice))
-    ).mul(BigNumber.from(10).pow(buyerTokenDecimals - 2));
+
+    const enteredAmountInWei = new BigNumber(enteredAmount).shiftedBy(
+      Number(offerTokenDecimals)
+    );
+
+    const enteredPriceInWei = new BigNumber(enteredPrice).shiftedBy(
+      Number(buyerTokenDecimals)
+    );
 
     try {
       const tx1 = await swapCatUpgradeable.createOffer(
@@ -123,7 +124,7 @@ export const MarketSell = () => {
 
       const tx2 = await offerToken.approve(
         swapCatUpgradeable.address,
-        enteredAmountInWei
+        enteredAmountInWei.toString()
       );
 
       const notificationPayloadTx2 = {

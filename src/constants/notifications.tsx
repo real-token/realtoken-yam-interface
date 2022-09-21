@@ -25,6 +25,8 @@ export enum NotificationsID {
   deleteOfferLoading = 'deleteOfferLoading',
   deleteOfferSuccess = 'deleteOfferSuccess',
   deleteOfferError = 'deleteOfferError',
+  createOfferInvalid = 'createOfferInvalid',
+  buyOfferInvalid = 'buyOfferInvalid',
 }
 
 export const NOTIFICATIONS = asConst<
@@ -456,6 +458,39 @@ export const NOTIFICATIONS = asConst<
             </Anchor>
           </Stack>
         )}
+      </Translation>
+    ),
+  }),
+  [NotificationsID.createOfferInvalid]: () => ({
+    id: `create-offer-invalid`,
+    color: 'red',
+    icon: <IconX size={14} />,
+    title: (
+      <Translation ns={'notifications'}>
+        {(t) => t('createOfferInvalid.title')}
+      </Translation>
+    ),
+    message: (
+      <Translation ns={'notifications'}>
+        {(t) => (
+          <Stack spacing={1}>{`${t('createOfferInvalid.message')}`}</Stack>
+        )}
+      </Translation>
+    ),
+  }),
+
+  [NotificationsID.buyOfferInvalid]: () => ({
+    id: `buy-offer-invalid`,
+    color: 'red',
+    icon: <IconX size={14} />,
+    title: (
+      <Translation ns={'notifications'}>
+        {(t) => t('buyOfferInvalid.title')}
+      </Translation>
+    ),
+    message: (
+      <Translation ns={'notifications'}>
+        {(t) => <Stack spacing={1}>{`${t('buyOfferInvalid.message')}`}</Stack>}
       </Translation>
     ),
   }),
