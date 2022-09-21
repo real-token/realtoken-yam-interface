@@ -155,46 +155,109 @@ export const BuyModalWithPermit: FC<
           .plus(1);
         const transactionDeadline = Date.now() + 3600; // permit valable during 1h
 
-        const { r, s, v }: any = await erc20PermitSignature(
-          account,
-          swapCatUpgradeable.address,
-          buyerTokenAmount.toString(),
-          transactionDeadline,
-          buyerToken,
-          provider
-        );
+        try {
+          const { r, s, v }: any = await erc20PermitSignature(
+            account,
+            swapCatUpgradeable.address,
+            buyerTokenAmount.toString(),
+            transactionDeadline,
+            buyerToken,
+            provider
+          );
 
-        const transaction = await swapCatUpgradeable.buyWithPermit(
-          formValues.offerId,
-          priceInWei.toString(),
-          amountInWei.toString(),
-          transactionDeadline.toString(),
-          v,
-          r,
-          s
-        );
+          const transaction = await swapCatUpgradeable.buyWithPermit(
+            formValues.offerId,
+            priceInWei.toString(),
+            amountInWei.toString(),
+            transactionDeadline.toString(),
+            v,
+            r,
+            s
+          );
 
-        const notificationPayload = {
-          key: transaction.hash,
-          href: `${activeChain?.blockExplorerUrl}tx/${transaction.hash}`,
-          hash: transaction.hash,
-        };
+          const notificationPayload = {
+            key: transaction.hash,
+            href: `${activeChain?.blockExplorerUrl}tx/${transaction.hash}`,
+            hash: transaction.hash,
+          };
 
-        showNotification(
-          NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationPayload)
-        );
+          showNotification(
+            NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationPayload)
+          );
 
-        transaction
-          .wait()
-          .then(({ status }) =>
-            updateNotification(
-              NOTIFICATIONS[
-                status === 1
-                  ? NotificationsID.buyOfferSuccess
-                  : NotificationsID.buyOfferError
-              ](notificationPayload)
+          transaction
+            .wait()
+            .then(({ status }) =>
+              updateNotification(
+                NOTIFICATIONS[
+                  status === 1
+                    ? NotificationsID.buyOfferSuccess
+                    : NotificationsID.buyOfferError
+                ](notificationPayload)
+              )
+            );
+        } catch (error) {
+          console.error(error);
+
+          const approveTx = await buyerToken.approve(
+            swapCatUpgradeable.address,
+            buyerTokenAmount.toString()
+          );
+
+          const notificationApprove = {
+            key: approveTx.hash,
+            href: `${activeChain?.blockExplorerUrl}tx/${approveTx.hash}`,
+            hash: approveTx.hash,
+          };
+
+          showNotification(
+            NOTIFICATIONS[NotificationsID.approveOfferLoading](
+              notificationApprove
             )
           );
+
+          approveTx
+            .wait()
+            .then(({ status }) =>
+              updateNotification(
+                NOTIFICATIONS[
+                  status === 1
+                    ? NotificationsID.approveOfferSuccess
+                    : NotificationsID.approveOfferError
+                ](notificationApprove)
+              )
+            );
+
+          await approveTx.wait(1);
+
+          const buyTx = await swapCatUpgradeable.buy(
+            formValues.offerId,
+            priceInWei.toString(),
+            amountInWei.toString()
+          );
+
+          const notificationBuy = {
+            key: buyTx.hash,
+            href: `${activeChain?.blockExplorerUrl}tx/${buyTx.hash}`,
+            hash: buyTx.hash,
+          };
+
+          showNotification(
+            NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationBuy)
+          );
+
+          buyTx
+            .wait()
+            .then(({ status }) =>
+              updateNotification(
+                NOTIFICATIONS[
+                  status === 1
+                    ? NotificationsID.buyOfferSuccess
+                    : NotificationsID.buyOfferError
+                ](notificationBuy)
+              )
+            );
+        }
       } catch (e) {
         console.error('Error in BuyModalWithPermit', e);
         showNotification(NOTIFICATIONS[NotificationsID.buyOfferInvalid]());
