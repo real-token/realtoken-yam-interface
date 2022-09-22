@@ -1,7 +1,6 @@
 import { FC, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { MaxUint256 } from '@ethersproject/constants';
 import { ActionIcon, Group, MantineSize, Text, Title } from '@mantine/core';
 import { IconChevronDown, IconChevronUp } from '@tabler/icons';
 import {
@@ -22,7 +21,7 @@ import { useOffers } from 'src/hooks';
 import { Offer } from 'src/hooks/types';
 
 import { Table } from '../../Table';
-import { BuyActions, BuyActionsWithPermit } from '../BuyActions';
+import { BuyActionsWithPermit } from '../BuyActions';
 import { MarketSubRow } from '../MarketSubRow';
 
 type OfferTable = {
