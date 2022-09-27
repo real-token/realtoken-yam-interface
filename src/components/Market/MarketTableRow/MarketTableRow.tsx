@@ -82,7 +82,7 @@ export const MarketTableRow: FC = () => {
                 </Text>
               </Group>
             ),
-            enableSorting: false,
+            enableSorting: true,
             meta: { colSpan: 1 },
           },
           {
@@ -99,7 +99,7 @@ export const MarketTableRow: FC = () => {
                 </Text>
               </Group>
             ),
-            enableSorting: false,
+            enableSorting: true,
             meta: { colSpan: 2 },
           },
           {
@@ -116,7 +116,7 @@ export const MarketTableRow: FC = () => {
                 </Text>
               </Group>
             ),
-            enableSorting: false,
+            enableSorting: true,
             meta: { colSpan: 2 },
           },
           {
@@ -133,7 +133,7 @@ export const MarketTableRow: FC = () => {
                 </Text>
               </Group>
             ),
-            enableSorting: false,
+            enableSorting: true,
             meta: { colSpan: 4 },
           },
           {
@@ -150,7 +150,7 @@ export const MarketTableRow: FC = () => {
                 </Text>
               </Group>
             ),
-            enableSorting: false,
+            enableSorting: true,
             meta: { colSpan: 2 },
           },
           {
@@ -167,7 +167,7 @@ export const MarketTableRow: FC = () => {
                 </Text>
               </Group>
             ),
-            enableSorting: false,
+            enableSorting: true,
             meta: { colSpan: 2 },
           },
           {
