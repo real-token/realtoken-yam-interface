@@ -83,7 +83,7 @@ export const MarketTableRow: FC = () => {
               </Group>
             ),
             enableSorting: true,
-            meta: { colSpan: 1 },
+            meta: { colSpan: 2 },
           },
           {
             id: 'offerTokenName',
