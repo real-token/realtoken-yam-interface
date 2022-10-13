@@ -94,7 +94,6 @@ export const MarketSellWithPermit = () => {
       const tx1 = await swapCatUpgradeable.createOfferWithPermit(
         enteredOfferToken,
         enteredBuyerToken,
-        '0', // offerId = 0 when creating a new offer
         enteredPriceInWei.toString(),
         enteredAmountInWei.toString(),
         transactionDeadline.toString(),

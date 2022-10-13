@@ -55,7 +55,7 @@ export const MarketTableRow: FC = () => {
             {t('title')}
           </Title>
         ),
-        meta: { colSpan: 5 },
+        meta: { colSpan: 15 },
         columns: [
           {
             id: 'offerId',
@@ -198,7 +198,7 @@ export const MarketTableRow: FC = () => {
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
-    meta: { colSpan: 13 },
+    meta: { colSpan: 15 },
   });
 
   return (

@@ -5,6 +5,7 @@ import { Contracts, ContractsID } from './contracts';
 import { Currency, DAI, ETH } from './currencies';
 
 export enum ChainsID {
+  Ethereum = 0x01,
   Gnosis = 0x64,
   Goerli = 0x05,
 }
@@ -25,28 +26,44 @@ export const CHAINS: Record<ChainsID, Chain> = {
     chainName: 'Gnosis Chain',
     logo: GnosisSVG.src,
     nativeCurrency: DAI,
-    rpcUrl: 'https://gnosischain-rpc.gateway.pokt.network/',
-    blockExplorerUrl: 'https://blockscout.com/xdai/mainnet/',
+    rpcUrl: 'https://rpc.ankr.com/gnosis',
+    blockExplorerUrl: 'https://gnosisscan.io/',
     contracts: {
       [ContractsID.swapCatUpgradeable]: {
         abi: swapCatUpgradeableABI,
-        address: '0xeaBE3576be937B6d2B40Bd58Da0a7e7f4FAa2632',
-        // address: '0x9EC2D0A68e9F49B37e77C63Bc38E58B11D345b3b', // old contract
-        metadata: { fromBlock: 7385668 },
+        address: '',
+        metadata: { fromBlock: 24582116 },
       },
     },
   },
+  [ChainsID.Ethereum]: {
+    chainId: ChainsID.Ethereum,
+    chainName: 'Ethereum',
+    logo: EthereumSVG.src,
+    nativeCurrency: ETH,
+    rpcUrl: 'https://rpc.ankr.com/eth',
+    blockExplorerUrl: 'https://etherscan.io/',
+    contracts: {
+      [ContractsID.swapCatUpgradeable]: {
+        abi: swapCatUpgradeableABI,
+        address: '',
+        metadata: { fromBlock: 15741178 },
+      },
+    },
+  },
+
   [ChainsID.Goerli]: {
     chainId: ChainsID.Goerli,
     chainName: 'Goerli',
     logo: EthereumSVG.src,
     nativeCurrency: ETH,
-    rpcUrl: 'https://goerli.poa.network/',
+    rpcUrl: 'https://rpc.ankr.com/eth_goerli',
     blockExplorerUrl: 'https://goerli.etherscan.io/',
     contracts: {
       [ContractsID.swapCatUpgradeable]: {
         abi: swapCatUpgradeableABI,
-        address: '0xeaBE3576be937B6d2B40Bd58Da0a7e7f4FAa2632',
+        address: '0x171A7f76E8a12aD217611A768968bAf8376ce726',
+        // address: '0xeaBE3576be937B6d2B40Bd58Da0a7e7f4FAa2632', // v1 contract
         // address: '0x9EC2D0A68e9F49B37e77C63Bc38E58B11D345b3b', // old contract
         metadata: { fromBlock: 7385668 },
       },
