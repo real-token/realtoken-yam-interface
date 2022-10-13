@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: yam-realtoken
+  name: yam-realtoken
+spec:
+  selector:
+    matchLabels:
+      app: yam-realtoken
+  template:
+    metadata:
+      labels:
+        app: yam-realtoken
+    spec:
+      containers:
+      - image: registry.digitalocean.com/yam-realtoken-cr/fe:dev-1.0.0
+        imagePullPolicy: IfNotPresent
+        name: yam-realtoken
+        ports:
+        - containerPort: 3000
+          protocol: TCP
