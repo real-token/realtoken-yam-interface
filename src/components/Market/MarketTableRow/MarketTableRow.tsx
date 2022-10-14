@@ -76,7 +76,10 @@ export const MarketTableRow: FC = () => {
                 </ActionIcon>
                 <Text
                   size={'sm'}
-                  sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
+                  sx={{
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                  }}
                 >
                   {getValue()}
                 </Text>
@@ -89,11 +92,15 @@ export const MarketTableRow: FC = () => {
             id: 'offerTokenName',
             accessorKey: 'offerTokenName',
             header: t('offerTokenName'),
-            cell: ({ row, getValue }) => (
+            cell: ({ getValue }) => (
               <Group noWrap={true} spacing={'xs'}>
                 <Text
                   size={'sm'}
-                  sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
+                  sx={{
+                    // textAlign: 'center',
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                  }}
                 >
                   {getValue()}
                 </Text>
@@ -106,11 +113,15 @@ export const MarketTableRow: FC = () => {
             id: 'buyerTokenName',
             accessorKey: 'buyerTokenName',
             header: t('buyerTokenName'),
-            cell: ({ row, getValue }) => (
+            cell: ({ getValue }) => (
               <Group noWrap={true} spacing={'xs'}>
                 <Text
                   size={'sm'}
-                  sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
+                  sx={{
+                    // textAlign: 'center',
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                  }}
                 >
                   {getValue()}
                 </Text>
@@ -123,11 +134,15 @@ export const MarketTableRow: FC = () => {
             id: 'sellerAddress',
             accessorKey: 'sellerAddress',
             header: t('sellerAddress'),
-            cell: ({ row, getValue }) => (
+            cell: ({ getValue }) => (
               <Group noWrap={true} spacing={'xs'}>
                 <Text
                   size={'sm'}
-                  sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
+                  sx={{
+                    // textAlign: 'center',
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                  }}
                 >
                   {getValue()}
                 </Text>
@@ -140,11 +155,14 @@ export const MarketTableRow: FC = () => {
             id: 'price',
             accessorKey: 'price',
             header: t('price'),
-            cell: ({ row, getValue }) => (
+            cell: ({ getValue }) => (
               <Group noWrap={true} spacing={'xs'}>
                 <Text
                   size={'sm'}
-                  sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
+                  sx={{
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                  }}
                 >
                   {getValue()}
                 </Text>
@@ -157,11 +175,14 @@ export const MarketTableRow: FC = () => {
             id: 'amount',
             accessorKey: 'amount',
             header: t('amount'),
-            cell: ({ row, getValue }) => (
+            cell: ({ getValue }) => (
               <Group noWrap={true} spacing={'xs'}>
                 <Text
                   size={'sm'}
-                  sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
+                  sx={{
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                  }}
                 >
                   {getValue()}
                 </Text>
