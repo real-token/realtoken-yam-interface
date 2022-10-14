@@ -1,17 +1,16 @@
 import type { Web3Provider } from '@ethersproject/providers';
 
-import type { Contract } from 'ethers';
 import { utils } from 'ethers';
 
 import { CoinBridgeToken } from '../abis/types/CoinBridgeToken';
 
+// This function is used for RealToken since the version is indicated within the token contract
 const coinBridgeTokenPermitSignature = async (
   owner: string,
   spender: string,
   amount: string,
   transactionDeadline: number,
   contract: CoinBridgeToken,
-  // contract: Contract,
   library: Web3Provider
 ) => {
   try {
