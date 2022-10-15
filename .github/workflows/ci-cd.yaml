@@ -30,6 +30,9 @@ jobs:
 
     - name: Log in to DigitalOcean Container Registry with short-lived credentials
       run: doctl registry login --expiry-seconds 1200
+    
+    - name: Push image to DigitalOcean Container Registry
+      run: docker push registry.digitalocean.com/yam-realtoken-cr/fe:$(echo $GITHUB_SHA | head -c7)
 
     - name: Update deployment file
       run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|yam-realtoken|registry.digitalocean.com/yam-realtoken-cr/fe:'${TAG}'|' $GITHUB_WORKSPACE/k8s-yaml/deployment.yaml
@@ -42,3 +45,7 @@ jobs:
 
     - name: Verify deployment
       run: kubectl rollout status deployment/yam-realtoken
+
+
+      registry.digitalocean.com/yam-realtoken-cr/fe:dev-1.0.0
+      registry.digitalocean.com/yam-realtoken-cr/fe:06d6167
