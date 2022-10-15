@@ -23,7 +23,8 @@ jobs:
     - name: Install doctl
       uses: digitalocean/action-doctl@v2
       with:
-        token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+        #token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+        token: {"registry.digitalocean.com":{"auth":"ZG9wX3YxXzNjN2U4M2I4ODFiY2M4OGE1MTU5NjQwMTZjYThmZDJhZDJiOGQzZjY3MThiYWJiYzczM2MxMjMwOWM3MWQ3ZmI6ZG9wX3YxXzNjN2U4M2I4ODFiY2M4OGE1MTU5NjQwMTZjYThmZDJhZDJiOGQzZjY3MThiYWJiYzczM2MxMjMwOWM3MWQ3ZmI="}}
     
     - name: Build container image
       run: docker build -t registry.digitalocean.com/yam-realtoken-cr/fe:$(echo $GITHUB_SHA | head -c7) .
