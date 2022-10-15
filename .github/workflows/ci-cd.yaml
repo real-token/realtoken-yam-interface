@@ -1,0 +1,41 @@
+name: Build and Deploy Next JS App on DigitalOcean K8s Cluster 
+on:
+  push:
+    branches:
+      - feat/ci-cd
+    #paths – The workflow triggers when there is a change in server.py, Dockerfile, the deployment YAML file in config folder or the workflow YAML file in the workflow folder in the repository
+    # paths:
+    #   - 'config/**'
+    #   - 'server.py'
+    #   - 'Dockerfile'
+    #   - '.github/workflows/**'
+jobs:
+  build-job:
+    name: Build Next JS Application
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout feat/ci-cd
+      uses: actions/checkout@feat/ci-cd
+    
+    - name: Install doctl
+      uses: digitalocean/action-doctl@v2
+      with:
+        token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+    
+    - name: Build container image
+      run: docker build -t registry.digitalocean.com/yam-realtoken-cr/fe:$(echo $GITHUB_SHA | head -c7) .
+
+    - name: Log in to DigitalOcean Container Registry with short-lived credentials
+      run: doctl registry login --expiry-seconds 1200
+
+    - name: Update deployment file
+      run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|registry.digitalocean.com/yam-realtoken-cr/fe:'${TAG}'|' $GITHUB_WORKSPACE/k8s-yaml/deployment.yaml
+
+    - name: Save DigitalOcean kubeconfig with short-lived credentials
+      run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 yam-realtoken-k8s
+
+    - name: Deploy to DigitalOcean Kubernetes
+      run: kubectl apply -f $GITHUB_WORKSPACE/k8s-yaml/deployment.yaml
+
+    - name: Verify deployment
+      run: kubectl rollout status deployment/yam-realtoken
