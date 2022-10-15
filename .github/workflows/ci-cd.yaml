@@ -17,6 +17,9 @@ jobs:
     - name: Checkout dev
       uses: actions/checkout@main
     
+    - name: Validate Access Token
+      run: echo ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
     - name: Install doctl
       uses: digitalocean/action-doctl@v2
       with:
