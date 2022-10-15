@@ -14,7 +14,7 @@ spec:
         app: yam-realtoken
     spec:
       containers:
-      - image: registry.digitalocean.com/yam-realtoken-cr/fe:${TAG}
+      - image: <IMAGE>
         imagePullPolicy: IfNotPresent
         name: yam-realtoken
         ports:

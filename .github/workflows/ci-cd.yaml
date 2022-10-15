@@ -35,7 +35,7 @@ jobs:
       run: docker push registry.digitalocean.com/yam-realtoken-cr/fe:$(echo $GITHUB_SHA | head -c7)
 
     - name: Update deployment file
-      run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|yam-realtoken|registry.digitalocean.com/yam-realtoken-cr/fe:'${TAG}'|' $GITHUB_WORKSPACE/k8s-yaml/deployment.yaml
+      run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|registry.digitalocean.com/yam-realtoken-cr/fe:'${TAG}'|' $GITHUB_WORKSPACE/k8s-yaml/deployment.yaml
 
     - name: Save DigitalOcean kubeconfig with short-lived credentials
       run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 yam-realtoken-k8s
