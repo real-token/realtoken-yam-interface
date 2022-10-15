@@ -2,7 +2,7 @@ name: Build and Deploy Next JS App on DigitalOcean K8s Cluster
 on:
   push:
     branches:
-      - feat/ci-cd
+      - dev
     #paths – The workflow triggers when there is a change in server.py, Dockerfile, the deployment YAML file in config folder or the workflow YAML file in the workflow folder in the repository
     # paths:
     #   - 'config/**'
@@ -14,8 +14,8 @@ jobs:
     name: Build Next JS Application
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout feat/ci-cd
-      uses: actions/checkout@feat/ci-cd
+    - name: Checkout dev
+      uses: actions/checkout@dev
     
     - name: Install doctl
       uses: digitalocean/action-doctl@v2
