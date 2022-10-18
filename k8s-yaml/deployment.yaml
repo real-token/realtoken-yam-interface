@@ -2,21 +2,21 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: staging-yam-realtoken
-  name: staging-yam-realtoken
+    app: <CURRENT_ENV>-yam-realtoken
+  name: <CURRENT_ENV>-yam-realtoken
 spec:
   selector:
     matchLabels:
-      app: staging-yam-realtoken
+      app: <CURRENT_ENV>-yam-realtoken
   template:
     metadata:
       labels:
-        app: staging-yam-realtoken
+        app: <CURRENT_ENV>-yam-realtoken
     spec:
       containers:
-      - image: registry.digitalocean.com/yam-realtoken-cr/staging:b3a473c
+      - image: <IMAGE>
         imagePullPolicy: IfNotPresent
-        name: staging-yam-realtoken
+        name: <CURRENT_ENV>-yam-realtoken
         ports:
         - containerPort: 3000
           protocol: TCP
