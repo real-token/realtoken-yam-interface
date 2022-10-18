@@ -1,7 +1,7 @@
 {
   "table": {
     "market": "Market",
-    "title": "RealToken Market",
+    "title": "RealToken YAM",
     "offerId": "Offer ID",
     "offerTokenAddress": "Sell Token Address",
     "offerTokenName": "Offer Token",

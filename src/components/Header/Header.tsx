@@ -70,9 +70,9 @@ export const Header: FC = () => {
         <Group position={'apart'} align={'center'}>
           <LogoWithName />
           <Link href={'/'}>
-            <a className={cssStyles.headerText}>{'Market'}</a>
+            <a className={cssStyles.headerText}>{'Explore'}</a>
           </Link>
-          <Link href={'/transfers'}>
+          <Link href={'/my-offers'}>
             <a className={cssStyles.headerText}>{'Your offers'}</a>
           </Link>
           <Link href={'/portfolio'}>

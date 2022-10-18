@@ -14,6 +14,7 @@ import { Erc20, Erc20ABI } from 'src/abis';
 import { Web3Provider } from '@ethersproject/providers';
 import BigNumber from 'bignumber.js';
 
+// isFiltered = 0 when fetching all offers, = 1 when fetching offers of the connected wallet
 export const useOffers: UseOffers = (isFiltered) => {
   const [isRefreshing, triggerRefresh] = useState<boolean>(true);
   const [offers, setOffers] = useState<Offer[]>([
@@ -64,6 +65,7 @@ export const useOffers: UseOffers = (isFiltered) => {
       const offerCount = (
         await asyncRetry(() => swapCatUpgradeable.getOfferCount())
       ).toNumber();
+			// console.log("offerCount", offerCount)
 			const offerCountArray = Array.from(Array(offerCount).keys());
 			const offersToFetch = offerCountArray.filter(x => !offersDeleted.includes(x));
 
@@ -75,6 +77,7 @@ export const useOffers: UseOffers = (isFiltered) => {
 						offerTokenAddress,
 						buyerTokenAddress,
 						sellerAddress,
+						buyerAddress,
 						price,
 						amount,
 					] = await getOffer();
@@ -110,10 +113,6 @@ export const useOffers: UseOffers = (isFiltered) => {
 						}
 					}
 
-					// if (amount.toString() !== '0') {
-					// 	offersData.push(offerData);
-					// }
-
 				} catch (e) {
 					console.log("Error getting when fetching offers: ", e);
 				}
@@ -126,7 +125,7 @@ export const useOffers: UseOffers = (isFiltered) => {
 
       return offersData;
     },
-    [swapCatUpgradeable, isRefreshing, offersData, provider, account]
+    [swapCatUpgradeable, isRefreshing, offersData, provider, account, isFiltered]
   );
 
   return {

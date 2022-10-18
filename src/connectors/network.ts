@@ -8,6 +8,6 @@ export const [network, hooks] = initializeConnector<Network>(
     new Network({
       actions: actions,
       urlMap: URLS,
-      defaultChainId: ChainsID.Gnosis,
+      defaultChainId: ChainsID.Goerli,
     })
 );

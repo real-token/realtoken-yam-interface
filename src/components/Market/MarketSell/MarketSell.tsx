@@ -10,6 +10,7 @@ import styles from 'styles/MarketSell.module.css';
 
 import { CoinBridgeToken, Erc20, Erc20ABI, coinBridgeTokenABI } from 'src/abis';
 import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
+import { ZERO_ADDRESS } from 'src/constants';
 import { useActiveChain } from 'src/hooks';
 import { useContract } from 'src/hooks/useContract';
 import { getContract } from 'src/utils';
@@ -26,7 +27,6 @@ export const MarketSell = () => {
   const [enteredBuyerToken, setEnteredBuyerToken] = useState('');
   const [enteredPrice, setEnteredPrice] = useState('');
   const [enteredAmount, setEnteredAmount] = useState('');
-  const [enteredOfferId, setEnteredOfferId] = useState('0');
 
   const { account, provider } = useWeb3React();
   const activeChain = useActiveChain();
@@ -43,9 +43,6 @@ export const MarketSell = () => {
   };
   const amountHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEnteredAmount(event.target.value);
-  };
-  const offerIdHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEnteredOfferId(event.target.value);
   };
 
   const submitHandler = async (event: any) => {
@@ -95,7 +92,7 @@ export const MarketSell = () => {
       const tx1 = await swapCatUpgradeable.createOffer(
         enteredOfferToken,
         enteredBuyerToken,
-        enteredOfferId,
+        ZERO_ADDRESS, // public offer (buyer = 0x0)
         enteredPriceInWei.toString(),
         enteredAmountInWei.toString()
       );
@@ -154,11 +151,6 @@ export const MarketSell = () => {
       alert('You are not allowed to create offer');
       console.error(e);
     }
-
-    // setEnteredOfferToken('');
-    // setEnteredBuyerToken('');
-    // setEnteredPrice('');
-    // setEnteredAmount('');
   };
 
   return (
@@ -199,17 +191,6 @@ export const MarketSell = () => {
               step={'0.01'}
               value={enteredAmount}
               onChange={amountHandler}
-            />
-          </div>
-
-          <div className={styles.market_sell}>
-            <label>{'OfferId'}</label>
-            <input
-              type={'number'}
-              min={'0'}
-              step={'1'}
-              value={enteredOfferId}
-              onChange={offerIdHandler}
             />
           </div>
         </div>

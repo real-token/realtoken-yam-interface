@@ -6,7 +6,7 @@ import UserTransfers from 'src/modules/transfers/UserTransfers';
 const TransfersPage = () => {
   return (
     <Fragment>
-      <UserTransfers />
+      {/* <UserTransfers /> */}
       <MarketTableRowUser />
     </Fragment>
   );

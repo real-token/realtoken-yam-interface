@@ -36,7 +36,7 @@ type AppProps = NextAppProps & { colorScheme: ColorScheme; locale: string };
 const App = ({ Component, pageProps, colorScheme, locale }: AppProps) => {
   return (
     <>
-      <Head title={'Realtoken Marketplace'} />
+      <Head title={'Realtoken YAM'} />
 
       <Web3Providers>
         <MantineProviders initialColorScheme={colorScheme}>

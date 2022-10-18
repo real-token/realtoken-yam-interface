@@ -3,6 +3,7 @@ import type { Web3Provider } from '@ethersproject/providers';
 import type { Contract } from 'ethers';
 import { utils } from 'ethers';
 
+// This function is used for general tokens with permit function
 const erc20PermitSignature = async (
   owner: string,
   spender: string,
