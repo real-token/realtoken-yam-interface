@@ -8,23 +8,23 @@ metadata:
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/cors-allow-origin: "*"
     nginx.ingress.kubernetes.io/proxy-body-size: 128m
-  name: yam-realtoken-ingress
+  name: staging-yam-realtoken-ingress
   namespace: default
 spec:
   rules:
-  - host: test-yam.realtoken.network
+  - host: staging-yam.realtoken.network
     http:
       paths:
       - backend:
           service:
-            name: yam-realtoken-svc
+            name: staging-yam-realtoken-svc
             port:
               number: 80
         path: /
         pathType: ImplementationSpecific
   tls:
   - hosts:
-    - test-yam.realtoken.network
+    - staging-yam.realtoken.network
     secretName: letsencrypt-staging
     
   ingressClassName: nginx

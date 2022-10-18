@@ -15,7 +15,7 @@ jobs:
     name: Build yam.realtoken.network
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout ${GITHUB_REF##*/}
+    - name: Checkout latest git repo
       uses: actions/checkout@main
     
     - name: Validate Access Token
@@ -36,13 +36,10 @@ jobs:
       run: docker push registry.digitalocean.com/yam-realtoken-cr/${GITHUB_REF##*/}:$(echo $GITHUB_SHA | head -c7)
 
     - name: Update Docker Image in Deployment file
-      run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|registry.digitalocean.com/yam-realtoken-cr/${GITHUB_REF##*/}:'${TAG}'|' $GITHUB_WORKSPACE/k8s-yaml/deployment.yaml
-    
-    - name: Update Environment Prefix in Deployment file
-      run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|registry.digitalocean.com/yam-realtoken-cr/${GITHUB_REF##*/}:'${TAG}'|' $GITHUB_WORKSPACE/k8s-yaml/deployment.yaml
+      run: TAG=$(echo $GITHUB_SHA | head -c7) && CURRENT_ENV=$(echo ${GITHUB_REF##*/}) && sed -i 's|<IMAGE>|registry.digitalocean.com/yam-realtoken-cr/${CURRENT_ENV}:'${TAG}'|' $GITHUB_WORKSPACE/k8s-yaml/deployment.yaml
 
     - name: Update Environment Prefix in Deployment file
-      run: sed -i 's|<CURRENT_ENV>|${GITHUB_REF##*/}|' $GITHUB_WORKSPACE/k8s-yaml/deployment.yaml
+      run: CURRENT_ENV=$(echo ${GITHUB_REF##*/}) && sed -i 's|<CURRENT_ENV>|${CURRENT_ENV}|' $GITHUB_WORKSPACE/k8s-yaml/deployment.yaml
 
     - name: Save DigitalOcean kubeconfig with short-lived credentials
       run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 yam-realtoken-k8s
