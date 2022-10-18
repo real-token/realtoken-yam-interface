@@ -9,7 +9,7 @@ on:
     #   - 'config/**'
     #   - 'server.py'
     #   - 'Dockerfile'
-    #   - '.github/workflows/**'
+    #   - '.github/workflows/**' 
 jobs:
   build-job:
     name: Build yam.realtoken.network
