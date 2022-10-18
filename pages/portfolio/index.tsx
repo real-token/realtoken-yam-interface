@@ -6,10 +6,11 @@ import { UserPortfolio } from 'src/modules/portfolio/UserPortfolio';
 
 const PortfolioPage = () => {
   return (
-    <Fragment>
-      <UserPortfolio />
-      <MarketSellWithPermit />
-    </Fragment>
+    <div>Coming soon...</div>
+    // <Fragment>
+    //   <UserPortfolio />
+    //   <MarketSellWithPermit />
+    // </Fragment>
   );
 };
 

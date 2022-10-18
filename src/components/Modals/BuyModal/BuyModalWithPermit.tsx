@@ -151,8 +151,7 @@ export const BuyModalWithPermit: FC<
 
         const buyerTokenAmount = amountInWei
           .multipliedBy(priceInWei)
-          .shiftedBy(-offerTokenDecimals)
-          .plus(1);
+          .shiftedBy(-offerTokenDecimals);
         const transactionDeadline = Date.now() + 3600; // permit valable during 1h
 
         try {

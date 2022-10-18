@@ -9,7 +9,7 @@ export const [coinbaseWallet, hooks] = initializeConnector<CoinbaseWallet>(
       actions: actions,
       options: {
         url: URLS[0],
-        appName: 'realtoken-marketplace',
+        appName: 'realtoken-yam',
         darkMode: true,
       },
     })

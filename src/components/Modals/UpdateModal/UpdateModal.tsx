@@ -120,9 +120,7 @@ export const UpdateModal: FC<ContextModalProps<UpdateModalProps>> = ({
 
         setSubmitting(true);
 
-        const transaction = await swapCatUpgradeable.createOffer(
-          formValues.offerTokenAddress,
-          formValues.buyerTokenAddress,
+        const transaction = await swapCatUpgradeable.updateOffer(
           formValues.offerId,
           new BigNumber(formValues.price.toString())
             .shiftedBy(Number(buyerTokenDecimals))
