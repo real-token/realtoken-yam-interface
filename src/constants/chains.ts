@@ -62,8 +62,9 @@ export const CHAINS: Record<ChainsID, Chain> = {
     contracts: {
       [ContractsID.swapCatUpgradeable]: {
         abi: swapCatUpgradeableABI,
-        address: '0x171A7f76E8a12aD217611A768968bAf8376ce726',
-        // address: '0xeaBE3576be937B6d2B40Bd58Da0a7e7f4FAa2632', // v1 contract
+        address: '0xfAa0aC428Bc3BE5493454F308E8ef0337E820095', // v0.2. contract
+        // address: '0x171A7f76E8a12aD217611A768968bAf8376ce726', // v0.1.1 contract
+        // address: '0xeaBE3576be937B6d2B40Bd58Da0a7e7f4FAa2632', // v0.1.0 contract
         // address: '0x9EC2D0A68e9F49B37e77C63Bc38E58B11D345b3b', // old contract
         metadata: { fromBlock: 7385668 },
       },
@@ -82,3 +83,5 @@ export const URLS = Object.keys(CHAINS).reduce<Record<number, string>>(
 export const ALLOWED_CHAINS = Object.keys(URLS).map((chainId) =>
   Number(chainId)
 );
+
+export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';

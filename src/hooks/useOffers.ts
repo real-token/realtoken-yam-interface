@@ -65,7 +65,7 @@ export const useOffers: UseOffers = (isFiltered) => {
       const offerCount = (
         await asyncRetry(() => swapCatUpgradeable.getOfferCount())
       ).toNumber();
-			console.log("offerCount", offerCount)
+			// console.log("offerCount", offerCount)
 			const offerCountArray = Array.from(Array(offerCount).keys());
 			const offersToFetch = offerCountArray.filter(x => !offersDeleted.includes(x));
 
@@ -77,6 +77,7 @@ export const useOffers: UseOffers = (isFiltered) => {
 						offerTokenAddress,
 						buyerTokenAddress,
 						sellerAddress,
+						buyerAddress,
 						price,
 						amount,
 					] = await getOffer();

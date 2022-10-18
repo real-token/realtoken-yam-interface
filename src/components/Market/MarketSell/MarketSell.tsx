@@ -10,6 +10,7 @@ import styles from 'styles/MarketSell.module.css';
 
 import { CoinBridgeToken, Erc20, Erc20ABI, coinBridgeTokenABI } from 'src/abis';
 import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
+import { ZERO_ADDRESS } from 'src/constants';
 import { useActiveChain } from 'src/hooks';
 import { useContract } from 'src/hooks/useContract';
 import { getContract } from 'src/utils';
@@ -91,6 +92,7 @@ export const MarketSell = () => {
       const tx1 = await swapCatUpgradeable.createOffer(
         enteredOfferToken,
         enteredBuyerToken,
+        ZERO_ADDRESS, // public offer (buyer = 0x0)
         enteredPriceInWei.toString(),
         enteredAmountInWei.toString()
       );
