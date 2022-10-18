@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - dev
+      - staging
     #paths – The workflow triggers when there is a change in server.py, Dockerfile, the deployment YAML file in config folder or the workflow YAML file in the workflow folder in the repository
     # paths:
     #   - 'config/**'
@@ -11,10 +12,10 @@ on:
     #   - '.github/workflows/**'
 jobs:
   build-job:
-    name: Build Next JS Application
+    name: Build ${GITHUB_REF##*/}-yam.realtoken.network
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout dev
+    - name: Checkout ${GITHUB_REF##*/}
       uses: actions/checkout@main
     
     - name: Validate Access Token
@@ -26,16 +27,17 @@ jobs:
         token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
     
     - name: Build container image
-      run: docker build -t registry.digitalocean.com/yam-realtoken-cr/fe:$(echo $GITHUB_SHA | head -c7) .
+      run: docker build -t registry.digitalocean.com/yam-realtoken-cr/${GITHUB_REF##*/}:$(echo $GITHUB_SHA | head -c7) .
 
     - name: Log in to DigitalOcean Container Registry with short-lived credentials
       run: doctl registry login --expiry-seconds 1200
     
     - name: Push image to DigitalOcean Container Registry
-      run: docker push registry.digitalocean.com/yam-realtoken-cr/fe:$(echo $GITHUB_SHA | head -c7)
+      run: docker push registry.digitalocean.com/yam-realtoken-cr/${GITHUB_REF##*/}:$(echo $GITHUB_SHA | head -c7)
 
     - name: Update deployment file
-      run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|registry.digitalocean.com/yam-realtoken-cr/fe:'${TAG}'|' $GITHUB_WORKSPACE/k8s-yaml/deployment.yaml
+      run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|registry.digitalocean.com/yam-realtoken-cr/${GITHUB_REF##*/}:'${TAG}'|' $GITHUB_WORKSPACE/k8s-yaml/deployment.yaml
+      run: CURRENT_ENV=$(echo $GITHUB_SHA | head -c7) && sed -i 's|<CURRENT_ENV>|${GITHUB_REF##*/}:'${CURRENT_ENV}'|' $GITHUB_WORKSPACE/k8s-yaml/deployment.yaml
 
     - name: Save DigitalOcean kubeconfig with short-lived credentials
       run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 yam-realtoken-k8s
@@ -44,4 +46,4 @@ jobs:
       run: kubectl apply -f $GITHUB_WORKSPACE/k8s-yaml/deployment.yaml
 
     - name: Verify deployment
-      run: kubectl rollout status deployment/yam-realtoken
+      run: kubectl rollout status deployment/${GITHUB_REF##*/}-yam-realtoken

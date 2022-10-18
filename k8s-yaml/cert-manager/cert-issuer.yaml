@@ -1,7 +1,7 @@
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer #To Allow any resource to access this Issue we use "ClusterIssuer"
 metadata:
-  name: letsencrypt-dev
+  name: letsencrypt-staging
   namespace: default
 spec:
   acme:

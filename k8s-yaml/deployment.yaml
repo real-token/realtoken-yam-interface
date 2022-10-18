@@ -2,21 +2,21 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: yam-realtoken
-  name: yam-realtoken
+    app: <CURRENT_ENV>-yam-realtoken
+  name: <CURRENT_ENV>-yam-realtoken
 spec:
   selector:
     matchLabels:
-      app: yam-realtoken
+      app: <CURRENT_ENV>-yam-realtoken
   template:
     metadata:
       labels:
-        app: yam-realtoken
+        app: <CURRENT_ENV>-yam-realtoken
     spec:
       containers:
       - image: <IMAGE>
         imagePullPolicy: IfNotPresent
-        name: yam-realtoken
+        name: <CURRENT_ENV>-yam-realtoken
         ports:
         - containerPort: 3000
           protocol: TCP

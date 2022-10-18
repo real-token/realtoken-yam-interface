@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-dev
+    cert-manager.io/cluster-issuer: letsencrypt-staging
     #kubernetes.io/ingress.class: nginx
     kubernetes.io/tls-acme: "true"
     nginx.ingress.kubernetes.io/enable-cors: "true"
@@ -25,6 +25,6 @@ spec:
   tls:
   - hosts:
     - test-yam.realtoken.network
-    secretName: letsencrypt-dev
+    secretName: letsencrypt-staging
     
   ingressClassName: nginx

@@ -2,14 +2,14 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: yam-realtoken-svc
-  name: yam-realtoken-svc
+    app: staging-yam-realtoken-svc
+  name: staging-yam-realtoken-svc
 spec:
   ports:
   - port: 80 # The port that will be exposed by this service configuration
     protocol: TCP
     targetPort: 3000 # The local container port on the deployment
   selector:
-    app: yam-realtoken # This "key: value" must match the "label" configuration in deployment.yaml
+    app: staging-yam-realtoken # This "key: value" must match the "label" configuration in deployment.yaml
   sessionAffinity: None
   type: ClusterIP
