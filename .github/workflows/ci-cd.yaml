@@ -26,14 +26,14 @@ jobs:
       with:
         token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
     
-    #  - name: Build container image
-    #    run: docker build -t registry.digitalocean.com/yam-realtoken-cr/${GITHUB_REF##*/}:$(echo $GITHUB_SHA | head -c7) .
+     - name: Build container image
+       run: docker build -t registry.digitalocean.com/yam-realtoken-cr/${GITHUB_REF##*/}:$(echo $GITHUB_SHA | head -c7) .
 
     - name: Log in to DigitalOcean Container Registry with short-lived credentials
       run: doctl registry login --expiry-seconds 1200
     
-    #  - name: Push image to DigitalOcean Container Registry
-    #    run: docker push registry.digitalocean.com/yam-realtoken-cr/${GITHUB_REF##*/}:$(echo $GITHUB_SHA | head -c7)
+     - name: Push image to DigitalOcean Container Registry
+       run: docker push registry.digitalocean.com/yam-realtoken-cr/${GITHUB_REF##*/}:$(echo $GITHUB_SHA | head -c7)
 
     - name: Update Docker Image in Deployment file
       run: TAG=$(echo $GITHUB_SHA | head -c7) && ENV_PREFIX=$(echo ${GITHUB_REF##*/}) && sed -i 's|<IMAGE>|registry.digitalocean.com/yam-realtoken-cr/'${ENV_PREFIX}':'${TAG}'|' $GITHUB_WORKSPACE/k8s-yaml/deployment.yaml && cat $GITHUB_WORKSPACE/k8s-yaml/deployment.yaml
