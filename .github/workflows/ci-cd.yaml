@@ -35,8 +35,10 @@ jobs:
     - name: Push image to DigitalOcean Container Registry
       run: docker push registry.digitalocean.com/yam-realtoken-cr/${GITHUB_REF##*/}:$(echo $GITHUB_SHA | head -c7)
 
-    - name: Update deployment file
+    - name: Update Docker Image in Deployment file
       run: TAG=$(echo $GITHUB_SHA | head -c7) && sed -i 's|<IMAGE>|registry.digitalocean.com/yam-realtoken-cr/${GITHUB_REF##*/}:'${TAG}'|' $GITHUB_WORKSPACE/k8s-yaml/deployment.yaml
+    
+    - name: Update Environment Prefix in Deployment file
       run: CURRENT_ENV=$(echo $GITHUB_SHA | head -c7) && sed -i 's|<CURRENT_ENV>|${GITHUB_REF##*/}:'${CURRENT_ENV}'|' $GITHUB_WORKSPACE/k8s-yaml/deployment.yaml
 
     - name: Save DigitalOcean kubeconfig with short-lived credentials
