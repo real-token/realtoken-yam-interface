@@ -7,7 +7,8 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json yarn.lock* ./
-RUN yarn
+RUN apk add --no-cache git openssh
+RUN yarn install
 
 
 # 2. Rebuild the source code only when needed
