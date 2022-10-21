@@ -62,7 +62,7 @@ export const CHAINS: Record<ChainsID, Chain> = {
     contracts: {
       [ContractsID.swapCatUpgradeable]: {
         abi: swapCatUpgradeableABI,
-        address: '0xfAa0aC428Bc3BE5493454F308E8ef0337E820095', // v0.2. contract
+        address: '0xBDAa060F27D00b9e135C005Ae5Ad0F51C8ba4FD9', // v0.2. contract
         // address: '0x171A7f76E8a12aD217611A768968bAf8376ce726', // v0.1.1 contract
         // address: '0xeaBE3576be937B6d2B40Bd58Da0a7e7f4FAa2632', // v0.1.0 contract
         // address: '0x9EC2D0A68e9F49B37e77C63Bc38E58B11D345b3b', // old contract
