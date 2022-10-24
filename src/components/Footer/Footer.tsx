@@ -14,6 +14,7 @@ import {
 } from '@mantine/core';
 import { NextLink } from '@mantine/next';
 import {
+  IconBrandGithub,
   IconBrandMedium,
   IconBrandTelegram,
   IconBrandTwitter,
@@ -60,6 +61,14 @@ const FooterButtons: FC = () => {
         target={'_blank'}
       >
         <IconBrandMedium />
+      </ActionIcon>
+      <ActionIcon
+        variant={'subtle'}
+        component={NextLink}
+        href={'https://github.com/real-token'}
+        target={'_blank'}
+      >
+        <IconBrandGithub />
       </ActionIcon>
     </Group>
   );
