@@ -11,6 +11,8 @@ import {
   Header as MantineHeader,
   MediaQuery,
   Title,
+  Anchor,
+  Text,
 } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { useWeb3React } from '@web3-react/core';
@@ -23,6 +25,7 @@ import { Divider } from '../Divider';
 import { SettingsMenu } from '../SettingsMenu';
 import { WalletMenu } from '../WalletMenu';
 import { styles } from './Header.styles';
+import { NextLink } from '@mantine/next';
 
 const LogoWithName: FC = () => {
   const { t } = useTranslation('common', { keyPrefix: 'header' });
@@ -69,6 +72,7 @@ export const Header: FC = () => {
       <Box sx={styles.container}>
         <Group position={'apart'} align={'center'}>
           <LogoWithName />
+          <Text component={NextLink} href={'/my-offers'} >{'Your offers'}</ Text>
           <Link href={'/'}>
             <a className={cssStyles.headerText}>{'Explore'}</a>
           </Link>

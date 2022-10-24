@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Modal } from '@mantine/core';
+import { Modal, Paper } from '@mantine/core';
 import { showNotification, updateNotification } from '@mantine/notifications';
 import { useWeb3React } from '@web3-react/core';
 
@@ -132,7 +132,8 @@ export const MarketSellWithPermit = () => {
   };
 
   return (
-    <div className={styles.new_offer}>
+    //<div className={styles.new_offer}>
+    <Paper >
       <form onSubmit={permitHandler}>
         <div className={styles.market_sells}>
           <div className={styles.market_sell}>
@@ -176,6 +177,7 @@ export const MarketSellWithPermit = () => {
           <button type={'submit'}>{'Permit and Create Offer'}</button>
         </div>
       </form>
-    </div>
+      </Paper>
+    //</div>
   );
 };
