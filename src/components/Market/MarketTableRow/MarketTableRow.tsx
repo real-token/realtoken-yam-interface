@@ -97,7 +97,6 @@ export const MarketTableRow: FC = () => {
                 <Text
                   size={'sm'}
                   sx={{
-                    // textAlign: 'center',
                     textOverflow: 'ellipsis',
                     overflow: 'hidden',
                   }}
@@ -118,7 +117,6 @@ export const MarketTableRow: FC = () => {
                 <Text
                   size={'sm'}
                   sx={{
-                    // textAlign: 'center',
                     textOverflow: 'ellipsis',
                     overflow: 'hidden',
                   }}
@@ -139,7 +137,6 @@ export const MarketTableRow: FC = () => {
                 <Text
                   size={'sm'}
                   sx={{
-                    // textAlign: 'center',
                     textOverflow: 'ellipsis',
                     overflow: 'hidden',
                   }}
@@ -156,17 +153,16 @@ export const MarketTableRow: FC = () => {
             accessorKey: 'price',
             header: t('price'),
             cell: ({ getValue }) => (
-              <Group noWrap={true} spacing={'xs'}>
-                <Text
-                  size={'sm'}
-                  sx={{
-                    textOverflow: 'ellipsis',
-                    overflow: 'hidden',
-                  }}
-                >
-                  {getValue()}
-                </Text>
-              </Group>
+              <Text
+                size={'sm'}
+                sx={{
+                  textAlign: 'center',
+                  textOverflow: 'ellipsis',
+                  overflow: 'hidden',
+                }}
+              >
+                {getValue()}
+              </Text>
             ),
             enableSorting: true,
             meta: { colSpan: 2 },
@@ -176,17 +172,16 @@ export const MarketTableRow: FC = () => {
             accessorKey: 'amount',
             header: t('amount'),
             cell: ({ getValue }) => (
-              <Group noWrap={true} spacing={'xs'}>
-                <Text
-                  size={'sm'}
-                  sx={{
-                    textOverflow: 'ellipsis',
-                    overflow: 'hidden',
-                  }}
-                >
-                  {getValue()}
-                </Text>
-              </Group>
+              <Text
+                size={'sm'}
+                sx={{
+                  textAlign: 'center',
+                  textOverflow: 'ellipsis',
+                  overflow: 'hidden',
+                }}
+              >
+                {getValue()}
+              </Text>
             ),
             enableSorting: true,
             meta: { colSpan: 2 },

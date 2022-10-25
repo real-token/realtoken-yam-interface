@@ -1,8 +1,6 @@
 import { FC, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import Link from 'next/link';
-
 import {
   Box,
   Button,
@@ -10,14 +8,12 @@ import {
   Image,
   Header as MantineHeader,
   MediaQuery,
-  Title,
-  Anchor,
   Text,
+  Title,
 } from '@mantine/core';
 import { useModals } from '@mantine/modals';
+import { NextLink } from '@mantine/next';
 import { useWeb3React } from '@web3-react/core';
-
-import cssStyles from 'styles/Header.module.css';
 
 import { Logo } from 'src/assets';
 
@@ -25,7 +21,6 @@ import { Divider } from '../Divider';
 import { SettingsMenu } from '../SettingsMenu';
 import { WalletMenu } from '../WalletMenu';
 import { styles } from './Header.styles';
-import { NextLink } from '@mantine/next';
 
 const LogoWithName: FC = () => {
   const { t } = useTranslation('common', { keyPrefix: 'header' });
@@ -72,16 +67,25 @@ export const Header: FC = () => {
       <Box sx={styles.container}>
         <Group position={'apart'} align={'center'}>
           <LogoWithName />
-          <Text component={NextLink} href={'/my-offers'} >{'Your offers'}</ Text>
-          <Link href={'/'}>
-            <a className={cssStyles.headerText}>{'Explore'}</a>
-          </Link>
-          <Link href={'/my-offers'}>
-            <a className={cssStyles.headerText}>{'Your offers'}</a>
-          </Link>
-          <Link href={'/portfolio'}>
-            <a className={cssStyles.headerText}>{'Portfolio'}</a>
-          </Link>
+          <Text size={'xl'} weight={700} component={NextLink} href={'/'}>
+            {'Explore'}
+          </Text>
+          <Text
+            size={'xl'}
+            weight={700}
+            component={NextLink}
+            href={'/my-offers'}
+          >
+            {'Your offers'}
+          </Text>
+          <Text
+            size={'xl'}
+            weight={700}
+            component={NextLink}
+            href={'/portfolio'}
+          >
+            {'Portfolio'}
+          </Text>
           <HeaderButtons />
         </Group>
       </Box>
