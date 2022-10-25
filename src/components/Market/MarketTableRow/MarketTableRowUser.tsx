@@ -24,7 +24,7 @@ import { Offer } from 'src/hooks/types';
 import { Table } from '../../Table';
 import { DeleteActions } from '../DeleteActions';
 import { MarketSubRow } from '../MarketSubRow';
-import { UpdateActions } from '../UpdateActions';
+import { UpdateActions, UpdateActionsWithPermit } from '../UpdateActions';
 
 type OfferTable = {
   offerId: BigNumber;
@@ -176,7 +176,7 @@ export const MarketTableRowUser: FC = () => {
             id: 'update',
             header: undefined,
             cell: ({ row }) => (
-              <UpdateActions
+              <UpdateActionsWithPermit
                 updateOffer={row.original}
                 triggerRefresh={refreshState[1]}
               />
