@@ -20,7 +20,7 @@ export const MarketSellWithPermit = () => {
   const [enteredBuyerToken, setEnteredBuyerToken] = useState('');
   const [enteredPrice, setEnteredPrice] = useState('');
   const [enteredAmount, setEnteredAmount] = useState('');
-
+  const [enteredBuyerAddress, setEnteredBuyerAddress] = useState('');
   const { account, provider } = useWeb3React();
   const activeChain = useActiveChain();
   const realTokenYamUpgradeable = useContract(
@@ -38,6 +38,10 @@ export const MarketSellWithPermit = () => {
   };
   const amountHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEnteredAmount(event.target.value);
+  };
+
+  const buyerAddressHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEnteredBuyerAddress(event.target.value);
   };
 
   const permitHandler = async (event: any) => {
@@ -104,7 +108,7 @@ export const MarketSellWithPermit = () => {
       const tx1 = await realTokenYamUpgradeable.createOfferWithPermit(
         enteredOfferToken,
         enteredBuyerToken,
-        ZERO_ADDRESS, // public offer (buyer = 0x0)
+        enteredBuyerAddress === '' ? ZERO_ADDRESS : enteredBuyerAddress, // ZERO_ADDRESS, // public offer (buyer = 0x0)
         enteredPriceInWei.toString(),
         enteredAmountInWei.toString(),
         transactionDeadline.toString(),
@@ -179,6 +183,16 @@ export const MarketSellWithPermit = () => {
               step={'0.01'}
               value={enteredAmount}
               onChange={amountHandler}
+            />
+          </div>
+          <div className={styles.market_sell}>
+            <label>
+              {'Private buyer address (optional, only used for private offer)'}
+            </label>
+            <input
+              type={'text'}
+              value={enteredBuyerAddress}
+              onChange={buyerAddressHandler}
             />
           </div>
         </div>
