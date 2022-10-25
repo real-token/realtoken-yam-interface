@@ -9,7 +9,7 @@ import { ColorScheme } from '@mantine/core';
 import { getCookie } from 'cookies-next';
 
 import 'src/i18next';
-import { Layout } from 'src/layouts/Layout';
+import Layout from 'src/layouts/Layout';
 import { MantineProviders, Web3Providers } from 'src/providers';
 
 import { Head } from '../src/components';
