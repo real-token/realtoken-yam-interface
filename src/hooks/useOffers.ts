@@ -32,7 +32,7 @@ export const useOffers: UseOffers = (isFiltered) => {
     },
   ]);
 
-  const swapCatUpgradeable = useContract(ContractsID.swapCatUpgradeable);
+  const realTokenYamUpgradeable = useContract(ContractsID.realTokenYamUpgradeable);
 
   const interval = useInterval(() => triggerRefresh(true), 60000);
 
@@ -44,7 +44,7 @@ export const useOffers: UseOffers = (isFiltered) => {
 
   useEffect(() => {
     triggerRefresh(true);
-  }, [swapCatUpgradeable]);
+  }, [realTokenYamUpgradeable]);
 
   const { account, provider } = useWeb3React();
 
@@ -52,25 +52,25 @@ export const useOffers: UseOffers = (isFiltered) => {
 
   useAsync(
     async (isActive) => {
-      if (!swapCatUpgradeable || !isRefreshing) return undefined;
+      if (!realTokenYamUpgradeable || !isRefreshing) return undefined;
 
 			const getEvents = () =>
-			swapCatUpgradeable.queryFilter(
-				swapCatUpgradeable.filters.OfferDeleted(),
-				swapCatUpgradeable.metadata.fromBlock
+			realTokenYamUpgradeable.queryFilter(
+				realTokenYamUpgradeable.filters.OfferDeleted(),
+				realTokenYamUpgradeable.metadata.fromBlock
 			);
 
 			const events = await asyncRetry(getEvents);
 			const offersDeleted = events.map(event => event.args.offerId.toNumber());
       const offerCount = (
-        await asyncRetry(() => swapCatUpgradeable.getOfferCount())
+        await asyncRetry(() => realTokenYamUpgradeable.getOfferCount())
       ).toNumber();
 			// console.log("offerCount", offerCount)
 			const offerCountArray = Array.from(Array(offerCount).keys());
 			const offersToFetch = offerCountArray.filter(x => !offersDeleted.includes(x));
 
       for (const i of offersToFetch) {
-        const getOffer = () => swapCatUpgradeable.showOffer(i);
+        const getOffer = () => realTokenYamUpgradeable.showOffer(i);
 
 				try {
 					const [
@@ -125,7 +125,7 @@ export const useOffers: UseOffers = (isFiltered) => {
 
       return offersData;
     },
-    [swapCatUpgradeable, isRefreshing, offersData, provider, account, isFiltered]
+    [realTokenYamUpgradeable, isRefreshing, offersData, provider, account, isFiltered]
   );
 
   return {

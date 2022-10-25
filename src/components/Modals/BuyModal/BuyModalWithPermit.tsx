@@ -90,7 +90,9 @@ export const BuyModalWithPermit: FC<
   const [amountMax, setAmountMax] = useState<number>();
   const activeChain = useActiveChain();
 
-  const swapCatUpgradeable = useContract(ContractsID.swapCatUpgradeable);
+  const realTokenYamUpgradeable = useContract(
+    ContractsID.realTokenYamUpgradeable
+  );
   const buyerToken = getContract<CoinBridgeToken>(
     buyerTokenAddress,
     coinBridgeTokenABI,
@@ -133,7 +135,7 @@ export const BuyModalWithPermit: FC<
           !formValues.offerId ||
           !formValues.price ||
           !formValues.amount ||
-          !swapCatUpgradeable ||
+          !realTokenYamUpgradeable ||
           !buyerToken
         ) {
           return;
@@ -157,14 +159,14 @@ export const BuyModalWithPermit: FC<
         try {
           const { r, s, v }: any = await erc20PermitSignature(
             account,
-            swapCatUpgradeable.address,
+            realTokenYamUpgradeable.address,
             buyerTokenAmount.toString(),
             transactionDeadline,
             buyerToken,
             provider
           );
 
-          const transaction = await swapCatUpgradeable.buyWithPermit(
+          const transaction = await realTokenYamUpgradeable.buyWithPermit(
             formValues.offerId,
             priceInWei.toString(),
             amountInWei.toString(),
@@ -199,7 +201,7 @@ export const BuyModalWithPermit: FC<
           console.error(error);
 
           const approveTx = await buyerToken.approve(
-            swapCatUpgradeable.address,
+            realTokenYamUpgradeable.address,
             buyerTokenAmount.toString()
           );
 
@@ -229,7 +231,7 @@ export const BuyModalWithPermit: FC<
 
           await approveTx.wait(1);
 
-          const buyTx = await swapCatUpgradeable.buy(
+          const buyTx = await realTokenYamUpgradeable.buy(
             formValues.offerId,
             priceInWei.toString(),
             amountInWei.toString()
@@ -269,7 +271,7 @@ export const BuyModalWithPermit: FC<
     [
       account,
       provider,
-      swapCatUpgradeable,
+      realTokenYamUpgradeable,
       buyerToken,
       offerTokenDecimals,
       buyerTokenDecimals,

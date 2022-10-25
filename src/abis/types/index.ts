@@ -3,8 +3,8 @@
 /* eslint-disable */
 export type { Erc20 } from "./Erc20";
 export type { CoinBridgeToken } from "./CoinBridgeToken";
-export type { SwapCatUpgradeable } from "./SwapCatUpgradeable";
+export type { RealTokenYamUpgradeable } from "./RealTokenYamUpgradeable";
 export * as factories from "./factories";
 export { Erc20__factory } from "./factories/Erc20__factory";
 export { CoinBridgeToken__factory } from "./factories/CoinBridgeToken__factory";
-export { SwapCatUpgradeable__factory } from "./factories/SwapCatUpgradeable__factory";
+export { RealTokenYamUpgradeable__factory } from "./factories/RealTokenYamUpgradeable__factory";

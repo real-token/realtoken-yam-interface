@@ -160,44 +160,6 @@ npx hardhat test
 
 ## Usage
 
-Deployed addresses on Goerli testnet:
-
-AdminProxy: 0xc7f8c34680913ee5b5839da58b2013b731a8f437
-
-AdminToken: 0xa221a6194bdaf3d6c329ab58a8d1daaf1aec4008
-
-ComplianceRegistry (trustedIntermediary): 0xf8aeaa8938a858c036ed77d2ff8bab0c12e01a56
-
-TokenOwner1: 0x518be392928df2a9f063f6d225626e210fd84992
-
-TokenOwner2: 0xf894671ecb801a6bbbe4c6eca37074c7329926c2
-
-TokenOwner3: 0x063d5bc32e62e79d982c518a8de6f65653bf9cff
-
-TokenOwner4: 0xa03d9eae4a545141eb1e6e8248eb17fdc84dcdb7
-
-Token Implemetation (logic): 0x8784219F6F6CbEDe8eee1Cf4871fbf9E424C22df
-
-RegS Token 1: 0x8784219F6F6CbEDe8eee1Cf4871fbf9E424C22df
-
-RegD Token 2: 0xDF3f63a3a1E86296d438156BD9029e6973dD96A7
-
-SwapCatUpgradeable Proxy: 0x9EC2D0A68e9F49B37e77C63Bc38E58B11D345b3b
-
-SwapCatUpgradeable Implementation: 0xDFB267850891Ea0482A9aA382003461Eb704a6a6
-
-SwapCat Admin: 0x71C7D067f4046f146419f4FC72c18601C5eB7545
-
-SwapCat Moderator: 0x822d65085ce1D3097CdE8035C4d5A0a196955523
-
-USDCToken Test: 0x31f3bEB82969825F8d2699b9f1191A0618526773
-
-SwapCatUpgradeable Proxy (with Permit): 0xeaBE3576be937B6d2B40Bd58Da0a7e7f4FAa2632
-
-SwapCatUpgradeable Implementation (with Permit): 0x65f0A4b5e1Ca1D88A83510127ba710fC1878A755
-
-USDCToken Test (with Permit): 0x2d8aC0601b2D4c9C8b4Bd87dEE72a08fE2bC0F7f
-
 <!-- CONTRIBUTING -->
 
 ## Contributing

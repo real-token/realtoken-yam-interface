@@ -75,7 +75,9 @@ export const UpdateModal: FC<ContextModalProps<UpdateModalProps>> = ({
   const [amountMax, setAmountMax] = useState<number>();
 
   const activeChain = useActiveChain();
-  const swapCatUpgradeable = useContract(ContractsID.swapCatUpgradeable);
+  const realTokenYamUpgradeable = useContract(
+    ContractsID.realTokenYamUpgradeable
+  );
 
   const {
     offers,
@@ -113,14 +115,14 @@ export const UpdateModal: FC<ContextModalProps<UpdateModalProps>> = ({
           !formValues.offerId ||
           !formValues.price ||
           !formValues.amount ||
-          !swapCatUpgradeable
+          !realTokenYamUpgradeable
         ) {
           return;
         }
 
         setSubmitting(true);
 
-        const transaction = await swapCatUpgradeable.updateOffer(
+        const transaction = await realTokenYamUpgradeable.updateOffer(
           formValues.offerId,
           new BigNumber(formValues.price.toString())
             .shiftedBy(Number(buyerTokenDecimals))
@@ -162,7 +164,7 @@ export const UpdateModal: FC<ContextModalProps<UpdateModalProps>> = ({
     [
       account,
       activeChain,
-      swapCatUpgradeable,
+      realTokenYamUpgradeable,
       onClose,
       provider,
       triggerTableRefresh,

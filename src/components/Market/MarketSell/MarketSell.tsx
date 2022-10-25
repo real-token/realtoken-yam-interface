@@ -30,7 +30,9 @@ export const MarketSell = () => {
 
   const { account, provider } = useWeb3React();
   const activeChain = useActiveChain();
-  const swapCatUpgradeable = useContract(ContractsID.swapCatUpgradeable);
+  const realTokenYamUpgradeable = useContract(
+    ContractsID.realTokenYamUpgradeable
+  );
 
   const offerTokenHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEnteredOfferToken(event.target.value);
@@ -50,7 +52,7 @@ export const MarketSell = () => {
     if (
       !account ||
       !provider ||
-      !swapCatUpgradeable ||
+      !realTokenYamUpgradeable ||
       !enteredOfferToken ||
       !enteredBuyerToken ||
       !enteredPrice ||
@@ -89,7 +91,7 @@ export const MarketSell = () => {
     );
 
     try {
-      const tx1 = await swapCatUpgradeable.createOffer(
+      const tx1 = await realTokenYamUpgradeable.createOffer(
         enteredOfferToken,
         enteredBuyerToken,
         ZERO_ADDRESS, // public offer (buyer = 0x0)
@@ -120,7 +122,7 @@ export const MarketSell = () => {
         );
 
       const tx2 = await offerToken.approve(
-        swapCatUpgradeable.address,
+        realTokenYamUpgradeable.address,
         enteredAmountInWei.toString()
       );
 

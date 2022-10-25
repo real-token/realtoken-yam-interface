@@ -42,7 +42,9 @@ export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
   const [amountMax, setAmountMax] = useState<number>();
 
   const activeChain = useActiveChain();
-  const swapCatUpgradeable = useContract(ContractsID.swapCatUpgradeable);
+  const realTokenYamUpgradeable = useContract(
+    ContractsID.realTokenYamUpgradeable
+  );
 
   const {
     offers,
@@ -78,14 +80,14 @@ export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
           !account ||
           !provider ||
           !formValues.offerId ||
-          !swapCatUpgradeable
+          !realTokenYamUpgradeable
         ) {
           return;
         }
 
         setSubmitting(true);
 
-        const transaction = await swapCatUpgradeable.deleteOffer(
+        const transaction = await realTokenYamUpgradeable.deleteOffer(
           formValues.offerId
         );
 
@@ -121,7 +123,7 @@ export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
     [
       account,
       activeChain,
-      swapCatUpgradeable,
+      realTokenYamUpgradeable,
       onClose,
       provider,
       triggerTableRefresh,

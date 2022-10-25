@@ -1,4 +1,4 @@
-import { swapCatUpgradeableABI } from 'src/abis';
+import { realTokenYamUpgradeableABI } from 'src/abis';
 import { EthereumSVG, GnosisSVG } from 'src/assets';
 
 import { Contracts, ContractsID } from './contracts';
@@ -29,8 +29,8 @@ export const CHAINS: Record<ChainsID, Chain> = {
     rpcUrl: 'https://rpc.ankr.com/gnosis',
     blockExplorerUrl: 'https://gnosisscan.io/',
     contracts: {
-      [ContractsID.swapCatUpgradeable]: {
-        abi: swapCatUpgradeableABI,
+      [ContractsID.realTokenYamUpgradeable]: {
+        abi: realTokenYamUpgradeableABI,
         address: '',
         metadata: { fromBlock: 24582116 },
       },
@@ -44,8 +44,8 @@ export const CHAINS: Record<ChainsID, Chain> = {
     rpcUrl: 'https://rpc.ankr.com/eth',
     blockExplorerUrl: 'https://etherscan.io/',
     contracts: {
-      [ContractsID.swapCatUpgradeable]: {
-        abi: swapCatUpgradeableABI,
+      [ContractsID.realTokenYamUpgradeable]: {
+        abi: realTokenYamUpgradeableABI,
         address: '',
         metadata: { fromBlock: 15741178 },
       },
@@ -63,8 +63,8 @@ export const CHAINS: Record<ChainsID, Chain> = {
     //   'https://eth.getblock.io/goerli/?api_key=eda96727-5cdd-4551-9e24-aef68d33e782', // getblock API 40k/day
     blockExplorerUrl: 'https://goerli.etherscan.io/',
     contracts: {
-      [ContractsID.swapCatUpgradeable]: {
-        abi: swapCatUpgradeableABI,
+      [ContractsID.realTokenYamUpgradeable]: {
+        abi: realTokenYamUpgradeableABI,
         address: '0xBDAa060F27D00b9e135C005Ae5Ad0F51C8ba4FD9', // v0.2.0 contract
         metadata: { fromBlock: 7385668 },
       },
