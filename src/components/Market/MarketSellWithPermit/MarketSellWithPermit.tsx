@@ -23,7 +23,9 @@ export const MarketSellWithPermit = () => {
 
   const { account, provider } = useWeb3React();
   const activeChain = useActiveChain();
-  const swapCatUpgradeable = useContract(ContractsID.swapCatUpgradeable);
+  const realTokenYamUpgradeable = useContract(
+    ContractsID.realTokenYamUpgradeable
+  );
 
   const offerTokenHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEnteredOfferToken(event.target.value);
@@ -44,7 +46,7 @@ export const MarketSellWithPermit = () => {
       if (
         !account ||
         !provider ||
-        !swapCatUpgradeable ||
+        !realTokenYamUpgradeable ||
         !enteredOfferToken ||
         !enteredBuyerToken ||
         !enteredPrice ||
@@ -76,6 +78,13 @@ export const MarketSellWithPermit = () => {
       const enteredAmountInWei = new BigNumber(enteredAmount).shiftedBy(
         Number(offerTokenDecimals)
       );
+      const oldAllowance = await offerToken.allowance(
+        account,
+        realTokenYamUpgradeable.address
+      );
+      const amountInWeiToPermit = enteredAmountInWei.plus(
+        new BigNumber(oldAllowance.toString())
+      );
 
       const enteredPriceInWei = new BigNumber(enteredPrice).shiftedBy(
         Number(buyerTokenDecimals)
@@ -85,14 +94,14 @@ export const MarketSellWithPermit = () => {
 
       const { r, s, v }: any = await coinBridgeTokenPermitSignature(
         account,
-        swapCatUpgradeable.address,
-        enteredAmountInWei.toString(),
+        realTokenYamUpgradeable.address,
+        amountInWeiToPermit.toString(),
         transactionDeadline,
         offerToken,
         provider
       );
 
-      const tx1 = await swapCatUpgradeable.createOfferWithPermit(
+      const tx1 = await realTokenYamUpgradeable.createOfferWithPermit(
         enteredOfferToken,
         enteredBuyerToken,
         ZERO_ADDRESS, // public offer (buyer = 0x0)
@@ -133,7 +142,7 @@ export const MarketSellWithPermit = () => {
 
   return (
     //<div className={styles.new_offer}>
-    <Paper >
+    <Paper>
       <form onSubmit={permitHandler}>
         <div className={styles.market_sells}>
           <div className={styles.market_sell}>
@@ -177,7 +186,7 @@ export const MarketSellWithPermit = () => {
           <button type={'submit'}>{'Permit and Create Offer'}</button>
         </div>
       </form>
-      </Paper>
+    </Paper>
     //</div>
   );
 };
