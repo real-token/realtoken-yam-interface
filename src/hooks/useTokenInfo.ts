@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, useState } from 'react';
 
 import { useAPI } from './useAPI';
+import { useAPIGoerli } from './useAPIGoerli';
 import { useAsync } from './useAsync';
 
 export type TokenInfo = {
@@ -18,7 +19,7 @@ type UseTokenInfo = (tokenAddress: string) => {
   refreshState: [boolean, Dispatch<SetStateAction<boolean>>];
 };
 export const useTokenInfo: UseTokenInfo = (tokenAddress) => {
-  const { api } = useAPI(tokenAddress);
+  const { api } = useAPIGoerli(tokenAddress);
   const [isRefreshing, triggerRefresh] = useState<boolean>(true);
 
   const [tokenInfo, setTokenInfo] = useState<TokenInfo>({
