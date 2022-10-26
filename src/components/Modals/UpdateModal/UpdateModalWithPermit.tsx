@@ -229,9 +229,6 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           label={t('price')}
           required={true}
           min={0}
-          // max={amountMax}
-          // step={amountMax}
-          showMax={true}
           placeholder={t('price')}
           sx={{ flexGrow: 1 }}
           {...getInputProps('price')}
@@ -239,11 +236,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
         <NumberInput
           label={t('amount')}
           required={true}
-          // disabled={!amountMax}
           min={0}
-          // max={amountMax}
-          // step={amountMax}
-          showMax={true}
           placeholder={t('amount')}
           sx={{ flexGrow: 1 }}
           {...getInputProps('amount')}
