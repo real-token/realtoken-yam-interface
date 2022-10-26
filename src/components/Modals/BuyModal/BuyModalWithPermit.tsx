@@ -9,19 +9,10 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import { Web3Provider } from '@ethersproject/providers';
-import {
-  Alert,
-  Box,
-  Button,
-  Container,
-  Group,
-  Input,
-  Stack,
-} from '@mantine/core';
+import { Box, Button, Container, Group, Input, Stack } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { ContextModalProps } from '@mantine/modals';
 import { showNotification, updateNotification } from '@mantine/notifications';
-import { IconAlertCircle } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
 
 import BigNumber from 'bignumber.js';
@@ -118,7 +109,7 @@ export const BuyModalWithPermit: FC<
           ?.amount as string
       )
     );
-  }, [values]);
+  }, [offers, values]);
 
   useEffect(() => {
     if (!amountMax) return;

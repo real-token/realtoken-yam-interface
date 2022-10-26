@@ -1,7 +1,7 @@
 import { FC, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Center, Loader, Text, Title } from '@mantine/core';
+import { Text, Title } from '@mantine/core';
 import {
   ColumnDef,
   getCoreRowModel,
@@ -9,7 +9,6 @@ import {
 } from '@tanstack/react-table';
 
 import { useTokenInfo } from 'src/hooks';
-import { TokenInfo } from 'src/hooks/';
 import { Offer } from 'src/hooks/types';
 
 import { Table, TableSubRowProps } from '../../Table';

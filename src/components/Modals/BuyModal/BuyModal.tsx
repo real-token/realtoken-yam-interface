@@ -53,6 +53,7 @@ export const BuyModal: FC<ContextModalProps<BuyModalProps>> = ({
   const { account, provider } = useWeb3React();
   const { getInputProps, onSubmit, reset, setFieldValue, values } =
     useForm<BuyFormValues>({
+      // eslint-disable-next-line object-shorthand
       initialValues: {
         offerId: offerId,
         price: price,
@@ -89,7 +90,7 @@ export const BuyModal: FC<ContextModalProps<BuyModalProps>> = ({
           ?.amount as string
       )
     );
-  }, [values]);
+  }, [offers, values]);
 
   useEffect(() => {
     if (!amountMax) return;
@@ -154,11 +155,13 @@ export const BuyModal: FC<ContextModalProps<BuyModalProps>> = ({
     },
     [
       account,
-      activeChain,
-      realTokenYamUpgradeable,
-      onClose,
       provider,
+      realTokenYamUpgradeable,
+      buyerTokenDecimals,
+      offerTokenDecimals,
+      activeChain?.blockExplorerUrl,
       triggerTableRefresh,
+      onClose,
     ]
   );
 

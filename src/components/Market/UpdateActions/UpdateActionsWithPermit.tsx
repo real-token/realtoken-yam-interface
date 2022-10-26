@@ -3,10 +3,8 @@ import { useTranslation } from 'react-i18next';
 
 import { ActionIcon, Group, Title } from '@mantine/core';
 import { useModals } from '@mantine/modals';
-import { IconEdit, IconShoppingCart } from '@tabler/icons';
+import { IconEdit } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
-
-import { BigNumber } from 'bignumber.js';
 
 import { Offer } from 'src/hooks/types';
 

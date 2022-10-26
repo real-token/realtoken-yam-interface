@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ActionIcon, Group, Title } from '@mantine/core';
 import { useModals } from '@mantine/modals';
-import { IconTrash, IconTrashOff } from '@tabler/icons';
+import { IconTrash } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
 
 import { Offer } from 'src/hooks/types';
@@ -47,7 +47,7 @@ export const DeleteActions: FC<DeleteActions> = ({
       {
         <ActionIcon
           color={'red'}
-          variant='filled'
+          variant={'filled'}
           onClick={() =>
             account ? onOpenDeleteModal(deleteOffer) : onOpenWalletModal()
           }

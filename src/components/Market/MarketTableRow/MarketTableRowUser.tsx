@@ -1,9 +1,7 @@
 import { FC, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { MaxUint256 } from '@ethersproject/constants';
-import { ActionIcon, Group, MantineSize, Text, Title } from '@mantine/core';
-import { IconChevronDown, IconChevronUp } from '@tabler/icons';
+import { Group, MantineSize, Text, Title } from '@mantine/core';
 import {
   ColumnDef,
   ExpandedState,
@@ -16,23 +14,13 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
-import BigNumber from 'bignumber.js';
-
 import { useOffers } from 'src/hooks';
 import { Offer } from 'src/hooks/types';
 
 import { Table } from '../../Table';
 import { DeleteActions } from '../DeleteActions';
 import { MarketSubRow } from '../MarketSubRow';
-import { UpdateActions, UpdateActionsWithPermit } from '../UpdateActions';
-
-type OfferTable = {
-  offerId: BigNumber;
-  offerToken: string;
-  buyerToken: string;
-  price: BigNumber;
-  amount: BigNumber;
-};
+import { UpdateActionsWithPermit } from '../UpdateActions';
 
 export const MarketTableRowUser: FC = () => {
   const { offers, refreshState } = useOffers(true); // add true to filter offers by user
@@ -63,19 +51,8 @@ export const MarketTableRowUser: FC = () => {
             id: 'offerId',
             accessorKey: 'offerId',
             header: t('offerId'),
-            cell: ({ row, getValue }) => (
+            cell: ({ getValue }) => (
               <Group noWrap={true} spacing={'xs'}>
-                {/* <ActionIcon
-                  variant={'transparent'}
-                  color={'brand'}
-                  onClick={() => row.toggleExpanded()}
-                >
-                  {row.getIsExpanded() ? (
-                    <IconChevronUp size={16} />
-                  ) : (
-                    <IconChevronDown size={16} />
-                  )}
-                </ActionIcon> */}
                 <Text
                   size={'sm'}
                   sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
@@ -91,7 +68,7 @@ export const MarketTableRowUser: FC = () => {
             id: 'offerTokenName',
             accessorKey: 'offerTokenName',
             header: t('offerTokenName'),
-            cell: ({ row, getValue }) => (
+            cell: ({ getValue }) => (
               <Group noWrap={true} spacing={'xs'}>
                 <Text
                   size={'sm'}
@@ -108,7 +85,7 @@ export const MarketTableRowUser: FC = () => {
             id: 'buyerTokenName',
             accessorKey: 'buyerTokenName',
             header: t('buyerTokenName'),
-            cell: ({ row, getValue }) => (
+            cell: ({ getValue }) => (
               <Group noWrap={true} spacing={'xs'}>
                 <Text
                   size={'sm'}
@@ -125,7 +102,7 @@ export const MarketTableRowUser: FC = () => {
             id: 'sellerAddress',
             accessorKey: 'sellerAddress',
             header: t('sellerAddress'),
-            cell: ({ row, getValue }) => (
+            cell: ({ getValue }) => (
               <Group noWrap={true} spacing={'xs'}>
                 <Text
                   size={'sm'}
@@ -142,7 +119,7 @@ export const MarketTableRowUser: FC = () => {
             id: 'price',
             accessorKey: 'price',
             header: t('price'),
-            cell: ({ row, getValue }) => (
+            cell: ({ getValue }) => (
               <Group noWrap={true} spacing={'xs'}>
                 <Text
                   size={'sm'}
@@ -159,7 +136,7 @@ export const MarketTableRowUser: FC = () => {
             id: 'amount',
             accessorKey: 'amount',
             header: t('amount'),
-            cell: ({ row, getValue }) => (
+            cell: ({ getValue }) => (
               <Group noWrap={true} spacing={'xs'}>
                 <Text
                   size={'sm'}

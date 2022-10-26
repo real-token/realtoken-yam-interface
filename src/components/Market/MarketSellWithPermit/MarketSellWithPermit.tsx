@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Modal, Paper } from '@mantine/core';
+import { Paper } from '@mantine/core';
 import { showNotification, updateNotification } from '@mantine/notifications';
 import { useWeb3React } from '@web3-react/core';
 
@@ -169,8 +169,8 @@ export const MarketSellWithPermit = () => {
             <label>{'Price (per unit)'}</label>
             <input
               type={'number'}
-              min={'0.01'}
-              step={'0.000000001'}
+              min={'0.000001'}
+              step={'0.000001'}
               value={enteredPrice}
               onChange={priceHandler}
             />
@@ -179,8 +179,8 @@ export const MarketSellWithPermit = () => {
             <label>{'Amount'}</label>
             <input
               type={'number'}
-              min={'0'}
-              step={'0.000000001'}
+              min={'0.000001'}
+              step={'0.000001'}
               value={enteredAmount}
               onChange={amountHandler}
             />

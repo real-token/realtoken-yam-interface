@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useState } from 'react';
 
-import { useAPI } from './useAPI';
+// import { useAPI } from './useAPI';
 import { useAPIGoerli } from './useAPIGoerli';
 import { useAsync } from './useAsync';
 

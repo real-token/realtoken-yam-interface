@@ -101,7 +101,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           ?.amount as string
       )
     );
-  }, [values]);
+  }, [offers, values]);
 
   useEffect(() => {
     if (!amountMax) return;
@@ -210,11 +210,15 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
     },
     [
       account,
-      activeChain,
-      realTokenYamUpgradeable,
-      onClose,
       provider,
+      realTokenYamUpgradeable,
+      offerTokenAddress,
+      offerTokenDecimals,
+      offerId,
+      buyerTokenDecimals,
+      activeChain?.blockExplorerUrl,
       triggerTableRefresh,
+      onClose,
     ]
   );
 

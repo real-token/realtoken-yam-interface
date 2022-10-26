@@ -15,22 +15,12 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
-import BigNumber from 'bignumber.js';
-
 import { useOffers } from 'src/hooks';
 import { Offer } from 'src/hooks/types';
 
 import { Table } from '../../Table';
 import { BuyActionsWithPermit } from '../BuyActions';
 import { MarketSubRow } from '../MarketSubRow';
-
-type OfferTable = {
-  offerId: BigNumber;
-  offerToken: string;
-  buyerToken: string;
-  price: BigNumber;
-  amount: BigNumber;
-};
 
 export const MarketTableRow: FC = () => {
   const { offers, refreshState } = useOffers();

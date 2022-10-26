@@ -6,8 +6,6 @@ import { useModals } from '@mantine/modals';
 import { IconShoppingCart } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
 
-import { BigNumber } from 'bignumber.js';
-
 import { Offer } from 'src/hooks/types';
 
 type BuyActions = {
