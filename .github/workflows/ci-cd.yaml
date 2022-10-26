@@ -4,6 +4,7 @@ on:
     branches:
       - dev
       - staging
+      - production
     #paths – The workflow triggers when there is a change in server.py, Dockerfile, the deployment YAML file in config folder or the workflow YAML file in the workflow folder in the repository
     # paths:
     #   - 'config/**'

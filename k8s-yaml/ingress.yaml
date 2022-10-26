@@ -2,29 +2,29 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-staging
+    cert-manager.io/cluster-issuer: letsencrypt-production
     #kubernetes.io/ingress.class: nginx
     kubernetes.io/tls-acme: "true"
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/cors-allow-origin: "*"
     nginx.ingress.kubernetes.io/proxy-body-size: 128m
-  name: staging-yam-realtoken-ingress
+  name: production-yam-realtoken-ingress
   namespace: default
 spec:
   rules:
-  - host: staging-yam.realtoken.network
+  - host: yam.realtoken.network
     http:
       paths:
       - backend:
           service:
-            name: staging-yam-realtoken-svc
+            name: production-yam-realtoken-svc
             port:
               number: 80
         path: /
         pathType: ImplementationSpecific
   tls:
   - hosts:
-    - staging-yam.realtoken.network
-    secretName: letsencrypt-staging
+    - yam.realtoken.network
+    secretName: letsencrypt-production
     
   ingressClassName: nginx
