@@ -26,7 +26,7 @@ export const NumberInput: FRC<NumberInputProps, HTMLInputElement> = forwardRef(
         <MantineInput
           hideControls={true}
           handlersRef={handlers}
-          precision={8}
+          precision={6}
           disabled={disabled}
           {...props}
           ref={ref}
