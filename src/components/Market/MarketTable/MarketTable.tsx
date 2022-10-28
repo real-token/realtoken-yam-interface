@@ -22,7 +22,7 @@ import { Table } from '../../Table';
 import { BuyActionsWithPermit } from '../BuyActions';
 import { MarketSubRow } from '../MarketSubRow';
 
-export const MarketTableRow: FC = () => {
+export const MarketTable: FC = () => {
   const { offers, refreshState } = useOffers();
 
   const [sorting, setSorting] = useState<SortingState>([

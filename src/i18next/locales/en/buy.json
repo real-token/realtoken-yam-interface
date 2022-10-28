@@ -3,7 +3,7 @@
     "market": "Market",
     "title": "RealToken YAM (You And Me)",
     "offerId": "Offer ID",
-    "offerTokenAddress": "Sell Token Address",
+    "offerTokenAddress": "Offer Token Address",
     "offerTokenName": "Offer Token",
     "buyerTokenAddress": "Buyer Token Address",
     "buyerTokenName": "Buyer Token",
@@ -14,7 +14,7 @@
   },
   "subRow": {
     "offerId": "Offer ID",
-    "offerTokenAddress": "Sell Token Address",
+    "offerTokenAddress": "Offer Token Address",
     "offerTokenName": "Offer Token",
     "buyerTokenAddress": "Buyer Token Address",
     "buyerTokenName": "Buyer Token",

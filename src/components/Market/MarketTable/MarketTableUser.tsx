@@ -22,7 +22,7 @@ import { DeleteActions } from '../DeleteActions';
 import { MarketSubRow } from '../MarketSubRow';
 import { UpdateActionsWithPermit } from '../UpdateActions';
 
-export const MarketTableRowUser: FC = () => {
+export const MarketTableUser: FC = () => {
   const { offers, refreshState } = useOffers(true); // add true to filter offers by user
 
   const [sorting, setSorting] = useState<SortingState>([

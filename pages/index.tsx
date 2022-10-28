@@ -2,14 +2,14 @@ import { Fragment } from 'react';
 
 import { NextPage } from 'next';
 
-import { MarketSellWithPermit } from 'src/components/Market';
-import { MarketTableRow } from 'src/components/Market/MarketTableRow';
+import { MarketTable, SellActions } from 'src/components/Market';
+import 'src/components/Market';
 
 const HomePage: NextPage = () => {
   return (
     <Fragment>
-      <MarketTableRow />
-      <MarketSellWithPermit />
+      <MarketTable />
+      <SellActions />
     </Fragment>
   );
 };

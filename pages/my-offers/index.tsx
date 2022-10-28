@@ -1,11 +1,11 @@
 import { Fragment } from 'react';
 
-import { MarketTableRowUser } from 'src/components/Market/MarketTableRow';
+import { MarketTableUser } from 'src/components/Market/MarketTable';
 
 const TransfersPage = () => {
   return (
     <Fragment>
-      <MarketTableRowUser />
+      <MarketTableUser />
     </Fragment>
   );
 };
