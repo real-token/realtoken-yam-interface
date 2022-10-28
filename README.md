@@ -7,15 +7,14 @@
 [![MIT License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
-[![Lint](https://github.com/real-token/realtoken-yam-interface/actions/workflows/lint.yml/badge.svg)](https://github.com/real-token/realtoken-yam-interface/actions/workflows/lint.yml)
-[![Build pass](https://github.com/real-token/realtoken-yam-interface/actions/workflows/node.js.yml/badge.svg?branch=master)](https://github.com/real-token/realtoken-yam-interface/actions/workflows/node.js.yml)
+[![Build and Deploy Next JS App on DigitalOcean K8s Cluster](https://github.com/real-token/realtoken-yam-interface/actions/workflows/ci-cd.yaml/badge.svg)](https://github.com/real-token/realtoken-yam-interface/actions/workflows/ci-cd.yaml)
 [![Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
 <!-- PROJECT LOGO -->
 <br />
 <div align="center" id="about-the-project">
   <a href="https://github.com/real-token/realtoken-yam-interface">
-    <img src="images/logo.svg" alt="Logo" width="80" height="80">
+    <img src="logo.svg" alt="Logo" width="80" height="80">
   </a>
 
 <h3 align="center">RealToken YAM interface</h3>
@@ -59,13 +58,6 @@
 
 ## Getting Started
 
-### Prerequisites
-
-- npm
-  ```sh
-  npm install npm@latest -g
-  ```
-
 ### Installation
 
 1. Clone the repo
@@ -74,47 +66,17 @@
    ```
 2. Install NPM packages
    ```sh
-   npm install
+   yarn
    ```
-3. Setup a `.env` file, with the following config
-
-   > CoinMarketCap API Key [here](https://coinmarketcap.com/api/pricing/)
-
-   > Infura API Key [here](https://infura.io/pricing)
-
-   > Etherscan API Key [here](https://etherscan.io/apis)
-
-   > Check [.env.example](.env.example)
-
-4. Check available command
+3. Start the application in dev mode
+   ```sh
+   yarn dev
+   ```
+4. Build artifacts
 
    ```
-   npx hardhat --help
+   yarn build
    ```
-
-   > Hardhat Getting Started [here](https://hardhat.org/getting-started#running-tasks)
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-<!-- USAGE EXAMPLES -->
-
-> Have fun
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-<!-- AUDIT -->
-
-## Audit
-
-Auditing the solidity code in an important aspect of this language, we need to be confident with the code we ship to the customer to avoid malicious attacks
-
-A lot of the auditing have been done during the contract construction using the `Solidity static analysis framework` [**Slither**](https://github.com/crytic/slither)
-
-You can download Slither and use the following command to _audit_ the code
-
-```sh
-slither .
-```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -123,42 +85,20 @@ slither .
 ## Roadmap
 
 - YAM interface with basic functionnalities ✅
-- Add whitelisting token functionnalities ✅
-- Testing ✅
-- Slither analysis ✅
-- Support for Hardware Wallet ❌
+- Sellers can create offers, update offers, delete offers ✅
+- Buyers can choose and buy offers with a certain amount ✅
+- Fetch all offers in main page and user's offers in user page ✅
+- Add testing Cypress ❌
+- Add private offer ❌
+- Add create and buy offer in native currency ❌
+- Add create/update/delete/buy in batch features ❌
+- Add user porfolio ❌
+- Add user portfolio analytics ❌
+- Add more token informations ❌
 
-See the [open issues](https://github.com/real-token/realtoken-yam-interface/issues) for a full list of proposed features (and known issues).
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-<!-- COVERAGE -->
-
-## Coverage
-
-```
-npx hardhat coverage
-```
-
-<img src="images/coverage.png" alt="Coverage">
+  See the [open issues](https://github.com/real-token/realtoken-yam-interface/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
-<!-- GAS FEES -->
-
-## Gas fees
-
-```
-npx hardhat test
-```
-
-<img src="images/gas.png" alt="Coverage">
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-<!-- USAGE EXAMPLES -->
-
-## Usage
 
 <!-- CONTRIBUTING -->
 
@@ -198,13 +138,11 @@ Project Link: [https://github.com/real-token/realtoken-yam-interface](https://gi
 ## Built With Hardhat
 
 - [Eslint](https://eslint.org/)
-- [Chai](https://www.chaijs.com/guide/)
-- [Solhint](https://github.com/protofire/solhint)
+- [Nextjs](https://nextjs.org/)
 - [Prettier](https://github.com/prettier/prettier)
-- [solidity-coverage](https://github.com/sc-forks/solidity-coverage)
 - [dotenv](https://www.npmjs.com/package/dotenv)
-- [Waffle](https://getwaffle.io/)
 - [Typescript](https://www.typescriptlang.org/)
+- [web3-react](https://github.com/Uniswap/web3-react)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
