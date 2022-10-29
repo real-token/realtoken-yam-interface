@@ -57,7 +57,7 @@ const FooterButtons: FC = () => {
       <ActionIcon
         variant={'subtle'}
         component={NextLink}
-        href={'https://blog.realt.co/'}
+        href={'https://realt.co/blog/'}
         target={'_blank'}
       >
         <IconBrandMedium />
