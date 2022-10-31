@@ -42,6 +42,7 @@ const FooterButtons: FC = () => {
         variant={'subtle'}
         component={NextLink}
         href={'https://twitter.com/RealTPlatform/'}
+        aria-label={'Twitter'}
         target={'_blank'}
       >
         <IconBrandTwitter />
@@ -50,6 +51,7 @@ const FooterButtons: FC = () => {
         variant={'subtle'}
         component={NextLink}
         href={'https://t.me/Realtoken_welcome/'}
+        aria-label={'Telegram'}
         target={'_blank'}
       >
         <IconBrandTelegram />
@@ -58,6 +60,7 @@ const FooterButtons: FC = () => {
         variant={'subtle'}
         component={NextLink}
         href={'https://realt.co/blog/'}
+        aria-label={'Blog'}
         target={'_blank'}
       >
         <IconBrandMedium />
@@ -66,6 +69,7 @@ const FooterButtons: FC = () => {
         variant={'subtle'}
         component={NextLink}
         href={'https://github.com/real-token'}
+        aria-label={'GitHub'}
         target={'_blank'}
       >
         <IconBrandGithub />

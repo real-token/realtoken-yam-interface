@@ -324,6 +324,7 @@ export const BuyModalWithPermit: FC<
       buyerToken,
       offerTokenDecimals,
       buyerTokenDecimals,
+      values,
       activeChain?.blockExplorerUrl,
       triggerTableRefresh,
       onClose,
@@ -350,10 +351,14 @@ export const BuyModalWithPermit: FC<
           {...getInputProps('amount')}
         />
         <Group grow={true}>
-          <Button color={'red'} onClick={onClose}>
+          <Button color={'red'} onClick={onClose} aria-label={t('cancel')}>
             {t('cancel')}
           </Button>
-          <Button type={'submit'} loading={isSubmitting}>
+          <Button
+            type={'submit'}
+            loading={isSubmitting}
+            aria-label={t('confirm')}
+          >
             {t('confirm')}
           </Button>
         </Group>

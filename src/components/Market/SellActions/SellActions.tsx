@@ -371,7 +371,11 @@ export const SellActions = () => {
             {...getInputProps('isPrivateOffer', { type: 'checkbox' })}
           />
           <Group position={'left'} mt={'md'}>
-            <Button type={'submit'} loading={isSubmitting}>
+            <Button
+              type={'submit'}
+              loading={isSubmitting}
+              aria-label={'submit'}
+            >
               {'Permit and Create Offer'}
             </Button>
           </Group>

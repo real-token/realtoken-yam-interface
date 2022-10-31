@@ -95,7 +95,7 @@ export const SettingsMenu: FC = () => {
     >
       <Menu.Target>
         <ActionIcon size={36} color={'brand'}>
-          <IconSettings size={20} />
+          <IconSettings size={20} aria-label={'Setting'} />
         </ActionIcon>
       </Menu.Target>
       <Menu.Dropdown>

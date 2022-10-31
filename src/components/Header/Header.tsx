@@ -47,7 +47,11 @@ const ConnectButton: FC = () => {
     });
   }, [modals, t]);
 
-  return <Button onClick={onOpenWalletModal}>{t('title')}</Button>;
+  return (
+    <Button aria-label={t('title')} onClick={onOpenWalletModal}>
+      {t('title')}
+    </Button>
+  );
 };
 
 const HeaderButtons: FC = () => {
