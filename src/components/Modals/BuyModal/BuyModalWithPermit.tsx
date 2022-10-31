@@ -162,9 +162,6 @@ export const BuyModalWithPermit: FC<
             buyerToken,
             provider
           );
-          console.log('token type: ', buyerTokenType);
-          console.log('values: ', values);
-          console.log('form values: ', formValues);
 
           const buyWithPermitTx = await realTokenYamUpgradeable.buyWithPermit(
             formValues.offerId,
@@ -206,9 +203,6 @@ export const BuyModalWithPermit: FC<
             buyerToken,
             provider
           );
-          console.log('token type: ', buyerTokenType);
-          console.log('values: ', values);
-          console.log('form values: ', formValues);
 
           const buyWithPermitTx = await realTokenYamUpgradeable.buyWithPermit(
             formValues.offerId,
@@ -242,9 +236,6 @@ export const BuyModalWithPermit: FC<
               )
             );
         } else if (buyerTokenType === 3) {
-          console.log('token type: ', buyerTokenType);
-          console.log('values: ', values);
-          console.log('form values: ', formValues);
           // TokenType = 3: ERC20 Without Permit, do Approve/buy
           const approveTx = await buyerToken.approve(
             realTokenYamUpgradeable.address,

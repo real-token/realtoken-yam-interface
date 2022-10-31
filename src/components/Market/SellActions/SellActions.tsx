@@ -138,9 +138,6 @@ export const SellActions = () => {
             offerToken,
             provider
           );
-          console.log('token type: ', offerTokenType);
-          console.log('values: ', values);
-          console.log('form values: ', formValues);
 
           const createOfferWithPermitTx =
             await realTokenYamUpgradeable.createOfferWithPermit(
@@ -189,9 +186,6 @@ export const SellActions = () => {
             offerToken,
             provider
           );
-          console.log('token type: ', offerTokenType);
-          console.log('values: ', values);
-          console.log('form values: ', formValues);
 
           const createOfferWithPermitTx =
             await realTokenYamUpgradeable.createOfferWithPermit(
@@ -231,9 +225,6 @@ export const SellActions = () => {
               )
             );
         } else if (offerTokenType === 3) {
-          console.log('token type: ', offerTokenType);
-          console.log('values: ', values);
-          console.log('form values: ', formValues);
           // TokenType = 3: ERC20 Without Permit, do Approve/CreateOffer
           const approveTx = await offerToken.approve(
             realTokenYamUpgradeable.address,
