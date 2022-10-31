@@ -39,6 +39,7 @@ export interface RealTokenYamUpgradeableInterface extends ethers.utils.Interface
     "getInitialOffer(uint256)": FunctionFragment;
     "getOfferCount()": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
+    "getTokenType(address)": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
     "initialize(address,address)": FunctionFragment;
@@ -54,6 +55,7 @@ export interface RealTokenYamUpgradeableInterface extends ethers.utils.Interface
     "showOffer(uint256)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "toggleWhitelist(address[],bool[])": FunctionFragment;
+    "toggleWhitelistWithType(address[],uint8[])": FunctionFragment;
     "tokenInfo(address)": FunctionFragment;
     "unpause()": FunctionFragment;
     "updateOffer(uint256,uint256,uint256)": FunctionFragment;
@@ -147,6 +149,10 @@ export interface RealTokenYamUpgradeableInterface extends ethers.utils.Interface
     values: [BytesLike]
   ): string;
   encodeFunctionData(
+    functionFragment: "getTokenType",
+    values: [string]
+  ): string;
+  encodeFunctionData(
     functionFragment: "grantRole",
     values: [BytesLike, string]
   ): string;
@@ -199,6 +205,10 @@ export interface RealTokenYamUpgradeableInterface extends ethers.utils.Interface
   encodeFunctionData(
     functionFragment: "toggleWhitelist",
     values: [string[], boolean[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "toggleWhitelistWithType",
+    values: [string[], BigNumberish[]]
   ): string;
   encodeFunctionData(functionFragment: "tokenInfo", values: [string]): string;
   encodeFunctionData(functionFragment: "unpause", values?: undefined): string;
@@ -290,6 +300,10 @@ export interface RealTokenYamUpgradeableInterface extends ethers.utils.Interface
     functionFragment: "getRoleAdmin",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "getTokenType",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
@@ -326,6 +340,10 @@ export interface RealTokenYamUpgradeableInterface extends ethers.utils.Interface
     functionFragment: "toggleWhitelist",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "toggleWhitelistWithType",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "tokenInfo", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "unpause", data: BytesLike): Result;
   decodeFunctionResult(
@@ -350,6 +368,7 @@ export interface RealTokenYamUpgradeableInterface extends ethers.utils.Interface
     "AdminChanged(address,address)": EventFragment;
     "BeaconUpgraded(address)": EventFragment;
     "FeeChanged(uint256,uint256)": EventFragment;
+    "Initialized(uint8)": EventFragment;
     "OfferAccepted(uint256,address,address,address,address,uint256,uint256)": EventFragment;
     "OfferCreated(address,address,address,address,uint256,uint256,uint256)": EventFragment;
     "OfferDeleted(uint256)": EventFragment;
@@ -359,6 +378,7 @@ export interface RealTokenYamUpgradeableInterface extends ethers.utils.Interface
     "RoleGranted(bytes32,address,address)": EventFragment;
     "RoleRevoked(bytes32,address,address)": EventFragment;
     "TokenWhitelistToggled(address[],bool[])": EventFragment;
+    "TokenWhitelistWithTypeToggled(address[],uint8[])": EventFragment;
     "Unpaused(address)": EventFragment;
     "Upgraded(address)": EventFragment;
   };
@@ -366,6 +386,7 @@ export interface RealTokenYamUpgradeableInterface extends ethers.utils.Interface
   getEvent(nameOrSignatureOrTopic: "AdminChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "BeaconUpgraded"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "FeeChanged"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OfferAccepted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OfferCreated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OfferDeleted"): EventFragment;
@@ -375,6 +396,9 @@ export interface RealTokenYamUpgradeableInterface extends ethers.utils.Interface
   getEvent(nameOrSignatureOrTopic: "RoleGranted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleRevoked"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "TokenWhitelistToggled"): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "TokenWhitelistWithTypeToggled"
+  ): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Unpaused"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Upgraded"): EventFragment;
 }
@@ -388,6 +412,8 @@ export type BeaconUpgradedEvent = TypedEvent<[string] & { beacon: string }>;
 export type FeeChangedEvent = TypedEvent<
   [BigNumber, BigNumber] & { oldFee: BigNumber; newFee: BigNumber }
 >;
+
+export type InitializedEvent = TypedEvent<[number] & { version: number }>;
 
 export type OfferAcceptedEvent = TypedEvent<
   [BigNumber, string, string, string, string, BigNumber, BigNumber] & {
@@ -447,6 +473,10 @@ export type RoleRevokedEvent = TypedEvent<
 
 export type TokenWhitelistToggledEvent = TypedEvent<
   [string[], boolean[]] & { tokens: string[]; status: boolean[] }
+>;
+
+export type TokenWhitelistWithTypeToggledEvent = TypedEvent<
+  [string[], number[]] & { tokens: string[]; types: number[] }
 >;
 
 export type UnpausedEvent = TypedEvent<[string] & { account: string }>;
@@ -592,6 +622,8 @@ export interface RealTokenYamUpgradeable extends BaseContract {
 
     getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<[string]>;
 
+    getTokenType(token: string, overrides?: CallOverrides): Promise<[number]>;
+
     grantRole(
       role: BytesLike,
       account: string,
@@ -664,6 +696,12 @@ export interface RealTokenYamUpgradeable extends BaseContract {
     toggleWhitelist(
       tokens_: string[],
       status_: boolean[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    toggleWhitelistWithType(
+      tokens_: string[],
+      types_: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -808,6 +846,8 @@ export interface RealTokenYamUpgradeable extends BaseContract {
 
   getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
 
+  getTokenType(token: string, overrides?: CallOverrides): Promise<number>;
+
   grantRole(
     role: BytesLike,
     account: string,
@@ -877,6 +917,12 @@ export interface RealTokenYamUpgradeable extends BaseContract {
   toggleWhitelist(
     tokens_: string[],
     status_: boolean[],
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  toggleWhitelistWithType(
+    tokens_: string[],
+    types_: BigNumberish[],
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -1021,6 +1067,8 @@ export interface RealTokenYamUpgradeable extends BaseContract {
 
     getRoleAdmin(role: BytesLike, overrides?: CallOverrides): Promise<string>;
 
+    getTokenType(token: string, overrides?: CallOverrides): Promise<number>;
+
     grantRole(
       role: BytesLike,
       account: string,
@@ -1082,6 +1130,12 @@ export interface RealTokenYamUpgradeable extends BaseContract {
     toggleWhitelist(
       tokens_: string[],
       status_: boolean[],
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    toggleWhitelistWithType(
+      tokens_: string[],
+      types_: BigNumberish[],
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1169,6 +1223,14 @@ export interface RealTokenYamUpgradeable extends BaseContract {
       [BigNumber, BigNumber],
       { oldFee: BigNumber; newFee: BigNumber }
     >;
+
+    "Initialized(uint8)"(
+      version?: null
+    ): TypedEventFilter<[number], { version: number }>;
+
+    Initialized(
+      version?: null
+    ): TypedEventFilter<[number], { version: number }>;
 
     "OfferAccepted(uint256,address,address,address,address,uint256,uint256)"(
       offerId?: BigNumberish | null,
@@ -1372,6 +1434,22 @@ export interface RealTokenYamUpgradeable extends BaseContract {
       { tokens: string[]; status: boolean[] }
     >;
 
+    "TokenWhitelistWithTypeToggled(address[],uint8[])"(
+      tokens?: string[] | null,
+      types?: BigNumberish[] | null
+    ): TypedEventFilter<
+      [string[], number[]],
+      { tokens: string[]; types: number[] }
+    >;
+
+    TokenWhitelistWithTypeToggled(
+      tokens?: string[] | null,
+      types?: BigNumberish[] | null
+    ): TypedEventFilter<
+      [string[], number[]],
+      { tokens: string[]; types: number[] }
+    >;
+
     "Unpaused(address)"(
       account?: null
     ): TypedEventFilter<[string], { account: string }>;
@@ -1486,6 +1564,8 @@ export interface RealTokenYamUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getTokenType(token: string, overrides?: CallOverrides): Promise<BigNumber>;
+
     grantRole(
       role: BytesLike,
       account: string,
@@ -1558,6 +1638,12 @@ export interface RealTokenYamUpgradeable extends BaseContract {
     toggleWhitelist(
       tokens_: string[],
       status_: boolean[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    toggleWhitelistWithType(
+      tokens_: string[],
+      types_: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1705,6 +1791,11 @@ export interface RealTokenYamUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    getTokenType(
+      token: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     grantRole(
       role: BytesLike,
       account: string,
@@ -1777,6 +1868,12 @@ export interface RealTokenYamUpgradeable extends BaseContract {
     toggleWhitelist(
       tokens_: string[],
       status_: boolean[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    toggleWhitelistWithType(
+      tokens_: string[],
+      types_: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

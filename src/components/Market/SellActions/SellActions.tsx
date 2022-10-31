@@ -13,6 +13,7 @@ import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { ZERO_ADDRESS } from 'src/constants';
 import { useActiveChain } from 'src/hooks';
 import coinBridgeTokenPermitSignature from 'src/hooks/coinBridgeTokenPermitSignature';
+import erc20PermitSignature from 'src/hooks/erc20PermitSignature';
 import { useContract } from 'src/hooks/useContract';
 import { getContract } from 'src/utils';
 
@@ -123,52 +124,185 @@ export const SellActions = () => {
 
         const transactionDeadline = Date.now() + 3600; // permit valable during 1h
 
-        const { r, s, v }: any = await coinBridgeTokenPermitSignature(
-          account,
-          realTokenYamUpgradeable.address,
-          amountInWeiToPermit.toString(),
-          transactionDeadline,
-          offerToken,
-          provider
-        );
-        console.log('values: ', values);
-        console.log('form values: ', formValues);
-
-        const tx1 = await realTokenYamUpgradeable.createOfferWithPermit(
-          formValues.offerTokenAddress,
-          formValues.buyerTokenAddress,
-          formValues.isPrivateOffer === false
-            ? ZERO_ADDRESS
-            : formValues.buyerAddress,
-          priceInWei.toString(),
-          amountInWeiToPermit.toString(),
-          transactionDeadline.toString(),
-          v,
-          r,
-          s
+        const offerTokenType = await realTokenYamUpgradeable.getTokenType(
+          formValues.offerTokenAddress
         );
 
-        const notificationPayload = {
-          key: tx1.hash,
-          href: `${activeChain?.blockExplorerUrl}tx/${tx1.hash}`,
-          hash: tx1.hash,
-        };
+        if (offerTokenType === 1) {
+          // TokenType = 1: RealToken
+          const { r, s, v }: any = await coinBridgeTokenPermitSignature(
+            account,
+            realTokenYamUpgradeable.address,
+            amountInWeiToPermit.toString(),
+            transactionDeadline,
+            offerToken,
+            provider
+          );
+          console.log('token type: ', offerTokenType);
+          console.log('values: ', values);
+          console.log('form values: ', formValues);
 
-        showNotification(
-          NOTIFICATIONS[NotificationsID.createOfferLoading](notificationPayload)
-        );
+          const createOfferWithPermitTx =
+            await realTokenYamUpgradeable.createOfferWithPermit(
+              formValues.offerTokenAddress,
+              formValues.buyerTokenAddress,
+              formValues.isPrivateOffer === false
+                ? ZERO_ADDRESS
+                : formValues.buyerAddress,
+              priceInWei.toString(),
+              amountInWeiToPermit.toString(),
+              transactionDeadline.toString(),
+              v,
+              r,
+              s
+            );
+          const notificationPayload = {
+            key: createOfferWithPermitTx.hash,
+            href: `${activeChain?.blockExplorerUrl}tx/${createOfferWithPermitTx.hash}`,
+            hash: createOfferWithPermitTx.hash,
+          };
 
-        tx1
-          .wait()
-          .then(({ status }) =>
-            updateNotification(
-              NOTIFICATIONS[
-                status === 1
-                  ? NotificationsID.createOfferSuccess
-                  : NotificationsID.createOfferError
-              ](notificationPayload)
+          showNotification(
+            NOTIFICATIONS[NotificationsID.createOfferLoading](
+              notificationPayload
             )
           );
+
+          createOfferWithPermitTx
+            .wait()
+            .then(({ status }) =>
+              updateNotification(
+                NOTIFICATIONS[
+                  status === 1
+                    ? NotificationsID.createOfferSuccess
+                    : NotificationsID.createOfferError
+                ](notificationPayload)
+              )
+            );
+        } else if (offerTokenType === 2) {
+          // TokenType = 2: ERC20 With Permit
+          const { r, s, v }: any = await erc20PermitSignature(
+            account,
+            realTokenYamUpgradeable.address,
+            amountInWeiToPermit.toString(),
+            transactionDeadline,
+            offerToken,
+            provider
+          );
+          console.log('token type: ', offerTokenType);
+          console.log('values: ', values);
+          console.log('form values: ', formValues);
+
+          const createOfferWithPermitTx =
+            await realTokenYamUpgradeable.createOfferWithPermit(
+              formValues.offerTokenAddress,
+              formValues.buyerTokenAddress,
+              formValues.isPrivateOffer === false
+                ? ZERO_ADDRESS
+                : formValues.buyerAddress,
+              priceInWei.toString(),
+              amountInWeiToPermit.toString(),
+              transactionDeadline.toString(),
+              v,
+              r,
+              s
+            );
+          const notificationPayload = {
+            key: createOfferWithPermitTx.hash,
+            href: `${activeChain?.blockExplorerUrl}tx/${createOfferWithPermitTx.hash}`,
+            hash: createOfferWithPermitTx.hash,
+          };
+
+          showNotification(
+            NOTIFICATIONS[NotificationsID.createOfferLoading](
+              notificationPayload
+            )
+          );
+
+          createOfferWithPermitTx
+            .wait()
+            .then(({ status }) =>
+              updateNotification(
+                NOTIFICATIONS[
+                  status === 1
+                    ? NotificationsID.createOfferSuccess
+                    : NotificationsID.createOfferError
+                ](notificationPayload)
+              )
+            );
+        } else if (offerTokenType === 3) {
+          console.log('token type: ', offerTokenType);
+          console.log('values: ', values);
+          console.log('form values: ', formValues);
+          // TokenType = 3: ERC20 Without Permit, do Approve/CreateOffer
+          const approveTx = await offerToken.approve(
+            realTokenYamUpgradeable.address,
+            amountInWeiToPermit.toString()
+          );
+
+          const notificationApprove = {
+            key: approveTx.hash,
+            href: `${activeChain?.blockExplorerUrl}tx/${approveTx.hash}`,
+            hash: approveTx.hash,
+          };
+
+          showNotification(
+            NOTIFICATIONS[NotificationsID.approveOfferLoading](
+              notificationApprove
+            )
+          );
+
+          approveTx
+            .wait()
+            .then(({ status }) =>
+              updateNotification(
+                NOTIFICATIONS[
+                  status === 1
+                    ? NotificationsID.approveOfferSuccess
+                    : NotificationsID.approveOfferError
+                ](notificationApprove)
+              )
+            );
+
+          await approveTx.wait(1);
+
+          const createOfferTx = await realTokenYamUpgradeable.createOffer(
+            formValues.offerTokenAddress,
+            formValues.buyerTokenAddress,
+            formValues.isPrivateOffer === false
+              ? ZERO_ADDRESS
+              : formValues.buyerAddress,
+            priceInWei.toString(),
+            amountInWeiToPermit.toString()
+          );
+
+          const notificationCreateOffer = {
+            key: createOfferTx.hash,
+            href: `${activeChain?.blockExplorerUrl}tx/${createOfferTx.hash}`,
+            hash: createOfferTx.hash,
+          };
+
+          showNotification(
+            NOTIFICATIONS[NotificationsID.createOfferLoading](
+              notificationCreateOffer
+            )
+          );
+
+          createOfferTx
+            .wait()
+            .then(({ status }) =>
+              updateNotification(
+                NOTIFICATIONS[
+                  status === 1
+                    ? NotificationsID.createOfferSuccess
+                    : NotificationsID.createOfferError
+                ](notificationCreateOffer)
+              )
+            );
+        } else {
+          console.log('Token is not whitelisted');
+          showNotification(NOTIFICATIONS[NotificationsID.createOfferInvalid]());
+        }
       } catch (error) {
         console.log('ERROR WHEN SELLING WITH PERMIT', error);
         showNotification(NOTIFICATIONS[NotificationsID.createOfferInvalid]());
