@@ -33,6 +33,7 @@ export const NumberInput: FRC<NumberInputProps, HTMLInputElement> = forwardRef(
         />
         {showMin && (
           <Button
+            aria-label={'Min'}
             variant={'light'}
             disabled={disabled}
             onClick={() => handlers.current?.decrement()}
@@ -43,6 +44,7 @@ export const NumberInput: FRC<NumberInputProps, HTMLInputElement> = forwardRef(
         )}
         {showMax && (
           <Button
+            aria-label={'Max'}
             variant={'light'}
             disabled={disabled}
             onClick={() => handlers.current?.increment()}

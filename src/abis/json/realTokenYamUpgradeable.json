@@ -54,6 +54,19 @@
 		"anonymous": false,
 		"inputs": [
 			{
+				"indexed": false,
+				"internalType": "uint8",
+				"name": "version",
+				"type": "uint8"
+			}
+		],
+		"name": "Initialized",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
 				"indexed": true,
 				"internalType": "uint256",
 				"name": "offerId",
@@ -303,6 +316,25 @@
 			}
 		],
 		"name": "TokenWhitelistToggled",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address[]",
+				"name": "tokens",
+				"type": "address[]"
+			},
+			{
+				"indexed": true,
+				"internalType": "enum IRealTokenYamUpgradeable.TokenType[]",
+				"name": "types",
+				"type": "uint8[]"
+			}
+		],
+		"name": "TokenWhitelistWithTypeToggled",
 		"type": "event"
 	},
 	{
@@ -732,6 +764,25 @@
 	{
 		"inputs": [
 			{
+				"internalType": "address",
+				"name": "token",
+				"type": "address"
+			}
+		],
+		"name": "getTokenType",
+		"outputs": [
+			{
+				"internalType": "enum IRealTokenYamUpgradeable.TokenType",
+				"name": "",
+				"type": "uint8"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "bytes32",
 				"name": "role",
 				"type": "bytes32"
@@ -1004,6 +1055,24 @@
 			}
 		],
 		"name": "toggleWhitelist",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address[]",
+				"name": "tokens_",
+				"type": "address[]"
+			},
+			{
+				"internalType": "enum IRealTokenYamUpgradeable.TokenType[]",
+				"name": "types_",
+				"type": "uint8[]"
+			}
+		],
+		"name": "toggleWhitelistWithType",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"

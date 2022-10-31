@@ -20,6 +20,7 @@ import BigNumber from 'bignumber.js';
 import { CoinBridgeToken, coinBridgeTokenABI } from 'src/abis';
 import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { useActiveChain, useContract, useOffers } from 'src/hooks';
+import coinBridgeTokenPermitSignature from 'src/hooks/coinBridgeTokenPermitSignature';
 import erc20PermitSignature from 'src/hooks/erc20PermitSignature';
 import { getContract } from 'src/utils';
 
@@ -147,8 +148,13 @@ export const BuyModalWithPermit: FC<
           .shiftedBy(-offerTokenDecimals);
         const transactionDeadline = Date.now() + 3600; // permit valable during 1h
 
-        try {
-          const { r, s, v }: any = await erc20PermitSignature(
+        const buyerTokenType = await realTokenYamUpgradeable.getTokenType(
+          formValues.buyerTokenAddress
+        );
+
+        if (buyerTokenType === 1) {
+          // TokenType = 1: RealToken
+          const { r, s, v }: any = await coinBridgeTokenPermitSignature(
             account,
             realTokenYamUpgradeable.address,
             buyerTokenAmount.toString(),
@@ -157,7 +163,7 @@ export const BuyModalWithPermit: FC<
             provider
           );
 
-          const transaction = await realTokenYamUpgradeable.buyWithPermit(
+          const buyWithPermitTx = await realTokenYamUpgradeable.buyWithPermit(
             formValues.offerId,
             priceInWei.toString(),
             amountInWei.toString(),
@@ -166,18 +172,17 @@ export const BuyModalWithPermit: FC<
             r,
             s
           );
-
           const notificationPayload = {
-            key: transaction.hash,
-            href: `${activeChain?.blockExplorerUrl}tx/${transaction.hash}`,
-            hash: transaction.hash,
+            key: buyWithPermitTx.hash,
+            href: `${activeChain?.blockExplorerUrl}tx/${buyWithPermitTx.hash}`,
+            hash: buyWithPermitTx.hash,
           };
 
           showNotification(
             NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationPayload)
           );
 
-          transaction
+          buyWithPermitTx
             .wait()
             .then(({ status }) =>
               updateNotification(
@@ -188,9 +193,50 @@ export const BuyModalWithPermit: FC<
                 ](notificationPayload)
               )
             );
-        } catch (error) {
-          console.error(error);
+        } else if (buyerTokenType === 2) {
+          // TokenType = 2: ERC20 With Permit
+          const { r, s, v }: any = await erc20PermitSignature(
+            account,
+            realTokenYamUpgradeable.address,
+            buyerTokenAmount.toString(),
+            transactionDeadline,
+            buyerToken,
+            provider
+          );
 
+          const buyWithPermitTx = await realTokenYamUpgradeable.buyWithPermit(
+            formValues.offerId,
+            priceInWei.toString(),
+            amountInWei.toString(),
+            transactionDeadline.toString(),
+            v,
+            r,
+            s
+          );
+
+          const notificationPayload = {
+            key: buyWithPermitTx.hash,
+            href: `${activeChain?.blockExplorerUrl}tx/${buyWithPermitTx.hash}`,
+            hash: buyWithPermitTx.hash,
+          };
+
+          showNotification(
+            NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationPayload)
+          );
+
+          buyWithPermitTx
+            .wait()
+            .then(({ status }) =>
+              updateNotification(
+                NOTIFICATIONS[
+                  status === 1
+                    ? NotificationsID.buyOfferSuccess
+                    : NotificationsID.buyOfferError
+                ](notificationPayload)
+              )
+            );
+        } else if (buyerTokenType === 3) {
+          // TokenType = 3: ERC20 Without Permit, do Approve/buy
           const approveTx = await buyerToken.approve(
             realTokenYamUpgradeable.address,
             buyerTokenAmount.toString()
@@ -249,6 +295,9 @@ export const BuyModalWithPermit: FC<
                 ](notificationBuy)
               )
             );
+        } else {
+          console.log('Token is not whitelisted');
+          showNotification(NOTIFICATIONS[NotificationsID.buyOfferInvalid]());
         }
       } catch (e) {
         console.error('Error in BuyModalWithPermit', e);
@@ -266,6 +315,7 @@ export const BuyModalWithPermit: FC<
       buyerToken,
       offerTokenDecimals,
       buyerTokenDecimals,
+      values,
       activeChain?.blockExplorerUrl,
       triggerTableRefresh,
       onClose,
@@ -292,10 +342,14 @@ export const BuyModalWithPermit: FC<
           {...getInputProps('amount')}
         />
         <Group grow={true}>
-          <Button color={'red'} onClick={onClose}>
+          <Button color={'red'} onClick={onClose} aria-label={t('cancel')}>
             {t('cancel')}
           </Button>
-          <Button type={'submit'} loading={isSubmitting}>
+          <Button
+            type={'submit'}
+            loading={isSubmitting}
+            aria-label={t('confirm')}
+          >
             {t('confirm')}
           </Button>
         </Group>

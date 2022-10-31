@@ -120,14 +120,16 @@ export const MarketTableUser: FC = () => {
             accessorKey: 'price',
             header: t('price'),
             cell: ({ getValue }) => (
-              <Group noWrap={true} spacing={'xs'}>
-                <Text
-                  size={'sm'}
-                  sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
-                >
-                  {getValue()}
-                </Text>
-              </Group>
+              <Text
+                size={'sm'}
+                sx={{
+                  textAlign: 'center',
+                  textOverflow: 'ellipsis',
+                  overflow: 'hidden',
+                }}
+              >
+                {getValue()}
+              </Text>
             ),
             enableSorting: false,
             meta: { colSpan: 2 },
@@ -137,14 +139,16 @@ export const MarketTableUser: FC = () => {
             accessorKey: 'amount',
             header: t('amount'),
             cell: ({ getValue }) => (
-              <Group noWrap={true} spacing={'xs'}>
-                <Text
-                  size={'sm'}
-                  sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
-                >
-                  {getValue()}
-                </Text>
-              </Group>
+              <Text
+                size={'sm'}
+                sx={{
+                  textAlign: 'center',
+                  textOverflow: 'ellipsis',
+                  overflow: 'hidden',
+                }}
+              >
+                {getValue()}
+              </Text>
             ),
             enableSorting: false,
             meta: { colSpan: 2 },

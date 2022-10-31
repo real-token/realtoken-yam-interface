@@ -138,10 +138,14 @@ export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
           <Container>{offerId ? offerId : 'Offer not found'}</Container>
         </Box>
         <Group grow={true}>
-          <Button color={'red'} onClick={onClose}>
+          <Button color={'red'} onClick={onClose} aria-label={t('cancel')}>
             {t('cancel')}
           </Button>
-          <Button type={'submit'} loading={isSubmitting}>
+          <Button
+            type={'submit'}
+            loading={isSubmitting}
+            aria-label={t('confirm')}
+          >
             {t('confirm')}
           </Button>
         </Group>

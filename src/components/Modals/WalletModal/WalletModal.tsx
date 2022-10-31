@@ -44,6 +44,7 @@ const WalletModalButton: FC<WalletModalButtonProps> = ({
 
   return (
     <Button
+      aria-label={title}
       fullWidth={true}
       variant={'gradient'}
       rightIcon={

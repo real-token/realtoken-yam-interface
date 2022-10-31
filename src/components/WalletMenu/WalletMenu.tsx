@@ -26,7 +26,7 @@ const WalletUser: FRC<ButtonProps, HTMLButtonElement> = forwardRef(
     const { account } = useWeb3React();
 
     return (
-      <Button {...props} ref={ref}>
+      <Button {...props} ref={ref} aria-label={shortenString(account)}>
         {shortenString(account)}
       </Button>
     );

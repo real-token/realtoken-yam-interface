@@ -57,7 +57,7 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
             account ? onOpenBuyModal(buyOffer) : onOpenWalletModal()
           }
         >
-          <IconShoppingCart size={16} />
+          <IconShoppingCart size={16} aria-label={'Buy'} />
         </ActionIcon>
       }
     </Group>

@@ -20,6 +20,7 @@ import { CoinBridgeToken, coinBridgeTokenABI } from 'src/abis';
 import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { useActiveChain, useContract, useOffers } from 'src/hooks';
 import coinBridgeTokenPermitSignature from 'src/hooks/coinBridgeTokenPermitSignature';
+import erc20PermitSignature from 'src/hooks/erc20PermitSignature';
 import { getContract } from 'src/utils';
 
 import { NumberInput } from '../../NumberInput';
@@ -156,50 +157,175 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
 
         const transactionDeadline = Date.now() + 60 * 60 * 24 * 365; // permit valable during 1 year
 
-        const { r, s, v }: any = await coinBridgeTokenPermitSignature(
-          account,
-          realTokenYamUpgradeable.address,
-          amountInWeiToPermit.toString(),
-          transactionDeadline,
-          offerToken,
-          provider
+        const offerTokenType = await realTokenYamUpgradeable.getTokenType(
+          formValues.offerTokenAddress
         );
 
-        const transaction = await realTokenYamUpgradeable.updateOfferWithPermit(
-          formValues.offerId,
-          new BigNumber(formValues.price.toString())
-            .shiftedBy(Number(buyerTokenDecimals))
-            .toString(),
-          new BigNumber(formValues.amount.toString())
-            .shiftedBy(Number(offerTokenDecimals))
-            .toString(),
-          transactionDeadline.toString(),
-          v,
-          r,
-          s
-        );
+        if (offerTokenType === 1) {
+          // TokenType = 1: RealToken
+          const { r, s, v }: any = await coinBridgeTokenPermitSignature(
+            account,
+            realTokenYamUpgradeable.address,
+            amountInWeiToPermit.toString(),
+            transactionDeadline,
+            offerToken,
+            provider
+          );
 
-        const notificationPayload = {
-          key: transaction.hash,
-          href: `${activeChain?.blockExplorerUrl}tx/${transaction.hash}`,
-          hash: transaction.hash,
-        };
+          const updateOfferWithPermitTx =
+            await realTokenYamUpgradeable.updateOfferWithPermit(
+              formValues.offerId,
+              new BigNumber(formValues.price.toString())
+                .shiftedBy(Number(buyerTokenDecimals))
+                .toString(),
+              new BigNumber(formValues.amount.toString())
+                .shiftedBy(Number(offerTokenDecimals))
+                .toString(),
+              transactionDeadline.toString(),
+              v,
+              r,
+              s
+            );
 
-        showNotification(
-          NOTIFICATIONS[NotificationsID.updateOfferLoading](notificationPayload)
-        );
+          const notificationPayload = {
+            key: updateOfferWithPermitTx.hash,
+            href: `${activeChain?.blockExplorerUrl}tx/${updateOfferWithPermitTx.hash}`,
+            hash: updateOfferWithPermitTx.hash,
+          };
 
-        transaction
-          .wait()
-          .then(({ status }) =>
-            updateNotification(
-              NOTIFICATIONS[
-                status === 1
-                  ? NotificationsID.updateOfferSuccess
-                  : NotificationsID.updateOfferError
-              ](notificationPayload)
+          showNotification(
+            NOTIFICATIONS[NotificationsID.updateOfferLoading](
+              notificationPayload
             )
           );
+
+          updateOfferWithPermitTx
+            .wait()
+            .then(({ status }) =>
+              updateNotification(
+                NOTIFICATIONS[
+                  status === 1
+                    ? NotificationsID.updateOfferSuccess
+                    : NotificationsID.updateOfferError
+                ](notificationPayload)
+              )
+            );
+        } else if (offerTokenType === 2) {
+          // TokenType = 2: ERC20 With Permit
+          const { r, s, v }: any = await erc20PermitSignature(
+            account,
+            realTokenYamUpgradeable.address,
+            amountInWeiToPermit.toString(),
+            transactionDeadline,
+            offerToken,
+            provider
+          );
+
+          const updateOfferWithPermitTx =
+            await realTokenYamUpgradeable.updateOfferWithPermit(
+              formValues.offerId,
+              new BigNumber(formValues.price.toString())
+                .shiftedBy(Number(buyerTokenDecimals))
+                .toString(),
+              new BigNumber(formValues.amount.toString())
+                .shiftedBy(Number(offerTokenDecimals))
+                .toString(),
+              transactionDeadline.toString(),
+              v,
+              r,
+              s
+            );
+
+          const notificationPayload = {
+            key: updateOfferWithPermitTx.hash,
+            href: `${activeChain?.blockExplorerUrl}tx/${updateOfferWithPermitTx.hash}`,
+            hash: updateOfferWithPermitTx.hash,
+          };
+
+          showNotification(
+            NOTIFICATIONS[NotificationsID.updateOfferLoading](
+              notificationPayload
+            )
+          );
+
+          updateOfferWithPermitTx
+            .wait()
+            .then(({ status }) =>
+              updateNotification(
+                NOTIFICATIONS[
+                  status === 1
+                    ? NotificationsID.updateOfferSuccess
+                    : NotificationsID.updateOfferError
+                ](notificationPayload)
+              )
+            );
+        } else if (offerTokenType === 3) {
+          // TokenType = 3: ERC20 Without Permit, do Approve/buy
+          const approveTx = await offerToken.approve(
+            realTokenYamUpgradeable.address,
+            amountInWeiToPermit.toString()
+          );
+
+          const notificationApprove = {
+            key: approveTx.hash,
+            href: `${activeChain?.blockExplorerUrl}tx/${approveTx.hash}`,
+            hash: approveTx.hash,
+          };
+
+          showNotification(
+            NOTIFICATIONS[NotificationsID.approveOfferLoading](
+              notificationApprove
+            )
+          );
+
+          approveTx
+            .wait()
+            .then(({ status }) =>
+              updateNotification(
+                NOTIFICATIONS[
+                  status === 1
+                    ? NotificationsID.approveOfferSuccess
+                    : NotificationsID.approveOfferError
+                ](notificationApprove)
+              )
+            );
+
+          await approveTx.wait(1);
+
+          const updateOfferTx = await realTokenYamUpgradeable.updateOffer(
+            formValues.offerId,
+            new BigNumber(formValues.price.toString())
+              .shiftedBy(Number(buyerTokenDecimals))
+              .toString(),
+            new BigNumber(formValues.amount.toString())
+              .shiftedBy(Number(offerTokenDecimals))
+              .toString()
+          );
+
+          const notificationUpdate = {
+            key: updateOfferTx.hash,
+            href: `${activeChain?.blockExplorerUrl}tx/${updateOfferTx.hash}`,
+            hash: updateOfferTx.hash,
+          };
+
+          showNotification(
+            NOTIFICATIONS[NotificationsID.updateOfferLoading](
+              notificationUpdate
+            )
+          );
+
+          updateOfferTx
+            .wait()
+            .then(({ status }) =>
+              updateNotification(
+                NOTIFICATIONS[
+                  status === 1
+                    ? NotificationsID.updateOfferSuccess
+                    : NotificationsID.updateOfferError
+                ](notificationUpdate)
+              )
+            );
+        }
       } catch (e) {
         console.error('Error UpdateModal', e);
       } finally {
@@ -217,6 +343,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
       offerId,
       buyerTokenDecimals,
       activeChain?.blockExplorerUrl,
+      values,
       triggerTableRefresh,
       onClose,
     ]
@@ -246,10 +373,14 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           {...getInputProps('amount')}
         />
         <Group grow={true}>
-          <Button color={'red'} onClick={onClose}>
+          <Button color={'red'} onClick={onClose} aria-label={t('cancel')}>
             {t('cancel')}
           </Button>
-          <Button type={'submit'} loading={isSubmitting}>
+          <Button
+            type={'submit'}
+            loading={isSubmitting}
+            aria-label={t('confirm')}
+          >
             {t('confirm')}
           </Button>
         </Group>
