@@ -146,7 +146,7 @@ export const BuyModalWithPermit: FC<
         const buyerTokenAmount = amountInWei
           .multipliedBy(priceInWei)
           .shiftedBy(-offerTokenDecimals);
-        const transactionDeadline = Date.now() + 3600; // permit valable during 1h
+        const transactionDeadline = Math.floor(Date.now() / 1000) + 3600; // permit valable during 1h
 
         const buyerTokenType = await realTokenYamUpgradeable.getTokenType(
           formValues.buyerTokenAddress

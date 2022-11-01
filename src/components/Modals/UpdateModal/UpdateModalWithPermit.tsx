@@ -155,7 +155,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
 
         setSubmitting(true);
 
-        const transactionDeadline = Date.now() + 60 * 60 * 24 * 365; // permit valable during 1 year
+        const transactionDeadline = Math.floor(Date.now() / 1000) + 3600; // permit valable during 1h
 
         const offerTokenType = await realTokenYamUpgradeable.getTokenType(
           formValues.offerTokenAddress

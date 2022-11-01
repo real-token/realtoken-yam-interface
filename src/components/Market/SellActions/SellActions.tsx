@@ -122,7 +122,7 @@ export const SellActions = () => {
           Number(buyerTokenDecimals)
         );
 
-        const transactionDeadline = Date.now() + 3600; // permit valable during 1h
+        const transactionDeadline = Math.floor(Date.now() / 1000) + 3600; // permit valable during 1h
 
         const offerTokenType = await realTokenYamUpgradeable.getTokenType(
           formValues.offerTokenAddress
@@ -147,7 +147,7 @@ export const SellActions = () => {
                 ? ZERO_ADDRESS
                 : formValues.buyerAddress,
               priceInWei.toString(),
-              amountInWeiToPermit.toString(),
+              amountInWei.toString(),
               transactionDeadline.toString(),
               v,
               r,
@@ -195,7 +195,7 @@ export const SellActions = () => {
                 ? ZERO_ADDRESS
                 : formValues.buyerAddress,
               priceInWei.toString(),
-              amountInWeiToPermit.toString(),
+              amountInWei.toString(),
               transactionDeadline.toString(),
               v,
               r,
@@ -264,7 +264,7 @@ export const SellActions = () => {
               ? ZERO_ADDRESS
               : formValues.buyerAddress,
             priceInWei.toString(),
-            amountInWeiToPermit.toString()
+            amountInWei.toString()
           );
 
           const notificationCreateOffer = {
