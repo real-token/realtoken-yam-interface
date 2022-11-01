@@ -1,17 +1,17 @@
 {
   "wallet": {
-    "control": "Connect wallet",
-    "copy": "Copy address",
-    "viewOn": "View on explorer",
-    "disconnect": "Disconnect",
-    "network": "Network"
+    "control": "Connecter mon portefeuille",
+    "copy": "Copie d'adresse",
+    "viewOn": "Voir sur l'explorateur",
+    "disconnect": "Deconnexion",
+    "network": "Réseau"
   },
   "settings": {
-    "title": "Language",
-    "french": "French",
-    "english": "English",
-    "spanish": "Spanish",
-    "light": "Light",
-    "dark": "Dark"
+    "title": "Langue",
+    "french": "Français",
+    "english": "Anglais",
+    "spanish": "Espagnol",
+    "light": "Clair",
+    "dark": "Sombre"
   }
 }
