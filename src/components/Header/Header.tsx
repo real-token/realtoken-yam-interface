@@ -86,6 +86,14 @@ export const Header: FC = () => {
             size={'xl'}
             weight={700}
             component={NextLink}
+            href={'/private-offers'}
+          >
+            {'Private offers'}
+          </Text>
+          <Text
+            size={'xl'}
+            weight={700}
+            component={NextLink}
             href={'/portfolio'}
           >
             {'Portfolio'}
