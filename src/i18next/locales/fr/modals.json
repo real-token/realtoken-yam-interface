@@ -2,6 +2,18 @@
   "wallet": {
     "title": "Connecter mon portefeuille"
   },
+  "sell": {
+    "title": "Créer offre",
+    "offerTokenAddress": "Adresse du jeton en vente",
+    "offerTokenName": "En vente",
+    "buyerTokenAddress": "Adresse du jeton d'achat",
+    "buyerTokenName": "Jeton d'achat",
+    "sellerAddress": "Adresse du vendeur",
+    "price": "Prix",
+    "amount": "Montant",
+    "cancel": "Annuler",
+    "confirm": "Confirmer"
+  },
   "buy": {
     "title": "Acheter",
     "selectedOffer": "Offre sélectionnée",
