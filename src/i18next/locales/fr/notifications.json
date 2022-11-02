@@ -1,67 +1,67 @@
 {
   "userCopied": {
     "title": "Copié 🎉",
-    "message": "Votre adresse a bien été copié à votre presse-papiers."
+    "message": "Votre adresse a bien été copiéé à votre presse-papiers."
   },
   "usersNotFound": {
     "title": "Erreur",
-    "message": "{{ usersNotFound }} users couldn't be retrieved. Vérifier votre RPC ou rafraîchissez la table."
+    "message": "{{ usersNotFound }} l'utilisateur ne peut etre retrouvé. Vérifier votre RPC ou rafraîchissez la table."
   },
   "createOfferLoading": {
-    "title": "Veuillez patentier",
+    "title": "Veuillez patienter",
     "message": "Votre transaction est en cours de validation."
   },
   "createOfferSuccess": {
     "title": "Réussi",
-    "message": "Votre transaction est validé."
+    "message": "Votre transaction est validée."
   },
   "createOfferError": {
     "title": "Erreur",
     "message": "Votre transaction a été refusée."
   },
   "buyOfferLoading": {
-    "title": "Veuillez patentier",
+    "title": "Veuillez patienter",
     "message": "Votre transaction est en cours de validation."
   },
   "buyOfferSuccess": {
     "title": "Réussi",
-    "message": "Votre transaction est validé."
+    "message": "Votre transaction est validée."
   },
   "buyOfferError": {
     "title": "Erreur",
     "message": "Votre transaction a été refusée."
   },
   "approveOfferLoading": {
-    "title": "Veuillez patentier",
+    "title": "Veuillez patienter",
     "message": "Votre transaction est en cours de validation."
   },
   "approveOfferSuccess": {
     "title": "Réussi",
-    "message": "Votre transaction est validé."
+    "message": "Votre transaction est validée."
   },
   "approveOfferError": {
     "title": "Erreur",
     "message": "Votre transaction a été refusée."
   },
   "updateOfferLoading": {
-    "title": "Veuillez patentier",
+    "title": "Veuillez patienter",
     "message": "Votre transaction est en cours de validation."
   },
   "updateOfferSuccess": {
     "title": "Réussi",
-    "message": "Votre transaction est validé."
+    "message": "Votre transaction est validée."
   },
   "updateOfferError": {
     "title": "Erreur",
     "message": "Votre transaction a été refusée."
   },
   "deleteOfferLoading": {
-    "title": "Veuillez patentier",
+    "title": "Veuillez patienter",
     "message": "Votre transaction est en cours de validation."
   },
   "deleteOfferSuccess": {
     "title": "Réussi",
-    "message": "Votre transaction est validé."
+    "message": "Votre transaction est validée."
   },
   "deleteOfferError": {
     "title": "Erreur",
@@ -69,10 +69,10 @@
   },
   "createOfferInvalid": {
     "title": "Erreur",
-    "message": "Vous ne pouvez créer cette offre. Merci de vérifier: Vous êtes sur liste blanche pour ce token, the offer token is whitelisted and not in locking periode, votre jeton d'achat est dans votre portefeuille."
+    "message": "Vous ne pouvez créer cette offre. Merci de vérifier: Vous êtes sur liste blanche pour ce token, le token est valide et pas en période de blocage, votre jeton d'achat est dans votre portefeuille."
   },
   "buyOfferInvalid": {
     "title": "Erreur",
-    "message": "Vous ne pouvez acquérir cette offre. Merci de vérifier: Vous êtes sur liste blanche pour ce token, the offer token is not in locking periode, vous avez suffisamment de votre jeton d'achat dans votre portefeuille."
+    "message": "Vous ne pouvez acquérir cette offre. Merci de vérifier: Vous êtes sur liste blanche pour ce token, le token n'est pas en période de blocage, vous avez suffisamment de votre jeton d'achat dans votre portefeuille."
   }
 }
