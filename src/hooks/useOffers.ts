@@ -13,22 +13,25 @@ import { useActiveChain } from './useActiveChain';
 import { Erc20, Erc20ABI } from 'src/abis';
 import { Web3Provider } from '@ethersproject/providers';
 import BigNumber from 'bignumber.js';
+import { useTranslation } from 'react-i18next';
 
 // isFiltered = 0 when fetching all offers, = 1 when fetching offers of the connected wallet
 export const useOffers: UseOffers = (isFiltered) => {
+const { t } = useTranslation('common', { keyPrefix: 'general' });
+
   const [isRefreshing, triggerRefresh] = useState<boolean>(true);
   const [offers, setOffers] = useState<Offer[]>([
     {
-      offerId: 'loading...',
-      offerTokenAddress: 'loading...',
-      offerTokenName: 'loading...',
-			offerTokenDecimals: 'loading...',
-      buyerTokenAddress: 'loading...',
-      buyerTokenName: 'loading...',
-			buyerTokenDecimals: 'loading...',
-      sellerAddress: 'loading...',
-      price: 'loading...',
-      amount: 'loading...',
+		offerId: t('loading'),
+		offerTokenAddress: t('loading'),
+		offerTokenName: t('loading'),
+		offerTokenDecimals: t('loading'),
+		buyerTokenAddress: t('loading'),
+		buyerTokenName: t('loading'),
+		buyerTokenDecimals: t('loading'),
+		sellerAddress: t('loading'),
+		price: t('loading'),
+		amount: t('loading'),
     },
   ]);
 

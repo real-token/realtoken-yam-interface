@@ -301,29 +301,37 @@ export const SellActions = () => {
         setSubmitting(false);
       }
     },
-    [
-      account,
-      provider,
-      realTokenYamUpgradeable,
-      values,
-      activeChain?.blockExplorerUrl,
-    ]
+    [account, provider, realTokenYamUpgradeable, activeChain?.blockExplorerUrl]
   );
-
+  console.log('DEBUG',getInputProps('isPrivateOffer', { type: 'checkbox' }).checked)
+  const privateOffer = () => {
+    if (getInputProps('isPrivateOffer', { type: 'checkbox' }).checked) {
+      return <TextInput
+      label={t('labelPrivateBuyerAddress')}
+      placeholder={t('placeholderOfferPrivatBuyerAddress')}
+      required={values.isPrivateOffer}
+      disabled={!values.isPrivateOffer}
+      {...getInputProps('buyerAddress')}
+    />
+    } else {
+      return
+    }
+  }
+  
   return (
     <Box sx={{ maxWidth: 400 }} mx={'auto'}>
-      <h3>{'Create your offer'}</h3>
+      <h3>{t('titleFormCreateOffer')}</h3>
       <form onSubmit={onSubmit(onHandleSubmit)}>
         <Stack justify={'center'} align={'stretch'}>
           <TextInput
             label={t('offerTokenAddress')}
-            placeholder={'Put the address of the token you want to sell'}
+            placeholder={t('placeholderOfferSellTokenAddress')}
             required={true}
             {...getInputProps('offerTokenAddress')}
           />
           <TextInput
             label={t('buyerTokenAddress')}
-            placeholder={'Put the address of the token you want to buy'}
+            placeholder={t('placeholderOfferBuyTokenAddress')}
             required={true}
             {...getInputProps('buyerTokenAddress')}
           />
@@ -349,25 +357,21 @@ export const SellActions = () => {
             sx={{ flexGrow: 1 }}
             {...getInputProps('amount')}
           />
-          <TextInput
-            label={'Buyer Address (only for private offers)'}
-            placeholder={'Put the address of the private buyer'}
-            required={values.isPrivateOffer}
-            disabled={!values.isPrivateOffer}
-            {...getInputProps('buyerAddress')}
-          />
+          
           <Checkbox
             mt={'md'}
-            label={'I want to create a private offer'}
+            label={t('checkboxLabelPrivateOffre')}
             {...getInputProps('isPrivateOffer', { type: 'checkbox' })}
+            
           />
+          {privateOffer()}
           <Group position={'left'} mt={'md'}>
             <Button
               type={'submit'}
               loading={isSubmitting}
               aria-label={'submit'}
             >
-              {'Permit and Create Offer'}
+              {t('buttonCreateOffer')}
             </Button>
           </Group>
         </Stack>

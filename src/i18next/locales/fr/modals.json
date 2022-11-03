@@ -12,7 +12,14 @@
     "price": "Prix",
     "amount": "Montant",
     "cancel": "Annuler",
-    "confirm": "Confirmer"
+    "confirm": "Confirmer",
+    "labelPrivateBuyerAddress": "Buyer Address (only for private offers)",
+    "placeholderOfferSellTokenAddress": "Put the address of the token you want to sell",
+    "placeholderOfferBuyTokenAddress": "Put the address of the token you want to buy",
+    "placeholderOfferPrivatBuyerAddress": "Put the address of the private buyer",
+    "buttonCreateOffer": "Permit and Create Offer",
+    "checkboxLabelPrivateOffre": "I want to create a private offer",
+    "titleFormCreateOffer": "Create your offer"
   },
   "buy": {
     "title": "Acheter",
