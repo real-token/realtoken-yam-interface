@@ -13,13 +13,13 @@
     "amount": "Montant",
     "cancel": "Annuler",
     "confirm": "Confirmer",
-    "labelPrivateBuyerAddress": "Buyer Address (only for private offers)",
-    "placeholderOfferSellTokenAddress": "Put the address of the token you want to sell",
-    "placeholderOfferBuyTokenAddress": "Put the address of the token you want to buy",
-    "placeholderOfferPrivatBuyerAddress": "Put the address of the private buyer",
-    "buttonCreateOffer": "Permit and Create Offer",
-    "checkboxLabelPrivateOffre": "I want to create a private offer",
-    "titleFormCreateOffer": "Create your offer"
+    "labelPrivateBuyerAddress": "Adresse de l'acheteur (Uniquement pour les offres privées)",
+    "placeholderOfferSellTokenAddress": "Renseigner l'adresse du jeton à vendre",
+    "placeholderOfferBuyTokenAddress": "Renseigner l'adresse du jeton d'achat",
+    "placeholderOfferPrivatBuyerAddress": "Renseigner l'adresse de l'acheteur privé",
+    "buttonCreateOffer": "Autoriser & Créer l'offre",
+    "checkboxLabelPrivateOffre": "Je veux créer une offre privée",
+    "titleFormCreateOffer": "Créer votre offre"
   },
   "buy": {
     "title": "Acheter",

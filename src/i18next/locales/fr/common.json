@@ -1,16 +1,16 @@
 {
   "header": {
     "title": "YAM",
-    "titleCat1": "Explore",
-    "titleCat2": "Your Offers",
-    "titleCat3": "Portfolio"
+    "titleCat1": "Découvrir",
+    "titleCat2": "Vos Offres",
+    "titleCat3": "Portefeuille"
   },
   "footer": {
     "copyright": "© {{year}} RealT. Tous droits réservés."
   },
   "general": {
-    "loading": "chargement...",
-    "comingSoon": "Coming soon..."
+    "loading": "Chargement...",
+    "comingSoon": "Bientôt disponible..."
   },
   "select": {
     "noOption": "Aucune option"
