@@ -303,7 +303,6 @@ export const SellActions = () => {
     },
     [account, provider, realTokenYamUpgradeable, activeChain?.blockExplorerUrl]
   );
-  console.log('DEBUG',getInputProps('isPrivateOffer', { type: 'checkbox' }).checked)
   const privateOffer = () => {
     if (getInputProps('isPrivateOffer', { type: 'checkbox' }).checked) {
       return <TextInput
