@@ -26,7 +26,6 @@ export const useTokenInfo: UseTokenInfo = (tokenAddress) => {
     fullName: 'undefined',
     tokenPrice: 0,
   });
-  console.log('api', api);
 
   useAsync(
     async (isActive) => {
