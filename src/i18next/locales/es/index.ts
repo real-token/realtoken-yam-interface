@@ -5,10 +5,7 @@ import { default as menu } from './menu.json';
 import { default as modals } from './modals.json';
 import { default as notifications } from './notifications.json';
 import { default as table } from './table.json';
-import { default as update } from './update.json';
 
-// import { default as delete } from './delete.json';
-
-const lng = { common, links, buy, update, menu, modals, notifications, table };
+const lng = { common, links, buy, menu, modals, notifications, table };
 
 export default lng;
