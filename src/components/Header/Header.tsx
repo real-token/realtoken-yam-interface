@@ -66,13 +66,14 @@ const HeaderButtons: FC = () => {
 };
 
 export const Header: FC = () => {
+  const { t } = useTranslation('common', { keyPrefix: 'header' });
   return (
     <MantineHeader height={'auto'}>
       <Box sx={styles.container}>
         <Group position={'apart'} align={'center'}>
           <LogoWithName />
           <Text size={'xl'} weight={700} component={NextLink} href={'/'}>
-            {'Explore'}
+            {t('titleCat1')}
           </Text>
           <Text
             size={'xl'}
@@ -80,7 +81,7 @@ export const Header: FC = () => {
             component={NextLink}
             href={'/my-offers'}
           >
-            {'Your offers'}
+            {t('titleCat2')}
           </Text>
           <Text
             size={'xl'}
@@ -96,7 +97,7 @@ export const Header: FC = () => {
             component={NextLink}
             href={'/portfolio'}
           >
-            {'Portfolio'}
+            {t('titleCat3')}
           </Text>
           <HeaderButtons />
         </Group>

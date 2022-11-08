@@ -1,5 +1,8 @@
+import { useTranslation } from "react-i18next";
+
 const PortfolioPage = () => {
-  return <div>{'Coming soon...'}</div>;
+  const { t } = useTranslation('common', { keyPrefix: 'general' });
+  return <div>{t("comingSoon")}</div>;
 };
 
 export default PortfolioPage;
