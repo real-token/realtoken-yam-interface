@@ -2,20 +2,19 @@ import { useEffect, useState } from 'react';
 
 import { useInterval } from '@mantine/hooks';
 
-import { ContractsID } from 'src/constants';
+import { ContractsID, ZERO_ADDRESS } from 'src/constants';
 import { asyncRetry, getContract } from 'src/utils';
 
 import { Offer, UseOffers } from './types';
 import { useAsync } from './useAsync';
 import { useContract } from './useContract';
 import { useWeb3React } from '@web3-react/core';
-import { useActiveChain } from './useActiveChain';
 import { Erc20, Erc20ABI } from 'src/abis';
 import { Web3Provider } from '@ethersproject/providers';
 import BigNumber from 'bignumber.js';
 
-// isFiltered = 0 when fetching all offers, = 1 when fetching offers of the connected wallet
-export const useOffers: UseOffers = (isFiltered) => {
+// filterSeller = 0 when fetching all offers, = 1 when fetching offers of the connected wallet
+export const useOffers: UseOffers = (filterSeller, filterBuyer) => {
   const [isRefreshing, triggerRefresh] = useState<boolean>(true);
   const [offers, setOffers] = useState<Offer[]>([
     {
@@ -27,6 +26,7 @@ export const useOffers: UseOffers = (isFiltered) => {
       buyerTokenName: 'loading...',
 			buyerTokenDecimals: 'loading...',
       sellerAddress: 'loading...',
+			buyerAddress: 'loading...',
       price: 'loading...',
       amount: 'loading...',
     },
@@ -97,22 +97,27 @@ export const useOffers: UseOffers = (isFiltered) => {
 						buyerTokenName: <string>buyerTokenName,
 						buyerTokenDecimals: buyerTokenDecimals.toString(),
 						sellerAddress: sellerAddress,
+						buyerAddress: buyerAddress,
 						price: (new BigNumber(price.toString())).shiftedBy(- buyerTokenDecimals).toString(),
 						amount: (new BigNumber(amount.toString()).shiftedBy(- offerTokenDecimals)).toString(),
-						// price: price.toString(),
-						// amount: amount.toString(),
 					};
 
-					if (isFiltered) {
+					// Filter offer by seller
+					if (filterSeller) {
 						if (offerData.sellerAddress === account) {
 							offersData.push(offerData);
 						}
+					} else if (filterBuyer) {
+						// Filter offer by buyer
+						if (offerData.buyerAddress === account) {
+							offersData.push(offerData);
+						}
 					} else {
-						if (amount.toString() !== '0') {
+						// No filter, show public offers
+						if (amount.toString() !== '0' && offerData.buyerAddress === ZERO_ADDRESS) {
 							offersData.push(offerData);
 						}
 					}
-
 				} catch (e) {
 					console.log("Error getting when fetching offers: ", e);
 				}
@@ -125,7 +130,7 @@ export const useOffers: UseOffers = (isFiltered) => {
 
       return offersData;
     },
-    [realTokenYamUpgradeable, isRefreshing, offersData, provider, account, isFiltered]
+    [realTokenYamUpgradeable, isRefreshing, offersData, provider, account, filterSeller, filterBuyer]
   );
 
   return {

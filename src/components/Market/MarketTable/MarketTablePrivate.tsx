@@ -22,7 +22,7 @@ import { BuyActionsWithPermit } from '../BuyActions';
 import { MarketSubRow } from '../MarketSubRow';
 
 export const MarketTablePrivate: FC = () => {
-  const { offers, refreshState } = useOffers(true); // add true to filter offers by user
+  const { offers, refreshState } = useOffers(false, true); // filter offers by buyer
 
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'offerId', desc: false },
