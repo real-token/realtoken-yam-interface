@@ -13,5 +13,10 @@
     "spanish": "Espagnol",
     "light": "Clair",
     "dark": "Sombre"
+  },
+  "subMenuMyOffer": {
+    "myOffers": "Mes Offres",
+    "addOffer": "Créer une offre",
+    "privateOffers": "Offres privées"
   }
 }

@@ -2,8 +2,7 @@
   "header": {
     "title": "YAM",
     "titleCat1": "Découvrir",
-    "titleCat2": "Vos Offres",
-    "titleCat3": "Portefeuille"
+    "titleCat2": "Vos Offres"
   },
   "footer": {
     "copyright": "© {{year}} RealT. Tous droits réservés."
