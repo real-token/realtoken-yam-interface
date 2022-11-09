@@ -1,7 +1,7 @@
 import { FC, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Group, MantineSize, Text, Title } from '@mantine/core';
+import { MantineSize, Text, Title } from '@mantine/core';
 import {
   ColumnDef,
   ExpandedState,
@@ -41,7 +41,7 @@ export const MarketTableUser: FC = () => {
       {
         id: 'title',
         header: () => (
-          <Title order={4} style={{ textAlign: 'center' }}>
+          <Title order={4} align={"center"}>
             {t('title')}
           </Title>
         ),
@@ -52,33 +52,30 @@ export const MarketTableUser: FC = () => {
             accessorKey: 'offerId',
             header: t('offerId'),
             cell: ({ getValue }) => (
-              <Group noWrap={true} spacing={'xs'}>
                 <Text
-                  size={'sm'}
+                  fz={'sm'}
                   sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
+                  ta={"center"}
                 >
                   {getValue()}
                 </Text>
-              </Group>
             ),
-            enableSorting: false,
-            meta: { colSpan: 2 },
+            enableSorting: true,
+            meta: { colSpan: 1 },
           },
           {
             id: 'offerTokenName',
             accessorKey: 'offerTokenName',
             header: t('offerTokenName'),
             cell: ({ getValue }) => (
-              <Group noWrap={true} spacing={'xs'}>
                 <Text
-                  size={'sm'}
+                  fz={'sm'}
                   sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
                 >
                   {getValue()}
                 </Text>
-              </Group>
             ),
-            enableSorting: false,
+            enableSorting: true,
             meta: { colSpan: 3 },
           },
           {
@@ -86,16 +83,14 @@ export const MarketTableUser: FC = () => {
             accessorKey: 'buyerTokenName',
             header: t('buyerTokenName'),
             cell: ({ getValue }) => (
-              <Group noWrap={true} spacing={'xs'}>
                 <Text
-                  size={'sm'}
+                  fz={'sm'}
                   sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
                 >
                   {getValue()}
                 </Text>
-              </Group>
             ),
-            enableSorting: false,
+            enableSorting: true,
             meta: { colSpan: 3 },
           },
           {
@@ -104,17 +99,17 @@ export const MarketTableUser: FC = () => {
             header: t('price'),
             cell: ({ getValue }) => (
               <Text
-                size={'sm'}
+                fz={'sm'}
                 sx={{
-                  textAlign: 'center',
                   textOverflow: 'ellipsis',
                   overflow: 'hidden',
                 }}
+                ta={"right"}
               >
                 {getValue()}
               </Text>
             ),
-            enableSorting: false,
+            enableSorting: true,
             meta: { colSpan: 2 },
           },
           {
@@ -123,17 +118,17 @@ export const MarketTableUser: FC = () => {
             header: t('amount'),
             cell: ({ getValue }) => (
               <Text
-                size={'sm'}
+                fz={'sm'}
                 sx={{
-                  textAlign: 'center',
                   textOverflow: 'ellipsis',
                   overflow: 'hidden',
                 }}
+                ta={"right"}
               >
                 {getValue()}
               </Text>
             ),
-            enableSorting: false,
+            enableSorting: true,
             meta: { colSpan: 2 },
           },
           {
@@ -145,6 +140,7 @@ export const MarketTableUser: FC = () => {
                 triggerRefresh={refreshState[1]}
               />
             ),
+            enableSorting: false,
             meta: { colSpan: 1 },
           },
           {
@@ -156,6 +152,7 @@ export const MarketTableUser: FC = () => {
                 triggerRefresh={refreshState[1]}
               />
             ),
+            enableSorting: false,
             meta: { colSpan: 1 },
           },
         ],
@@ -175,7 +172,7 @@ export const MarketTableUser: FC = () => {
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
-    meta: { colSpan: 15 },
+    meta: { colSpan: 13 },
   });
 
   return (
