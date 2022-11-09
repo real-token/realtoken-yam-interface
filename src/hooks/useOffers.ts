@@ -101,8 +101,8 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer) => {
 						buyerTokenDecimals: buyerTokenDecimals.toString(),
 						sellerAddress: sellerAddress,
 						buyerAddress: buyerAddress,
-						price: (new BigNumber(price.toString())).shiftedBy(- buyerTokenDecimals).toString(),
-						amount: (new BigNumber(amount.toString()).shiftedBy(- offerTokenDecimals)).toString(),
+						price: (new BigNumber(price.toString())).shiftedBy(- buyerTokenDecimals).toFixed(10).toString(),
+						amount: (new BigNumber(amount.toString()).shiftedBy(- offerTokenDecimals)).toFixed(10).toString(),
 					};
 
 					// console.log("filterSeller", filterSeller);
