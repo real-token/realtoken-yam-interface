@@ -105,18 +105,24 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer) => {
 						amount: (new BigNumber(amount.toString()).shiftedBy(- offerTokenDecimals)).toString(),
 					};
 
+					// console.log("filterSeller", filterSeller);
+					// console.log("filterBuyer", filterBuyer);
+
 					// Filter offer by seller
 					if (filterSeller) {
+						// console.log("is seller", account, sellerAddress)
 						if (offerData.sellerAddress === account) {
 							offersData.push(offerData);
 						}
 					} else if (filterBuyer) {
 						// Filter offer by buyer
+						// console.log("is buyer", account, buyerAddress);
 						if (offerData.buyerAddress === account) {
 							offersData.push(offerData);
 						}
 					} else {
 						// No filter, show public offers
+						// console.log("is public", account, sellerAddress, buyerAddress);
 						if (amount.toString() !== '0' && offerData.buyerAddress === ZERO_ADDRESS) {
 							offersData.push(offerData);
 						}

@@ -67,12 +67,19 @@ const HeaderButtons: FC = () => {
 
 export const Header: FC = () => {
   const { t } = useTranslation('common', { keyPrefix: 'header' });
+  // const uri = window.location.pathname;
   return (
     <MantineHeader height={'auto'}>
       <Box sx={styles.container}>
         <Group position={'apart'} align={'center'}>
           <LogoWithName />
-          <Text size={'xl'} weight={700} component={NextLink} href={'/'}>
+          <Text
+            size={'xl'}
+            weight={700}
+            component={NextLink}
+            href={'/'}
+            // color={uri === '/' ? '#cfaa70' : ''}
+          >
             {t('titleCat1')}
           </Text>
           <Text
@@ -80,24 +87,9 @@ export const Header: FC = () => {
             weight={700}
             component={NextLink}
             href={'/my-offers'}
+            // color={uri === '/my-offers' ? '#cfaa70' : ''}
           >
             {t('titleCat2')}
-          </Text>
-          <Text
-            size={'xl'}
-            weight={700}
-            component={NextLink}
-            href={'/private-offers'}
-          >
-            {'Private offers'}
-          </Text>
-          <Text
-            size={'xl'}
-            weight={700}
-            component={NextLink}
-            href={'/portfolio'}
-          >
-            {t('titleCat3')}
           </Text>
           <HeaderButtons />
         </Group>
