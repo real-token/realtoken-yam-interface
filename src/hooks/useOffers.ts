@@ -2,36 +2,36 @@ import { useEffect, useState } from 'react';
 
 import { useInterval } from '@mantine/hooks';
 
-import { ContractsID } from 'src/constants';
+import { ContractsID, ZERO_ADDRESS } from 'src/constants';
 import { asyncRetry, getContract } from 'src/utils';
 
 import { Offer, UseOffers } from './types';
 import { useAsync } from './useAsync';
 import { useContract } from './useContract';
 import { useWeb3React } from '@web3-react/core';
-import { useActiveChain } from './useActiveChain';
 import { Erc20, Erc20ABI } from 'src/abis';
 import { Web3Provider } from '@ethersproject/providers';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 
-// isFiltered = 0 when fetching all offers, = 1 when fetching offers of the connected wallet
-export const useOffers: UseOffers = (isFiltered) => {
-const { t } = useTranslation('common', { keyPrefix: 'general' });
-
+// filterSeller = 0 when fetching all offers, = 1 when fetching offers of the connected wallet
+export const useOffers: UseOffers = (filterSeller, filterBuyer) => {
+  const { t } = useTranslation('common', { keyPrefix: 'general' });
   const [isRefreshing, triggerRefresh] = useState<boolean>(true);
+  
   const [offers, setOffers] = useState<Offer[]>([
     {
-		offerId: t('loading'),
-		offerTokenAddress: t('loading'),
-		offerTokenName: t('loading'),
-		offerTokenDecimals: t('loading'),
-		buyerTokenAddress: t('loading'),
-		buyerTokenName: t('loading'),
-		buyerTokenDecimals: t('loading'),
-		sellerAddress: t('loading'),
-		price: t('loading'),
-		amount: t('loading'),
+      offerId: t('loading'),
+      offerTokenAddress: t('loading'),
+      offerTokenName: t('loading'),
+      offerTokenDecimals: t('loading'),
+      buyerTokenAddress: t('loading'),
+      buyerTokenName: t('loading'),
+      buyerTokenDecimals: t('loading'),
+      sellerAddress: t('loading'),
+      buyerAddress: t('loading'),
+      price: t('loading'),
+      amount: t('loading'),
     },
   ]);
 
@@ -100,22 +100,33 @@ const { t } = useTranslation('common', { keyPrefix: 'general' });
 						buyerTokenName: <string>buyerTokenName,
 						buyerTokenDecimals: buyerTokenDecimals.toString(),
 						sellerAddress: sellerAddress,
+						buyerAddress: buyerAddress,
 						price: (new BigNumber(price.toString())).shiftedBy(- buyerTokenDecimals).toString(),
 						amount: (new BigNumber(amount.toString()).shiftedBy(- offerTokenDecimals)).toString(),
-						// price: price.toString(),
-						// amount: amount.toString(),
 					};
 
-					if (isFiltered) {
+					// console.log("filterSeller", filterSeller);
+					// console.log("filterBuyer", filterBuyer);
+
+					// Filter offer by seller
+					if (filterSeller) {
+						// console.log("is seller", account, sellerAddress)
 						if (offerData.sellerAddress === account) {
 							offersData.push(offerData);
 						}
+					} else if (filterBuyer) {
+						// Filter offer by buyer
+						// console.log("is buyer", account, buyerAddress);
+						if (offerData.buyerAddress === account) {
+							offersData.push(offerData);
+						}
 					} else {
-						if (amount.toString() !== '0') {
+						// No filter, show public offers
+						// console.log("is public", account, sellerAddress, buyerAddress);
+						if (amount.toString() !== '0' && offerData.buyerAddress === ZERO_ADDRESS) {
 							offersData.push(offerData);
 						}
 					}
-
 				} catch (e) {
 					console.log("Error getting when fetching offers: ", e);
 				}
@@ -128,7 +139,7 @@ const { t } = useTranslation('common', { keyPrefix: 'general' });
 
       return offersData;
     },
-    [realTokenYamUpgradeable, isRefreshing, offersData, provider, account, isFiltered]
+    [realTokenYamUpgradeable, isRefreshing, offersData, provider, account, filterSeller, filterBuyer]
   );
 
   return {

@@ -18,12 +18,11 @@ import { useOffers } from 'src/hooks';
 import { Offer } from 'src/hooks/types';
 
 import { Table } from '../../Table';
-import { DeleteActions } from '../DeleteActions';
+import { BuyActionsWithPermit } from '../BuyActions';
 import { MarketSubRow } from '../MarketSubRow';
-import { UpdateActionsWithPermit } from '../UpdateActions';
 
-export const MarketTableUser: FC = () => {
-  const { offers, refreshState } = useOffers(true, false); // filter offers by seller
+export const MarketTablePrivate: FC = () => {
+  const { offers, refreshState } = useOffers(false, true); // filter offers by buyer
 
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'offerId', desc: false },
@@ -154,26 +153,15 @@ export const MarketTableUser: FC = () => {
             meta: { colSpan: 2 },
           },
           {
-            id: 'update',
+            id: 'actions',
             header: undefined,
             cell: ({ row }) => (
-              <UpdateActionsWithPermit
-                updateOffer={row.original}
+              <BuyActionsWithPermit
+                buyOffer={row.original}
                 triggerRefresh={refreshState[1]}
               />
             ),
-            meta: { colSpan: 0 },
-          },
-          {
-            id: 'delete',
-            header: undefined,
-            cell: ({ row }) => (
-              <DeleteActions
-                deleteOffer={row.original}
-                triggerRefresh={refreshState[1]}
-              />
-            ),
-            meta: { colSpan: 0 },
+            meta: { colSpan: 1 },
           },
         ],
       },

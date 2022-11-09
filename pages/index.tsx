@@ -9,7 +9,6 @@ const HomePage: NextPage = () => {
   return (
     <Fragment>
       <MarketTable />
-      
     </Fragment>
   );
 };
