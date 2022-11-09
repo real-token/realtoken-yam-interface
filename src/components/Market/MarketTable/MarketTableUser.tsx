@@ -45,7 +45,7 @@ export const MarketTableUser: FC = () => {
             {t('title')}
           </Title>
         ),
-        meta: { colSpan: 15 },
+        meta: { colSpan: 13 },
         columns: [
           {
             id: 'offerId',
@@ -62,7 +62,7 @@ export const MarketTableUser: FC = () => {
               </Group>
             ),
             enableSorting: false,
-            meta: { colSpan: 1 },
+            meta: { colSpan: 2 },
           },
           {
             id: 'offerTokenName',
@@ -79,7 +79,7 @@ export const MarketTableUser: FC = () => {
               </Group>
             ),
             enableSorting: false,
-            meta: { colSpan: 2 },
+            meta: { colSpan: 3 },
           },
           {
             id: 'buyerTokenName',
@@ -96,24 +96,7 @@ export const MarketTableUser: FC = () => {
               </Group>
             ),
             enableSorting: false,
-            meta: { colSpan: 2 },
-          },
-          {
-            id: 'sellerAddress',
-            accessorKey: 'sellerAddress',
-            header: t('sellerAddress'),
-            cell: ({ getValue }) => (
-              <Group noWrap={true} spacing={'xs'}>
-                <Text
-                  size={'sm'}
-                  sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
-                >
-                  {getValue()}
-                </Text>
-              </Group>
-            ),
-            enableSorting: false,
-            meta: { colSpan: 4 },
+            meta: { colSpan: 3 },
           },
           {
             id: 'price',
@@ -155,25 +138,25 @@ export const MarketTableUser: FC = () => {
           },
           {
             id: 'update',
-            header: undefined,
+            header: t('actionEdit'),
             cell: ({ row }) => (
               <UpdateActionsWithPermit
                 updateOffer={row.original}
                 triggerRefresh={refreshState[1]}
               />
             ),
-            meta: { colSpan: 0 },
+            meta: { colSpan: 1 },
           },
           {
             id: 'delete',
-            header: undefined,
+            header: t('actionDelete'),
             cell: ({ row }) => (
               <DeleteActions
                 deleteOffer={row.original}
                 triggerRefresh={refreshState[1]}
               />
             ),
-            meta: { colSpan: 0 },
+            meta: { colSpan: 1 },
           },
         ],
       },
