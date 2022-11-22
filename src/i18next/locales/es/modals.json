@@ -29,7 +29,7 @@
     "buyerTokenAddress": "Buyer Token Address",
     "buyerTokenName": "Buyer Token Name",
     "sellerAddress": "Seller Address",
-    "price": "Price/token",
+    "price": "Price/tokensubMenuMyOffer",
     "amount": "Quantity",
     "cancel": "Cancel",
     "confirm": "Confirm"
