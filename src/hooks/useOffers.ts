@@ -15,7 +15,7 @@ import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 
 // filterSeller = 0 when fetching all offers, = 1 when fetching offers of the connected wallet
-export const useOffers: UseOffers = (filterSeller, filterBuyer) => {
+export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount) => {
   const { t } = useTranslation('common', { keyPrefix: 'general' });
   const [isRefreshing, triggerRefresh] = useState<boolean>(true);
   
@@ -84,6 +84,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer) => {
 						price,
 						amount,
 					] = await getOffer();
+
 					const offerToken = getContract<Erc20>(offerTokenAddress, Erc20ABI, <Web3Provider>provider, account);
 					const buyerToken = getContract<Erc20>(buyerTokenAddress, Erc20ABI, <Web3Provider>provider, account);
 					const offerTokenName = <string>(await offerToken?.name());
@@ -91,6 +92,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer) => {
 					const offerTokenDecimals = <number>await offerToken?.decimals();
 					const buyerTokenDecimals = <number>await buyerToken?.decimals();
 
+					const bnAmount = new BigNumber(amount.toString());
 					const offerData: Offer = {
 						offerId: i.toString(),
 						offerTokenAddress: offerTokenAddress,
@@ -102,29 +104,28 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer) => {
 						sellerAddress: sellerAddress,
 						buyerAddress: buyerAddress,
 						price: (new BigNumber(price.toString())).shiftedBy(- buyerTokenDecimals).toFixed(10).toString(),
-						amount: (new BigNumber(amount.toString()).shiftedBy(- offerTokenDecimals)).toFixed(10).toString(),
+						amount: (bnAmount.shiftedBy(- offerTokenDecimals)).toFixed(10).toString(),
 					};
 
-					// console.log("filterSeller", filterSeller);
-					// console.log("filterBuyer", filterBuyer);
-
-					// Filter offer by seller
-					if (filterSeller) {
-						// console.log("is seller", account, sellerAddress)
-						if (offerData.sellerAddress === account) {
-							offersData.push(offerData);
-						}
-					} else if (filterBuyer) {
-						// Filter offer by buyer
-						// console.log("is buyer", account, buyerAddress);
-						if (offerData.buyerAddress === account) {
-							offersData.push(offerData);
-						}
-					} else {
-						// No filter, show public offers
-						// console.log("is public", account, sellerAddress, buyerAddress);
-						if (amount.toString() !== '0' && offerData.buyerAddress === ZERO_ADDRESS) {
-							offersData.push(offerData);
+					const condFiltreZeroAmount = filterZeroAmount ? !bnAmount.isZero() : true;
+					if(condFiltreZeroAmount){
+						if (filterSeller) {
+							//console.log("is seller", account, sellerAddress,buyerAddress)
+							if (offerData.sellerAddress === account) {
+								offersData.push(offerData);
+							}
+						} else if (filterBuyer) {
+							// Filter offer by buyer
+							//console.log("is buyer", account, buyerAddress,sellerAddress);
+							if (offerData.buyerAddress === account) {
+								offersData.push(offerData);
+							}
+						} else {
+							// No filter, show public offers
+							// console.log("is public", account, sellerAddress, buyerAddress);
+							if (offerData.buyerAddress === ZERO_ADDRESS) {
+								offersData.push(offerData);
+							}
 						}
 					}
 				} catch (e) {

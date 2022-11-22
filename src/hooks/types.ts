@@ -25,7 +25,8 @@ export type Offer = {
 
 export type UseOffers = (
   filterSeller?: boolean,
-  filerBuyer?: boolean
+  filerBuyer?: boolean,
+  filterZeroAmount?: boolean
 ) => {
   offers: Offer[];
   refreshState: [boolean, Dispatch<SetStateAction<boolean>>];
