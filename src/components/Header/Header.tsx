@@ -21,6 +21,7 @@ import { Divider } from '../Divider';
 import { SettingsMenu } from '../SettingsMenu';
 import { WalletMenu } from '../WalletMenu';
 import { styles } from './Header.styles';
+import { useRouter } from 'next/router';
 
 const LogoWithName: FC = () => {
   const { t } = useTranslation('common', { keyPrefix: 'header' });
@@ -67,7 +68,8 @@ const HeaderButtons: FC = () => {
 
 export const Header: FC = () => {
   const { t } = useTranslation('common', { keyPrefix: 'header' });
-  // const uri = window.location.pathname;
+  const router = useRouter()
+  const colorSelected = '#cfaa70';
   return (
     <MantineHeader height={'auto'}>
       <Box sx={styles.container}>
@@ -78,7 +80,7 @@ export const Header: FC = () => {
             weight={700}
             component={NextLink}
             href={'/'}
-            // color={uri === '/' ? '#cfaa70' : ''}
+            color={router.pathname === '/' ? colorSelected : ''}
           >
             {t('titleCat1')}
           </Text>
@@ -87,7 +89,7 @@ export const Header: FC = () => {
             weight={700}
             component={NextLink}
             href={'/my-offers'}
-            // color={uri === '/my-offers' ? '#cfaa70' : ''}
+            color={router.pathname === '/my-offers' ? colorSelected : ''}
           >
             {t('titleCat2')}
           </Text>

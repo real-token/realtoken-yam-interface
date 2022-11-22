@@ -3,14 +3,14 @@
     "title": "Connecter mon portefeuille"
   },
   "sell": {
-    "title": "Créer offre",
+    "titleFormCreateOffer": "Créer votre offre",
     "offerTokenAddress": "Adresse du jeton en vente",
     "offerTokenName": "En vente",
     "buyerTokenAddress": "Adresse du jeton d'achat",
     "buyerTokenName": "Jeton d'achat",
     "sellerAddress": "Adresse du vendeur",
-    "price": "Prix",
-    "amount": "Montant",
+    "price": "Prix/Jeton",
+    "amount": "Quantité",
     "cancel": "Annuler",
     "confirm": "Confirmer",
     "labelPrivateBuyerAddress": "Adresse de l'acheteur (Uniquement pour les offres privées)",
@@ -18,8 +18,7 @@
     "placeholderOfferBuyTokenAddress": "Renseigner l'adresse du jeton d'achat",
     "placeholderOfferPrivatBuyerAddress": "Renseigner l'adresse de l'acheteur privé",
     "buttonCreateOffer": "Autoriser & Créer l'offre",
-    "checkboxLabelPrivateOffre": "Je veux créer une offre privée",
-    "titleFormCreateOffer": "Créer votre offre"
+    "checkboxLabelPrivateOffre": "Je veux créer une offre privée"
   },
   "buy": {
     "title": "Acheter",
@@ -30,8 +29,8 @@
     "buyerTokenAddress": "Adresse du jeton d'achat",
     "buyerTokenName": "Jeton d'achat",
     "sellerAddress": "Adresse du vendeur",
-    "price": "Prix",
-    "amount": "Montant",
+    "price": "Prix/Jeton",
+    "amount": "Quantité",
     "cancel": "Annuler",
     "confirm": "Confirmer"
   },

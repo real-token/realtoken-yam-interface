@@ -23,7 +23,7 @@ import { BuyActionsWithPermit } from '../BuyActions';
 import { MarketSubRow } from '../MarketSubRow';
 
 export const MarketTable: FC = () => {
-  const { offers, refreshState } = useOffers();
+  const { offers, refreshState } = useOffers(false, false, true);
 
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'offerId', desc: false },
