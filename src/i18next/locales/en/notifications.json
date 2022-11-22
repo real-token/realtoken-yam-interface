@@ -69,7 +69,7 @@
   },
   "createOfferInvalid": {
     "title": "Error",
-    "message": "You can create this offer. Please make sure: You are whitelisted for the offer token, the offer token is whitelisted and not in locking periode, you have the offer token in your wallet."
+    "message": "You can not create this offer. Please make sure: You are whitelisted for the offer token, the offer token is whitelisted and not in locking periode."
   },
   "buyOfferInvalid": {
     "title": "Error",

@@ -3,14 +3,13 @@
     "title": "Connect wallet"
   },
   "sell": {
-    "title": "Create Offer",
     "offerTokenAddress": "Offer Token Address",
     "offerTokenName": "Offer Token Name",
     "buyerTokenAddress": "Buyer Token Address",
     "buyerTokenName": "Buyer Token Name",
     "sellerAddress": "Seller Address",
-    "price": "Price",
-    "amount": "Amount",
+    "price": "Price/token",
+    "amount": "Quantity",
     "cancel": "Cancel",
     "confirm": "Confirm",
     "labelPrivateBuyerAddress": "Buyer Address (only for private offers)",
@@ -30,8 +29,8 @@
     "buyerTokenAddress": "Buyer Token Address",
     "buyerTokenName": "Buyer Token Name",
     "sellerAddress": "Seller Address",
-    "price": "Price",
-    "amount": "Amount",
+    "price": "Price/token",
+    "amount": "Quantity",
     "cancel": "Cancel",
     "confirm": "Confirm"
   },
