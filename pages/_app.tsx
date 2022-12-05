@@ -14,6 +14,8 @@ import { MantineProviders, Web3Providers } from 'src/providers';
 
 import { Head } from '../src/components';
 
+import { Provider } from 'jotai';
+
 type TestProps = {
   initialLocale: string;
 };
@@ -38,14 +40,16 @@ const App = ({ Component, pageProps, colorScheme, locale }: AppProps) => {
     <>
       <Head title={'Realtoken YAM'} />
 
-      <Web3Providers>
-        <MantineProviders initialColorScheme={colorScheme}>
-          <LanguageInit initialLocale={locale} />
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
-        </MantineProviders>
-      </Web3Providers>
+      <Provider>
+        <Web3Providers>
+          <MantineProviders initialColorScheme={colorScheme}>
+            <LanguageInit initialLocale={locale} />
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </MantineProviders>
+        </Web3Providers>
+      </Provider>
     </>
   );
 };

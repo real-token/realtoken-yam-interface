@@ -13,11 +13,14 @@ import { Erc20, Erc20ABI } from 'src/abis';
 import { Web3Provider } from '@ethersproject/providers';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
+import { useAtomValue } from 'jotai';
+import { isRefreshedAutoAtom } from 'src/states';
 
 // filterSeller = 0 when fetching all offers, = 1 when fetching offers of the connected wallet
 export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount) => {
   const { t } = useTranslation('common', { keyPrefix: 'general' });
   const [isRefreshing, triggerRefresh] = useState<boolean>(true);
+  const [initialized,setInitialized] = useState<boolean>(false);
   
   const [offers, setOffers] = useState<Offer[]>([
     {
@@ -39,23 +42,34 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
 
   const interval = useInterval(() => triggerRefresh(true), 60000);
 
+  const isAutoRefreshEnabled = useAtomValue(isRefreshedAutoAtom);
+
   useEffect(() => {
-    interval.start();
-    return interval.stop;
+    // interval.start();
+    // return interval.stop;
+	triggerRefresh(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    triggerRefresh(true);
-  }, [realTokenYamUpgradeable]);
+
+	if(!isAutoRefreshEnabled || !realTokenYamUpgradeable || !initialized) return;
+
+	triggerRefresh(isAutoRefreshEnabled);
+	isAutoRefreshEnabled ? interval.start() : interval.stop();
+	
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [realTokenYamUpgradeable,isAutoRefreshEnabled,initialized]);
 
   const { account, provider } = useWeb3React();
 
   const offersData: Offer[] = [];
 
+  useEffect(() => { if(offersData) setInitialized(true); },[offersData])
+
   useAsync(
     async (isActive) => {
-      if (!realTokenYamUpgradeable || !isRefreshing) return undefined;
+      	if (!realTokenYamUpgradeable || !isRefreshing) return undefined;
 
 			const getEvents = () =>
 			realTokenYamUpgradeable.queryFilter(
@@ -65,15 +79,15 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
 
 			const events = await asyncRetry(getEvents);
 			const offersDeleted = events.map(event => event.args.offerId.toNumber());
-      const offerCount = (
-        await asyncRetry(() => realTokenYamUpgradeable.getOfferCount())
-      ).toNumber();
+			const offerCount = (
+				await asyncRetry(() => realTokenYamUpgradeable.getOfferCount())
+			).toNumber();
 			// console.log("offerCount", offerCount)
 			const offerCountArray = Array.from(Array(offerCount).keys());
 			const offersToFetch = offerCountArray.filter(x => !offersDeleted.includes(x));
 
-      for (const i of offersToFetch) {
-        const getOffer = () => realTokenYamUpgradeable.showOffer(i);
+      	for (const i of offersToFetch) {
+        	const getOffer = () => realTokenYamUpgradeable.showOffer(i);
 
 				try {
 					const [
@@ -131,14 +145,14 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
 				} catch (e) {
 					console.log("Error getting when fetching offers: ", e);
 				}
-      }
+      	}
 
-      if (isActive()) {
-        setOffers(offersData.filter(Boolean));
-        triggerRefresh(false);
-      }
+		if (isActive()) {
+			setOffers(offersData.filter(Boolean));
+			triggerRefresh(false);
+		}
 
-      return offersData;
+      	return offersData;
     },
     [realTokenYamUpgradeable, isRefreshing, offersData, provider, account, filterSeller, filterBuyer]
   );

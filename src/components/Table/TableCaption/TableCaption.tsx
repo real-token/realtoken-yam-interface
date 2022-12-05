@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 
 import {
   ActionIcon,
+  Checkbox,
+  Grid,
   Group,
   MediaQuery,
   Menu,
@@ -15,6 +17,8 @@ import { IconAdjustmentsHorizontal, IconRefresh } from '@tabler/icons';
 import { Table } from '@tanstack/react-table';
 
 import { styles } from './TableCaption.styles';
+import { useAtom } from 'jotai';
+import { isRefreshedAutoAtom } from 'src/states';
 
 export type TableCaptionOptions = {
   visible?: boolean;
@@ -39,6 +43,7 @@ export const TableCaption = <T,>({
     '50',
     '100',
   ]);
+  const [isAutoRefresh,setIsAutoRefresh] = useAtom(isRefreshedAutoAtom);
 
   const { refreshState } = tablecaptionOptions;
 
@@ -125,6 +130,16 @@ export const TableCaption = <T,>({
               ...range(1, paginationProps.total).map((idx) => idx.toString()),
             ]}
           />
+
+          <Grid p={5} pt={10}>
+            <Menu.Label pb={0}>{t('autoRefresh')}</Menu.Label>
+            <Checkbox
+              p={5}
+              checked={isAutoRefresh}
+              onChange={(event) => setIsAutoRefresh(Boolean(event.currentTarget.checked))}
+            />
+          </Grid>
+          
         </Menu.Dropdown>
       </Menu>
     </Group>
