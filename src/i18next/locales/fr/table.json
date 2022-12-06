@@ -7,5 +7,9 @@
     "goTo": "Aller vers",
     "noOption": "Aucune option",
     "autoRefresh": "Enable automatic refresh"
+  },
+  "filters": {
+    "title": "Filtres",
+    "nameFilterPlaceholder": "Nom de la propriété"
   }
 }

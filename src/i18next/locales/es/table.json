@@ -7,5 +7,9 @@
     "goTo": "Go to page",
     "noOption": "No options",
     "autoRefresh": "Enable automatic refresh"
+  },
+  "filters": {
+    "title": "Filters",
+    "nameFilterPlaceholder": "Offer token name"
   }
 }
