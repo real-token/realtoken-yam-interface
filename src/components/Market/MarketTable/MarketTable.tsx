@@ -11,6 +11,7 @@ import {
   getCoreRowModel,
   getExpandedRowModel,
   getPaginationRowModel,
+  getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
@@ -21,6 +22,9 @@ import { Offer } from 'src/hooks/types';
 import { Table } from '../../Table';
 import { BuyActionsWithPermit } from '../BuyActions';
 import { MarketSubRow } from '../MarketSubRow';
+import { useAtom } from 'jotai';
+import { nameFilterValueAtom } from 'src/states';
+import React from 'react';
 
 export const MarketTable: FC = () => {
   const { offers, refreshState } = useOffers(false, false, true);
@@ -193,14 +197,25 @@ export const MarketTable: FC = () => {
     [refreshState, t]
   );
 
+  const [nameFilterValue,setNamefilterValue] = useAtom(nameFilterValueAtom);
+
+  // console.log("nameFilterValue: ", nameFilterValue)
+
+  // const fuzzyFilter: FilterFn<any> = (row, columnId, filterValue): boolean => {
+    
+  // }
+
   const table = useReactTable({
     data: offers,
     columns: columns,
-    state: { sorting, pagination, expanded },
+    state: { sorting: sorting, pagination: pagination, expanded: expanded, globalFilter: nameFilterValue },
+    globalFilterFn: 'includesString',
     onSortingChange: setSorting,
+    onGlobalFilterChange: setNamefilterValue,
     onPaginationChange: setPagination,
     onExpandedChange: setExpanded,
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
@@ -208,22 +223,25 @@ export const MarketTable: FC = () => {
   });
 
   return (
-    <Table
-      tableProps={{
-        highlightOnHover: true,
-        verticalSpacing: 'sm',
-        horizontalSpacing: 'xs',
-        sx: (theme) => ({
-          tableLayout: 'fixed',
-          border: theme.other.border(theme),
-          borderRadius: theme.radius[theme.defaultRadius as MantineSize],
-          borderCollapse: 'separate',
-          borderSpacing: 0,
-        }),
-      }}
-      table={table}
-      tablecaptionOptions={{ refreshState: refreshState, visible: true }}
-      TableSubRow={MarketSubRow}
-    />
+    <>
+      
+      <Table
+        tableProps={{
+          highlightOnHover: true,
+          verticalSpacing: 'sm',
+          horizontalSpacing: 'xs',
+          sx: (theme) => ({
+            tableLayout: 'fixed',
+            border: theme.other.border(theme),
+            borderRadius: theme.radius[theme.defaultRadius as MantineSize],
+            borderCollapse: 'separate',
+            borderSpacing: 0,
+          }),
+        }}
+        table={table}
+        tablecaptionOptions={{ refreshState: refreshState, visible: true }}
+        TableSubRow={MarketSubRow}
+      />
+    </>
   );
 };
