@@ -1,13 +1,11 @@
-import { useCallback, useEffect, useState } from 'react';
+/* eslint-disable react/display-name */
+import { forwardRef, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { Box, Button, Checkbox, Group, Stack, TextInput } from '@mantine/core';
+import { Box, Button, Checkbox, Flex, Group, Select, SelectItem, Stack, TextInput, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { showNotification, updateNotification } from '@mantine/notifications';
 import { useWeb3React } from '@web3-react/core';
-
 import BigNumber from 'bignumber.js';
-
 import { CoinBridgeToken, Erc20, Erc20ABI, coinBridgeTokenABI } from 'src/abis';
 import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { ZERO_ADDRESS } from 'src/constants';
@@ -16,8 +14,15 @@ import coinBridgeTokenPermitSignature from 'src/hooks/coinBridgeTokenPermitSigna
 import erc20PermitSignature from 'src/hooks/erc20PermitSignature';
 import { useContract } from 'src/hooks/useContract';
 import { getContract } from 'src/utils';
-
 import { NumberInput } from '../../NumberInput';
+import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
+import { PropertiesToken } from 'src/types/PropertiesToken';
+
+interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
+  label: string;
+  uuid: string;
+  value: string;
+}
 
 type SellFormValues = {
   offerTokenAddress: string;
@@ -49,6 +54,18 @@ export const SellActions = () => {
   const activeChain = useActiveChain();
 
   const { t } = useTranslation('modals', { keyPrefix: 'sell' });
+
+  const { propertiesToken } = usePropertiesToken();
+
+  const formatedPropetiesTokenForSelect: SelectItem[] = useMemo((): SelectItem[] => {
+    if(!propertiesToken) return [];
+
+    console.log(propertiesToken)
+
+    const formated: SelectItem[] = [];
+    propertiesToken.map((propertyTokenInfo: PropertiesToken) => formated.push({value: propertyTokenInfo.contractAddress, label: propertyTokenInfo.shortName}))
+    return formated;
+  },[propertiesToken])
 
   // const sellerBalance = new BigNumber(
   // 	(await offerToken.balanceOf(account)).toString()
@@ -318,18 +335,38 @@ export const SellActions = () => {
       return
     }
   }
-  
+
+  const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
+    ({ uuid, label, value, ...others }: ItemProps, ref) => (
+      <Flex ref={ref} {...others} key={label} gap={"sx"} direction={"column"}>
+          <Text fz={"sm"} fw={700}>{label}</Text>
+          <Text fz={"xs"} fs={"italic"}>{value}</Text>
+      </Flex>
+    )
+  );
+
   return (
     <Box sx={{ maxWidth: 400 }} mx={'auto'}>
       <h3>{t('titleFormCreateOffer')}</h3>
       <form onSubmit={onSubmit(onHandleSubmit)}>
         <Stack justify={'center'} align={'stretch'}>
-          <TextInput
+
+        <Select
+          label={t('offerTokenAddress')}
+          placeholder={t('placeholderOfferSellTokenAddress')}
+          searchable={true}
+          nothingFound={"No property found"}
+          itemComponent={SelectItem}
+          data={formatedPropetiesTokenForSelect}
+          {...getInputProps('offerTokenAddress')}
+        />
+
+          {/* <TextInput
             label={t('offerTokenAddress')}
             placeholder={t('placeholderOfferSellTokenAddress')}
             required={true}
             {...getInputProps('offerTokenAddress')}
-          />
+          /> */}
           <TextInput
             label={t('buyerTokenAddress')}
             placeholder={t('placeholderOfferBuyTokenAddress')}

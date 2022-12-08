@@ -13,7 +13,7 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "labelPrivateBuyerAddress": "Buyer Address (only for private offers)",
-    "placeholderOfferSellTokenAddress": "Put the address of the token you want to sell",
+    "placeholderOfferSellTokenAddress": "Search the token you want to sell",
     "placeholderOfferBuyTokenAddress": "Put the address of the token you want to buy",
     "placeholderOfferPrivatBuyerAddress": "Put the address of the private buyer",
     "buttonCreateOffer": "Permit and Create Offer",
