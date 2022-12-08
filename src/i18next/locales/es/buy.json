@@ -12,7 +12,9 @@
     "amount": "Amount",
     "address": "Address",
     "actionEdit": "Edit",
-    "actionDelete": "Delete"
+    "actionDelete": "Delete",
+    "buy": "Buy"
+
   },
   "subRow": {
     "offerId": "Offer ID",

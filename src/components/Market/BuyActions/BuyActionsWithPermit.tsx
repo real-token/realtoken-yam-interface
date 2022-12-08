@@ -34,6 +34,7 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
           offerTokenDecimals: offer.offerTokenDecimals,
           buyerTokenAddress: offer.buyerTokenAddress,
           buyerTokenDecimals: offer.buyerTokenDecimals,
+          sellerAddress: offer.sellerAddress,
           triggerTableRefresh: triggerRefresh,
         },
       });

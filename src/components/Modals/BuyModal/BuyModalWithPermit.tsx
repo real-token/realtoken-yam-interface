@@ -4,12 +4,13 @@ import {
   SetStateAction,
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Web3Provider } from '@ethersproject/providers';
-import { Box, Button, Container, Group, Input, Stack } from '@mantine/core';
+import { Button, Divider, Flex, Group, Input, Stack, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { ContextModalProps } from '@mantine/modals';
 import { showNotification, updateNotification } from '@mantine/notifications';
@@ -17,7 +18,7 @@ import { useWeb3React } from '@web3-react/core';
 
 import BigNumber from 'bignumber.js';
 
-import { CoinBridgeToken, coinBridgeTokenABI } from 'src/abis';
+import { CoinBridgeToken, coinBridgeTokenABI, Erc20, Erc20ABI } from 'src/abis';
 import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { useActiveChain, useContract, useOffers } from 'src/hooks';
 import coinBridgeTokenPermitSignature from 'src/hooks/coinBridgeTokenPermitSignature';
@@ -25,6 +26,7 @@ import erc20PermitSignature from 'src/hooks/erc20PermitSignature';
 import { getContract } from 'src/utils';
 
 import { NumberInput } from '../../NumberInput';
+import { useWalletERC20Balance } from 'src/hooks/useWalletERC20Balance';
 
 type BuyModalWithPermitProps = {
   offerId: string;
@@ -34,6 +36,7 @@ type BuyModalWithPermitProps = {
   offerTokenDecimals: number;
   buyerTokenAddress: string;
   buyerTokenDecimals: number;
+  sellerAddress: string;
   triggerTableRefresh: Dispatch<SetStateAction<boolean>>;
 };
 
@@ -45,6 +48,7 @@ type BuyWithPermitFormValues = {
   offerTokenDecimals: number;
   buyerTokenAddress: string;
   buyerTokenDecimals: number;
+  
 };
 
 export const BuyModalWithPermit: FC<
@@ -61,6 +65,8 @@ export const BuyModalWithPermit: FC<
     buyerTokenAddress,
     buyerTokenDecimals,
     triggerTableRefresh,
+    sellerAddress
+
   },
 }) => {
   const { account, provider } = useWeb3React();
@@ -74,13 +80,15 @@ export const BuyModalWithPermit: FC<
         offerTokenAddress: offerTokenAddress,
         offerTokenDecimals: offerTokenDecimals,
         buyerTokenAddress: buyerTokenAddress,
-        buyerTokenDecimals: buyerTokenDecimals,
+        buyerTokenDecimals: buyerTokenDecimals
       },
     });
 
   const [isSubmitting, setSubmitting] = useState<boolean>(false);
-  const [amountMax, setAmountMax] = useState<number>();
   const activeChain = useActiveChain();
+
+  const [offerTokenName,setOfferTokenName] = useState<string|undefined>("");
+  const [buyTokenSymbol,setBuyTokenSymbol] = useState<string|undefined>("");
 
   const realTokenYamUpgradeable = useContract(
     ContractsID.realTokenYamUpgradeable
@@ -91,6 +99,54 @@ export const BuyModalWithPermit: FC<
     provider as Web3Provider,
     account
   );
+  const offerToken = getContract<Erc20>(
+    offerTokenAddress,
+    Erc20ABI,
+    provider as Web3Provider,
+    account
+  )
+
+  const getOfferTokenInfos = async () => {
+
+    try{
+
+      // const response = await fetch("https://api.realt.community/v1/token");
+      // if(response.ok){
+
+      //   const jsonResponse = await response.json();
+
+      //   console.log(jsonResponse)
+
+      // }
+
+      const tokenName = await offerToken?.name();
+      setOfferTokenName(tokenName);
+
+
+    }catch(err){
+      console.log(err)
+    }
+
+  }
+  useEffect(() => {
+    if(offerToken) getOfferTokenInfos();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[offerToken])
+
+  const getBuyTokenInfos = async () => {
+
+    try{
+      const tokenSymbol = await buyerToken?.symbol();
+      setBuyTokenSymbol(tokenSymbol);
+    }catch(err){
+      console.log(err)
+    }
+
+  }
+  useEffect(() => {
+    if(buyerToken) getBuyTokenInfos();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[buyerToken])
 
   const {
     offers,
@@ -103,20 +159,7 @@ export const BuyModalWithPermit: FC<
     context.closeModal(id);
   }, [context, id, reset]);
 
-  useEffect(() => {
-    setAmountMax(
-      Number(
-        offers.find((offer) => offer.offerId === values.offerId)
-          ?.amount as string
-      )
-    );
-  }, [offers, values]);
-
-  useEffect(() => {
-    if (!amountMax) return;
-    setFieldValue('amount', amountMax);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [amountMax]);
+  const { balance, WalletERC20Balance } = useWalletERC20Balance(buyerTokenAddress,buyerTokenDecimals)
 
   const onHandleSubmit = useCallback(
     async (formValues: BuyWithPermitFormValues) => {
@@ -322,38 +365,89 @@ export const BuyModalWithPermit: FC<
     ]
   );
 
+  const maxTokenBuy: number|undefined = useMemo(() => {
+    if(!balance && amount) return undefined;
+    if(balance == undefined) return undefined;
+
+    if(balance >= amount) return amount;
+    return amount/balance;
+
+  },[balance,amount])
+
   return (
     <form onSubmit={onSubmit(onHandleSubmit)}>
       <Stack justify={'center'} align={'stretch'}>
-        <Box>
-          <Input.Label>{t('selectedOffer')}</Input.Label>
-          <Container>{offerId ? offerId : 'Offer not found'}</Container>
-        </Box>
-        <NumberInput
-          label={t('amount')}
-          required={true}
-          // disabled={!amountMax}
-          min={0}
-          max={amountMax}
-          step={amountMax}
-          showMax={true}
-          placeholder={t('amount')}
-          sx={{ flexGrow: 1 }}
-          {...getInputProps('amount')}
-        />
-        <Group grow={true}>
-          <Button color={'red'} onClick={onClose} aria-label={t('cancel')}>
-            {t('cancel')}
-          </Button>
-          <Button
-            type={'submit'}
-            loading={isSubmitting}
-            aria-label={t('confirm')}
-          >
-            {t('confirm')}
-          </Button>
-        </Group>
-      </Stack>
+
+      <Flex direction={"column"} gap={"sm"}>
+        <Text size={"xl"}>{t('selectedOffer')}</Text>
+        <Flex direction={"column"} gap={8}>
+            <Flex direction={"column"}>
+              <Text fw={700}>{t("offerId")}</Text>
+              <Text>{offerId}</Text>
+            </Flex>
+            <Flex direction={"column"}>
+              <Text fw={700}>{t("offerTokenName")}</Text>
+              <Text>{offerTokenName}</Text>
+            </Flex>
+            <Flex direction={"column"}>
+              <Text fw={700}>{t("sellerAddress")}</Text>
+              <Text>{sellerAddress}</Text>
+            </Flex>
+            <Flex direction={"column"} >
+              <Text fw={700}>{t("amount")}</Text>
+              <Text>{amount}</Text>
+            </Flex>
+            <Flex direction={"column"}>
+                <Text fw={700}>{t("price")}</Text>
+                <Text>{`${price} $${buyTokenSymbol}`}</Text>
+              </Flex>
+        </Flex>
+      </Flex>
+
+        {/* // <Box>
+        //   <Input.Label>{t('selectedOffer')}</Input.Label>
+        //   <Container>{offerId ? offerId : 'Offer not found'}</Container>
+        // </Box>  */}
+
+      <Divider />
+
+      <WalletERC20Balance 
+        tokenAddress={buyerTokenAddress}
+        tokenDecimals={buyerTokenDecimals}
+      />
+
+      <Flex direction={"column"} gap={"sm"} >
+        <Text size={"xl"}>{t("buy")}</Text>
+        <Flex direction={"column"} gap={8}>
+          <NumberInput
+            label={t('amount')}
+            required={true}
+            disabled={maxTokenBuy == 0 || maxTokenBuy == undefined}
+            min={0}
+            max={maxTokenBuy}
+            showMax={true}
+            placeholder={t('amount')}
+            sx={{ flexGrow: 1 }}
+            {...getInputProps('amount')}
+            groupMarginBottom={16}
+            setFieldValue={setFieldValue}
+          />
+          <Group grow={true}>
+            <Button color={'red'} onClick={onClose} aria-label={t('cancel')}>
+              {t('cancel')}
+            </Button>
+            <Button
+              type={'submit'}
+              loading={isSubmitting}
+              aria-label={t('confirm')}
+            >
+              {t('confirm')}
+            </Button>
+          </Group>
+        </Flex>
+      </Flex>
+        
+    </Stack>
     </form>
   );
 };

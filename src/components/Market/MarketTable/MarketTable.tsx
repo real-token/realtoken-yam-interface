@@ -199,12 +199,6 @@ export const MarketTable: FC = () => {
 
   const [nameFilterValue,setNamefilterValue] = useAtom(nameFilterValueAtom);
 
-  // console.log("nameFilterValue: ", nameFilterValue)
-
-  // const fuzzyFilter: FilterFn<any> = (row, columnId, filterValue): boolean => {
-    
-  // }
-
   const table = useReactTable({
     data: offers,
     columns: columns,

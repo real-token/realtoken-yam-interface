@@ -32,7 +32,8 @@
     "price": "Price/token",
     "amount": "Quantity",
     "cancel": "Cancel",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "buy": "Buy"
   },
   "delete": {
     "title": "Delete Offer",

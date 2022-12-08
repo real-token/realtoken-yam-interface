@@ -32,7 +32,8 @@
     "price": "Prix/Jeton",
     "amount": "Quantité",
     "cancel": "Annuler",
-    "confirm": "Confirmer"
+    "confirm": "Confirmer",
+    "buy": "Acheter"
   },
   "delete": {
     "title": "Supprimer",

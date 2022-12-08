@@ -22,22 +22,22 @@ import { NumberInput } from '../../NumberInput';
 type SellFormValues = {
   offerTokenAddress: string;
   buyerTokenAddress: string;
-  price: number;
-  amount: number;
+  price: number|undefined;
+  amount: number|undefined;
   buyerAddress: string;
   isPrivateOffer: boolean;
 };
 
 export const SellActions = () => {
   const { account, provider } = useWeb3React();
-  const { getInputProps, onSubmit, reset, setFieldValue, values } =
+  const { getInputProps, onSubmit, setFieldValue, values } =
     useForm<SellFormValues>({
       // eslint-disable-next-line object-shorthand
       initialValues: {
         offerTokenAddress: '',
         buyerTokenAddress: '',
-        price: 50,
-        amount: 1,
+        price: undefined,
+        amount: undefined,
         buyerAddress: ZERO_ADDRESS,
         isPrivateOffer: false,
       },
@@ -54,9 +54,9 @@ export const SellActions = () => {
   // 	(await offerToken.balanceOf(account)).toString()
   // ).shiftedBy(-offerTokenDecimals);
 
-  useEffect(() => {
-    setAmountMax(1);
-  }, [values]);
+  // useEffect(() => {
+  //   setAmountMax(1);
+  // }, [values]);
 
   useEffect(() => {
     if (!amountMax) return;
@@ -305,13 +305,15 @@ export const SellActions = () => {
   );
   const privateOffer = () => {
     if (getInputProps('isPrivateOffer', { type: 'checkbox' }).checked) {
-      return <TextInput
-      label={t('labelPrivateBuyerAddress')}
-      placeholder={t('placeholderOfferPrivatBuyerAddress')}
-      required={values.isPrivateOffer}
-      disabled={!values.isPrivateOffer}
-      {...getInputProps('buyerAddress')}
-    />
+      return(
+        <TextInput
+          label={t('labelPrivateBuyerAddress')}
+          placeholder={t('placeholderOfferPrivatBuyerAddress')}
+          required={values.isPrivateOffer}
+          disabled={!values.isPrivateOffer}
+          {...getInputProps('buyerAddress')}
+        />
+      )
     } else {
       return
     }

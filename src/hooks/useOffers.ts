@@ -45,8 +45,6 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
   const isAutoRefreshEnabled = useAtomValue(isRefreshedAutoAtom);
 
   useEffect(() => {
-    // interval.start();
-    // return interval.stop;
 	triggerRefresh(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
