@@ -199,12 +199,6 @@ export const MarketTable: FC = () => {
 
   const [nameFilterValue,setNamefilterValue] = useAtom(nameFilterValueAtom);
 
-  // console.log("nameFilterValue: ", nameFilterValue)
-
-  // const fuzzyFilter: FilterFn<any> = (row, columnId, filterValue): boolean => {
-    
-  // }
-
   const table = useReactTable({
     data: offers,
     columns: columns,
@@ -223,25 +217,22 @@ export const MarketTable: FC = () => {
   });
 
   return (
-    <>
-      
-      <Table
-        tableProps={{
-          highlightOnHover: true,
-          verticalSpacing: 'sm',
-          horizontalSpacing: 'xs',
-          sx: (theme) => ({
-            tableLayout: 'fixed',
-            border: theme.other.border(theme),
-            borderRadius: theme.radius[theme.defaultRadius as MantineSize],
-            borderCollapse: 'separate',
-            borderSpacing: 0,
-          }),
-        }}
-        table={table}
-        tablecaptionOptions={{ refreshState: refreshState, visible: true }}
-        TableSubRow={MarketSubRow}
-      />
-    </>
+    <Table
+      tableProps={{
+        highlightOnHover: true,
+        verticalSpacing: 'sm',
+        horizontalSpacing: 'xs',
+        sx: (theme) => ({
+          tableLayout: 'fixed',
+          border: theme.other.border(theme),
+          borderRadius: theme.radius[theme.defaultRadius as MantineSize],
+          borderCollapse: 'separate',
+          borderSpacing: 0,
+        }),
+      }}
+      table={table}
+      tablecaptionOptions={{ refreshState: refreshState, visible: true }}
+      TableSubRow={MarketSubRow}
+    />
   );
 };

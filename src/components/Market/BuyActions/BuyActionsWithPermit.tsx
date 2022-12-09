@@ -1,4 +1,4 @@
-import { Dispatch, FC, SetStateAction, useCallback } from 'react';
+import { Dispatch, FC, SetStateAction, useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ActionIcon, Group, Title } from '@mantine/core';
@@ -48,9 +48,14 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
     });
   }, [modals, t]);
 
+  const isAccountOffer: boolean = useMemo(() => {
+    if(!buyOffer || !account) return false;
+    return buyOffer.sellerAddress == account || buyOffer.buyerAddress == account
+  },[buyOffer, account])
+
   return (
-    <Group position={'center'}>
-      {
+    <>
+      { !isAccountOffer ? <Group position={'center'}>
         <ActionIcon
           color={'green'}
           onClick={() =>
@@ -59,7 +64,8 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
         >
           <IconShoppingCart size={16} aria-label={'Buy'} />
         </ActionIcon>
-      }
-    </Group>
+      </Group> : undefined }
+    </>
+    
   );
 };
