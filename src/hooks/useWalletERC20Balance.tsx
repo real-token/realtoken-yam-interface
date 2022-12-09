@@ -33,7 +33,7 @@ export const useWalletERC20Balance = (
 
         if(!account || !tokenERC20) return;
 
-        const balance = new BigNumber((await tokenERC20.balanceOf(account)).toNumber());
+        const balance = new BigNumber((await tokenERC20.balanceOf(account)).toString());
 
         setBigNumberbalance(balance);
         setBalance(balance ? parseFloat(balance.shiftedBy(-tokenDecimals).toFixed(10).toString()) : undefined)
