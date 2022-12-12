@@ -1,13 +1,11 @@
-import { useCallback, useEffect, useState } from 'react';
+/* eslint-disable react/display-name */
+import { forwardRef, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { Box, Button, Checkbox, Group, Stack, TextInput } from '@mantine/core';
+import { Box, Button, Checkbox, Flex, Group, Select, SelectItem, Stack, TextInput, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { showNotification, updateNotification } from '@mantine/notifications';
 import { useWeb3React } from '@web3-react/core';
-
 import BigNumber from 'bignumber.js';
-
 import { CoinBridgeToken, Erc20, Erc20ABI, coinBridgeTokenABI } from 'src/abis';
 import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { ZERO_ADDRESS } from 'src/constants';
@@ -16,28 +14,37 @@ import coinBridgeTokenPermitSignature from 'src/hooks/coinBridgeTokenPermitSigna
 import erc20PermitSignature from 'src/hooks/erc20PermitSignature';
 import { useContract } from 'src/hooks/useContract';
 import { getContract } from 'src/utils';
-
 import { NumberInput } from '../../NumberInput';
+import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
+import { PropertiesToken } from 'src/types/PropertiesToken';
+import { useAllowedBuyTokens } from 'src/hooks/useAllowedBuyTokens';
+import { AllowedBuyToken } from 'src/types/allowedBuyTokens';
+
+interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
+  label: string;
+  uuid: string;
+  value: string;
+}
 
 type SellFormValues = {
   offerTokenAddress: string;
   buyerTokenAddress: string;
-  price: number;
-  amount: number;
+  price: number|undefined;
+  amount: number|undefined;
   buyerAddress: string;
   isPrivateOffer: boolean;
 };
 
 export const SellActions = () => {
   const { account, provider } = useWeb3React();
-  const { getInputProps, onSubmit, reset, setFieldValue, values } =
+  const { getInputProps, onSubmit, setFieldValue, values } =
     useForm<SellFormValues>({
       // eslint-disable-next-line object-shorthand
       initialValues: {
         offerTokenAddress: '',
         buyerTokenAddress: '',
-        price: 50,
-        amount: 1,
+        price: undefined,
+        amount: undefined,
         buyerAddress: ZERO_ADDRESS,
         isPrivateOffer: false,
       },
@@ -50,13 +57,34 @@ export const SellActions = () => {
 
   const { t } = useTranslation('modals', { keyPrefix: 'sell' });
 
-  // const sellerBalance = new BigNumber(
-  // 	(await offerToken.balanceOf(account)).toString()
-  // ).shiftedBy(-offerTokenDecimals);
+  const { propertiesToken } = usePropertiesToken();
+  const { allowedBuyTokens } = useAllowedBuyTokens();
 
-  useEffect(() => {
-    setAmountMax(1);
-  }, [values]);
+  const formatedPropetiesTokenForSelect: SelectItem[] = useMemo((): SelectItem[] => {
+    if(!propertiesToken) return [];
+    const formated: SelectItem[] = [];
+    propertiesToken.map((propertyTokenInfo: PropertiesToken) => formated.push({value: propertyTokenInfo.contractAddress, label: propertyTokenInfo.shortName}))
+    return formated;
+  },[propertiesToken])
+
+  const formatedAllowBuyTokenForSelect: SelectItem[] = useMemo((): SelectItem[] => {
+    if(!allowedBuyTokens) return [];
+    const formated: SelectItem[] = [];
+    allowedBuyTokens.map((allowedBuyToken: AllowedBuyToken) => formated.push({value: allowedBuyToken.contractAddress, label: allowedBuyToken.symbol}))
+    return formated;
+  },[allowedBuyTokens])
+
+  const allowedBuyTokensForSelect: SelectItem[] = useMemo((): SelectItem[] => {
+      if(!formatedAllowBuyTokenForSelect || !formatedPropetiesTokenForSelect) return [];
+      const concat = formatedAllowBuyTokenForSelect.concat(formatedPropetiesTokenForSelect);
+      return concat.filter(token => token.value !== values.offerTokenAddress);
+  },[formatedPropetiesTokenForSelect,formatedAllowBuyTokenForSelect,values])
+
+  const allowedSellTokensForSelect: SelectItem[] = useMemo((): SelectItem[] => {
+    if(!formatedAllowBuyTokenForSelect || !formatedPropetiesTokenForSelect) return [];
+    const concat = formatedAllowBuyTokenForSelect.concat(formatedPropetiesTokenForSelect);
+    return concat.filter(token => token.value !== values.buyerTokenAddress);
+  },[formatedPropetiesTokenForSelect,formatedAllowBuyTokenForSelect,values])
 
   useEffect(() => {
     if (!amountMax) return;
@@ -305,35 +333,71 @@ export const SellActions = () => {
   );
   const privateOffer = () => {
     if (getInputProps('isPrivateOffer', { type: 'checkbox' }).checked) {
-      return <TextInput
-      label={t('labelPrivateBuyerAddress')}
-      placeholder={t('placeholderOfferPrivatBuyerAddress')}
-      required={values.isPrivateOffer}
-      disabled={!values.isPrivateOffer}
-      {...getInputProps('buyerAddress')}
-    />
+      return(
+        <TextInput
+          label={t('labelPrivateBuyerAddress')}
+          placeholder={t('placeholderOfferPrivatBuyerAddress')}
+          required={values.isPrivateOffer}
+          disabled={!values.isPrivateOffer}
+          {...getInputProps('buyerAddress')}
+        />
+      )
     } else {
       return
     }
   }
-  
+
+  const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
+    ({ uuid, label, value, ...others }: ItemProps, ref) => (
+      <Flex ref={ref} {...others} key={label} gap={"sx"} direction={"column"}>
+          <Text fz={"sm"} fw={700}>{label}</Text>
+          <Text fz={"xs"} fs={"italic"}>{value}</Text>
+      </Flex>
+    )
+  );
+
   return (
     <Box sx={{ maxWidth: 400 }} mx={'auto'}>
       <h3>{t('titleFormCreateOffer')}</h3>
       <form onSubmit={onSubmit(onHandleSubmit)}>
         <Stack justify={'center'} align={'stretch'}>
-          <TextInput
+
+          <Select
+            label={t('offerTokenAddress')}
+            placeholder={t('placeholderOfferSellTokenAddress')}
+            searchable={true}
+            required={true}
+            nothingFound={"No property found"}
+            itemComponent={SelectItem}
+            data={allowedSellTokensForSelect}
+            {...getInputProps('offerTokenAddress')}
+          />
+
+          {/* <TextInput
             label={t('offerTokenAddress')}
             placeholder={t('placeholderOfferSellTokenAddress')}
             required={true}
             {...getInputProps('offerTokenAddress')}
+          /> */}
+
+          <Select
+            label={t('buyerTokenAddress')}
+            placeholder={t('placeholderOfferBuyTokenAddress')}
+            searchable={true}
+            nothingFound={"No property found"}
+            itemComponent={SelectItem}
+            data={allowedBuyTokensForSelect}
+            required={true}
+            {...getInputProps('buyerTokenAddress')}
           />
-          <TextInput
+
+          {/* <TextInput
             label={t('buyerTokenAddress')}
             placeholder={t('placeholderOfferBuyTokenAddress')}
             required={true}
             {...getInputProps('buyerTokenAddress')}
-          />
+          /> */}
+
           <NumberInput
             label={t('price')}
             placeholder={t('price')}

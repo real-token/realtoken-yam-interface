@@ -3,26 +3,31 @@ import { forwardRef, useRef } from 'react';
 import {
   Button,
   ButtonProps,
-  Group,
   NumberInput as MantineInput,
   NumberInputProps as MantineNumberInputProps,
   NumberInputHandlers,
+  MantineNumberSize,
+  Flex,
+  Loader,
 } from '@mantine/core';
 
 import { FRC } from 'src/types';
+import { SetFieldValue } from '@mantine/form/lib/types';
 
 type NumberInputProps = {
   showMax?: boolean | undefined;
   showMin?: boolean | undefined;
   controlsProps?: ButtonProps;
+  groupMarginBottom: MantineNumberSize;
+  setFieldValue: SetFieldValue<unknown>
 } & MantineNumberInputProps;
 
 export const NumberInput: FRC<NumberInputProps, HTMLInputElement> = forwardRef(
-  ({ disabled, showMin, showMax, controlsProps, ...props }, ref) => {
+  ({ disabled, showMin, showMax, controlsProps, groupMarginBottom, setFieldValue, ...props }, ref) => {
     const handlers = useRef<NumberInputHandlers>();
 
     return (
-      <Group spacing={5} align={'flex-end'}>
+      <Flex gap={5} align={'flex-end'} mb={groupMarginBottom ?? 0}>
         <MantineInput
           hideControls={true}
           handlersRef={handlers}
@@ -47,13 +52,13 @@ export const NumberInput: FRC<NumberInputProps, HTMLInputElement> = forwardRef(
             aria-label={'Max'}
             variant={'light'}
             disabled={disabled}
-            onClick={() => handlers.current?.increment()}
+            onClick={() => setFieldValue("amount",props.max)}
             {...controlsProps}
           >
-            {'Max'}
+            {!props.max ? <Loader size={"xs"}/> : 'Max'}
           </Button>
         )}
-      </Group>
+      </Flex>
     );
   }
 );

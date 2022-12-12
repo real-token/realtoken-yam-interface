@@ -14,7 +14,7 @@
     "cancel": "Annuler",
     "confirm": "Confirmer",
     "labelPrivateBuyerAddress": "Adresse de l'acheteur (Uniquement pour les offres privées)",
-    "placeholderOfferSellTokenAddress": "Renseigner l'adresse du jeton à vendre",
+    "placeholderOfferSellTokenAddress": "Rechercher l'adresse du jeton à vendre",
     "placeholderOfferBuyTokenAddress": "Renseigner l'adresse du jeton d'achat",
     "placeholderOfferPrivatBuyerAddress": "Renseigner l'adresse de l'acheteur privé",
     "buttonCreateOffer": "Autoriser & Créer l'offre",
@@ -32,7 +32,8 @@
     "price": "Prix/Jeton",
     "amount": "Quantité",
     "cancel": "Annuler",
-    "confirm": "Confirmer"
+    "confirm": "Confirmer",
+    "buy": "Acheter"
   },
   "delete": {
     "title": "Supprimer",
