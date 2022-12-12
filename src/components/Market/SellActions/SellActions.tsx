@@ -17,6 +17,8 @@ import { getContract } from 'src/utils';
 import { NumberInput } from '../../NumberInput';
 import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
 import { PropertiesToken } from 'src/types/PropertiesToken';
+import { useAllowedBuyTokens } from 'src/hooks/useAllowedBuyTokens';
+import { AllowedBuyToken } from 'src/types/allowedBuyTokens';
 
 interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
   label: string;
@@ -56,24 +58,26 @@ export const SellActions = () => {
   const { t } = useTranslation('modals', { keyPrefix: 'sell' });
 
   const { propertiesToken } = usePropertiesToken();
+  const { allowedBuyTokens } = useAllowedBuyTokens();
 
   const formatedPropetiesTokenForSelect: SelectItem[] = useMemo((): SelectItem[] => {
     if(!propertiesToken) return [];
-
-    console.log(propertiesToken)
-
     const formated: SelectItem[] = [];
     propertiesToken.map((propertyTokenInfo: PropertiesToken) => formated.push({value: propertyTokenInfo.contractAddress, label: propertyTokenInfo.shortName}))
     return formated;
   },[propertiesToken])
 
-  // const sellerBalance = new BigNumber(
-  // 	(await offerToken.balanceOf(account)).toString()
-  // ).shiftedBy(-offerTokenDecimals);
+  const formatedAllowBuyTokenForSelect: SelectItem[] = useMemo((): SelectItem[] => {
+    if(!allowedBuyTokens) return [];
+    const formated: SelectItem[] = [];
+    allowedBuyTokens.map((allowedBuyToken: AllowedBuyToken) => formated.push({value: allowedBuyToken.contractAddress, label: allowedBuyToken.symbol}))
+    return formated;
+  },[allowedBuyTokens])
 
-  // useEffect(() => {
-  //   setAmountMax(1);
-  // }, [values]);
+  const allowedBuyTokensForSelect: SelectItem[] = useMemo((): SelectItem[] => {
+      if(!formatedAllowBuyTokenForSelect || !formatedPropetiesTokenForSelect) return [];
+      return formatedAllowBuyTokenForSelect.concat(formatedPropetiesTokenForSelect.filter(token => token.value !== values.offerTokenAddress))
+  },[formatedPropetiesTokenForSelect,formatedAllowBuyTokenForSelect,values])
 
   useEffect(() => {
     if (!amountMax) return;
@@ -351,15 +355,16 @@ export const SellActions = () => {
       <form onSubmit={onSubmit(onHandleSubmit)}>
         <Stack justify={'center'} align={'stretch'}>
 
-        <Select
-          label={t('offerTokenAddress')}
-          placeholder={t('placeholderOfferSellTokenAddress')}
-          searchable={true}
-          nothingFound={"No property found"}
-          itemComponent={SelectItem}
-          data={formatedPropetiesTokenForSelect}
-          {...getInputProps('offerTokenAddress')}
-        />
+          <Select
+            label={t('offerTokenAddress')}
+            placeholder={t('placeholderOfferSellTokenAddress')}
+            searchable={true}
+            required={true}
+            nothingFound={"No property found"}
+            itemComponent={SelectItem}
+            data={formatedPropetiesTokenForSelect}
+            {...getInputProps('offerTokenAddress')}
+          />
 
           {/* <TextInput
             label={t('offerTokenAddress')}
@@ -367,12 +372,25 @@ export const SellActions = () => {
             required={true}
             {...getInputProps('offerTokenAddress')}
           /> */}
-          <TextInput
+
+          <Select
+            label={t('buyerTokenAddress')}
+            placeholder={t('placeholderOfferBuyTokenAddress')}
+            searchable={true}
+            nothingFound={"No property found"}
+            itemComponent={SelectItem}
+            data={allowedBuyTokensForSelect}
+            required={true}
+            {...getInputProps('buyerTokenAddress')}
+          />
+
+          {/* <TextInput
             label={t('buyerTokenAddress')}
             placeholder={t('placeholderOfferBuyTokenAddress')}
             required={true}
             {...getInputProps('buyerTokenAddress')}
-          />
+          /> */}
+
           <NumberInput
             label={t('price')}
             placeholder={t('price')}

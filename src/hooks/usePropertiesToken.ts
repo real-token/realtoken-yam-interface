@@ -31,19 +31,6 @@ export const usePropertiesToken = (): usePropertiesTokenReturn => {
             
             // BYPASS IF NETWORK IS GOERLI / TMP: WAIT FOR API TO BE UPDATED
             if(chainId == 5){
-
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-
                 const properties: PropertiesToken[] = [
                     {
                         uuid: "15777 Ardmore",
@@ -103,7 +90,6 @@ export const usePropertiesToken = (): usePropertiesTokenReturn => {
                 ]
 
                 setPropertiesToken(properties);
-
                 return;
             }
 
@@ -130,7 +116,7 @@ export const usePropertiesToken = (): usePropertiesTokenReturn => {
         }
     }
 
-    useEffect(() => { getPropertiesTokenList() },[])
+    useEffect(() => { getPropertiesTokenList() },[chainId])
 
     return{
         propertiesToken
