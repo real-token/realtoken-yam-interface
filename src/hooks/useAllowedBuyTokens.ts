@@ -9,7 +9,6 @@ type useAllowedBuyTokensReturn = {
 }
 
 const getRightAllowBuyTokens = (chainId: number|undefined): AllowedBuyToken[]  => {
-    if(!chainId) return [];
     switch(chainId){
         case 5:
             return goerliAllowedBuyTokens;
@@ -21,14 +20,9 @@ const getRightAllowBuyTokens = (chainId: number|undefined): AllowedBuyToken[]  =
 export const useAllowedBuyTokens = (): useAllowedBuyTokensReturn => {
 
     const { chainId } = useWeb3React();
-    const [allowedBuyTokens,setAllowedBuyTokens] = useState<AllowedBuyToken[]>([]);
-
-    useEffect(() => {
-        setAllowedBuyTokens(getRightAllowBuyTokens(chainId))
-    },[chainId])
 
     return{
-        allowedBuyTokens
+        allowedBuyTokens: getRightAllowBuyTokens(chainId)
     }
 
 }

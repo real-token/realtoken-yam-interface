@@ -76,7 +76,14 @@ export const SellActions = () => {
 
   const allowedBuyTokensForSelect: SelectItem[] = useMemo((): SelectItem[] => {
       if(!formatedAllowBuyTokenForSelect || !formatedPropetiesTokenForSelect) return [];
-      return formatedAllowBuyTokenForSelect.concat(formatedPropetiesTokenForSelect.filter(token => token.value !== values.offerTokenAddress))
+      const concat = formatedAllowBuyTokenForSelect.concat(formatedPropetiesTokenForSelect);
+      return concat.filter(token => token.value !== values.offerTokenAddress);
+  },[formatedPropetiesTokenForSelect,formatedAllowBuyTokenForSelect,values])
+
+  const allowedSellTokensForSelect: SelectItem[] = useMemo((): SelectItem[] => {
+    if(!formatedAllowBuyTokenForSelect || !formatedPropetiesTokenForSelect) return [];
+    const concat = formatedAllowBuyTokenForSelect.concat(formatedPropetiesTokenForSelect);
+    return concat.filter(token => token.value !== values.buyerTokenAddress);
   },[formatedPropetiesTokenForSelect,formatedAllowBuyTokenForSelect,values])
 
   useEffect(() => {
@@ -362,7 +369,7 @@ export const SellActions = () => {
             required={true}
             nothingFound={"No property found"}
             itemComponent={SelectItem}
-            data={formatedPropetiesTokenForSelect}
+            data={allowedSellTokensForSelect}
             {...getInputProps('offerTokenAddress')}
           />
 

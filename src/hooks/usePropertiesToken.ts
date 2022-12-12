@@ -12,25 +12,28 @@ export const usePropertiesToken = (): usePropertiesTokenReturn => {
     const { chainId } = useWeb3React();
     const [propertiesToken,setPropertiesToken] = useState<PropertiesToken[]>([]);
 
-    const convertNetworkToValue = (chainId: number|undefined): string[] => {
-        if(!chainId) return []
+    const getContractAddressFromChainId = (propertyToken: APIPropertiesToken): string|undefined => {
         switch(chainId){
             case 1:
-                return ["ethereumContract"];
+                propertyToken.ethereumContract;
             case 100:
-                return ["gnosisContract","xDaiContract"];
-            case 5:
-                return ["goerliContract"]
+                return propertyToken.gnosisContract ? propertyToken.gnosisContract : propertyToken.xDaiContract;
+            // case 5:
+            //     return propertyToken.goerliContract
             default:
-                return [];
+                return undefined;
         }
     }
 
     const getPropertiesTokenList = async () => {
+        console.log()
         try{
+
+            if(!chainId) setPropertiesToken([]);
             
             // BYPASS IF NETWORK IS GOERLI / TMP: WAIT FOR API TO BE UPDATED
             if(chainId == 5){
+                console.log()
                 const properties: PropertiesToken[] = [
                     {
                         uuid: "15777 Ardmore",
@@ -93,19 +96,24 @@ export const usePropertiesToken = (): usePropertiesTokenReturn => {
                 return;
             }
 
-            const rightChainId: string[] = convertNetworkToValue(chainId)
-
             const response = await fetch("https://api.realt.community/v1/token");
 
             if(response.ok){
                 const responseJson: APIPropertiesToken[] = await response.json();
-
                 const propertiesToken: PropertiesToken[] = [];
-                responseJson.forEach((propertyToken: APIPropertiesToken) => propertiesToken.push({
-                    uuid: propertyToken.uuid,
-                    shortName: propertyToken.shortName,
-                    contractAddress: rightChainId[0] ?? rightChainId[1]
-                }));
+                responseJson.forEach((propertyToken: APIPropertiesToken) => {
+                    const contractAddress = getContractAddressFromChainId(propertyToken);
+                    if(contractAddress){
+                        propertiesToken.push({
+                            uuid: propertyToken.uuid,
+                            shortName: propertyToken.shortName,
+                            contractAddress: contractAddress
+                        })
+                    }
+                    
+                });
+
+                console.log(propertiesToken)
 
                 setPropertiesToken(propertiesToken);
 
@@ -116,7 +124,7 @@ export const usePropertiesToken = (): usePropertiesTokenReturn => {
         }
     }
 
-    useEffect(() => { getPropertiesTokenList() },[chainId])
+    useEffect(() => { if(chainId) getPropertiesTokenList() },[chainId])
 
     return{
         propertiesToken
