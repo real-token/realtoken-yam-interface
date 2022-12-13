@@ -26,8 +26,6 @@ export const MarketSubRow: FC<TableSubRowProps<Offer>> = ({
 }) => {
   const { t } = useTranslation('buy', { keyPrefix: 'subRow' });
 
-  console.count("test")
-
   const columns = useMemo<ColumnDef<TokenInfoShow>[]>(
     () => [
       {
