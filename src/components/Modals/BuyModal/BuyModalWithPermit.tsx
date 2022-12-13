@@ -366,13 +366,16 @@ export const BuyModalWithPermit: FC<
   );
 
   const maxTokenBuy: number|undefined = useMemo(() => {
-    if(!balance && amount) return undefined;
+
+    console.log(price);
+    console.log(balance)
+
+    if(!balance && price) return undefined;
     if(balance == undefined) return undefined;
 
-    if(balance >= amount) return amount;
-    return amount/balance;
+    return balance/price;
 
-  },[balance,amount])
+  },[balance,price])
 
   return (
     <form onSubmit={onSubmit(onHandleSubmit)}>
