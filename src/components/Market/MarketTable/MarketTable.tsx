@@ -29,6 +29,8 @@ import React from 'react';
 export const MarketTable: FC = () => {
   const { offers, refreshState } = useOffers(false, false, true);
 
+  // console.count("TES2")
+
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'offerId', desc: false },
   ]);

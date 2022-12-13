@@ -26,6 +26,8 @@ export const MarketSubRow: FC<TableSubRowProps<Offer>> = ({
 }) => {
   const { t } = useTranslation('buy', { keyPrefix: 'subRow' });
 
+  console.count("test")
+
   const columns = useMemo<ColumnDef<TokenInfoShow>[]>(
     () => [
       {
@@ -119,34 +121,34 @@ export const MarketSubRow: FC<TableSubRowProps<Offer>> = ({
     100
   ).toFixed(2);
 
-  const tokenInfoShow: TokenInfoShow = {
-    fullName: tokenInfo.fullName,
-    initialPrice: tokenInfo.tokenPrice.toString(),
-    offerPrice: price,
-    priceDifference: `${priceDifference} %`,
-  };
+  const tokenInfoShow: TokenInfoShow[] = useMemo(() => {
+    return [{
+      fullName: tokenInfo.fullName,
+      initialPrice: tokenInfo.tokenPrice.toString(),
+      offerPrice: price,
+      priceDifference: `${priceDifference} %`,
+      // fullName: "",
+      // initialPrice: "tokenInfo.tokenPrice.toString()",
+      // offerPrice: price,
+      // priceDifference: "`${priceDifference} %`",
+    }]
+  },[tokenInfo,price,priceDifference]);
 
   const table = useReactTable({
-    data: [tokenInfoShow],
+    data: tokenInfoShow,
     columns: columns,
     getCoreRowModel: getCoreRowModel(),
     meta: { colSpan: 1 },
   });
 
   return (
-    <>
-      {
-        <>
-          <Table
-            tableProps={{
-              verticalSpacing: 'xs',
-              horizontalSpacing: 'xs',
-              sx: { tableLayout: 'fixed' },
-            }}
-            table={table}
-          />
-        </>
-      }
-    </>
+    <Table
+      tableProps={{
+        verticalSpacing: 'xs',
+        horizontalSpacing: 'xs',
+        sx: { tableLayout: 'fixed' },
+      }}
+      table={table}
+    />
   );
 };
