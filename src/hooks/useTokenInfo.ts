@@ -35,7 +35,6 @@ export const useTokenInfo: UseTokenInfo = (sellerTokenAddress,buyerTokenAddress)
         fullName: contract.fullName != "" ? contract.fullName : contract.shortName,
         tokenPrice: contract.officialPrice ?? 0,
       };
-      console.log(tokenInfoFetched)
     }
 
     if (contract && tokenInfoFetched) {
