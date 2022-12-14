@@ -121,7 +121,7 @@ export const MarketSubRow: FC<TableSubRowProps<Offer>> = ({
 
   const tokenInfoShow: TokenInfoShow = {
     fullName: tokenInfo.fullName,
-    initialPrice: tokenInfo.tokenPrice.toString(),
+    initialPrice: tokenInfo.tokenPrice ? tokenInfo.tokenPrice.toString() : "",
     offerPrice: price,
     priceDifference: `${priceDifference} %`,
   };

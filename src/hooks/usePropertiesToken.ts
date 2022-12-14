@@ -26,7 +26,6 @@ export const usePropertiesToken = (): usePropertiesTokenReturn => {
     }
 
     const getPropertiesTokenList = async () => {
-        console.log()
         try{
 
             if(!chainId) setPropertiesToken([]);

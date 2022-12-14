@@ -15,5 +15,6 @@ export type APIPropertiesToken = {
 export type PropertiesToken = {
     uuid: string
     shortName: string
+    fullName: string
     contractAddress: string
 }
