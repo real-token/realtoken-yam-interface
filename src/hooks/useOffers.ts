@@ -36,6 +36,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
       buyerAddress: t('loading'),
       price: t('loading'),
       amount: t('loading'),
+	  hasPropertyToken: false
     },
   ]);
 
