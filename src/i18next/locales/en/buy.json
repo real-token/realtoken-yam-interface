@@ -22,7 +22,7 @@
     "buyerTokenName": "Buyer Token",
     "sellerAddress": "Seller Address",
     "price": "Price/token",
-    "initialPrice": "Initial Price",
+    "officialPrice": "Official price (RealT)",
     "offerPrice": "Offer Price",
     "priceDifference": "Price Difference",
     "amount": "Quantity",

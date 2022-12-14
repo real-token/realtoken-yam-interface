@@ -21,7 +21,7 @@ type TokenInfoShow = {
 };
 export const MarketSubRow: FC<TableSubRowProps<Offer>> = ({
   row: {
-    original: { offerTokenAddress, price },
+    original: { offerTokenAddress, buyerTokenAddress, price },
   },
 }) => {
   const { t } = useTranslation('buy', { keyPrefix: 'subRow' });
@@ -51,7 +51,7 @@ export const MarketSubRow: FC<TableSubRowProps<Offer>> = ({
       {
         id: 'initialPrice',
         accessorKey: 'initialPrice',
-        header: () => <Title order={6}>{t('initialPrice')}</Title>,
+        header: () => <Title order={6}>{t('officialPrice')}</Title>,
         cell: ({ getValue }) => (
           <Text
             size={'sm'}
@@ -112,7 +112,7 @@ export const MarketSubRow: FC<TableSubRowProps<Offer>> = ({
     [t]
   );
 
-  const { tokenInfo } = useTokenInfo(offerTokenAddress);
+  const { tokenInfo } = useTokenInfo(offerTokenAddress,buyerTokenAddress);
 
   const priceDifference = (
     ((Number(price) - tokenInfo.tokenPrice) / tokenInfo.tokenPrice) *
@@ -122,9 +122,9 @@ export const MarketSubRow: FC<TableSubRowProps<Offer>> = ({
   const tokenInfoShow: TokenInfoShow[] = useMemo(() => {
     return [{
       fullName: tokenInfo.fullName,
-      initialPrice: tokenInfo.tokenPrice.toString(),
-      offerPrice: price,
-      priceDifference: `${priceDifference} %`,
+    initialPrice: tokenInfo.tokenPrice ? tokenInfo.tokenPrice.toString() : "",
+    offerPrice: price,
+    priceDifference: `${priceDifference} %`,
     }]
   },[tokenInfo,price,priceDifference]);
 
