@@ -21,6 +21,7 @@ export type Offer = {
   buyerAddress: string;
   price: string;
   amount: string;
+  hasPropertyToken: boolean;
 };
 
 export type UseOffers = (

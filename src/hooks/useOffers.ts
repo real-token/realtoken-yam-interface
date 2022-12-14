@@ -15,6 +15,7 @@ import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { useAtomValue } from 'jotai';
 import { isRefreshedAutoAtom } from 'src/states';
+import { usePropertiesToken } from './usePropertiesToken';
 
 // filterSeller = 0 when fetching all offers, = 1 when fetching offers of the connected wallet
 export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount) => {
@@ -37,6 +38,8 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
       amount: t('loading'),
     },
   ]);
+
+  const { propertiesToken } = usePropertiesToken();
 
   const realTokenYamUpgradeable = useContract(ContractsID.realTokenYamUpgradeable);
 
@@ -104,6 +107,8 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
 					const offerTokenDecimals = <number>await offerToken?.decimals();
 					const buyerTokenDecimals = <number>await buyerToken?.decimals();
 
+					const hasPropertyToken = propertiesToken.find(propertyToken => (propertyToken.contractAddress == buyerTokenAddress || propertyToken.contractAddress == offerTokenAddress));
+
 					const bnAmount = new BigNumber(amount.toString());
 					const offerData: Offer = {
 						offerId: i.toString(),
@@ -117,6 +122,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
 						buyerAddress: buyerAddress,
 						price: (new BigNumber(price.toString())).shiftedBy(- buyerTokenDecimals).toFixed(10).toString(),
 						amount: (bnAmount.shiftedBy(- offerTokenDecimals)).toFixed(10).toString(),
+						hasPropertyToken: hasPropertyToken ? true : false
 					};
 
 					const condFiltreZeroAmount = filterZeroAmount ? !bnAmount.isZero() : true;
@@ -152,7 +158,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
 
       	return offersData;
     },
-    [realTokenYamUpgradeable, isRefreshing, offersData, provider, account, filterSeller, filterBuyer]
+    [realTokenYamUpgradeable, isRefreshing, offersData, provider, account, filterSeller, filterBuyer,propertiesToken]
   );
 
   return {

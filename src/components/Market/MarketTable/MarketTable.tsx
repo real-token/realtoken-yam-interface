@@ -57,30 +57,37 @@ export const MarketTable: FC = () => {
             id: 'offerId',
             accessorKey: 'offerId',
             header: t('offerId'),
-            cell: ({ row, getValue }) => (
-              <Group noWrap={true} spacing={'xs'}>
-                <ActionIcon
-                  variant={'transparent'}
-                  color={'brand'}
-                  onClick={() => row.toggleExpanded()}
-                >
-                  {row.getIsExpanded() ? (
-                    <IconChevronUp size={16} />
-                  ) : (
-                    <IconChevronDown size={16} />
-                  )}
-                </ActionIcon>
-                <Text
-                  size={'sm'}
-                  sx={{
-                    textOverflow: 'ellipsis',
-                    overflow: 'hidden',
-                  }}
-                >
-                  {getValue()}
-                </Text>
-              </Group>
-            ),
+            cell: ({ row, getValue }) => { 
+
+              if(row.original.hasPropertyToken){
+                return (
+                  <Group noWrap={true} spacing={'xs'}>
+                    <ActionIcon
+                      variant={'transparent'}
+                      color={'brand'}
+                      onClick={() => row.toggleExpanded()}
+                    >
+                      {row.getIsExpanded() ? (
+                        <IconChevronUp size={16} />
+                      ) : (
+                        <IconChevronDown size={16} />
+                      )}
+                    </ActionIcon>
+                    <Text
+                      size={'sm'}
+                      sx={{
+                        textOverflow: 'ellipsis',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      {getValue()}
+                    </Text>
+                  </Group>
+                )
+              }else{
+                return undefined;
+              }
+            },
             enableSorting: true,
             meta: { colSpan: 2 },
           },
@@ -234,7 +241,7 @@ export const MarketTable: FC = () => {
       }}
       table={table}
       tablecaptionOptions={{ refreshState: refreshState, visible: true }}
-      TableSubRow={MarketSubRow}
+      // TableSubRow={MarketSubRow}
     />
   );
 };
