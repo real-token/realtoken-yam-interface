@@ -58,7 +58,6 @@ export const MarketTable: FC = () => {
             accessorKey: 'offerId',
             header: t('offerId'),
             cell: ({ row, getValue }) => { 
-
               if(row.original.hasPropertyToken){
                 return (
                   <Group noWrap={true} spacing={'xs'}>
@@ -241,7 +240,7 @@ export const MarketTable: FC = () => {
       }}
       table={table}
       tablecaptionOptions={{ refreshState: refreshState, visible: true }}
-      // TableSubRow={MarketSubRow}
+      TableSubRow={MarketSubRow}
     />
   );
 };
