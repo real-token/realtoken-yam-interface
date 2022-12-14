@@ -29,6 +29,8 @@ import React from 'react';
 export const MarketTable: FC = () => {
   const { offers, refreshState } = useOffers(false, false, true);
 
+  // console.count("TES2")
+
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'offerId', desc: false },
   ]);
@@ -55,30 +57,36 @@ export const MarketTable: FC = () => {
             id: 'offerId',
             accessorKey: 'offerId',
             header: t('offerId'),
-            cell: ({ row, getValue }) => (
-              <Group noWrap={true} spacing={'xs'}>
-                <ActionIcon
-                  variant={'transparent'}
-                  color={'brand'}
-                  onClick={() => row.toggleExpanded()}
-                >
-                  {row.getIsExpanded() ? (
-                    <IconChevronUp size={16} />
-                  ) : (
-                    <IconChevronDown size={16} />
-                  )}
-                </ActionIcon>
-                <Text
-                  size={'sm'}
-                  sx={{
-                    textOverflow: 'ellipsis',
-                    overflow: 'hidden',
-                  }}
-                >
-                  {getValue()}
-                </Text>
-              </Group>
-            ),
+            cell: ({ row, getValue }) => { 
+              if(row.original.hasPropertyToken){
+                return (
+                  <Group noWrap={true} spacing={'xs'}>
+                    <ActionIcon
+                      variant={'transparent'}
+                      color={'brand'}
+                      onClick={() => row.toggleExpanded()}
+                    >
+                      {row.getIsExpanded() ? (
+                        <IconChevronUp size={16} />
+                      ) : (
+                        <IconChevronDown size={16} />
+                      )}
+                    </ActionIcon>
+                    <Text
+                      size={'sm'}
+                      sx={{
+                        textOverflow: 'ellipsis',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      {getValue()}
+                    </Text>
+                  </Group>
+                )
+              }else{
+                return undefined;
+              }
+            },
             enableSorting: true,
             meta: { colSpan: 2 },
           },

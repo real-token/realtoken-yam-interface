@@ -24,7 +24,7 @@
     "buyerTokenName": "Jeton d'achat",
     "sellerAddress": "Adresse du vendeur",
     "price": "Prix/Jeton",
-    "initialPrice": "Prix initial (RealT)",
+    "officialPrice": "Prix officiel (RealT)",
     "offerPrice": "Prix proposé",
     "priceDifference": "Différence de prix",
     "amount": "Quantité",
