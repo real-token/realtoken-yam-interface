@@ -51,7 +51,7 @@ export const MarketSubRow: FC<TableSubRowProps<Offer>> = ({
       {
         id: 'initialPrice',
         accessorKey: 'initialPrice',
-        header: () => <Title order={6}>{t('initialPrice')}</Title>,
+        header: () => <Title order={6}>{t('officialPrice')}</Title>,
         cell: ({ getValue }) => (
           <Text
             size={'sm'}
