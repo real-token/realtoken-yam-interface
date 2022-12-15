@@ -61,7 +61,7 @@
     "buyerTokenName": "Jeton d'achat",
     "sellerAddress": "Adresse du vendeur",
     "price": "Prix",
-    "amount": "Montant",
+    "amount": "Quantité",
     "cancel": "Annuler",
     "confirm": "Confirmer"
   }

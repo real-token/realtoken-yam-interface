@@ -6,7 +6,7 @@
     "lineNumber": "Nombre de lignes",
     "goTo": "Aller vers",
     "noOption": "Aucune option",
-    "autoRefresh": "Enable automatic refresh"
+    "autoRefresh": "Rafraîchissement automatique"
   },
   "filters": {
     "title": "Filtres",
