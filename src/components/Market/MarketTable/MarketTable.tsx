@@ -58,9 +58,9 @@ export const MarketTable: FC = () => {
             accessorKey: 'offerId',
             header: t('offerId'),
             cell: ({ row, getValue }) => { 
-              if(row.original.hasPropertyToken){
-                return (
-                  <Group noWrap={true} spacing={'xs'}>
+              return (
+                <Group noWrap={true} spacing={'xs'}>
+                  { row.original.hasPropertyToken ? 
                     <ActionIcon
                       variant={'transparent'}
                       color={'brand'}
@@ -72,7 +72,10 @@ export const MarketTable: FC = () => {
                         <IconChevronDown size={16} />
                       )}
                     </ActionIcon>
-                    <Text
+                    :
+                    <ActionIcon variant={'transparent'} color={'brand'} disabled={true}/>
+                  }
+                  <Text
                       size={'sm'}
                       sx={{
                         textOverflow: 'ellipsis',
@@ -81,11 +84,8 @@ export const MarketTable: FC = () => {
                     >
                       {getValue()}
                     </Text>
-                  </Group>
-                )
-              }else{
-                return undefined;
-              }
+                </Group>
+              )
             },
             enableSorting: true,
             meta: { colSpan: 2 },
