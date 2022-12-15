@@ -91,7 +91,7 @@ Copyright.displayName = 'Copyright';
 
 export const Footer: FC = () => {
   return (
-    <MantineFooter height={'auto'}>
+    <div>
       <Divider />
       <Box sx={styles.container}>
         <Group position={'apart'} align={'center'}>
@@ -105,6 +105,6 @@ export const Footer: FC = () => {
           <Copyright size={'sm'} mt={5} />
         </MediaQuery>
       </Box>
-    </MantineFooter>
+    </div>
   );
 };

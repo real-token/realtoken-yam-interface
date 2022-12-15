@@ -71,7 +71,7 @@ export const Header: FC = () => {
   const router = useRouter()
   const colorSelected = '#cfaa70';
   return (
-    <MantineHeader height={'auto'}>
+    <div>
       <Box sx={styles.container}>
         <Group position={'apart'} align={'center'}>
           <LogoWithName />
@@ -97,6 +97,6 @@ export const Header: FC = () => {
         </Group>
       </Box>
       <Divider />
-    </MantineHeader>
+    </div>
   );
 };

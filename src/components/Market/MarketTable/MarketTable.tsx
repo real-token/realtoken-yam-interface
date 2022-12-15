@@ -28,9 +28,7 @@ import React from 'react';
 
 export const MarketTable: FC = () => {
   const { offers, refreshState } = useOffers(false, false, true);
-
-  // console.count("TES2")
-
+  
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'offerId', desc: false },
   ]);
@@ -231,7 +229,6 @@ export const MarketTable: FC = () => {
         verticalSpacing: 'sm',
         horizontalSpacing: 'xs',
         sx: (theme) => ({
-          tableLayout: 'fixed',
           border: theme.other.border(theme),
           borderRadius: theme.radius[theme.defaultRadius as MantineSize],
           borderCollapse: 'separate',

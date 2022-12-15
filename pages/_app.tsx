@@ -39,7 +39,6 @@ const App = ({ Component, pageProps, colorScheme, locale }: AppProps) => {
   return (
     <>
       <Head title={'Realtoken YAM'} />
-
       <Provider>
         <Web3Providers>
           <MantineProviders initialColorScheme={colorScheme}>
