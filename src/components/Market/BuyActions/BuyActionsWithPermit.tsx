@@ -29,7 +29,7 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
         innerProps: {
           offerId: offer.offerId,
           price: offer.price,
-          amount: offer.amount,
+          offerAmount: offer.amount,
           offerTokenAddress: offer.offerTokenAddress,
           offerTokenDecimals: offer.offerTokenDecimals,
           buyerTokenAddress: offer.buyerTokenAddress,
@@ -67,6 +67,5 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
         </ActionIcon>
       </Group> : undefined }
     </>
-    
   );
 };
