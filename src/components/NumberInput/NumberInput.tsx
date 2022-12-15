@@ -25,9 +25,6 @@ type NumberInputProps = {
 export const NumberInput: FRC<NumberInputProps, HTMLInputElement> = forwardRef(
   ({ disabled, showMin, showMax, controlsProps, groupMarginBottom, setFieldValue, ...props }, ref) => {
     const handlers = useRef<NumberInputHandlers>();
-
-    console.log(props)
-
     return (
       <Flex gap={5} align={'flex-end'} mb={groupMarginBottom ?? 0}>
         <MantineInput

@@ -36,7 +36,10 @@ type SellFormValues = {
 };
 
 export const SellActions = () => {
+  
+  const { t } = useTranslation('modals', { keyPrefix: 'sell' });
   const { account, provider } = useWeb3React();
+
   const { getInputProps, onSubmit, setFieldValue, values } =
     useForm<SellFormValues>({
       // eslint-disable-next-line object-shorthand
@@ -48,6 +51,9 @@ export const SellActions = () => {
         buyerAddress: ZERO_ADDRESS,
         isPrivateOffer: false,
       },
+      validate: {
+        buyerAddress: (value) => (value == account ? t('invalidPrivateOfferAddress'): null),
+      },
     });
 
   // const [isPrivateOffer, setIsPrivateOffer] = useState(false);
@@ -55,7 +61,7 @@ export const SellActions = () => {
   const [amountMax, setAmountMax] = useState<number>();
   const activeChain = useActiveChain();
 
-  const { t } = useTranslation('modals', { keyPrefix: 'sell' });
+  
 
   const { propertiesToken } = usePropertiesToken();
   const { allowedBuyTokens } = useAllowedBuyTokens();
@@ -339,6 +345,7 @@ export const SellActions = () => {
           placeholder={t('placeholderOfferPrivatBuyerAddress')}
           required={values.isPrivateOffer}
           disabled={!values.isPrivateOffer}
+          error={"Impossible de créér une offre à destination de votre address"}
           {...getInputProps('buyerAddress')}
         />
       )
@@ -373,13 +380,6 @@ export const SellActions = () => {
             {...getInputProps('offerTokenAddress')}
           />
 
-          {/* <TextInput
-            label={t('offerTokenAddress')}
-            placeholder={t('placeholderOfferSellTokenAddress')}
-            required={true}
-            {...getInputProps('offerTokenAddress')}
-          /> */}
-
           <Select
             label={t('buyerTokenAddress')}
             placeholder={t('placeholderOfferBuyTokenAddress')}
@@ -390,13 +390,6 @@ export const SellActions = () => {
             required={true}
             {...getInputProps('buyerTokenAddress')}
           />
-
-          {/* <TextInput
-            label={t('buyerTokenAddress')}
-            placeholder={t('placeholderOfferBuyTokenAddress')}
-            required={true}
-            {...getInputProps('buyerTokenAddress')}
-          /> */}
 
           <NumberInput
             label={t('price')}

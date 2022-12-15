@@ -18,7 +18,8 @@
     "placeholderOfferPrivatBuyerAddress": "Put the address of the private buyer",
     "buttonCreateOffer": "Permit and Create Offer",
     "checkboxLabelPrivateOffre": "I want to create a private offer",
-    "titleFormCreateOffer": "Create your offer"
+    "titleFormCreateOffer": "Create your offer",
+    "invalidPrivateOfferAddress": "Unable to create an offer for your address"
   },
   "buy": {
     "title": "Buy Offer",
