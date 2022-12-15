@@ -51,7 +51,7 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
 
   const isAccountOffer: boolean = useMemo(() => {
     if(!buyOffer || !account) return false;
-    return buyOffer.sellerAddress == account || buyOffer.buyerAddress == account
+    return buyOffer.sellerAddress == account || (isAccountOffer && buyOffer.buyerAddress == account)
   },[buyOffer, account])
 
   return (
