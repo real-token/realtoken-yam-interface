@@ -21,7 +21,7 @@ const useStyles = createStyles((theme, _params, getRef) => ({
     position: "sticky", 
     top: 0, 
     backgroundColor: "#1A1B1E", 
-    zIndex: 999999999,
+    zIndex: 1,
   }
 }));
 
