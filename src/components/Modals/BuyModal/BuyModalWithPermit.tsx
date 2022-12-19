@@ -393,7 +393,7 @@ export const BuyModalWithPermit: FC<
             </Flex>
             <Flex direction={"column"}>
                 <Text fw={700}>{t("price")}</Text>
-                <Text>{`${price} $${buyTokenSymbol}`}</Text>
+                <Text>{`${price} ${buyTokenSymbol}`}</Text>
               </Flex>
         </Flex>
       </Flex>

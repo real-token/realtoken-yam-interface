@@ -54,7 +54,7 @@ export const WalletERC20Balance: FC<WalletERC20BalanceProps> = ({ balance, symbo
           <div className={classes.container}>
               <div className={classes.wallet}><IconWallet color={"white"} size={24}/></div>
               <div className={classes.balanceContainer}>
-                <Text fw={700} mr={5}>{`$${symbol}`}</Text>
+                <Text fw={700} mr={5}>{`${symbol}`}</Text>
                 <Text className={classes.balance}>{balance}</Text>
               </div>
           </div>
