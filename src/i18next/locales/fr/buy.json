@@ -9,7 +9,7 @@
     "buyerTokenName": "Jeton d'achat",
     "sellerAddress": "Adresse du vendeur",
     "price": "Prix/Jeton",
-    "amount": "Quantité",
+    "amount": "Quantité disponible",
     "address": "Adresse",
     "actionEdit": "Editer",
     "actionDelete": "Supprimer",
@@ -27,7 +27,7 @@
     "officialPrice": "Prix officiel (RealT)",
     "offerPrice": "Prix proposé",
     "priceDifference": "Différence de prix",
-    "amount": "Quantité",
+    "amount": "Quantité disponible",
     "address": "Adresse",
     "name": "Nom",
     "value": "Valeur (~)"

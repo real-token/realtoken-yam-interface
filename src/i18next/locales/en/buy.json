@@ -9,7 +9,7 @@
     "buyerTokenName": "Buyer Token",
     "sellerAddress": "Seller Address",
     "price": "Price/token",
-    "amount": "Quantity",
+    "amount": "Available quantity",
     "address": "Address",
     "actionEdit": "Edit",
     "actionDelete": "Delete"
@@ -25,7 +25,7 @@
     "officialPrice": "Official price (RealT)",
     "offerPrice": "Offer Price",
     "priceDifference": "Price Difference",
-    "amount": "Quantity",
+    "amount": "Available quantity",
     "address": "Address",
     "name": "Name",
     "value": "Value (~)"
