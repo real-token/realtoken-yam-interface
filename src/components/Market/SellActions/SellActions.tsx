@@ -393,7 +393,7 @@ export const SellActions = () => {
 
           <NumberInput
             label={t('price')}
-            placeholder={t('price')}
+            placeholder={t('placeholderPrice')}
             required={true}
             min={0.000001}
             max={undefined}
@@ -404,7 +404,7 @@ export const SellActions = () => {
           />
           <NumberInput
             label={t('amount')}
-            placeholder={t('amount')}
+            placeholder={t('placeholderAmount')}
             required={true}
             min={0.000001}
             max={undefined}

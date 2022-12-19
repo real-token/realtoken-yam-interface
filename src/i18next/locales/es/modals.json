@@ -16,6 +16,8 @@
     "placeholderOfferSellTokenAddress": "Search the token you want to sell",
     "placeholderOfferBuyTokenAddress": "Put the address of the token you want to buy",
     "placeholderOfferPrivatBuyerAddress": "Put the address of the private buyer",
+    "placeholderPrice": "Number of purchase tokens for one token on sale",
+    "placeholderAmount": "Quantity of tokens on sale",
     "buttonCreateOffer": "Permit and Create Offer",
     "checkboxLabelPrivateOffre": "I want to create a private offer",
     "titleFormCreateOffer": "Create your offer",
