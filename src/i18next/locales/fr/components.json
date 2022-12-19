@@ -1,5 +1,5 @@
 {
-    "walletBalance": {
-        "title": "Valeur du portefeuille"
-    }
+  "walletBalance": {
+    "title": "Solde du portefeuille"
+  }
 }
