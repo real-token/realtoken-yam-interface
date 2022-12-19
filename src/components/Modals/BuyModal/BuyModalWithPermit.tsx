@@ -31,7 +31,7 @@ import { useWalletERC20Balance } from 'src/hooks/useWalletERC20Balance';
 type BuyModalWithPermitProps = {
   offerId: string;
   price: number;
-  amount: number;
+  offerAmount: number;
   offerTokenAddress: string;
   offerTokenDecimals: number;
   buyerTokenAddress: string;
@@ -59,7 +59,7 @@ export const BuyModalWithPermit: FC<
   innerProps: {
     offerId,
     price,
-    amount,
+    offerAmount,
     offerTokenAddress,
     offerTokenDecimals,
     buyerTokenAddress,
@@ -76,13 +76,15 @@ export const BuyModalWithPermit: FC<
       initialValues: {
         offerId: offerId,
         price: price,
-        amount: amount,
+        amount: 0,
         offerTokenAddress: offerTokenAddress,
         offerTokenDecimals: offerTokenDecimals,
         buyerTokenAddress: buyerTokenAddress,
         buyerTokenDecimals: buyerTokenDecimals
       },
     });
+
+    // console.log(values)
 
   const [isSubmitting, setSubmitting] = useState<boolean>(false);
   const activeChain = useActiveChain();
@@ -353,15 +355,18 @@ export const BuyModalWithPermit: FC<
 
   const maxTokenBuy: number|undefined = useMemo(() => {
 
-    console.log(price);
-    console.log(balance)
-
     if(!balance && price) return undefined;
     if(balance == undefined) return undefined;
 
-    return balance/price;
+    const max = balance/price;
 
-  },[balance,price])
+    console.log(max,offerAmount)
+
+    return max >= offerAmount ? offerAmount : max;
+
+  },[balance,price,offerAmount])
+
+  console.log(maxTokenBuy)
 
   return (
     <form onSubmit={onSubmit(onHandleSubmit)}>
@@ -384,7 +389,7 @@ export const BuyModalWithPermit: FC<
             </Flex>
             <Flex direction={"column"} >
               <Text fw={700}>{t("amount")}</Text>
-              <Text>{amount}</Text>
+              <Text>{offerAmount}</Text>
             </Flex>
             <Flex direction={"column"}>
                 <Text fw={700}>{t("price")}</Text>
@@ -392,11 +397,6 @@ export const BuyModalWithPermit: FC<
               </Flex>
         </Flex>
       </Flex>
-
-        {/* // <Box>
-        //   <Input.Label>{t('selectedOffer')}</Input.Label>
-        //   <Container>{offerId ? offerId : 'Offer not found'}</Container>
-        // </Box>  */}
 
       <Divider />
 
@@ -417,9 +417,9 @@ export const BuyModalWithPermit: FC<
             showMax={true}
             placeholder={t('amount')}
             sx={{ flexGrow: 1 }}
-            {...getInputProps('amount')}
             groupMarginBottom={16}
             setFieldValue={setFieldValue}
+            {...getInputProps('amount')}
           />
           <Group grow={true}>
             <Button color={'red'} onClick={onClose} aria-label={t('cancel')}>

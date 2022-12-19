@@ -1,17 +1,35 @@
+import { createStyles } from '@mantine/core';
 import { FC, ReactNode } from 'react';
-
-import { AppShell } from '@mantine/core';
-
 import { Footer } from '../components/Footer';
 import { Header } from '../components/Header';
-import { styles } from './Layout.styles';
 
 type LayoutProps = { children: ReactNode };
 
+const useStyles = createStyles((theme, _params, getRef) => ({
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    height: '100vh'
+  },
+  main: {
+    display: "flex",
+    flexDirection: "column",
+    flexGrow: 1,
+    overflowY: "auto"
+  }
+}));
+
 export const Layout: FC<LayoutProps> = ({ children }) => {
+
+  const { classes } = useStyles();
+
   return (
-    <AppShell header={<Header />} footer={<Footer />} styles={styles.appShell}>
-      {children}
-    </AppShell>
+    <div className={classes.container}>
+      <Header />
+      <div className={classes.main}>
+        {children}
+      </div>
+      <Footer />
+    </div>
   );
 };

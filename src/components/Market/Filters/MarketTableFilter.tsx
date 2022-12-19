@@ -12,7 +12,6 @@ export const MarketTableFilter: FC = () => {
     
     return(
         <Flex
-            mih={50}
             gap={"xs"}
             align={"flex-start"}
             direction={"column"}

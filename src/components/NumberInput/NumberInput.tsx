@@ -25,7 +25,6 @@ type NumberInputProps = {
 export const NumberInput: FRC<NumberInputProps, HTMLInputElement> = forwardRef(
   ({ disabled, showMin, showMax, controlsProps, groupMarginBottom, setFieldValue, ...props }, ref) => {
     const handlers = useRef<NumberInputHandlers>();
-
     return (
       <Flex gap={5} align={'flex-end'} mb={groupMarginBottom ?? 0}>
         <MantineInput
@@ -52,7 +51,7 @@ export const NumberInput: FRC<NumberInputProps, HTMLInputElement> = forwardRef(
             aria-label={'Max'}
             variant={'light'}
             disabled={disabled}
-            onClick={() => setFieldValue("amount",props.max)}
+            onClick={() => setFieldValue("amount",Number(props.max))}
             {...controlsProps}
           >
             {!props.max ? <Loader size={"xs"}/> : 'Max'}

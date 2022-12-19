@@ -11,8 +11,8 @@
     "price": "Prix/Jeton",
     "amount": "Quantité",
     "address": "Adresse",
-    "actionEdit": "Edit",
-    "actionDelete": "Delete",
+    "actionEdit": "Editer",
+    "actionDelete": "Supprimer",
     "buy": "Acheter"
 
   },

@@ -1,5 +1,4 @@
 import { Fragment } from 'react';
-
 import { MarketTablePrivate } from 'src/components/Market/MarketTable';
 
 const PrivateOfferPage = () => {

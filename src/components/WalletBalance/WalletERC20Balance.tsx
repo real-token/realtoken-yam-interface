@@ -26,10 +26,15 @@ const useStyles = createStyles((theme, _params, getRef) => ({
         alignItems: "center",
         backgroundColor: theme.colors.brand[5],
         borderRadius: theme.radius.md,
-        padding: 5,
+        padding: 10,
     },
     balance: {
       flexGrow: 1
+    },
+    balanceContainer: {
+      display: "flex",
+      flexDirection: "column",
+      rowGap: 0
     }
   }));
 
@@ -44,15 +49,16 @@ export const WalletERC20Balance: FC<WalletERC20BalanceProps> = ({ balance, symbo
     const { t } = useTranslation("components",{ keyPrefix: 'walletBalance' });
 
     return(
-      <Flex direction={'column'} gap={'xs'}>
+      <Flex direction={'column'} gap={'xs'} ml={8}>
           <Text>{t("title")}</Text>
           <div className={classes.container}>
-              <div className={classes.wallet}><IconWallet color="white"/></div>
-              <Text className={classes.balance}>{balance}</Text>
-              <Text fw={700} mr={5}>{`$${symbol}`}</Text>
+              <div className={classes.wallet}><IconWallet color={"white"} size={24}/></div>
+              <div className={classes.balanceContainer}>
+                <Text fw={700} mr={5}>{`$${symbol}`}</Text>
+                <Text className={classes.balance}>{balance}</Text>
+              </div>
           </div>
       </Flex>
-      
     )
     
 }

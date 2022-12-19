@@ -28,9 +28,7 @@ import React from 'react';
 
 export const MarketTable: FC = () => {
   const { offers, refreshState } = useOffers(false, false, true);
-
-  // console.count("TES2")
-
+  
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'offerId', desc: false },
   ]);
@@ -58,9 +56,9 @@ export const MarketTable: FC = () => {
             accessorKey: 'offerId',
             header: t('offerId'),
             cell: ({ row, getValue }) => { 
-              if(row.original.hasPropertyToken){
-                return (
-                  <Group noWrap={true} spacing={'xs'}>
+              return (
+                <Group noWrap={true} spacing={'xs'}>
+                  { row.original.hasPropertyToken ? 
                     <ActionIcon
                       variant={'transparent'}
                       color={'brand'}
@@ -72,7 +70,10 @@ export const MarketTable: FC = () => {
                         <IconChevronDown size={16} />
                       )}
                     </ActionIcon>
-                    <Text
+                    :
+                    <ActionIcon variant={'transparent'} color={'brand'} disabled={true}/>
+                  }
+                  <Text
                       size={'sm'}
                       sx={{
                         textOverflow: 'ellipsis',
@@ -81,11 +82,8 @@ export const MarketTable: FC = () => {
                     >
                       {getValue()}
                     </Text>
-                  </Group>
-                )
-              }else{
-                return undefined;
-              }
+                </Group>
+              )
             },
             enableSorting: true,
             meta: { colSpan: 2 },
@@ -231,7 +229,6 @@ export const MarketTable: FC = () => {
         verticalSpacing: 'sm',
         horizontalSpacing: 'xs',
         sx: (theme) => ({
-          tableLayout: 'fixed',
           border: theme.other.border(theme),
           borderRadius: theme.radius[theme.defaultRadius as MantineSize],
           borderCollapse: 'separate',

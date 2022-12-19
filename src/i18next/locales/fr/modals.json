@@ -18,7 +18,8 @@
     "placeholderOfferBuyTokenAddress": "Renseigner l'adresse du jeton d'achat",
     "placeholderOfferPrivatBuyerAddress": "Renseigner l'adresse de l'acheteur privé",
     "buttonCreateOffer": "Autoriser & Créer l'offre",
-    "checkboxLabelPrivateOffre": "Je veux créer une offre privée"
+    "checkboxLabelPrivateOffre": "Je veux créer une offre privée",
+    "invalidPrivateOfferAddress": "Impossible de créer une offre à destination de votre address"
   },
   "buy": {
     "title": "Acheter",
@@ -61,7 +62,7 @@
     "buyerTokenName": "Jeton d'achat",
     "sellerAddress": "Adresse du vendeur",
     "price": "Prix",
-    "amount": "Montant",
+    "amount": "Quantité",
     "cancel": "Annuler",
     "confirm": "Confirmer"
   }

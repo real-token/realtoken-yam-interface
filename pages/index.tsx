@@ -1,17 +1,19 @@
-import { Fragment } from 'react';
-
 import { NextPage } from 'next';
-
 import { MarketTable } from 'src/components/Market';
 import 'src/components/Market';
 import { MarketTableFilter } from 'src/components/Market/Filters';
+import { Flex } from '@mantine/core';
 
 const HomePage: NextPage = () => {
   return (
-    <Fragment>
+    <Flex
+      direction={"column"}
+      p={"xl"}
+      style={{ flexGrow: 1 }}
+    >
       <MarketTableFilter />
       <MarketTable />
-    </Fragment>
+    </Flex>
   );
 };
 

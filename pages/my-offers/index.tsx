@@ -1,7 +1,7 @@
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Tabs } from '@mantine/core';
+import { Flex, Tabs } from '@mantine/core';
 import { IconFingerprint, IconList, IconPlus } from '@tabler/icons';
 
 import { SellActions } from 'src/components/Market';
@@ -12,9 +12,12 @@ import {
 
 const TransfersPage = () => {
   const menu = useTranslation('menu', { keyPrefix: 'subMenuMyOffer' });
-  const common = useTranslation('common', { keyPrefix: 'general' });
   return (
-    <Fragment>
+    <Flex
+      direction={"column"}
+      p={"xl"}
+      style={{ flexGrow: 1 }}
+    >
       <Tabs color={'orange'} defaultValue={'myOffers'}>
         <Tabs.List>
           <Tabs.Tab value={'myOffers'} icon={<IconList size={18} />}>
@@ -43,7 +46,7 @@ const TransfersPage = () => {
           <SellActions />
         </Tabs.Panel>
       </Tabs>
-    </Fragment>
+    </Flex>
   );
 };
 

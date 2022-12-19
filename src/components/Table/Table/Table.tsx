@@ -2,6 +2,7 @@ import { FC, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
+  createStyles,
   Table as MantineTable,
   TableProps as MantineTableProps,
 } from '@mantine/core';
@@ -11,6 +12,18 @@ import { TableCaption, TableCaptionOptions } from '../TableCaption';
 import { TableHeader } from '../TableHeader';
 
 export type TableSubRowProps<T> = { row: Row<T> };
+
+const useStyles = createStyles((theme, _params, getRef) => ({
+  table: {
+    overflow: "clip"
+  },
+  thead: {
+    position: "sticky", 
+    top: 0, 
+    backgroundColor: "#1A1B1E", 
+    zIndex: 1,
+  }
+}));
 
 type TableProps<T> = {
   tableProps?: MantineTableProps;
@@ -27,9 +40,12 @@ export const Table = <T,>({
 }: TableProps<T>) => {
   const { t } = useTranslation('table', { keyPrefix: 'table' });
 
+  const { classes } = useStyles();
+
   return (
-    <MantineTable {...tableProps}>
-      <thead>
+    <MantineTable {...tableProps} className={classes.table}>
+      {/*  */}
+      <thead className={classes.thead}>
         {table.getHeaderGroups().map(({ id, headers }) => (
           <tr key={id}>
             {headers.map((header) => (
@@ -79,16 +95,16 @@ export const Table = <T,>({
         )}
       </tbody>
       {tablecaptionOptions?.visible && (
-        <tfoot>
-          <tr>
-            <td colSpan={table.options.meta?.colSpan}>
-              <TableCaption
-                table={table}
-                tablecaptionOptions={tablecaptionOptions}
-              />
-            </td>
-          </tr>
-        </tfoot>
+      <tfoot>
+        <tr>
+          <td colSpan={table.options.meta?.colSpan}>
+            <TableCaption
+              table={table}
+              tablecaptionOptions={tablecaptionOptions}
+            />
+          </td>
+        </tr>
+      </tfoot>
       )}
     </MantineTable>
   );
