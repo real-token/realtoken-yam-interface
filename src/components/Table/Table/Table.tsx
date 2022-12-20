@@ -5,7 +5,6 @@ import {
   createStyles,
   Table as MantineTable,
   TableProps as MantineTableProps,
-  useMantineColorScheme,
 } from '@mantine/core';
 import { Table as ReactTable, Row, flexRender } from '@tanstack/react-table';
 
@@ -14,7 +13,7 @@ import { TableHeader } from '../TableHeader';
 
 export type TableSubRowProps<T> = { row: Row<T> };
 
-const useStyles = createStyles((theme, _params, getRef) => ({
+const useStyles = createStyles((theme) => ({
   table: {
     overflow: "clip"
   },
@@ -44,7 +43,6 @@ export const Table = <T,>({
 
   return (
     <MantineTable {...tableProps} className={classes.table}>
-      {/*  */}
       <thead className={classes.thead}>
         {table.getHeaderGroups().map(({ id, headers }) => (
           <tr key={id}>
@@ -71,7 +69,7 @@ export const Table = <T,>({
                   </td>
                 ))}
               </tr>
-              {TableSubRow && row.original && row.getIsExpanded() && (
+              {/* {TableSubRow && row.original && row.getIsExpanded() && (
                 <tr>
                   <td
                     colSpan={table.options.meta?.colSpan}
@@ -80,7 +78,7 @@ export const Table = <T,>({
                     <TableSubRow row={row} />
                   </td>
                 </tr>
-              )}
+              )} */}
             </Fragment>
           ))
         ) : (
