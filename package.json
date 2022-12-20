@@ -33,6 +33,7 @@
     "@web3-react/walletconnect": "^8.0.34-beta.0",
     "bignumber.js": "^9.0.2",
     "cookies-next": "^2.0.5",
+    "dotenv": "^16.0.3",
     "i18next": "^21.8.11",
     "jotai": "^1.11.0",
     "next": "12.1.5",
