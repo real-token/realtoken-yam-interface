@@ -49,7 +49,7 @@ export const WalletERC20Balance: FC<WalletERC20BalanceProps> = ({ balance, symbo
     const { t } = useTranslation("components",{ keyPrefix: 'walletBalance' });
 
     return(
-      <Flex direction={'column'} gap={'xs'} ml={8}>
+      <Flex direction={'column'} gap={'xs'}>
           <Text>{t("title")}</Text>
           <div className={classes.container}>
               <div className={classes.wallet}><IconWallet color={"white"} size={24}/></div>

@@ -1,6 +1,5 @@
 import { useWeb3React } from "@web3-react/core";
 import { useEffect, useState } from "react"
-import { network } from "src/connectors";
 import { APIPropertiesToken, PropertiesToken } from "src/types/PropertiesToken";
 
 type usePropertiesTokenReturn = {

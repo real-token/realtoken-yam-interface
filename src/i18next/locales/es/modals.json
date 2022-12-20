@@ -34,7 +34,11 @@
     "amount": "Quantity",
     "cancel": "Cancel",
     "confirm": "Confirm",
-    "buy": "Buy"
+    "buy": "Buy",
+    "summary": "Transaction summary",
+    "summaryText1": "You will buy",
+    "summaryText2": "with a unit price of",
+    "summaryText3": "and for a total of"
   },
   "delete": {
     "title": "Delete Offer",

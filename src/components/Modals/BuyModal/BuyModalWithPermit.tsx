@@ -27,6 +27,7 @@ import { getContract } from 'src/utils';
 
 import { NumberInput } from '../../NumberInput';
 import { useWalletERC20Balance } from 'src/hooks/useWalletERC20Balance';
+import { cleanNumber } from 'src/utils/number';
 
 type BuyModalWithPermitProps = {
   offerId: string;
@@ -66,7 +67,6 @@ export const BuyModalWithPermit: FC<
     buyerTokenDecimals,
     triggerTableRefresh,
     sellerAddress
-
   },
 }) => {
   const { account, provider } = useWeb3React();
@@ -90,6 +90,7 @@ export const BuyModalWithPermit: FC<
   const activeChain = useActiveChain();
 
   const [offerTokenName,setOfferTokenName] = useState<string|undefined>("");
+  const [offerTokenSymbol,setOfferTokenSymbol] = useState<string|undefined>("");
   const [buyTokenSymbol,setBuyTokenSymbol] = useState<string|undefined>("");
 
   const realTokenYamUpgradeable = useContract(
@@ -111,7 +112,9 @@ export const BuyModalWithPermit: FC<
   const getOfferTokenInfos = async () => {
     try{
       const tokenName = await offerToken?.name();
+      const tokenSymbol = await offerToken?.symbol();
       setOfferTokenName(tokenName);
+      setOfferTokenSymbol(tokenSymbol)
     }catch(err){
       console.log(err)
     }
@@ -353,20 +356,15 @@ export const BuyModalWithPermit: FC<
     ]
   );
 
-  const maxTokenBuy: number|undefined = useMemo(() => {
+  const total = values?.amount * values?.price;
 
+  const maxTokenBuy: number|undefined = useMemo(() => {
     if(!balance && price) return undefined;
     if(balance == undefined) return undefined;
 
     const max = balance/price;
-
-    console.log(max,offerAmount)
-
     return max >= offerAmount ? offerAmount : max;
-
   },[balance,price,offerAmount])
-
-  console.log(maxTokenBuy)
 
   return (
     <form onSubmit={onSubmit(onHandleSubmit)}>
@@ -421,6 +419,12 @@ export const BuyModalWithPermit: FC<
             setFieldValue={setFieldValue}
             {...getInputProps('amount')}
           />
+
+          <Text size={"xl"}>{t("summary")}</Text>
+          <Text size={"md"} mb={10}>
+            {` ${t("summaryText1")} ${values?.amount} ${offerTokenSymbol} ${t("summaryText2")} ${cleanNumber(values?.price)} ${buyTokenSymbol} ${t("summaryText3")} ${total} ${buyTokenSymbol}`}
+          </Text>
+          
           <Group grow={true}>
             <Button color={'red'} onClick={onClose} aria-label={t('cancel')}>
               {t('cancel')}
@@ -429,6 +433,7 @@ export const BuyModalWithPermit: FC<
               type={'submit'}
               loading={isSubmitting}
               aria-label={t('confirm')}
+              disabled={values?.amount == 0 || !values.amount}
             >
               {t('confirm')}
             </Button>

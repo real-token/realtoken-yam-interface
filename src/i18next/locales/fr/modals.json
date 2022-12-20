@@ -34,7 +34,11 @@
     "amount": "Quantité",
     "cancel": "Annuler",
     "confirm": "Confirmer",
-    "buy": "Acheter"
+    "buy": "Acheter",
+    "summary": "Résumé de la transaction",
+    "summaryText1": "Vous achetez",
+    "summaryText2": "avec un prix unitaire de",
+    "summaryText3": "et pour un total de"
   },
   "delete": {
     "title": "Supprimer",
