@@ -33,6 +33,7 @@ type OfferTable = {
 };
 
 export const MarketTableRow: FC = () => {
+	console.log("Testnet enabled: ", process.env.ENABLE_TESTNET === 'true');
   const { offers, refreshState } = useOffers();
 
   const [sorting, setSorting] = useState<SortingState>([

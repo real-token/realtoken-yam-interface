@@ -12,7 +12,7 @@ metadata:
   namespace: default
 spec:
   rules:
-  - host: test-yam.realtoken.network
+  - host: dev-yam.realtoken.network
     http:
       paths:
       - backend:
@@ -24,7 +24,7 @@ spec:
         pathType: ImplementationSpecific
   tls:
   - hosts:
-    - test-yam.realtoken.network
+    - dev-yam.realtoken.network
     secretName: letsencrypt-dev
     
   ingressClassName: nginx
