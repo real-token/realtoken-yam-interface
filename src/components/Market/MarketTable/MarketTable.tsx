@@ -58,7 +58,7 @@ export const MarketTable: FC = () => {
             cell: ({ row, getValue }) => { 
               return (
                 <Group noWrap={true} spacing={'xs'}>
-                  {/* { row.original.hasPropertyToken ? 
+                  { row.original.hasPropertyToken && process.env.NEXT_PUBLIC_ENV == "stagging" ?
                     <ActionIcon
                       variant={'transparent'}
                       color={'brand'}
@@ -72,8 +72,7 @@ export const MarketTable: FC = () => {
                     </ActionIcon>
                     :
                     <ActionIcon variant={'transparent'} color={'brand'} disabled={true}/>
-                  } */}
-                  <ActionIcon variant={'transparent'} color={'brand'} disabled={true}/>
+                  }
                   <Text
                       size={'sm'}
                       sx={{
@@ -238,7 +237,7 @@ export const MarketTable: FC = () => {
       }}
       table={table}
       tablecaptionOptions={{ refreshState: refreshState, visible: true }}
-      // TableSubRow={MarketSubRow}
+      TableSubRow={MarketSubRow}
     />
   );
 };

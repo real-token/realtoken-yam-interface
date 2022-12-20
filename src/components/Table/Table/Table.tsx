@@ -69,7 +69,7 @@ export const Table = <T,>({
                   </td>
                 ))}
               </tr>
-              {/* {TableSubRow && row.original && row.getIsExpanded() && (
+              {TableSubRow && row.original && row.getIsExpanded() && process.env.NEXT_PUBLIC_ENV == "stagging" ? (
                 <tr>
                   <td
                     colSpan={table.options.meta?.colSpan}
@@ -78,7 +78,7 @@ export const Table = <T,>({
                     <TableSubRow row={row} />
                   </td>
                 </tr>
-              )} */}
+              ) : undefined}
             </Fragment>
           ))
         ) : (
