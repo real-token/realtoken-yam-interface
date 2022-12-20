@@ -11,8 +11,9 @@ metadata:
   name: production-yam-realtoken-ingress
   namespace: default
 spec:
+  ingressClassName: nginx
   rules:
-  - host: production-yam.realtoken.network
+  - host: yam.realtoken.network
     http:
       paths:
       - backend:
@@ -24,7 +25,5 @@ spec:
         pathType: ImplementationSpecific
   tls:
   - hosts:
-    - production-yam.realtoken.network
+    - yam.realtoken.network
     secretName: letsencrypt-production
-    
-  ingressClassName: nginx
