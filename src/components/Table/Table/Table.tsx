@@ -5,6 +5,7 @@ import {
   createStyles,
   Table as MantineTable,
   TableProps as MantineTableProps,
+  useMantineColorScheme,
 } from '@mantine/core';
 import { Table as ReactTable, Row, flexRender } from '@tanstack/react-table';
 
@@ -20,7 +21,7 @@ const useStyles = createStyles((theme, _params, getRef) => ({
   thead: {
     position: "sticky", 
     top: 0, 
-    backgroundColor: "#1A1B1E", 
+    backgroundColor: theme.colorScheme == "dark" ? "#1A1B1E" : "#FFFF", 
     zIndex: 1,
   }
 }));
@@ -39,7 +40,6 @@ export const Table = <T,>({
   TableSubRow,
 }: TableProps<T>) => {
   const { t } = useTranslation('table', { keyPrefix: 'table' });
-
   const { classes } = useStyles();
 
   return (
