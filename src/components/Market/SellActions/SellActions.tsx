@@ -1,5 +1,5 @@
 /* eslint-disable react/display-name */
-import { forwardRef, useCallback, useEffect, useMemo, useState } from 'react';
+import { forwardRef, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Button, Checkbox, Flex, Group, Select, SelectItem, Stack, TextInput, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
@@ -19,6 +19,7 @@ import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
 import { PropertiesToken } from 'src/types/PropertiesToken';
 import { useAllowedBuyTokens } from 'src/hooks/useAllowedBuyTokens';
 import { AllowedBuyToken } from 'src/types/allowedBuyTokens';
+import { cleanNumber } from 'src/utils/number';
 
 interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
   label: string;
@@ -40,7 +41,7 @@ export const SellActions = () => {
   const { t } = useTranslation('modals', { keyPrefix: 'sell' });
   const { account, provider } = useWeb3React();
 
-  const { getInputProps, onSubmit, setFieldValue, values } =
+  const { getInputProps, onSubmit, values } =
     useForm<SellFormValues>({
       // eslint-disable-next-line object-shorthand
       initialValues: {
@@ -58,10 +59,7 @@ export const SellActions = () => {
 
   // const [isPrivateOffer, setIsPrivateOffer] = useState(false);
   const [isSubmitting, setSubmitting] = useState<boolean>(false);
-  const [amountMax, setAmountMax] = useState<number>();
   const activeChain = useActiveChain();
-
-  
 
   const { propertiesToken } = usePropertiesToken();
   const { allowedBuyTokens } = useAllowedBuyTokens();
@@ -81,9 +79,9 @@ export const SellActions = () => {
   },[allowedBuyTokens])
 
   const allowedBuyTokensForSelect: SelectItem[] = useMemo((): SelectItem[] => {
-      if(!formatedAllowBuyTokenForSelect || !formatedPropetiesTokenForSelect) return [];
-      const concat = formatedAllowBuyTokenForSelect.concat(formatedPropetiesTokenForSelect);
-      return concat.filter(token => token.value !== values.offerTokenAddress);
+    if(!formatedAllowBuyTokenForSelect || !formatedPropetiesTokenForSelect) return [];
+    const concat = formatedAllowBuyTokenForSelect.concat(formatedPropetiesTokenForSelect);
+    return concat.filter(token => token.value !== values.offerTokenAddress);
   },[formatedPropetiesTokenForSelect,formatedAllowBuyTokenForSelect,values])
 
   const allowedSellTokensForSelect: SelectItem[] = useMemo((): SelectItem[] => {
@@ -91,11 +89,6 @@ export const SellActions = () => {
     const concat = formatedAllowBuyTokenForSelect.concat(formatedPropetiesTokenForSelect);
     return concat.filter(token => token.value !== values.buyerTokenAddress);
   },[formatedPropetiesTokenForSelect,formatedAllowBuyTokenForSelect,values])
-
-  useEffect(() => {
-    if (!amountMax) return;
-    setFieldValue('amount', amountMax);
-  }, [amountMax, setFieldValue]);
 
   const realTokenYamUpgradeable = useContract(
     ContractsID.realTokenYamUpgradeable
@@ -354,6 +347,22 @@ export const SellActions = () => {
     }
   }
 
+  const offerTokenSymbol = allowedSellTokensForSelect.find(value => value.value == values.offerTokenAddress)?.label;
+  const buyTokenSymbol =  allowedBuyTokensForSelect.find(value => value.value == values.buyerTokenAddress)?.label;
+  const total = (values.amount ?? 0) * (values.price ?? 0);
+
+  const summary = () => {
+    if(total && buyTokenSymbol && offerTokenSymbol){
+      return (
+        <Text size={"md"} mb={10}>
+            {` ${t("summaryText1")} ${values?.amount} "${offerTokenSymbol}" ${t("summaryText2")} ${cleanNumber(values.price ?? 0)} ${buyTokenSymbol} ${t("summaryText3")} ${total} ${buyTokenSymbol}`}
+        </Text>
+      )
+    }else{
+      return undefined;
+    }
+  }
+
   const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
     ({ uuid, label, value, ...others }: ItemProps, ref) => (
       <Flex ref={ref} {...others} key={label} gap={"sx"} direction={"column"}>
@@ -368,7 +377,6 @@ export const SellActions = () => {
       <h3>{t('titleFormCreateOffer')}</h3>
       <form onSubmit={onSubmit(onHandleSubmit)}>
         <Stack justify={'center'} align={'stretch'}>
-
           <Select
             label={t('offerTokenAddress')}
             placeholder={t('placeholderOfferSellTokenAddress')}
@@ -379,7 +387,6 @@ export const SellActions = () => {
             data={allowedSellTokensForSelect}
             {...getInputProps('offerTokenAddress')}
           />
-
           <Select
             label={t('buyerTokenAddress')}
             placeholder={t('placeholderOfferBuyTokenAddress')}
@@ -390,7 +397,6 @@ export const SellActions = () => {
             required={true}
             {...getInputProps('buyerTokenAddress')}
           />
-
           <NumberInput
             label={t('price')}
             placeholder={t('price')}
@@ -418,17 +424,21 @@ export const SellActions = () => {
             mt={'md'}
             label={t('checkboxLabelPrivateOffre')}
             {...getInputProps('isPrivateOffer', { type: 'checkbox' })}
-            
           />
+
           {privateOffer()}
+
           <Group position={'left'} mt={'md'}>
-            <Button
-              type={'submit'}
-              loading={isSubmitting}
-              aria-label={'submit'}
-            >
-              {t('buttonCreateOffer')}
-            </Button>
+            <>
+              {summary()}
+              <Button
+                type={'submit'}
+                loading={isSubmitting}
+                aria-label={'submit'}
+              >
+                {t('buttonCreateOffer')}
+              </Button>
+            </>
           </Group>
         </Stack>
       </form>

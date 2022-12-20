@@ -13,13 +13,16 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "labelPrivateBuyerAddress": "Buyer Address (only for private offers)",
-    "placeholderOfferSellTokenAddress": "Search the token you want to sell",
-    "placeholderOfferBuyTokenAddress": "Put the address of the token you want to buy",
-    "placeholderOfferPrivatBuyerAddress": "Put the address of the private buyer",
+    "placeholderOfferSellTokenAddress": "Token you want to sell",
+    "placeholderOfferBuyTokenAddress": "Token you want to buy",
+    "placeholderOfferPrivatBuyerAddress": "Address of the private buyer",
     "buttonCreateOffer": "Permit and Create Offer",
     "checkboxLabelPrivateOffre": "I want to create a private offer",
     "titleFormCreateOffer": "Create your offer",
-    "invalidPrivateOfferAddress": "Unable to create an offer for your address"
+    "invalidPrivateOfferAddress": "Unable to create an offer for your address",
+    "summaryText1": "You will sell",
+    "summaryText2": "with a unit price of",
+    "summaryText3": "and for a total of"
   },
   "buy": {
     "title": "Buy Offer",
