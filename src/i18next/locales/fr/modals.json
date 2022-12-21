@@ -21,7 +21,10 @@
     "placeholderAmount": "Quantité de jeton en vente",
     "buttonCreateOffer": "Autoriser & Créer l'offre",
     "checkboxLabelPrivateOffre": "Je veux créer une offre privée",
-    "invalidPrivateOfferAddress": "Impossible de créer une offre à destination de votre address"
+    "invalidPrivateOfferAddress": "Impossible de créer une offre à destination de votre address",
+    "summaryText1": "You will sell",
+    "summaryText2": "with a unit price of",
+    "summaryText3": "and for a total of"
   },
   "buy": {
     "title": "Acheter",
@@ -36,7 +39,11 @@
     "amount": "Quantité (de jeton en vente)",
     "cancel": "Annuler",
     "confirm": "Confirmer",
-    "buy": "Acheter"
+    "buy": "Acheter",
+    "summary": "Résumé de la transaction",
+    "summaryText1": "Vous achetez",
+    "summaryText2": "avec un prix unitaire de",
+    "summaryText3": "et pour un total de"
   },
   "delete": {
     "title": "Supprimer",

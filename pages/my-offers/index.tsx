@@ -1,7 +1,7 @@
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Flex, Tabs } from '@mantine/core';
+import { createStyles, Flex, MantineTheme, Tabs } from '@mantine/core';
 import { IconFingerprint, IconList, IconPlus } from '@tabler/icons';
 
 import { SellActions } from 'src/components/Market';
@@ -12,13 +12,14 @@ import {
 
 const TransfersPage = () => {
   const menu = useTranslation('menu', { keyPrefix: 'subMenuMyOffer' });
+
   return (
     <Flex
       direction={"column"}
       p={"xl"}
       style={{ flexGrow: 1 }}
     >
-      <Tabs color={'orange'} defaultValue={'myOffers'}>
+      <Tabs color={"brand"} variant={"pills"} defaultValue={'myOffers'}>
         <Tabs.List>
           <Tabs.Tab value={'myOffers'} icon={<IconList size={18} />}>
             {menu.t('myOffers')}

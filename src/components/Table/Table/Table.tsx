@@ -13,14 +13,14 @@ import { TableHeader } from '../TableHeader';
 
 export type TableSubRowProps<T> = { row: Row<T> };
 
-const useStyles = createStyles((theme, _params, getRef) => ({
+const useStyles = createStyles((theme) => ({
   table: {
     overflow: "clip"
   },
   thead: {
     position: "sticky", 
     top: 0, 
-    backgroundColor: "#1A1B1E", 
+    backgroundColor: theme.colorScheme == "dark" ? "#1A1B1E" : "#FFFF", 
     zIndex: 1,
   }
 }));
@@ -39,12 +39,10 @@ export const Table = <T,>({
   TableSubRow,
 }: TableProps<T>) => {
   const { t } = useTranslation('table', { keyPrefix: 'table' });
-
   const { classes } = useStyles();
 
   return (
     <MantineTable {...tableProps} className={classes.table}>
-      {/*  */}
       <thead className={classes.thead}>
         {table.getHeaderGroups().map(({ id, headers }) => (
           <tr key={id}>
@@ -71,7 +69,7 @@ export const Table = <T,>({
                   </td>
                 ))}
               </tr>
-              {TableSubRow && row.original && row.getIsExpanded() && (
+              {TableSubRow && row.original && row.getIsExpanded() && process.env.NEXT_PUBLIC_ENV == "staging" ? (
                 <tr>
                   <td
                     colSpan={table.options.meta?.colSpan}
@@ -80,7 +78,7 @@ export const Table = <T,>({
                     <TableSubRow row={row} />
                   </td>
                 </tr>
-              )}
+              ) : undefined}
             </Fragment>
           ))
         ) : (
