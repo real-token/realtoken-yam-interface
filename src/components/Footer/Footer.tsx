@@ -6,7 +6,6 @@ import {
   Box,
   Group,
   Image,
-  Footer as MantineFooter,
   MediaQuery,
   Text,
   TextProps,
@@ -38,6 +37,13 @@ const LogoWithName: FC = () => {
 const FooterButtons: FC = () => {
   return (
     <Group>
+      <ActionIcon 
+        variant={'subtle'}
+        component={NextLink}
+        href={"/faq"}
+      >
+        FAQ
+      </ActionIcon>
       <ActionIcon
         variant={'subtle'}
         component={NextLink}
