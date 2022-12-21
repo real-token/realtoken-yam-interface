@@ -1,7 +1,8 @@
 import { FC, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Group, MantineSize, Text, Title } from '@mantine/core';
+import { ActionIcon, Group, MantineSize, Text, Title } from '@mantine/core';
+import { IconChevronDown, IconChevronUp } from '@tabler/icons';
 import {
   ColumnDef,
   ExpandedState,
@@ -10,6 +11,7 @@ import {
   getCoreRowModel,
   getExpandedRowModel,
   getPaginationRowModel,
+  getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
@@ -18,13 +20,15 @@ import { useOffers } from 'src/hooks';
 import { Offer } from 'src/hooks/types';
 
 import { Table } from '../../Table';
-import { DeleteActions } from '../DeleteActions';
+import { BuyActionsWithPermit } from '../BuyActions';
 import { MarketSubRow } from '../MarketSubRow';
-import { UpdateActionsWithPermit } from '../UpdateActions';
+import { useAtom } from 'jotai';
+import { nameFilterValueAtom } from 'src/states';
+import React from 'react';
 
-export const MarketTableRowUser: FC = () => {
-  const { offers, refreshState } = useOffers(true); // add true to filter offers by user
-
+export const MarketTable: FC = () => {
+  const { offers, refreshState } = useOffers(false, false, true);
+  
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'offerId', desc: false },
   ]);
@@ -51,18 +55,38 @@ export const MarketTableRowUser: FC = () => {
             id: 'offerId',
             accessorKey: 'offerId',
             header: t('offerId'),
-            cell: ({ getValue }) => (
-              <Group noWrap={true} spacing={'xs'}>
-                <Text
-                  size={'sm'}
-                  sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
-                >
-                  {getValue()}
-                </Text>
-              </Group>
-            ),
-            enableSorting: false,
-            meta: { colSpan: 1 },
+            cell: ({ row, getValue }) => { 
+              return (
+                <Group noWrap={true} spacing={'xs'}>
+                  { row.original.hasPropertyToken && process.env.NEXT_PUBLIC_ENV == "staging" ?
+                    <ActionIcon
+                      variant={'transparent'}
+                      color={'brand'}
+                      onClick={() => row.toggleExpanded()}
+                    >
+                      {row.getIsExpanded() ? (
+                        <IconChevronUp size={16} />
+                      ) : (
+                        <IconChevronDown size={16} />
+                      )}
+                    </ActionIcon>
+                    :
+                    <ActionIcon variant={'transparent'} color={'brand'} disabled={true}/>
+                  }
+                  <Text
+                      size={'sm'}
+                      sx={{
+                        textOverflow: 'ellipsis',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      {getValue()}
+                    </Text>
+                </Group>
+              )
+            },
+            enableSorting: true,
+            meta: { colSpan: 2 },
           },
           {
             id: 'offerTokenName',
@@ -72,13 +96,16 @@ export const MarketTableRowUser: FC = () => {
               <Group noWrap={true} spacing={'xs'}>
                 <Text
                   size={'sm'}
-                  sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
+                  sx={{
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                  }}
                 >
                   {getValue()}
                 </Text>
               </Group>
             ),
-            enableSorting: false,
+            enableSorting: true,
             meta: { colSpan: 2 },
           },
           {
@@ -89,13 +116,16 @@ export const MarketTableRowUser: FC = () => {
               <Group noWrap={true} spacing={'xs'}>
                 <Text
                   size={'sm'}
-                  sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
+                  sx={{
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                  }}
                 >
                   {getValue()}
                 </Text>
               </Group>
             ),
-            enableSorting: false,
+            enableSorting: true,
             meta: { colSpan: 2 },
           },
           {
@@ -106,13 +136,16 @@ export const MarketTableRowUser: FC = () => {
               <Group noWrap={true} spacing={'xs'}>
                 <Text
                   size={'sm'}
-                  sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
+                  sx={{
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                  }}
                 >
                   {getValue()}
                 </Text>
               </Group>
             ),
-            enableSorting: false,
+            enableSorting: true,
             meta: { colSpan: 4 },
           },
           {
@@ -120,16 +153,18 @@ export const MarketTableRowUser: FC = () => {
             accessorKey: 'price',
             header: t('price'),
             cell: ({ getValue }) => (
-              <Group noWrap={true} spacing={'xs'}>
-                <Text
-                  size={'sm'}
-                  sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
-                >
-                  {getValue()}
-                </Text>
-              </Group>
+              <Text
+                size={'sm'}
+                sx={{
+                  textAlign: 'center',
+                  textOverflow: 'ellipsis',
+                  overflow: 'hidden',
+                }}
+              >
+                {getValue()}
+              </Text>
             ),
-            enableSorting: false,
+            enableSorting: true,
             meta: { colSpan: 2 },
           },
           {
@@ -137,39 +172,30 @@ export const MarketTableRowUser: FC = () => {
             accessorKey: 'amount',
             header: t('amount'),
             cell: ({ getValue }) => (
-              <Group noWrap={true} spacing={'xs'}>
-                <Text
-                  size={'sm'}
-                  sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
-                >
-                  {getValue()}
-                </Text>
-              </Group>
+              <Text
+                size={'sm'}
+                sx={{
+                  textAlign: 'center',
+                  textOverflow: 'ellipsis',
+                  overflow: 'hidden',
+                }}
+              >
+                {getValue()}
+              </Text>
             ),
-            enableSorting: false,
+            enableSorting: true,
             meta: { colSpan: 2 },
           },
           {
-            id: 'update',
+            id: 'actions',
             header: undefined,
             cell: ({ row }) => (
-              <UpdateActionsWithPermit
-                updateOffer={row.original}
+              <BuyActionsWithPermit
+                buyOffer={row.original}
                 triggerRefresh={refreshState[1]}
               />
             ),
-            meta: { colSpan: 0 },
-          },
-          {
-            id: 'delete',
-            header: undefined,
-            cell: ({ row }) => (
-              <DeleteActions
-                deleteOffer={row.original}
-                triggerRefresh={refreshState[1]}
-              />
-            ),
-            meta: { colSpan: 0 },
+            meta: { colSpan: 1 },
           },
         ],
       },
@@ -177,14 +203,19 @@ export const MarketTableRowUser: FC = () => {
     [refreshState, t]
   );
 
+  const [nameFilterValue,setNamefilterValue] = useAtom(nameFilterValueAtom);
+
   const table = useReactTable({
     data: offers,
     columns: columns,
-    state: { sorting, pagination, expanded },
+    state: { sorting: sorting, pagination: pagination, expanded: expanded, globalFilter: nameFilterValue },
+    globalFilterFn: 'includesString',
     onSortingChange: setSorting,
+    onGlobalFilterChange: setNamefilterValue,
     onPaginationChange: setPagination,
     onExpandedChange: setExpanded,
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
@@ -198,7 +229,6 @@ export const MarketTableRowUser: FC = () => {
         verticalSpacing: 'sm',
         horizontalSpacing: 'xs',
         sx: (theme) => ({
-          tableLayout: 'fixed',
           border: theme.other.border(theme),
           borderRadius: theme.radius[theme.defaultRadius as MantineSize],
           borderCollapse: 'separate',

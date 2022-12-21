@@ -21,7 +21,7 @@ type TokenInfoShow = {
 };
 export const MarketSubRow: FC<TableSubRowProps<Offer>> = ({
   row: {
-    original: { offerTokenAddress, price },
+    original: { offerTokenAddress, buyerTokenAddress, price },
   },
 }) => {
   const { t } = useTranslation('buy', { keyPrefix: 'subRow' });
@@ -51,7 +51,7 @@ export const MarketSubRow: FC<TableSubRowProps<Offer>> = ({
       {
         id: 'initialPrice',
         accessorKey: 'initialPrice',
-        header: () => <Title order={6}>{t('initialPrice')}</Title>,
+        header: () => <Title order={6}>{t('officialPrice')}</Title>,
         cell: ({ getValue }) => (
           <Text
             size={'sm'}
@@ -112,41 +112,37 @@ export const MarketSubRow: FC<TableSubRowProps<Offer>> = ({
     [t]
   );
 
-  const { tokenInfo } = useTokenInfo(offerTokenAddress);
+  const { tokenInfo } = useTokenInfo(offerTokenAddress,buyerTokenAddress);
 
   const priceDifference = (
     ((Number(price) - tokenInfo.tokenPrice) / tokenInfo.tokenPrice) *
     100
   ).toFixed(2);
 
-  const tokenInfoShow: TokenInfoShow = {
-    fullName: tokenInfo.fullName,
-    initialPrice: tokenInfo.tokenPrice.toString(),
+  const tokenInfoShow: TokenInfoShow[] = useMemo(() => {
+    return [{
+      fullName: tokenInfo.fullName,
+    initialPrice: tokenInfo.tokenPrice ? tokenInfo.tokenPrice.toString() : "",
     offerPrice: price,
     priceDifference: `${priceDifference} %`,
-  };
+    }]
+  },[tokenInfo,price,priceDifference]);
 
   const table = useReactTable({
-    data: [tokenInfoShow],
+    data: tokenInfoShow,
     columns: columns,
     getCoreRowModel: getCoreRowModel(),
     meta: { colSpan: 1 },
   });
 
   return (
-    <>
-      {
-        <>
-          <Table
-            tableProps={{
-              verticalSpacing: 'xs',
-              horizontalSpacing: 'xs',
-              sx: { tableLayout: 'fixed' },
-            }}
-            table={table}
-          />
-        </>
-      }
-    </>
+    <Table
+      tableProps={{
+        verticalSpacing: 'xs',
+        horizontalSpacing: 'xs',
+        sx: { tableLayout: 'fixed' },
+      }}
+      table={table}
+    />
   );
 };

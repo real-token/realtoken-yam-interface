@@ -1,4 +1,4 @@
-import { Dispatch, FC, SetStateAction, useCallback } from 'react';
+import { Dispatch, FC, SetStateAction, useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ActionIcon, Group, Title } from '@mantine/core';
@@ -29,11 +29,12 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
         innerProps: {
           offerId: offer.offerId,
           price: offer.price,
-          amount: offer.amount,
+          offerAmount: offer.amount,
           offerTokenAddress: offer.offerTokenAddress,
           offerTokenDecimals: offer.offerTokenDecimals,
           buyerTokenAddress: offer.buyerTokenAddress,
           buyerTokenDecimals: offer.buyerTokenDecimals,
+          sellerAddress: offer.sellerAddress,
           triggerTableRefresh: triggerRefresh,
         },
       });
@@ -48,18 +49,23 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
     });
   }, [modals, t]);
 
+  const isAccountOffer: boolean = useMemo(() => {
+    if(!buyOffer || !account) return false;
+    return buyOffer.sellerAddress == account || (isAccountOffer && buyOffer.buyerAddress == account)
+  },[buyOffer, account])
+
   return (
-    <Group position={'center'}>
-      {
+    <>
+      { !isAccountOffer ? <Group position={'center'}>
         <ActionIcon
           color={'green'}
           onClick={() =>
             account ? onOpenBuyModal(buyOffer) : onOpenWalletModal()
           }
         >
-          <IconShoppingCart size={16} />
+          <IconShoppingCart size={16} aria-label={'Buy'} />
         </ActionIcon>
-      }
-    </Group>
+      </Group> : undefined }
+    </>
   );
 };

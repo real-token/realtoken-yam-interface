@@ -1,8 +1,7 @@
 import { FC, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ActionIcon, Group, MantineSize, Text, Title } from '@mantine/core';
-import { IconChevronDown, IconChevronUp } from '@tabler/icons';
+import { Group, MantineSize, Text, Title } from '@mantine/core';
 import {
   ColumnDef,
   ExpandedState,
@@ -22,9 +21,8 @@ import { Table } from '../../Table';
 import { BuyActionsWithPermit } from '../BuyActions';
 import { MarketSubRow } from '../MarketSubRow';
 
-export const MarketTableRow: FC = () => {
-  const { offers, refreshState } = useOffers();
-
+export const MarketTablePrivate: FC = () => {
+  const { offers, refreshState } = useOffers(false, true, true); // filter offers by buyer
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'offerId', desc: false },
   ]);
@@ -51,32 +49,18 @@ export const MarketTableRow: FC = () => {
             id: 'offerId',
             accessorKey: 'offerId',
             header: t('offerId'),
-            cell: ({ row, getValue }) => (
+            cell: ({ getValue }) => (
               <Group noWrap={true} spacing={'xs'}>
-                <ActionIcon
-                  variant={'transparent'}
-                  color={'brand'}
-                  onClick={() => row.toggleExpanded()}
-                >
-                  {row.getIsExpanded() ? (
-                    <IconChevronUp size={16} />
-                  ) : (
-                    <IconChevronDown size={16} />
-                  )}
-                </ActionIcon>
                 <Text
                   size={'sm'}
-                  sx={{
-                    textOverflow: 'ellipsis',
-                    overflow: 'hidden',
-                  }}
+                  sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
                 >
                   {getValue()}
                 </Text>
               </Group>
             ),
-            enableSorting: true,
-            meta: { colSpan: 2 },
+            enableSorting: false,
+            meta: { colSpan: 1 },
           },
           {
             id: 'offerTokenName',
@@ -86,16 +70,13 @@ export const MarketTableRow: FC = () => {
               <Group noWrap={true} spacing={'xs'}>
                 <Text
                   size={'sm'}
-                  sx={{
-                    textOverflow: 'ellipsis',
-                    overflow: 'hidden',
-                  }}
+                  sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
                 >
                   {getValue()}
                 </Text>
               </Group>
             ),
-            enableSorting: true,
+            enableSorting: false,
             meta: { colSpan: 2 },
           },
           {
@@ -106,16 +87,13 @@ export const MarketTableRow: FC = () => {
               <Group noWrap={true} spacing={'xs'}>
                 <Text
                   size={'sm'}
-                  sx={{
-                    textOverflow: 'ellipsis',
-                    overflow: 'hidden',
-                  }}
+                  sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
                 >
                   {getValue()}
                 </Text>
               </Group>
             ),
-            enableSorting: true,
+            enableSorting: false,
             meta: { colSpan: 2 },
           },
           {
@@ -126,16 +104,13 @@ export const MarketTableRow: FC = () => {
               <Group noWrap={true} spacing={'xs'}>
                 <Text
                   size={'sm'}
-                  sx={{
-                    textOverflow: 'ellipsis',
-                    overflow: 'hidden',
-                  }}
+                  sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
                 >
                   {getValue()}
                 </Text>
               </Group>
             ),
-            enableSorting: true,
+            enableSorting: false,
             meta: { colSpan: 4 },
           },
           {
@@ -154,7 +129,7 @@ export const MarketTableRow: FC = () => {
                 {getValue()}
               </Text>
             ),
-            enableSorting: true,
+            enableSorting: false,
             meta: { colSpan: 2 },
           },
           {
@@ -173,7 +148,7 @@ export const MarketTableRow: FC = () => {
                 {getValue()}
               </Text>
             ),
-            enableSorting: true,
+            enableSorting: false,
             meta: { colSpan: 2 },
           },
           {

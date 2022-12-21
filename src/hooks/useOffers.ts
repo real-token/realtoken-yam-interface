@@ -2,57 +2,76 @@ import { useEffect, useState } from 'react';
 
 import { useInterval } from '@mantine/hooks';
 
-import { ContractsID } from 'src/constants';
+import { ContractsID, ZERO_ADDRESS } from 'src/constants';
 import { asyncRetry, getContract } from 'src/utils';
 
 import { Offer, UseOffers } from './types';
 import { useAsync } from './useAsync';
 import { useContract } from './useContract';
 import { useWeb3React } from '@web3-react/core';
-import { useActiveChain } from './useActiveChain';
 import { Erc20, Erc20ABI } from 'src/abis';
 import { Web3Provider } from '@ethersproject/providers';
 import BigNumber from 'bignumber.js';
+import { useTranslation } from 'react-i18next';
+import { useAtomValue } from 'jotai';
+import { isRefreshedAutoAtom } from 'src/states';
+import { usePropertiesToken } from './usePropertiesToken';
 
-// isFiltered = 0 when fetching all offers, = 1 when fetching offers of the connected wallet
-export const useOffers: UseOffers = (isFiltered) => {
+// filterSeller = 0 when fetching all offers, = 1 when fetching offers of the connected wallet
+export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount) => {
+  const { t } = useTranslation('common', { keyPrefix: 'general' });
   const [isRefreshing, triggerRefresh] = useState<boolean>(true);
+  const [initialized,setInitialized] = useState<boolean>(false);
+  
   const [offers, setOffers] = useState<Offer[]>([
     {
-      offerId: 'loading...',
-      offerTokenAddress: 'loading...',
-      offerTokenName: 'loading...',
-			offerTokenDecimals: 'loading...',
-      buyerTokenAddress: 'loading...',
-      buyerTokenName: 'loading...',
-			buyerTokenDecimals: 'loading...',
-      sellerAddress: 'loading...',
-      price: 'loading...',
-      amount: 'loading...',
+      offerId: t('loading'),
+      offerTokenAddress: t('loading'),
+      offerTokenName: t('loading'),
+      offerTokenDecimals: t('loading'),
+      buyerTokenAddress: t('loading'),
+      buyerTokenName: t('loading'),
+      buyerTokenDecimals: t('loading'),
+      sellerAddress: t('loading'),
+      buyerAddress: t('loading'),
+      price: t('loading'),
+      amount: t('loading'),
+	  hasPropertyToken: false
     },
   ]);
+
+  const { propertiesToken } = usePropertiesToken();
 
   const realTokenYamUpgradeable = useContract(ContractsID.realTokenYamUpgradeable);
 
   const interval = useInterval(() => triggerRefresh(true), 60000);
 
+  const isAutoRefreshEnabled = useAtomValue(isRefreshedAutoAtom);
+
   useEffect(() => {
-    interval.start();
-    return interval.stop;
+	triggerRefresh(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    triggerRefresh(true);
-  }, [realTokenYamUpgradeable]);
+
+	if(!isAutoRefreshEnabled || !realTokenYamUpgradeable || !initialized) return;
+
+	triggerRefresh(isAutoRefreshEnabled);
+	isAutoRefreshEnabled ? interval.start() : interval.stop();
+	
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [realTokenYamUpgradeable,isAutoRefreshEnabled,initialized]);
 
   const { account, provider } = useWeb3React();
 
   const offersData: Offer[] = [];
 
+  useEffect(() => { if(offersData) setInitialized(true); },[offersData])
+
   useAsync(
     async (isActive) => {
-      if (!realTokenYamUpgradeable || !isRefreshing) return undefined;
+      	if (!realTokenYamUpgradeable || !isRefreshing) return undefined;
 
 			const getEvents = () =>
 			realTokenYamUpgradeable.queryFilter(
@@ -62,15 +81,15 @@ export const useOffers: UseOffers = (isFiltered) => {
 
 			const events = await asyncRetry(getEvents);
 			const offersDeleted = events.map(event => event.args.offerId.toNumber());
-      const offerCount = (
-        await asyncRetry(() => realTokenYamUpgradeable.getOfferCount())
-      ).toNumber();
+			const offerCount = (
+				await asyncRetry(() => realTokenYamUpgradeable.getOfferCount())
+			).toNumber();
 			// console.log("offerCount", offerCount)
 			const offerCountArray = Array.from(Array(offerCount).keys());
 			const offersToFetch = offerCountArray.filter(x => !offersDeleted.includes(x));
 
-      for (const i of offersToFetch) {
-        const getOffer = () => realTokenYamUpgradeable.showOffer(i);
+      	for (const i of offersToFetch) {
+        	const getOffer = () => realTokenYamUpgradeable.showOffer(i);
 
 				try {
 					const [
@@ -81,6 +100,7 @@ export const useOffers: UseOffers = (isFiltered) => {
 						price,
 						amount,
 					] = await getOffer();
+
 					const offerToken = getContract<Erc20>(offerTokenAddress, Erc20ABI, <Web3Provider>provider, account);
 					const buyerToken = getContract<Erc20>(buyerTokenAddress, Erc20ABI, <Web3Provider>provider, account);
 					const offerTokenName = <string>(await offerToken?.name());
@@ -88,6 +108,9 @@ export const useOffers: UseOffers = (isFiltered) => {
 					const offerTokenDecimals = <number>await offerToken?.decimals();
 					const buyerTokenDecimals = <number>await buyerToken?.decimals();
 
+					const hasPropertyToken = propertiesToken.find(propertyToken => (propertyToken.contractAddress == buyerTokenAddress || propertyToken.contractAddress == offerTokenAddress));
+
+					const bnAmount = new BigNumber(amount.toString());
 					const offerData: Offer = {
 						offerId: i.toString(),
 						offerTokenAddress: offerTokenAddress,
@@ -97,35 +120,46 @@ export const useOffers: UseOffers = (isFiltered) => {
 						buyerTokenName: <string>buyerTokenName,
 						buyerTokenDecimals: buyerTokenDecimals.toString(),
 						sellerAddress: sellerAddress,
-						price: (new BigNumber(price.toString())).shiftedBy(- buyerTokenDecimals).toString(),
-						amount: (new BigNumber(amount.toString()).shiftedBy(- offerTokenDecimals)).toString(),
-						// price: price.toString(),
-						// amount: amount.toString(),
+						buyerAddress: buyerAddress,
+						price: (new BigNumber(price.toString())).shiftedBy(- buyerTokenDecimals).toFixed(10).toString(),
+						amount: (bnAmount.shiftedBy(- offerTokenDecimals)).toFixed(10).toString(),
+						hasPropertyToken: hasPropertyToken ? true : false
 					};
 
-					if (isFiltered) {
-						if (offerData.sellerAddress === account) {
-							offersData.push(offerData);
-						}
-					} else {
-						if (amount.toString() !== '0') {
-							offersData.push(offerData);
+					const condFiltreZeroAmount = filterZeroAmount ? !bnAmount.isZero() : true;
+					if(condFiltreZeroAmount){
+						if (filterSeller) {
+							//console.log("is seller", account, sellerAddress,buyerAddress)
+							if (offerData.sellerAddress === account) {
+								offersData.push(offerData);
+							}
+						} else if (filterBuyer) {
+							// Filter offer by buyer
+							//console.log("is buyer", account, buyerAddress,sellerAddress);
+							if (offerData.buyerAddress === account) {
+								offersData.push(offerData);
+							}
+						} else {
+							// No filter, show public offers
+							// console.log("is public", account, sellerAddress, buyerAddress);
+							if (offerData.buyerAddress === ZERO_ADDRESS) {
+								offersData.push(offerData);
+							}
 						}
 					}
-
 				} catch (e) {
 					console.log("Error getting when fetching offers: ", e);
 				}
-      }
+      	}
 
-      if (isActive()) {
-        setOffers(offersData.filter(Boolean));
-        triggerRefresh(false);
-      }
+		if (isActive()) {
+			setOffers(offersData.filter(Boolean));
+			triggerRefresh(false);
+		}
 
-      return offersData;
+      	return offersData;
     },
-    [realTokenYamUpgradeable, isRefreshing, offersData, provider, account, isFiltered]
+    [realTokenYamUpgradeable, isRefreshing, offersData, provider, account, filterSeller, filterBuyer,propertiesToken]
   );
 
   return {

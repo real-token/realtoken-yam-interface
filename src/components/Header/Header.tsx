@@ -21,6 +21,7 @@ import { Divider } from '../Divider';
 import { SettingsMenu } from '../SettingsMenu';
 import { WalletMenu } from '../WalletMenu';
 import { styles } from './Header.styles';
+import { useRouter } from 'next/router';
 
 const LogoWithName: FC = () => {
   const { t } = useTranslation('common', { keyPrefix: 'header' });
@@ -47,7 +48,11 @@ const ConnectButton: FC = () => {
     });
   }, [modals, t]);
 
-  return <Button onClick={onOpenWalletModal}>{t('title')}</Button>;
+  return (
+    <Button aria-label={t('title')} onClick={onOpenWalletModal}>
+      {t('title')}
+    </Button>
+  );
 };
 
 const HeaderButtons: FC = () => {
@@ -62,34 +67,36 @@ const HeaderButtons: FC = () => {
 };
 
 export const Header: FC = () => {
+  const { t } = useTranslation('common', { keyPrefix: 'header' });
+  const router = useRouter()
+  const colorSelected = '#cfaa70';
   return (
-    <MantineHeader height={'auto'}>
+    <div>
       <Box sx={styles.container}>
         <Group position={'apart'} align={'center'}>
           <LogoWithName />
-          <Text size={'xl'} weight={700} component={NextLink} href={'/'}>
-            {'Explore'}
+          <Text
+            size={'xl'}
+            weight={700}
+            component={NextLink}
+            href={'/'}
+            color={router.pathname === '/' ? colorSelected : ''}
+          >
+            {t('titleCat1')}
           </Text>
           <Text
             size={'xl'}
             weight={700}
             component={NextLink}
             href={'/my-offers'}
+            color={router.pathname === '/my-offers' ? colorSelected : ''}
           >
-            {'Your offers'}
-          </Text>
-          <Text
-            size={'xl'}
-            weight={700}
-            component={NextLink}
-            href={'/portfolio'}
-          >
-            {'Portfolio'}
+            {t('titleCat2')}
           </Text>
           <HeaderButtons />
         </Group>
       </Box>
       <Divider />
-    </MantineHeader>
+    </div>
   );
 };

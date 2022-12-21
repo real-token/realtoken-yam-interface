@@ -42,6 +42,7 @@ const FooterButtons: FC = () => {
         variant={'subtle'}
         component={NextLink}
         href={'https://twitter.com/RealTPlatform/'}
+        aria-label={'Twitter'}
         target={'_blank'}
       >
         <IconBrandTwitter />
@@ -50,6 +51,7 @@ const FooterButtons: FC = () => {
         variant={'subtle'}
         component={NextLink}
         href={'https://t.me/Realtoken_welcome/'}
+        aria-label={'Telegram'}
         target={'_blank'}
       >
         <IconBrandTelegram />
@@ -57,7 +59,8 @@ const FooterButtons: FC = () => {
       <ActionIcon
         variant={'subtle'}
         component={NextLink}
-        href={'https://blog.realt.co/'}
+        href={'https://realt.co/blog/'}
+        aria-label={'Blog'}
         target={'_blank'}
       >
         <IconBrandMedium />
@@ -66,6 +69,7 @@ const FooterButtons: FC = () => {
         variant={'subtle'}
         component={NextLink}
         href={'https://github.com/real-token'}
+        aria-label={'GitHub'}
         target={'_blank'}
       >
         <IconBrandGithub />
@@ -87,7 +91,7 @@ Copyright.displayName = 'Copyright';
 
 export const Footer: FC = () => {
   return (
-    <MantineFooter height={'auto'}>
+    <div>
       <Divider />
       <Box sx={styles.container}>
         <Group position={'apart'} align={'center'}>
@@ -101,6 +105,6 @@ export const Footer: FC = () => {
           <Copyright size={'sm'} mt={5} />
         </MediaQuery>
       </Box>
-    </MantineFooter>
+    </div>
   );
 };
