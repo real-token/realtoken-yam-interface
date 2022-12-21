@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Button, Container, Group, Input, Stack } from '@mantine/core';
+import { Button, Text, Flex, Group, Stack, Divider } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { ContextModalProps } from '@mantine/modals';
 import { showNotification, updateNotification } from '@mantine/notifications';
@@ -352,10 +352,27 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
   return (
     <form onSubmit={onSubmit(onHandleSubmit)}>
       <Stack justify={'center'} align={'stretch'}>
-        <Box>
-          <Input.Label>{t('selectedOffer')}</Input.Label>
-          <Container>{offerId ? offerId : 'Offer not found'}</Container>
-        </Box>
+        
+        <Flex direction={"column"} gap={"sm"}>
+          <Text size={"xl"}>{t('selectedOffer')}</Text>
+          <Flex direction={"column"} gap={8}>
+              <Flex direction={"column"}>
+                <Text fw={700}>{t("offerId")}</Text>
+                <Text>{offerId ? offerId : 'Offer not found'}</Text>
+              </Flex>
+              <Flex direction={"column"}>
+                <Text fw={700}>{t("price")}</Text>
+                <Text>{price}</Text>
+              </Flex>
+              <Flex direction={"column"}>
+                <Text fw={700}>{t("amount")}</Text>
+                <Text>{amount}</Text>
+              </Flex>
+          </Flex>
+        </Flex>
+
+        <Divider/>
+
         <NumberInput
           label={t('price')}
           required={true}
