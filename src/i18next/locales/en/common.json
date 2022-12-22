@@ -5,7 +5,8 @@
     "titleCat2": "Your Offers"
   },
   "footer": {
-    "copyright": "© {{year}} RealT. All rights reserved."
+    "copyright": "© {{year}} RealT. All rights reserved.",
+    "faq": "FAQ"
   },
   "general": {
     "loading": "loading...",
