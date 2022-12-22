@@ -34,56 +34,6 @@ const LogoWithName: FC = () => {
   );
 };
 
-const FooterButtons: FC = () => {
-  return (
-    <Group>
-      <ActionIcon 
-        variant={'subtle'}
-        component={NextLink}
-        href={"/faq"}
-      >
-        FAQ
-      </ActionIcon>
-      <ActionIcon
-        variant={'subtle'}
-        component={NextLink}
-        href={'https://twitter.com/RealTPlatform/'}
-        aria-label={'Twitter'}
-        target={'_blank'}
-      >
-        <IconBrandTwitter />
-      </ActionIcon>
-      <ActionIcon
-        variant={'subtle'}
-        component={NextLink}
-        href={'https://t.me/Realtoken_welcome/'}
-        aria-label={'Telegram'}
-        target={'_blank'}
-      >
-        <IconBrandTelegram />
-      </ActionIcon>
-      <ActionIcon
-        variant={'subtle'}
-        component={NextLink}
-        href={'https://realt.co/blog/'}
-        aria-label={'Blog'}
-        target={'_blank'}
-      >
-        <IconBrandMedium />
-      </ActionIcon>
-      <ActionIcon
-        variant={'subtle'}
-        component={NextLink}
-        href={'https://github.com/real-token'}
-        aria-label={'GitHub'}
-        target={'_blank'}
-      >
-        <IconBrandGithub />
-      </ActionIcon>
-    </Group>
-  );
-};
-
 const Copyright: FRC<TextProps, HTMLDivElement> = forwardRef((props, ref) => {
   const { t } = useTranslation('common', { keyPrefix: 'footer' });
 
@@ -96,6 +46,59 @@ const Copyright: FRC<TextProps, HTMLDivElement> = forwardRef((props, ref) => {
 Copyright.displayName = 'Copyright';
 
 export const Footer: FC = () => {
+
+  const { t } = useTranslation("common");
+
+  const FooterButtons: FC = () => {
+    return (
+      <Group>
+        <ActionIcon 
+          variant={'subtle'}
+          component={NextLink}
+          href={"/faq"}
+        >
+          {t("footer.faq")}
+        </ActionIcon>
+        <ActionIcon
+          variant={'subtle'}
+          component={NextLink}
+          href={'https://twitter.com/RealTPlatform/'}
+          aria-label={'Twitter'}
+          target={'_blank'}
+        >
+          <IconBrandTwitter />
+        </ActionIcon>
+        <ActionIcon
+          variant={'subtle'}
+          component={NextLink}
+          href={'https://t.me/Realtoken_welcome/'}
+          aria-label={'Telegram'}
+          target={'_blank'}
+        >
+          <IconBrandTelegram />
+        </ActionIcon>
+        <ActionIcon
+          variant={'subtle'}
+          component={NextLink}
+          href={'https://realt.co/blog/'}
+          aria-label={'Blog'}
+          target={'_blank'}
+        >
+          <IconBrandMedium />
+        </ActionIcon>
+        <ActionIcon
+          variant={'subtle'}
+          component={NextLink}
+          href={'https://github.com/real-token'}
+          aria-label={'GitHub'}
+          target={'_blank'}
+        >
+          <IconBrandGithub />
+        </ActionIcon>
+      </Group>
+    );
+  };
+
   return (
     <div>
       <Divider />
