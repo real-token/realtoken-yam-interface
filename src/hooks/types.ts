@@ -30,5 +30,5 @@ export type UseOffers = (
   filterZeroAmount?: boolean
 ) => {
   offers: Offer[];
-  refreshState: [boolean, Dispatch<SetStateAction<boolean>>];
+  refreshState: [boolean, () => void];
 };

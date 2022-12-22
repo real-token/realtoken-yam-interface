@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useInterval } from '@mantine/hooks';
 
 import { ContractsID, ZERO_ADDRESS } from 'src/constants';
@@ -17,7 +17,7 @@ import { usePropertiesToken } from './usePropertiesToken';
 // filterSeller = 0 when fetching all offers, = 1 when fetching offers of the connected wallet
 export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount) => {
   const { t } = useTranslation('common', { keyPrefix: 'general' });
-  const [isRefreshing, triggerRefresh] = useState<boolean>(true);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(true);
   const [initialized,setInitialized] = useState<boolean>(false);
   
   const LOADING_OFFER = {
@@ -34,32 +34,15 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
     amount: t('loading'),
   hasPropertyToken: false
   };
-
   const LOADING_OFFERS = [LOADING_OFFER,LOADING_OFFER,LOADING_OFFER]
+
   const [offers, setOffers] = useState<Offer[]>(LOADING_OFFERS);
   const { propertiesToken } = usePropertiesToken();
-  const { chainId } = useWeb3React();
 
   const realTokenYamUpgradeable = useContract(ContractsID.realTokenYamUpgradeable);
-  const interval = useInterval(() => triggerRefresh(true), 60000);
-  const isAutoRefreshEnabled = useAtomValue(isRefreshedAutoAtom);
+  const { account, provider, chainId } = useWeb3React();
 
-  useEffect(() => {
-	  triggerRefresh(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if(!isAutoRefreshEnabled || !realTokenYamUpgradeable || !initialized) return;
-    triggerRefresh(isAutoRefreshEnabled);
-    isAutoRefreshEnabled ? interval.start() : interval.stop();
-	
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [realTokenYamUpgradeable,isAutoRefreshEnabled,initialized]);
-
-  const { account, provider } = useWeb3React();
-
-  const fetchOffers = async (): Promise<Offer[]> => {
+  const fetchOffers = useCallback(async (): Promise<Offer[]> => {
     return new Promise<Offer[]>(async (resolve, reject) => {
       if(realTokenYamUpgradeable){
         try{
@@ -141,8 +124,6 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
             }
           }
         
-          setInitialized(true);
-          triggerRefresh(false);
           resolve(offersData);
 
         }catch(err){
@@ -151,19 +132,39 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
         }
       }
     })
+  },[account, filterBuyer, filterSeller, filterZeroAmount, propertiesToken, provider, realTokenYamUpgradeable])
+
+  const fetch = async () => {
+    setOffers(LOADING_OFFERS);
+    setIsRefreshing(true);
+    const offers = await fetchOffers();
+
+    console.log(offers)
+
+    setOffers(offers);
+    setInitialized(true);
+    setIsRefreshing(false);
   }
 
+  const interval = useInterval(() => fetch(), 60000);
+  const isAutoRefreshEnabled = useAtomValue(isRefreshedAutoAtom);
+
+  // LOAD OFFERS ON INIT
+
   useEffect(() => {
-    const fetch = async () => {
-      const offers = await fetchOffers();
-      console.log(offers)
-      setOffers(offers);
-    }
-    if (realTokenYamUpgradeable && isRefreshing) fetch()
-  },[realTokenYamUpgradeable,isRefreshing, chainId])
+    if(!isAutoRefreshEnabled || !realTokenYamUpgradeable || !initialized) return;
+    setIsRefreshing(isAutoRefreshEnabled);
+    isAutoRefreshEnabled ? interval.start() : interval.stop();
+	
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [realTokenYamUpgradeable,isAutoRefreshEnabled,initialized]);
+
+  useEffect(() => {
+    if (realTokenYamUpgradeable) fetch()
+  },[realTokenYamUpgradeable, chainId])
 
   return {
     offers: offers,
-    refreshState: [isRefreshing, triggerRefresh],
+    refreshState: [isRefreshing, fetch],
   };
 };
