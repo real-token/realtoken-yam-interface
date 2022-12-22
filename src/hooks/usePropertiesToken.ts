@@ -134,11 +134,7 @@ export const usePropertiesToken = (): usePropertiesTokenReturn => {
                     }
                     
                 });
-
-                console.log(propertiesToken)
-
                 setPropertiesToken(propertiesToken);
-
             }
 
         }catch(err){
