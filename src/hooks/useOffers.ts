@@ -16,11 +16,12 @@ import { usePropertiesToken } from './usePropertiesToken';
 
 // filterSeller = 0 when fetching all offers, = 1 when fetching offers of the connected wallet
 export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount) => {
+
   const { t } = useTranslation('common', { keyPrefix: 'general' });
   const [isRefreshing, setIsRefreshing] = useState<boolean>(true);
   const [initialized,setInitialized] = useState<boolean>(false);
-  
-  const LOADING_OFFER = {
+
+  const [offers, setOffers] = useState<Offer[]>([{
     offerId: t('loading'),
     offerTokenAddress: t('loading'),
     offerTokenName: t('loading'),
@@ -33,10 +34,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
     price: t('loading'),
     amount: t('loading'),
   hasPropertyToken: false
-  };
-  const LOADING_OFFERS = [LOADING_OFFER,LOADING_OFFER,LOADING_OFFER]
-
-  const [offers, setOffers] = useState<Offer[]>(LOADING_OFFERS);
+  }]);
   const { propertiesToken } = usePropertiesToken();
 
   const realTokenYamUpgradeable = useContract(ContractsID.realTokenYamUpgradeable);
@@ -134,10 +132,21 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
     })
   },[account, filterBuyer, filterSeller, filterZeroAmount, propertiesToken, provider, realTokenYamUpgradeable])
 
-  const fetch = async () => {
-    console.log("OK")
-
-    setOffers(LOADING_OFFERS);
+  const fetch = useCallback(async () => {
+    setOffers([{
+      offerId: t('loading'),
+      offerTokenAddress: t('loading'),
+      offerTokenName: t('loading'),
+      offerTokenDecimals: t('loading'),
+      buyerTokenAddress: t('loading'),
+      buyerTokenName: t('loading'),
+      buyerTokenDecimals: t('loading'),
+      sellerAddress: t('loading'),
+      buyerAddress: t('loading'),
+      price: t('loading'),
+      amount: t('loading'),
+    hasPropertyToken: false
+    }]);
     setIsRefreshing(true);
     const offers = await fetchOffers();
 
@@ -146,12 +155,15 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
     setOffers(offers);
     setInitialized(true);
     setIsRefreshing(false);
-  }
+  },[fetchOffers])
 
   const interval = useInterval(() => fetch(), 60000);
   const isAutoRefreshEnabled = useAtomValue(isRefreshedAutoAtom);
 
   // LOAD OFFERS ON INIT
+  useEffect(() => {
+    if (realTokenYamUpgradeable && chainId) fetch()
+  },[realTokenYamUpgradeable, chainId, fetch])
 
   useEffect(() => {
     if(!isAutoRefreshEnabled || !realTokenYamUpgradeable || !initialized) return;
@@ -160,10 +172,6 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
 	
 	// eslint-disable-next-line react-hooks/exhaustive-deps
   }, [realTokenYamUpgradeable,isAutoRefreshEnabled,initialized]);
-
-  useEffect(() => {
-    if (realTokenYamUpgradeable) fetch()
-  },[realTokenYamUpgradeable, chainId])
 
   return {
     offers: offers,
