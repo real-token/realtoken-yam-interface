@@ -73,6 +73,10 @@
     "price": "Prix",
     "amount": "Quantité",
     "cancel": "Annuler",
-    "confirm": "Confirmer"
+    "confirm": "Confirmer",
+    "summary": "Résumé de la transaction",
+    "summaryText1": "Vous allez modifier le prix de vente de",
+    "summaryText2": "et le montant de",
+    "summaryText3": "à"
   }
 }

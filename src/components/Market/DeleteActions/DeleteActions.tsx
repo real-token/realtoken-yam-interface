@@ -26,6 +26,7 @@ export const DeleteActions: FC<DeleteActions> = ({
     (offer: Offer) => {
       modals.openContextModal('delete', {
         title: <Title order={3}>{t('delete.title')}</Title>,
+        size: "lg",
         innerProps: {
           offerId: offer.offerId,
           triggerTableRefresh: triggerRefresh,
