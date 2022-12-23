@@ -16,7 +16,7 @@ import { useWeb3React } from '@web3-react/core';
 
 import BigNumber from 'bignumber.js';
 
-import { CoinBridgeToken, coinBridgeTokenABI } from 'src/abis';
+import { CoinBridgeToken, coinBridgeTokenABI, Erc20, Erc20ABI } from 'src/abis';
 import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { useActiveChain, useContract, useOffers } from 'src/hooks';
 import coinBridgeTokenPermitSignature from 'src/hooks/coinBridgeTokenPermitSignature';
@@ -25,6 +25,7 @@ import { getContract } from 'src/utils';
 
 import { NumberInput } from '../../NumberInput';
 import { cleanNumber } from 'src/utils/number';
+import { Web3Provider } from '@ethersproject/providers';
 
 type UpdateModalProps = {
   offerId: string;
@@ -90,6 +91,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
   } = useOffers();
 
   const { t } = useTranslation('modals', { keyPrefix: 'update' });
+  const { t: t1 } = useTranslation('modals', { keyPrefix: 'sell' });
 
   const onClose = useCallback(() => {
     reset();
@@ -350,6 +352,52 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
     ]
   );
 
+  const [offerTokenSymbol,setOfferTokenSymbol] = useState<string|undefined>("");
+  const [buyTokenSymbol,setBuyTokenSymbol] = useState<string|undefined>("");
+
+  const buyerToken = getContract<CoinBridgeToken>(
+    buyerTokenAddress,
+    coinBridgeTokenABI,
+    provider as Web3Provider,
+    account
+  );
+  const offerToken = getContract<Erc20>(
+    offerTokenAddress,
+    Erc20ABI,
+    provider as Web3Provider,
+    account
+  )
+
+  const getOfferTokenInfos = async () => {
+    try{
+      const tokenSymbol = await offerToken?.symbol();
+      setOfferTokenSymbol(tokenSymbol)
+    }catch(err){
+      console.log(err)
+    }
+  }
+  useEffect(() => {
+    if(offerToken) getOfferTokenInfos();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[offerToken])
+
+  const getBuyTokenInfos = async () => {
+
+    try{
+      const tokenSymbol = await buyerToken?.symbol();
+      setBuyTokenSymbol(tokenSymbol);
+    }catch(err){
+      console.log(err)
+    }
+
+  }
+  useEffect(() => {
+    if(buyerToken) getBuyTokenInfos();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[buyerToken])
+
+  const total = values?.amount * values?.price;
+
   return (
     <form onSubmit={onSubmit(onHandleSubmit)}>
       <Stack justify={'center'} align={'stretch'}>
@@ -394,8 +442,8 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
         <Text size={"xl"}>{t("summary")}</Text>
         { values.price > 0 && values.amount > 0 && (
           <Text size={"md"} mb={10}>
-            {/* {` ${t("summaryText1")} ${values?.amount} ${offerTokenSymbol} ${t("summaryText2")} ${cleanNumber(values?.price)} ${buyTokenSymbol} ${t("summaryText3")} ${total} ${buyTokenSymbol}`} */}
-            {` ${t('summaryText1')} ${cleanNumber(price)} ${t('summaryText3')} ${cleanNumber(values.price)} ${t('summaryText2')} ${cleanNumber(amount)} ${t('summaryText3')} ${cleanNumber(values.amount)}`}
+            {` ${t1("summaryText1")} ${values?.amount} ${offerTokenSymbol} ${t1("summaryText2")} ${cleanNumber(values?.price)} ${buyTokenSymbol} ${t1("summaryText3")} ${total} ${buyTokenSymbol}`}
+            {/* {` ${t1('summaryText1')} ${cleanNumber(price)} ${t1('summaryText3')} ${cleanNumber(values.price)} ${t1('summaryText2')} ${cleanNumber(amount)} ${t1('summaryText3')} ${cleanNumber(values.amount)}`} */}
           </Text>
         )}
 

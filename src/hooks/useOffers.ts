@@ -135,6 +135,8 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
   },[account, filterBuyer, filterSeller, filterZeroAmount, propertiesToken, provider, realTokenYamUpgradeable])
 
   const fetch = async () => {
+    console.log("OK")
+
     setOffers(LOADING_OFFERS);
     setIsRefreshing(true);
     const offers = await fetchOffers();
