@@ -73,6 +73,10 @@
     "price": "Price/token",
     "amount": "Quantity",
     "cancel": "Cancel",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "summary": "Summary",
+    "summaryText1": "You will modify the price from",
+    "summaryText2": "and the amount from",
+    "summaryText3": "to"
   }
 }

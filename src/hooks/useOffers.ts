@@ -139,7 +139,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
     setIsRefreshing(true);
     const offers = await fetchOffers();
 
-    console.log(offers)
+    // console.log(offers)
 
     setOffers(offers);
     setInitialized(true);

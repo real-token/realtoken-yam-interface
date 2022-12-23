@@ -26,6 +26,7 @@ export const UpdateActionsWithPermit: FC<UpdateActions> = ({
     (offer: Offer) => {
       modals.openContextModal('updatePermit', {
         title: <Title order={3}>{t('update.title')}</Title>,
+        size: "lg",
         innerProps: {
           offerId: offer.offerId,
           price: offer.price,

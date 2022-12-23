@@ -73,6 +73,7 @@
     "price": "Price",
     "amount": "Amount",
     "cancel": "Cancel",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "summary": "Summary"
   }
 }

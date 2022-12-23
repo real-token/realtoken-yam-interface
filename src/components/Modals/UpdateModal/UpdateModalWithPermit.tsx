@@ -24,6 +24,7 @@ import erc20PermitSignature from 'src/hooks/erc20PermitSignature';
 import { getContract } from 'src/utils';
 
 import { NumberInput } from '../../NumberInput';
+import { cleanNumber } from 'src/utils/number';
 
 type UpdateModalProps = {
   offerId: string;
@@ -389,6 +390,15 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           sx={{ flexGrow: 1 }}
           {...getInputProps('amount')}
         />
+
+        <Text size={"xl"}>{t("summary")}</Text>
+        { values.price > 0 && values.amount > 0 && (
+          <Text size={"md"} mb={10}>
+            {/* {` ${t("summaryText1")} ${values?.amount} ${offerTokenSymbol} ${t("summaryText2")} ${cleanNumber(values?.price)} ${buyTokenSymbol} ${t("summaryText3")} ${total} ${buyTokenSymbol}`} */}
+            {` ${t('summaryText1')} ${cleanNumber(price)} ${t('summaryText3')} ${cleanNumber(values.price)} ${t('summaryText2')} ${cleanNumber(amount)} ${t('summaryText3')} ${cleanNumber(values.amount)}`}
+          </Text>
+        )}
+
         <Group grow={true}>
           <Button color={'red'} onClick={onClose} aria-label={t('cancel')}>
             {t('cancel')}
@@ -397,6 +407,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
             type={'submit'}
             loading={isSubmitting}
             aria-label={t('confirm')}
+            disabled={values.price == 0 || values.amount == 0 || values.price == undefined || values.amount == undefined}
           >
             {t('confirm')}
           </Button>
