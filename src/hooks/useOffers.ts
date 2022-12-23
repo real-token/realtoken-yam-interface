@@ -42,6 +42,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
 
   const fetchOffers = useCallback(async (): Promise<Offer[]> => {
     return new Promise<Offer[]>(async (resolve, reject) => {
+      setOffers([]);
       if(realTokenYamUpgradeable){
         try{
           const offersData: Offer[] = [];
