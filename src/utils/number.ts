@@ -13,7 +13,7 @@ export const getNumberOfZero = (value: string) : number => {
 }
 
 export const cleanNumber = (number: string|number) : string => {
-    const n = parseFloat(number.toString());
+    const n = number ? parseFloat(number.toString()) : 0;
     const numberOfDecimals = getNumberDecimals(n.toString());
     return n.toFixed(Math.abs(numberOfDecimals));
 }
