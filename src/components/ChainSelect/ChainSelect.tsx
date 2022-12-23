@@ -19,11 +19,13 @@ type ChainSelectItemsProps = {
   logo: string;
 };
 
-const data = ALLOWED_CHAINS.map<SelectItem>((chain) => ({
-  value: chain.toString(),
-  label: CHAINS[chain as ChainsID].chainName,
-  logo: CHAINS[chain as ChainsID].logo,
-}));
+const data = ALLOWED_CHAINS
+  .filter((chain) => (chain.toString() !== "5" && process.env.NEXT_PUBLIC_ENV === "production") || process.env.NEXT_PUBLIC_ENV !== "production")
+  .map<SelectItem>((chain) => ( {
+    value: chain.toString(),
+    label: CHAINS[chain as ChainsID].chainName,
+    logo: CHAINS[chain as ChainsID].logo,
+  }));
 
 const ChainSelectItems: FRC<ChainSelectItemsProps, HTMLDivElement> = forwardRef(
   ({ label, logo, ...props }, ref) => {

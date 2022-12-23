@@ -1,4 +1,4 @@
-import { FC, useMemo, useState } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ActionIcon, Group, MantineSize, Text, Title } from '@mantine/core';
@@ -28,6 +28,7 @@ import React from 'react';
 
 export const MarketTable: FC = () => {
   const { offers, refreshState } = useOffers(false, false, true);
+  const [nameFilterValue,setNamefilterValue] = useAtom(nameFilterValueAtom);
   
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'offerId', desc: false },
@@ -203,7 +204,16 @@ export const MarketTable: FC = () => {
     [refreshState, t]
   );
 
-  const [nameFilterValue,setNamefilterValue] = useAtom(nameFilterValueAtom);
+  useEffect(() => {
+    if(nameFilterValue !== ""){
+      setSorting([
+        { id: "buyerTokenName", desc: true },
+        { id: "price", desc: false }
+      ])
+    }else{
+      setSorting([{ id: 'offerId', desc: false }])
+    }
+  },[nameFilterValue])
 
   const table = useReactTable({
     data: offers,
