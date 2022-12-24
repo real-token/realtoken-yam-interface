@@ -27,6 +27,7 @@ import { nameFilterValueAtom } from 'src/states';
 import React from 'react';
 
 export const MarketTable: FC = () => {
+
   const { offers, refreshState } = useOffers(false, false, true);
   const [nameFilterValue,setNamefilterValue] = useAtom(nameFilterValueAtom);
   

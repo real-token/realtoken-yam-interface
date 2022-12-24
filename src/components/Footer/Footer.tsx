@@ -13,6 +13,7 @@ import {
 } from '@mantine/core';
 import { NextLink } from '@mantine/next';
 import {
+  IconBrandDiscord,
   IconBrandGithub,
   IconBrandMedium,
   IconBrandTelegram,
@@ -68,6 +69,18 @@ export const Footer: FC = () => {
         >
           <IconBrandTwitter />
         </ActionIcon>
+
+        <ActionIcon
+          variant={'subtle'}
+          component={NextLink}
+          href={'https://discord.gg/9fQz6jYmcT'}
+          aria-label={'Discord'}
+          target={'_blank'}
+        >
+          <IconBrandDiscord />
+        </ActionIcon>
+
+
         <ActionIcon
           variant={'subtle'}
           component={NextLink}
