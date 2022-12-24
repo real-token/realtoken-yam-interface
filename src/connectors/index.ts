@@ -12,14 +12,14 @@ import { network, hooks as networkHooks } from './network';
 import { walletConnect, hooks as walletConnectHooks } from './walletConnect';
 
 const connectors: [
-  MetaMask | WalletConnect | CoinbaseWallet | GnosisSafe | Network,
+  MetaMask | WalletConnect | CoinbaseWallet | Network | GnosisSafe,
   Web3ReactHooks
 ][] = [
   [metaMask, metaMaskHooks],
   [walletConnect, walletConnectHooks],
   [coinbaseWallet, coinbaseWalletHooks],
-  [gnosisSafe, gnosisSafeHooks],
   [network, networkHooks],
+  [gnosisSafe, gnosisSafeHooks],
 ];
 
 export {

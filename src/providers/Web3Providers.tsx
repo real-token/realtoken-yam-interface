@@ -12,16 +12,16 @@ const ConnectEagerly: FC = () => {
   useEffect(() => {
     void network.activate();
   }, []);
-
+  
   useEffect(() => {
-    void metaMask.connectEagerly();
-  }, []);
-
-  useEffect(() => {
+    console.log('process.env.NEXT_PUBLIC_ENV', process.env.NEXT_PUBLIC_ENV)
+    process.env.NEXT_PUBLIC_ENV === "dev" ?  
     void gnosisSafe.connectEagerly().catch(() => {
       console.debug('Failed to connect eagerly to gnosis safe')
-    })
+    }): 
+    void metaMask.connectEagerly();
   }, [])
+
 
   return null;
 };

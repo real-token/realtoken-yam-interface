@@ -4,7 +4,6 @@ import { GnosisSafe } from '@web3-react/gnosis-safe';
 export const [gnosisSafe, hooks] = initializeConnector<GnosisSafe>(
   (actions) =>
     new GnosisSafe({
-      actions: actions,
-      options: { allowedDomains: [] },
+      actions,
     })
 );
