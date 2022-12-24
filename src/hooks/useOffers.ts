@@ -163,7 +163,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
 
   // LOAD OFFERS ON INIT
   useEffect(() => {
-    if (realTokenYamUpgradeable && chainId) fetch()
+    if (realTokenYamUpgradeable && chainId && account) fetch()
   },[realTokenYamUpgradeable, chainId, fetch])
 
   useEffect(() => {
