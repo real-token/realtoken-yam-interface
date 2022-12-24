@@ -1,0 +1,17 @@
+{
+  "short_name": "YAM",
+  "name": "Realtoken You and Me",
+  "description": "P2P excange",
+  "iconPath": "logo.svg",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "32x32",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "./index.html",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
