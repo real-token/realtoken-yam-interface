@@ -15,6 +15,12 @@ export const Head: FC<HeadProps> = ({ title }) => {
           name={'viewport'}
           content={'width=device-width, initial-scale=1.0'}
         />
+        <meta
+          name={'Description'}
+          content={
+            'RealToken YAM, a peer-to-peer platform to exchange your real estate tokens'
+          }
+        />
       </NextHead>
     </div>
   );

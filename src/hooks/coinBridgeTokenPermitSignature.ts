@@ -40,6 +40,7 @@ const coinBridgeTokenPermitSignature = async (
       { name: 'deadline', type: 'uint256' },
     ];
 
+    // eslint-disable-next-line object-shorthand
     const message = {
       owner,
       spender,
@@ -49,6 +50,7 @@ const coinBridgeTokenPermitSignature = async (
     };
     // console.log('message: ', message);
 
+    // eslint-disable-next-line object-shorthand
     const data = JSON.stringify({
       types: {
         EIP712Domain,

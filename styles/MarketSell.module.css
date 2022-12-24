@@ -26,7 +26,7 @@
 }
 
 .new_offer {
-  background-color: #c25100;
+  background-color: #25262b;
   padding: 1rem;
   margin: 2rem auto;
   width: 50rem;
@@ -40,8 +40,8 @@
   font: inherit;
   cursor: pointer;
   padding: 1rem 2rem;
-  border: 1px solid #10005e;
-  background-color: #0d0060;
+  border: 1px solid #ae730ae0;
+  background-color: #ae730a5e;
   color: white;
   border-radius: 12px;
   margin-right: 1rem;
@@ -49,8 +49,8 @@
 
 .new_offer button:hover,
 .new_offer button:active {
-  background-color: #510674;
-  border-color: #510674;
+  background-color: #ae730ad9;
+  border-color: #ae730ae0;
 }
 
 .new_offer button.alternative {

@@ -1,4 +1,4 @@
-import { swapCatUpgradeableABI } from 'src/abis';
+import { realTokenYamUpgradeableABI } from 'src/abis';
 import { EthereumSVG, GnosisSVG } from 'src/assets';
 
 import { Contracts, ContractsID } from './contracts';
@@ -29,10 +29,10 @@ export const CHAINS: Record<ChainsID, Chain> = {
     rpcUrl: 'https://rpc.ankr.com/gnosis',
     blockExplorerUrl: 'https://gnosisscan.io/',
     contracts: {
-      [ContractsID.swapCatUpgradeable]: {
-        abi: swapCatUpgradeableABI,
-        address: '',
-        metadata: { fromBlock: 24582116 },
+      [ContractsID.realTokenYamUpgradeable]: {
+        abi: realTokenYamUpgradeableABI,
+        address: '0xC759AA7f9dd9720A1502c104DaE4F9852bb17C14',
+        metadata: { fromBlock: 25530390 },
       },
     },
   },
@@ -44,10 +44,10 @@ export const CHAINS: Record<ChainsID, Chain> = {
     rpcUrl: 'https://rpc.ankr.com/eth',
     blockExplorerUrl: 'https://etherscan.io/',
     contracts: {
-      [ContractsID.swapCatUpgradeable]: {
-        abi: swapCatUpgradeableABI,
-        address: '',
-        metadata: { fromBlock: 15741178 },
+      [ContractsID.realTokenYamUpgradeable]: {
+        abi: realTokenYamUpgradeableABI,
+        address: '0xC759AA7f9dd9720A1502c104DaE4F9852bb17C14',
+        metadata: { fromBlock: 16220000 },
       },
     },
   },
@@ -57,15 +57,15 @@ export const CHAINS: Record<ChainsID, Chain> = {
     chainName: 'Goerli',
     logo: EthereumSVG.src,
     nativeCurrency: ETH,
-    rpcUrl: 'https://rpc.ankr.com/eth_goerli',
+    rpcUrl:
+      'https://eth-goerli.g.alchemy.com/v2/ot7yWosiHjoC8DMV_ESJxZtrMj55za-k', // realt-goerli API 300M/month
+    // rpcUrl:
+    //   'https://eth.getblock.io/goerli/?api_key=eda96727-5cdd-4551-9e24-aef68d33e782', // getblock API 40k/day
     blockExplorerUrl: 'https://goerli.etherscan.io/',
     contracts: {
-      [ContractsID.swapCatUpgradeable]: {
-        abi: swapCatUpgradeableABI,
-        address: '0xfAa0aC428Bc3BE5493454F308E8ef0337E820095', // v0.2. contract
-        // address: '0x171A7f76E8a12aD217611A768968bAf8376ce726', // v0.1.1 contract
-        // address: '0xeaBE3576be937B6d2B40Bd58Da0a7e7f4FAa2632', // v0.1.0 contract
-        // address: '0x9EC2D0A68e9F49B37e77C63Bc38E58B11D345b3b', // old contract
+      [ContractsID.realTokenYamUpgradeable]: {
+        abi: realTokenYamUpgradeableABI,
+        address: '0xBDAa060F27D00b9e135C005Ae5Ad0F51C8ba4FD9', // v0.2.0 contract
         metadata: { fromBlock: 7385668 },
       },
     },

@@ -6,7 +6,6 @@ import {
   Box,
   Group,
   Image,
-  Footer as MantineFooter,
   MediaQuery,
   Text,
   TextProps,
@@ -14,6 +13,8 @@ import {
 } from '@mantine/core';
 import { NextLink } from '@mantine/next';
 import {
+  IconBrandDiscord,
+  IconBrandGithub,
   IconBrandMedium,
   IconBrandTelegram,
   IconBrandTwitter,
@@ -34,37 +35,6 @@ const LogoWithName: FC = () => {
   );
 };
 
-const FooterButtons: FC = () => {
-  return (
-    <Group>
-      <ActionIcon
-        variant={'subtle'}
-        component={NextLink}
-        href={'https://twitter.com/RealTPlatform/'}
-        target={'_blank'}
-      >
-        <IconBrandTwitter />
-      </ActionIcon>
-      <ActionIcon
-        variant={'subtle'}
-        component={NextLink}
-        href={'https://t.me/Realtoken_welcome/'}
-        target={'_blank'}
-      >
-        <IconBrandTelegram />
-      </ActionIcon>
-      <ActionIcon
-        variant={'subtle'}
-        component={NextLink}
-        href={'https://blog.realt.co/'}
-        target={'_blank'}
-      >
-        <IconBrandMedium />
-      </ActionIcon>
-    </Group>
-  );
-};
-
 const Copyright: FRC<TextProps, HTMLDivElement> = forwardRef((props, ref) => {
   const { t } = useTranslation('common', { keyPrefix: 'footer' });
 
@@ -77,8 +47,73 @@ const Copyright: FRC<TextProps, HTMLDivElement> = forwardRef((props, ref) => {
 Copyright.displayName = 'Copyright';
 
 export const Footer: FC = () => {
+
+  const { t } = useTranslation("common");
+
+  const FooterButtons: FC = () => {
+    return (
+      <Group>
+        <ActionIcon 
+          variant={'subtle'}
+          component={NextLink}
+          href={"/faq"}
+        >
+          {t("footer.faq")}
+        </ActionIcon>
+        <ActionIcon
+          variant={'subtle'}
+          component={NextLink}
+          href={'https://twitter.com/RealTPlatform/'}
+          aria-label={'Twitter'}
+          target={'_blank'}
+        >
+          <IconBrandTwitter />
+        </ActionIcon>
+
+        <ActionIcon
+          variant={'subtle'}
+          component={NextLink}
+          href={'https://discord.gg/9fQz6jYmcT'}
+          aria-label={'Discord'}
+          target={'_blank'}
+        >
+          <IconBrandDiscord />
+        </ActionIcon>
+
+
+        <ActionIcon
+          variant={'subtle'}
+          component={NextLink}
+          href={'https://t.me/Realtoken_welcome/'}
+          aria-label={'Telegram'}
+          target={'_blank'}
+        >
+          <IconBrandTelegram />
+        </ActionIcon>
+        <ActionIcon
+          variant={'subtle'}
+          component={NextLink}
+          href={'https://realt.co/blog/'}
+          aria-label={'Blog'}
+          target={'_blank'}
+        >
+          <IconBrandMedium />
+        </ActionIcon>
+        <ActionIcon
+          variant={'subtle'}
+          component={NextLink}
+          href={'https://github.com/real-token'}
+          aria-label={'GitHub'}
+          target={'_blank'}
+        >
+          <IconBrandGithub />
+        </ActionIcon>
+      </Group>
+    );
+  };
+
   return (
-    <MantineFooter height={'auto'}>
+    <div>
       <Divider />
       <Box sx={styles.container}>
         <Group position={'apart'} align={'center'}>
@@ -92,6 +127,6 @@ export const Footer: FC = () => {
           <Copyright size={'sm'} mt={5} />
         </MediaQuery>
       </Box>
-    </MantineFooter>
+    </div>
   );
 };

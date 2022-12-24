@@ -9,10 +9,12 @@ import { ColorScheme } from '@mantine/core';
 import { getCookie } from 'cookies-next';
 
 import 'src/i18next';
-import Layout from 'src/layouts/Layout';
+import { Layout } from 'src/layouts/Layout';
 import { MantineProviders, Web3Providers } from 'src/providers';
 
 import { Head } from '../src/components';
+
+import { Provider } from 'jotai';
 
 type TestProps = {
   initialLocale: string;
@@ -37,15 +39,16 @@ const App = ({ Component, pageProps, colorScheme, locale }: AppProps) => {
   return (
     <>
       <Head title={'Realtoken YAM'} />
-
-      <Web3Providers>
-        <MantineProviders initialColorScheme={colorScheme}>
-          <LanguageInit initialLocale={locale} />
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
-        </MantineProviders>
-      </Web3Providers>
+      <Provider>
+        <Web3Providers>
+          <MantineProviders initialColorScheme={colorScheme}>
+            <LanguageInit initialLocale={locale} />
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </MantineProviders>
+        </Web3Providers>
+      </Provider>
     </>
   );
 };
