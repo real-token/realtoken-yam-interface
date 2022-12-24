@@ -13,8 +13,8 @@ import { ContextModalProps } from '@mantine/modals';
 import { NextLink } from '@mantine/next';
 import { Connector } from '@web3-react/types';
 
-import { CoinBaseWallet, MetaMask, WalletConnect } from 'src/assets';
-import { coinbaseWallet, metaMask, walletConnect } from 'src/connectors';
+import { CoinBaseWallet, GnosisSafe, MetaMask, WalletConnect } from 'src/assets';
+import { coinbaseWallet, gnosisSafe, metaMask, walletConnect } from 'src/connectors';
 
 import { styles } from './WalletModal.styles';
 
@@ -37,6 +37,7 @@ const WalletModalButton: FC<WalletModalButtonProps> = ({
 
   const onActivating = useCallback(async () => {
     setIsActivating(true);
+    console.log('connector',await connector.activate())
     await connector.activate();
     setIsActivating(false);
     onSuccess();
@@ -87,10 +88,10 @@ export const WalletModal: FC<ContextModalProps> = ({ context, id }) => {
         onSuccess={onClose}
       />
       <WalletModalButton
-        connector={coinbaseWallet}
-        title={'Coinbase Wallet'}
-        src={CoinBaseWallet.src}
-        buttonProps={{ gradient: { from: '#0052FF', to: '#5C8FFF' } }}
+        connector={gnosisSafe}
+        title={'GnosisSafe'}
+        src={GnosisSafe.src}
+        buttonProps={{ gradient: { from: '#005233', to: '#00bb55' } }}
         onSuccess={onClose}
       />
       <Anchor component={NextLink} href={t('href')} target={'_blank'}>
