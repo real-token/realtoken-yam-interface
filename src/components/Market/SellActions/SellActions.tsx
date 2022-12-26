@@ -1,5 +1,5 @@
 /* eslint-disable react/display-name */
-import { forwardRef, useCallback, useMemo, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Button, Checkbox, Flex, Group, Select, SelectItem, Stack, TextInput, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
@@ -20,6 +20,8 @@ import { PropertiesToken } from 'src/types/PropertiesToken';
 import { useAllowedBuyTokens } from 'src/hooks/useAllowedBuyTokens';
 import { AllowedBuyToken } from 'src/types/allowedBuyTokens';
 import { cleanNumber } from 'src/utils/number';
+import { Contract } from 'ethers';
+import { GnosisSafe } from '@web3-react/gnosis-safe';
 
 interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
   label: string;
@@ -39,7 +41,7 @@ type SellFormValues = {
 export const SellActions = () => {
   
   const { t } = useTranslation('modals', { keyPrefix: 'sell' });
-  const { account, provider } = useWeb3React();
+  const { account, provider, connector } = useWeb3React();
 
   const { getInputProps, onSubmit, values } =
     useForm<SellFormValues>({
@@ -156,6 +158,80 @@ export const SellActions = () => {
         );
 
         if (offerTokenType === 1) {
+
+          console.log(connector)
+
+          if(connector.sdk){
+
+            console.log("GNOSIS")
+
+            const approveTx = await offerToken.approve(
+              realTokenYamUpgradeable.address,
+              amountInWeiToPermit.toString()
+            );
+  
+            const notificationApprove = {
+              key: approveTx.hash,
+              href: `${activeChain?.blockExplorerUrl}tx/${approveTx.hash}`,
+              hash: approveTx.hash,
+            };
+  
+            showNotification(
+              NOTIFICATIONS[NotificationsID.approveOfferLoading](
+                notificationApprove
+              )
+            );
+  
+            approveTx
+              .wait()
+              .then(({ status }) =>
+                updateNotification(
+                  NOTIFICATIONS[
+                    status === 1
+                      ? NotificationsID.approveOfferSuccess
+                      : NotificationsID.approveOfferError
+                  ](notificationApprove)
+                )
+              );
+  
+            await approveTx.wait(1);
+  
+            const createOfferTx = await realTokenYamUpgradeable.createOffer(
+              formValues.offerTokenAddress,
+              formValues.buyerTokenAddress,
+              formValues.isPrivateOffer === false
+                ? ZERO_ADDRESS
+                : formValues.buyerAddress,
+              priceInWei.toString(),
+              amountInWei.toString()
+            );
+  
+            const notificationCreateOffer = {
+              key: createOfferTx.hash,
+              href: `${activeChain?.blockExplorerUrl}tx/${createOfferTx.hash}`,
+              hash: createOfferTx.hash,
+            };
+  
+            showNotification(
+              NOTIFICATIONS[NotificationsID.createOfferLoading](
+                notificationCreateOffer
+              )
+            );
+  
+            createOfferTx
+              .wait()
+              .then(({ status }) =>
+                updateNotification(
+                  NOTIFICATIONS[
+                    status === 1
+                      ? NotificationsID.createOfferSuccess
+                      : NotificationsID.createOfferError
+                  ](notificationCreateOffer)
+                )
+              );
+
+          }else{
+
           // TokenType = 1: RealToken
           const { r, s, v }: any = await coinBridgeTokenPermitSignature(
             account,
@@ -203,6 +279,7 @@ export const SellActions = () => {
                 ](notificationPayload)
               )
             );
+          }
         } else if (offerTokenType === 2) {
           // TokenType = 2: ERC20 With Permit
           const { r, s, v }: any = await erc20PermitSignature(
