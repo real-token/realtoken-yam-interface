@@ -37,7 +37,7 @@ const WalletModalButton: FC<WalletModalButtonProps> = ({
 
   const onActivating = useCallback(async () => {
     setIsActivating(true);
-    console.log('connector',await connector.activate())
+    console.log('connector',connector)
     await connector.activate();
     setIsActivating(false);
     onSuccess();
