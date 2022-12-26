@@ -20,8 +20,11 @@ import { PropertiesToken } from 'src/types/PropertiesToken';
 import { useAllowedBuyTokens } from 'src/hooks/useAllowedBuyTokens';
 import { AllowedBuyToken } from 'src/types/allowedBuyTokens';
 import { cleanNumber } from 'src/utils/number';
-import { Contract } from 'ethers';
-import { GnosisSafe } from '@web3-react/gnosis-safe';
+import { Connector } from '@web3-react/types';
+
+interface GnosisConnector extends Connector{
+  sdk: any
+}
 
 interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
   label: string;
@@ -161,7 +164,7 @@ export const SellActions = () => {
 
           console.log(connector)
 
-          if(connector.sdk){
+          if((connector as GnosisConnector).sdk){
 
             console.log("GNOSIS")
 
