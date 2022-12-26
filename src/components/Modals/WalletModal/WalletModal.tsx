@@ -1,20 +1,23 @@
-import { FC, useCallback, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import SafeAppsSDK from '@gnosis.pm/safe-apps-sdk';
 
 import {
   Anchor,
   Button,
   ButtonProps,
+  Flex,
   Image,
   LoadingOverlay,
   Stack,
+  Text,
 } from '@mantine/core';
 import { ContextModalProps } from '@mantine/modals';
 import { NextLink } from '@mantine/next';
 import { Connector } from '@web3-react/types';
 
-import { CoinBaseWallet, GnosisSafe, MetaMask, WalletConnect } from 'src/assets';
-import { coinbaseWallet, gnosisSafe, metaMask, walletConnect } from 'src/connectors';
+import { GnosisSafe, MetaMask, WalletConnect } from 'src/assets';
+import { gnosisSafe, metaMask, walletConnect } from 'src/connectors';
 
 import { styles } from './WalletModal.styles';
 
@@ -24,6 +27,8 @@ type WalletModalButtonProps = {
   src: string;
   buttonProps: ButtonProps;
   onSuccess: () => void;
+  disabled?: boolean;
+  disabledError?: string
 };
 
 const WalletModalButton: FC<WalletModalButtonProps> = ({
@@ -32,15 +37,20 @@ const WalletModalButton: FC<WalletModalButtonProps> = ({
   src,
   buttonProps,
   onSuccess,
+  disabled = false,
+  disabledError
 }) => {
   const [isActivating, setIsActivating] = useState<boolean>(false);
 
   const onActivating = useCallback(async () => {
-    setIsActivating(true);
-    console.log('connector',await connector.activate())
-    await connector.activate();
-    setIsActivating(false);
-    onSuccess();
+    try{
+      setIsActivating(true);
+      await connector.activate();
+      setIsActivating(false);
+      onSuccess();
+    }catch(err){
+      console.log(err)
+    }
   }, [connector, onSuccess]);
 
   return (
@@ -48,24 +58,42 @@ const WalletModalButton: FC<WalletModalButtonProps> = ({
       aria-label={title}
       fullWidth={true}
       variant={'gradient'}
-      rightIcon={
-        <Image src={src} alt={title} fit={'contain'} width={30} radius={'xl'} />
-      }
+      rightIcon={<Image src={src} alt={title} fit={'contain'} width={30} radius={'xl'} />}
       styles={styles.button}
       onClick={onActivating}
       {...buttonProps}
+      disabled={disabled}
     >
-      <LoadingOverlay
-        visible={isActivating}
-        loaderProps={{ size: 'sm', variant: 'dots' }}
-      />
-      {title}
+      <Flex direction={"column"}>
+        <LoadingOverlay
+          visible={isActivating}
+          loaderProps={{ size: 'sm', variant: 'dots' }}
+        />
+        {
+          disabled ? <Text color={"red"} hidden={!disabled}>{disabledError}</Text> : title
+        }
+      </Flex>
     </Button>
   );
 };
 
 export const WalletModal: FC<ContextModalProps> = ({ context, id }) => {
   const { t } = useTranslation('links', { keyPrefix: 'walletMenu' });
+
+  const [gnosisDisabled,setGnosisDisabled] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchIfGnosis = async () => {
+      try {
+        const gnosisSdk = new SafeAppsSDK()
+        await gnosisSdk.safe.getInfo();
+        setGnosisDisabled(false);
+      } catch (e) {
+        console.log('Gnosis Safe is not detected', e);
+      }
+    }
+    fetchIfGnosis();
+  },[])
 
   const onClose = useCallback(() => {
     context.closeModal(id);
@@ -93,6 +121,8 @@ export const WalletModal: FC<ContextModalProps> = ({ context, id }) => {
         src={GnosisSafe.src}
         buttonProps={{ gradient: { from: '#005233', to: '#00bb55' } }}
         onSuccess={onClose}
+        disabled={gnosisDisabled}
+        disabledError={"You need to open app in Gnosis App in order to use YAM with gnosis"}
       />
       <Anchor component={NextLink} href={t('href')} target={'_blank'}>
         {t('text')}
