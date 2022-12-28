@@ -139,9 +139,6 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
     return new Promise<Offer[]>(async (resolve, reject) => {
       try{
 
-        const source = chainId == 100 ? "yam-gnosis" : "yam-eth";
-        console.log(source);
-
         const offersData: Offer[] = [];
         // const { data } = await execute(getOffersDocument, {}, {
         //   source: source
@@ -204,19 +201,19 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
           const condFiltreZeroAmount = filterZeroAmount ? parseFloat(bnAmount) !== 0 : true;
           if(condFiltreZeroAmount){
             if (filterSeller) {
-              console.log("is seller")
+              // console.log("is seller")
               if (offerData.sellerAddress === account) {
                 offersData.push(offerData);
               }
             } else if (filterBuyer) {
               // Filter offer by buyer
-              console.log("is buyer");
+              // console.log("is buyer");
               if (offerData.buyerAddress === account) {
                 offersData.push(offerData);
               }
             } else {
               // No filter, show public offers
-              console.log("is public");
+              // console.log("is public");
               if (!offerData.buyerAddress) {
                 offersData.push(offerData);
               }
@@ -224,8 +221,6 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
           }
           
         });
-
-        console.log(offersData)
 
         resolve(offersData);
 
