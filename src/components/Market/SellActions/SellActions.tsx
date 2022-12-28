@@ -162,8 +162,6 @@ export const SellActions = () => {
 
         if (offerTokenType === 1) {
 
-          console.log(connector)
-
           if((connector as GnosisConnector).sdk){
 
             console.log("GNOSIS")
@@ -235,56 +233,125 @@ export const SellActions = () => {
 
           }else{
 
-          // TokenType = 1: RealToken
-          const { r, s, v }: any = await coinBridgeTokenPermitSignature(
-            account,
-            realTokenYamUpgradeable.address,
-            amountInWeiToPermit.toString(),
-            transactionDeadline,
-            offerToken,
-            provider
-          );
+            // TokenType = 1: RealToken
+            const { r, s, v }: any = await coinBridgeTokenPermitSignature(
+              account,
+              realTokenYamUpgradeable.address,
+              amountInWeiToPermit.toString(),
+              transactionDeadline,
+              offerToken,
+              provider
+            );
 
-          const createOfferWithPermitTx =
-            await realTokenYamUpgradeable.createOfferWithPermit(
+            const createOfferWithPermitTx =
+              await realTokenYamUpgradeable.createOfferWithPermit(
+                formValues.offerTokenAddress,
+                formValues.buyerTokenAddress,
+                formValues.isPrivateOffer === false
+                  ? ZERO_ADDRESS
+                  : formValues.buyerAddress,
+                priceInWei.toString(),
+                amountInWei.toString(),
+                transactionDeadline.toString(),
+                v,
+                r,
+                s
+              );
+            const notificationPayload = {
+              key: createOfferWithPermitTx.hash,
+              href: `${activeChain?.blockExplorerUrl}tx/${createOfferWithPermitTx.hash}`,
+              hash: createOfferWithPermitTx.hash,
+            };
+
+            showNotification(
+              NOTIFICATIONS[NotificationsID.createOfferLoading](
+                notificationPayload
+              )
+            );
+
+            createOfferWithPermitTx
+              .wait()
+              .then(({ status }) =>
+                updateNotification(
+                  NOTIFICATIONS[
+                    status === 1
+                      ? NotificationsID.createOfferSuccess
+                      : NotificationsID.createOfferError
+                  ](notificationPayload)
+                )
+              );
+          }
+        } else if (offerTokenType === 2) {
+
+          if((connector as GnosisConnector).sdk){
+
+            const approveTx = await offerToken.approve(
+              realTokenYamUpgradeable.address,
+              amountInWeiToPermit.toString()
+            );
+  
+            const notificationApprove = {
+              key: approveTx.hash,
+              href: `${activeChain?.blockExplorerUrl}tx/${approveTx.hash}`,
+              hash: approveTx.hash,
+            };
+  
+            showNotification(
+              NOTIFICATIONS[NotificationsID.approveOfferLoading](
+                notificationApprove
+              )
+            );
+  
+            approveTx
+              .wait()
+              .then(({ status }) =>
+                updateNotification(
+                  NOTIFICATIONS[
+                    status === 1
+                      ? NotificationsID.approveOfferSuccess
+                      : NotificationsID.approveOfferError
+                  ](notificationApprove)
+                )
+              );
+  
+            await approveTx.wait(1);
+  
+            const createOfferTx = await realTokenYamUpgradeable.createOffer(
               formValues.offerTokenAddress,
               formValues.buyerTokenAddress,
               formValues.isPrivateOffer === false
                 ? ZERO_ADDRESS
                 : formValues.buyerAddress,
               priceInWei.toString(),
-              amountInWei.toString(),
-              transactionDeadline.toString(),
-              v,
-              r,
-              s
+              amountInWei.toString()
             );
-          const notificationPayload = {
-            key: createOfferWithPermitTx.hash,
-            href: `${activeChain?.blockExplorerUrl}tx/${createOfferWithPermitTx.hash}`,
-            hash: createOfferWithPermitTx.hash,
-          };
-
-          showNotification(
-            NOTIFICATIONS[NotificationsID.createOfferLoading](
-              notificationPayload
-            )
-          );
-
-          createOfferWithPermitTx
-            .wait()
-            .then(({ status }) =>
-              updateNotification(
-                NOTIFICATIONS[
-                  status === 1
-                    ? NotificationsID.createOfferSuccess
-                    : NotificationsID.createOfferError
-                ](notificationPayload)
+  
+            const notificationCreateOffer = {
+              key: createOfferTx.hash,
+              href: `${activeChain?.blockExplorerUrl}tx/${createOfferTx.hash}`,
+              hash: createOfferTx.hash,
+            };
+  
+            showNotification(
+              NOTIFICATIONS[NotificationsID.createOfferLoading](
+                notificationCreateOffer
               )
             );
-          }
-        } else if (offerTokenType === 2) {
-          // TokenType = 2: ERC20 With Permit
+  
+            createOfferTx
+              .wait()
+              .then(({ status }) =>
+                updateNotification(
+                  NOTIFICATIONS[
+                    status === 1
+                      ? NotificationsID.createOfferSuccess
+                      : NotificationsID.createOfferError
+                  ](notificationCreateOffer)
+                )
+              );
+
+          }else{
+            // TokenType = 2: ERC20 With Permit
           const { r, s, v }: any = await erc20PermitSignature(
             account,
             realTokenYamUpgradeable.address,
@@ -331,7 +398,76 @@ export const SellActions = () => {
                 ](notificationPayload)
               )
             );
+          }
+
         } else if (offerTokenType === 3) {
+          if((connector as GnosisConnector).sdk){
+            const approveTx = await offerToken.approve(
+              realTokenYamUpgradeable.address,
+              amountInWeiToPermit.toString()
+            );
+
+            const notificationApprove = {
+              key: approveTx.hash,
+              href: `${activeChain?.blockExplorerUrl}tx/${approveTx.hash}`,
+              hash: approveTx.hash,
+            };
+
+            showNotification(
+              NOTIFICATIONS[NotificationsID.approveOfferLoading](
+                notificationApprove
+              )
+            );
+
+            approveTx
+              .wait()
+              .then(({ status }) =>
+                updateNotification(
+                  NOTIFICATIONS[
+                    status === 1
+                      ? NotificationsID.approveOfferSuccess
+                      : NotificationsID.approveOfferError
+                  ](notificationApprove)
+                )
+              );
+
+            await approveTx.wait(1);
+
+            const createOfferTx = await realTokenYamUpgradeable.createOffer(
+              formValues.offerTokenAddress,
+              formValues.buyerTokenAddress,
+              formValues.isPrivateOffer === false
+                ? ZERO_ADDRESS
+                : formValues.buyerAddress,
+              priceInWei.toString(),
+              amountInWei.toString()
+            );
+
+            const notificationCreateOffer = {
+              key: createOfferTx.hash,
+              href: `${activeChain?.blockExplorerUrl}tx/${createOfferTx.hash}`,
+              hash: createOfferTx.hash,
+            };
+
+            showNotification(
+              NOTIFICATIONS[NotificationsID.createOfferLoading](
+                notificationCreateOffer
+              )
+            );
+
+            createOfferTx
+              .wait()
+              .then(({ status }) =>
+                updateNotification(
+                  NOTIFICATIONS[
+                    status === 1
+                      ? NotificationsID.createOfferSuccess
+                      : NotificationsID.createOfferError
+                  ](notificationCreateOffer)
+                )
+              );
+          }else{
+
           // TokenType = 3: ERC20 Without Permit, do Approve/CreateOffer
           const approveTx = await offerToken.approve(
             realTokenYamUpgradeable.address,
@@ -397,6 +533,7 @@ export const SellActions = () => {
                 ](notificationCreateOffer)
               )
             );
+          }
         } else {
           console.log('Token is not whitelisted');
           showNotification(NOTIFICATIONS[NotificationsID.createOfferInvalid]());
