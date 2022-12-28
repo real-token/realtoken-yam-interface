@@ -40,7 +40,9 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
   const { propertiesToken } = usePropertiesToken();
 
   const realTokenYamUpgradeable = useContract(ContractsID.realTokenYamUpgradeable);
-  const { account, provider, chainId } = useWeb3React();
+  const { account: acc, provider, chainId } = useWeb3React();
+
+  const account = (acc as string).toLowerCase();
 
   const fetchOffers = useCallback(async (): Promise<Offer[]> => {
     return new Promise<Offer[]>(async (resolve, reject) => {
@@ -150,7 +152,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
 
         const { data } = await client.query({query: gql`
         query getOffers{
-          offers {
+          offers(first: 1000){
             id
             offerToken {
               address
@@ -201,7 +203,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
           const condFiltreZeroAmount = filterZeroAmount ? parseFloat(bnAmount) !== 0 : true;
           if(condFiltreZeroAmount){
             if (filterSeller) {
-              // console.log("is seller")
+              // console.log(offerData.sellerAddress,account)
               if (offerData.sellerAddress === account) {
                 offersData.push(offerData);
               }
@@ -229,7 +231,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
         reject(err)
       }
     });
-  },[account, filterBuyer, filterSeller, filterZeroAmount, t, chainId])
+  },[account, filterBuyer, filterSeller, filterZeroAmount, chainId])
 
   const fetch = useCallback(async () => {
     setOffers([{
