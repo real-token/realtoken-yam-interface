@@ -191,8 +191,8 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
             buyerTokenDecimals: offer.buyerToken.decimals,
             sellerAddress: offer.seller.address,
             buyerAddress: offer.buyer?.address,
-            price: cleanNumber((new BigNumber(offer.prices[0].price.toString())).shiftedBy(- offer.buyerToken.decimals).toFixed(10)).toString(),
-            amount: cleanNumber((new BigNumber(offer.prices[0].amount.toString())).shiftedBy(- offer.offerToken.decimals).toFixed(10)).toString(),
+            price: offer.prices[0].price.toString(),
+            amount: offer.prices[0].amount.toString(),
             hasPropertyToken: false
           };
 
