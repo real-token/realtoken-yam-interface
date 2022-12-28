@@ -28,7 +28,7 @@ import React from 'react';
 
 export const MarketTable: FC = () => {
 
-  const { offers, refreshState } = useOffers(false, false, true);
+  const { offers, refreshState } = useOffers(false, false, true, true);
   const [nameFilterValue,setNamefilterValue] = useAtom(nameFilterValueAtom);
   
   const [sorting, setSorting] = useState<SortingState>([

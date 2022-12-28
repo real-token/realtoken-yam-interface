@@ -16,7 +16,7 @@ import { Offer as OfferGraphQl } from "../../.graphclient/index";
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
 
 // filterSeller = 0 when fetching all offers, = 1 when fetching offers of the connected wallet
-export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount) => {
+export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount, filterRemoved) => {
 
   const { t } = useTranslation('common', { keyPrefix: 'general' });
   const [isRefreshing, setIsRefreshing] = useState<boolean>(true);
@@ -34,7 +34,8 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
     buyerAddress: t('loading'),
     price: t('loading'),
     amount: t('loading'),
-    hasPropertyToken: false
+    hasPropertyToken: false,
+    removedAtBlock: 0,
   }]);
   const { propertiesToken } = usePropertiesToken();
 
@@ -99,7 +100,8 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
               buyerAddress: buyerAddress,
               price: (new BigNumber(price.toString())).shiftedBy(- buyerTokenDecimals).toFixed(10).toString(),
               amount: (bnAmount.shiftedBy(- offerTokenDecimals)).toFixed(10).toString(),
-              hasPropertyToken: hasPropertyToken ? true : false
+              hasPropertyToken: hasPropertyToken ? true : false,
+              removedAtBlock: 0,
             };
 
             const condFiltreZeroAmount = filterZeroAmount ? !bnAmount.isZero() : true;
@@ -153,6 +155,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
         query getOffers{
           offers(first: 1000){
             id
+            removedAtBlock
             offerToken {
               address
               name
@@ -194,29 +197,34 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
             buyerAddress: offer.buyer?.address,
             price: offer.prices[0].price.toString(),
             amount: offer.prices[0].amount.toString(),
-            hasPropertyToken: false
+            hasPropertyToken: false,
+            removedAtBlock: offer.removedAtBlock ?? 0
           };
 
           const bnAmount = offerData.amount;
 
           const condFiltreZeroAmount = filterZeroAmount ? parseFloat(bnAmount) !== 0 : true;
+          const condFiltreRemoved = filterRemoved && offerData.removedAtBlock > 0 ? false : true;
+
           if(condFiltreZeroAmount){
-            if (filterSeller) {
-              // console.log("is seller")
-              if (offerData.sellerAddress === account) {
-                offersData.push(offerData);
-              }
-            } else if (filterBuyer) {
-              // Filter offer by buyer
-              // console.log("is buyer");
-              if (offerData.buyerAddress === account) {
-                offersData.push(offerData);
-              }
-            } else {
-              // No filter, show public offers
-              // console.log("is public");
-              if (!offerData.buyerAddress) {
-                offersData.push(offerData);
+            if(condFiltreRemoved){
+              if (filterSeller) {
+                // console.log("is seller")
+                if (offerData.sellerAddress === account) {
+                  offersData.push(offerData);
+                }
+              } else if (filterBuyer) {
+                // Filter offer by buyer
+                // console.log("is buyer");
+                if (offerData.buyerAddress === account) {
+                  offersData.push(offerData);
+                }
+              } else {
+                // No filter, show public offers
+                // console.log("is public");
+                if (!offerData.buyerAddress) {
+                  offersData.push(offerData);
+                }
               }
             }
           }
@@ -230,7 +238,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
         reject(err)
       }
     });
-  },[account, filterBuyer, filterSeller, filterZeroAmount, t, chainId])
+  },[account, filterBuyer, filterSeller, filterZeroAmount, filterRemoved, t, chainId])
 
   const fetch = useCallback(async () => {
     setOffers([{
@@ -245,7 +253,8 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
       buyerAddress: t('loading'),
       price: t('loading'),
       amount: t('loading'),
-    hasPropertyToken: false
+      hasPropertyToken: false,
+      removedAtBlock: 0
     }]);
     setIsRefreshing(true);
 
