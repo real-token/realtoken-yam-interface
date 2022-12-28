@@ -13,7 +13,8 @@ import { useAtomValue } from 'jotai';
 import { isRefreshedAutoAtom } from 'src/states';
 import { usePropertiesToken } from './usePropertiesToken';
 import { Offer as OfferGraphQl } from "../../.graphclient/index";
-import { ApolloClient, InMemoryCache, ApolloProvider, gql } from '@apollo/client';
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
+import { cleanNumber } from 'src/utils/number';
 
 // filterSeller = 0 when fetching all offers, = 1 when fetching offers of the connected wallet
 export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount) => {
@@ -183,8 +184,8 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
 
         await data.offers?.forEach((offer: OfferGraphQl) => {
           
-          const offerData = {
-            offerId: offer.id,
+          const offerData: Offer = {
+            offerId: parseInt(offer.id, 16).toString(),
             offerTokenAddress: offer.offerToken.address,
             offerTokenName: offer.offerToken.name ?? "",
             offerTokenDecimals: offer.offerToken.decimals,
@@ -193,8 +194,8 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
             buyerTokenDecimals: offer.buyerToken.decimals,
             sellerAddress: offer.seller.address,
             buyerAddress: offer.buyer?.address,
-            price: (new BigNumber(offer.prices[0].price.toString())).shiftedBy(- offer.buyerToken.decimals).toFixed(10).toString(),
-            amount: (new BigNumber(offer.prices[0].amount.toString())).shiftedBy(- offer.offerToken.decimals).toFixed(10).toString(),
+            price: cleanNumber((new BigNumber(offer.prices[0].price.toString())).shiftedBy(- offer.buyerToken.decimals).toFixed(10)).toString(),
+            amount: cleanNumber((new BigNumber(offer.prices[0].amount.toString())).shiftedBy(- offer.offerToken.decimals).toFixed(10)).toString(),
             hasPropertyToken: false
           };
 
