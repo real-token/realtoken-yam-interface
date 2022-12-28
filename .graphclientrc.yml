@@ -1,0 +1,12 @@
+sources:
+  - name: yam-gnosis
+    handler:
+      graphql:
+        endpoint: https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-gnosis
+  - name: yam-eth
+    handler:
+      graphql:
+        endpoint: https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph
+
+documents:
+  - ./config/graph/getOffersQuery.graphql
