@@ -14,7 +14,6 @@ import { isRefreshedAutoAtom } from 'src/states';
 import { usePropertiesToken } from './usePropertiesToken';
 import { Offer as OfferGraphQl } from "../../.graphclient/index";
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
-import { cleanNumber } from 'src/utils/number';
 
 // filterSeller = 0 when fetching all offers, = 1 when fetching offers of the connected wallet
 export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount) => {
@@ -150,7 +149,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
 
         const { data } = await client.query({query: gql`
         query getOffers{
-          offers {
+          offers(first: 1000){
             id
             offerToken {
               address
