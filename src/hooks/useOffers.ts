@@ -42,7 +42,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
   const realTokenYamUpgradeable = useContract(ContractsID.realTokenYamUpgradeable);
   const { account: acc, provider, chainId } = useWeb3React();
 
-  const account = (acc as string).toLowerCase();
+  const account = (acc as string)?.toLowerCase();
 
   const fetchOffers = useCallback(async (): Promise<Offer[]> => {
     return new Promise<Offer[]>(async (resolve, reject) => {
