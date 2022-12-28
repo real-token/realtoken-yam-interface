@@ -1,7 +1,7 @@
 import { FC, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ActionIcon, Group, MantineSize, Text, Title } from '@mantine/core';
+import { ActionIcon, Group, MantineSize, Text, Title, Tooltip } from '@mantine/core';
 import { IconChevronDown, IconChevronUp } from '@tabler/icons';
 import {
   ColumnDef,
@@ -28,7 +28,7 @@ import React from 'react';
 
 export const MarketTable: FC = () => {
 
-  const { offers, refreshState } = useOffers(false, false, true);
+  const { offers, refreshState } = useOffers(false, false, true, true);
   const [nameFilterValue,setNamefilterValue] = useAtom(nameFilterValueAtom);
   
   const [sorting, setSorting] = useState<SortingState>([
@@ -41,6 +41,7 @@ export const MarketTable: FC = () => {
   const [expanded, setExpanded] = useState<ExpandedState>({});
 
   const { t } = useTranslation('buy', { keyPrefix: 'table' });
+  const reverse = (value: number) => 1/value
 
   const columns = useMemo<ColumnDef<Offer>[]>(
     () => [
@@ -155,6 +156,7 @@ export const MarketTable: FC = () => {
             accessorKey: 'price',
             header: t('price'),
             cell: ({ getValue }) => (
+              <Tooltip label={`${reverse(getValue())}`}>
               <Text
                 size={'sm'}
                 sx={{
@@ -165,6 +167,7 @@ export const MarketTable: FC = () => {
               >
                 {getValue()}
               </Text>
+              </Tooltip>
             ),
             enableSorting: true,
             meta: { colSpan: 2 },
