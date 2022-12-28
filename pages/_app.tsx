@@ -36,25 +36,19 @@ const LanguageInit: FC<TestProps> = ({ initialLocale }) => {
 
 type AppProps = NextAppProps & { colorScheme: ColorScheme; locale: string };
 
-const connectors: [Connector,Web3ReactHooks][] = [
-  [walletConnect, walletConnectHooks],
-  [gnosisSafe,gnosisSafeHooks],
-  [metaMask, metaMaskHooks],
-]
-
 const App = ({ Component, pageProps, colorScheme, locale }: AppProps) => {
   return (
     <>
       <Head title={'Realtoken YAM'} />
       <Provider>
-        <Web3ReactProvider connectors={connectors}>
+        <Web3Providers>
           <MantineProviders initialColorScheme={colorScheme}>
             <LanguageInit initialLocale={locale} />
             <Layout>
               <Component {...pageProps} />
             </Layout>
           </MantineProviders>
-        </Web3ReactProvider>
+        </Web3Providers>
       </Provider>
     </>
   );
