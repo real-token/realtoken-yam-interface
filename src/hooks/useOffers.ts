@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useInterval } from '@mantine/hooks';
-
 import { ContractsID, ZERO_ADDRESS } from 'src/constants';
 import { asyncRetry, getContract } from 'src/utils';
 import { Offer, UseOffers } from './types';
@@ -13,6 +12,8 @@ import { useTranslation } from 'react-i18next';
 import { useAtomValue } from 'jotai';
 import { isRefreshedAutoAtom } from 'src/states';
 import { usePropertiesToken } from './usePropertiesToken';
+import { Offer as OfferGraphQl } from "../../.graphclient/index";
+import { ApolloClient, InMemoryCache, ApolloProvider, gql } from '@apollo/client';
 
 // filterSeller = 0 when fetching all offers, = 1 when fetching offers of the connected wallet
 export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount) => {
@@ -33,7 +34,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
     buyerAddress: t('loading'),
     price: t('loading'),
     amount: t('loading'),
-  hasPropertyToken: false
+    hasPropertyToken: false
   }]);
   const { propertiesToken } = usePropertiesToken();
 
@@ -133,6 +134,107 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
     })
   },[account, filterBuyer, filterSeller, filterZeroAmount, propertiesToken, provider, realTokenYamUpgradeable])
 
+  const fetchOfferTheGraph = useCallback(async (): Promise<Offer[]> => {
+    return new Promise<Offer[]>(async (resolve, reject) => {
+      try{
+
+        const source = chainId == 100 ? "yam-gnosis" : "yam-eth";
+        console.log(source);
+
+        const offersData: Offer[] = [];
+        // const { data } = await execute(getOffersDocument, {}, {
+        //   source: source
+        // });
+        const client = new ApolloClient({
+          uri: chainId == 100 ? "https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-gnosis" : "https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph",
+          cache: new InMemoryCache(),
+        });
+
+        const { data } = await client.query({query: gql`
+        query getOffers{
+          offers {
+            id
+            offerToken {
+              address
+              name
+              decimals
+              symbol
+            }
+            prices {
+              amount
+              price
+            }
+            seller {
+              id
+              address
+            }
+            buyerToken {
+              name
+              symbol
+              address
+              decimals
+            }
+            buyer {
+              address
+            }
+          }
+        }
+        `})
+
+        await data.offers?.forEach((offer: OfferGraphQl) => {
+          
+          const offerData = {
+            offerId: offer.id,
+            offerTokenAddress: offer.offerToken.address,
+            offerTokenName: offer.offerToken.name ?? "",
+            offerTokenDecimals: offer.offerToken.decimals,
+            buyerTokenAddress: offer.buyerToken.address,
+            buyerTokenName: offer.buyerToken.name ?? "",
+            buyerTokenDecimals: offer.buyerToken.decimals,
+            sellerAddress: offer.seller.address,
+            buyerAddress: offer.buyer?.address,
+            price: (new BigNumber(offer.prices[0].price.toString())).shiftedBy(- offer.buyerToken.decimals).toFixed(10).toString(),
+            amount: (new BigNumber(offer.prices[0].amount.toString())).shiftedBy(- offer.offerToken.decimals).toFixed(10).toString(),
+            hasPropertyToken: false
+          };
+
+          const bnAmount = offerData.amount;
+
+          const condFiltreZeroAmount = filterZeroAmount ? parseFloat(bnAmount) !== 0 : true;
+          if(condFiltreZeroAmount){
+            if (filterSeller) {
+              console.log("is seller")
+              if (offerData.sellerAddress === account) {
+                offersData.push(offerData);
+              }
+            } else if (filterBuyer) {
+              // Filter offer by buyer
+              console.log("is buyer");
+              if (offerData.buyerAddress === account) {
+                offersData.push(offerData);
+              }
+            } else {
+              // No filter, show public offers
+              console.log("is public");
+              if (!offerData.buyerAddress) {
+                offersData.push(offerData);
+              }
+            }
+          }
+          
+        });
+
+        console.log(offersData)
+
+        resolve(offersData);
+
+      }catch(err){
+        console.log(err)
+        reject(err)
+      }
+    });
+  },[account, filterBuyer, filterSeller, filterZeroAmount, t, chainId])
+
   const fetch = useCallback(async () => {
     setOffers([{
       offerId: t('loading'),
@@ -149,14 +251,18 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
     hasPropertyToken: false
     }]);
     setIsRefreshing(true);
-    const offers = await fetchOffers();
 
-    // console.log(offers)
+    let offers; 
+    if(chainId == 1 || chainId == 100){
+      offers = await fetchOfferTheGraph();
+    }else{
+      offers = await fetchOffers();
+    }
 
-    setOffers(offers);
+    if(offers) setOffers(offers);
     setInitialized(true);
     setIsRefreshing(false);
-  },[fetchOffers])
+  },[fetchOffers,fetchOfferTheGraph])
 
   const interval = useInterval(() => fetch(), 60000);
   const isAutoRefreshEnabled = useAtomValue(isRefreshedAutoAtom);
@@ -164,7 +270,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
   // LOAD OFFERS ON INIT
   useEffect(() => {
     if (realTokenYamUpgradeable && chainId && account) fetch()
-  },[realTokenYamUpgradeable, chainId, fetch])
+  },[realTokenYamUpgradeable, chainId, fetch, account])
 
   useEffect(() => {
     if(!isAutoRefreshEnabled || !realTokenYamUpgradeable || !initialized) return;

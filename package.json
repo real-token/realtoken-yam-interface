@@ -10,6 +10,7 @@
     "export": "next build && next export"
   },
   "dependencies": {
+    "@apollo/client": "^3.7.3",
     "@emotion/react": "^11.10.5",
     "@emotion/server": "^11.10.0",
     "@ethersproject/abi": "^5.6.4",
@@ -34,6 +35,7 @@
     "bignumber.js": "^9.0.2",
     "cookies-next": "^2.0.5",
     "dotenv": "^16.0.3",
+    "graphql": "^16.6.0",
     "i18next": "^21.8.11",
     "jotai": "^1.11.0",
     "next": "12.1.5",
@@ -45,6 +47,7 @@
   "devDependencies": {
     "@babel/core": "^7.18.5",
     "@coinbase/wallet-sdk": "^3.3.0",
+    "@graphprotocol/client-cli": "^2.2.16",
     "@radix-ui/react-scroll-area": "^0.1.5-rc.44",
     "@trivago/prettier-plugin-sort-imports": "^3.2.0",
     "@typechain/ethers-v5": "^10.1.0",
