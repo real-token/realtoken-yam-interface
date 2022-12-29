@@ -18,6 +18,14 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ARG BUILD_ENV
 COPY config/.env.${BUILD_ENV} ./.env
+
+RUN if [ "$BUILD_ENV" = "production" ]; then \
+			export BUILD_PRODUCTION=1; \
+		elif [ "$BUILD_ENV" = "staging" ]; then \
+			export BUILD_PRODUCTION=0; \
+		else \
+			export BUILD_PRODUCTION=0; \
+		fi
 # # This will do the trick, use the corresponding env file for each environment.
 # COPY .env.production.sample .env.production
 RUN yarn build
@@ -26,7 +34,8 @@ RUN yarn build
 FROM node:16-alpine AS runner
 WORKDIR /app
 
-ENV NODE_ENV=development
+ENV NODE_ENV=${BUILD_PRODUCTION:+production}
+ENV NODE_ENV=${NODE_ENV:-development}
 
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nextjs -u 1001
