@@ -13,8 +13,8 @@
     "address": "Address",
     "actionEdit": "Edit",
     "actionDelete": "Delete",
-    "buy": "Buy"
-
+    "buy": "Buy",
+    "privateTexte": "private"
   },
   "subRow": {
     "offerId": "Offer ID",
