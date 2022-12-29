@@ -166,6 +166,10 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
               amount
               price
             }
+            price{
+              amount
+              price
+            }
             seller {
               id
               address
@@ -189,14 +193,14 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
             offerId: parseInt(offer.id, 16).toString(),
             offerTokenAddress: offer.offerToken.address,
             offerTokenName: offer.offerToken.name ?? "",
-            offerTokenDecimals: offer.offerToken.decimals,
+            offerTokenDecimals: offer.offerToken.decimals?.toString() ?? "",
             buyerTokenAddress: offer.buyerToken.address,
             buyerTokenName: offer.buyerToken.name ?? "",
-            buyerTokenDecimals: offer.buyerToken.decimals,
+            buyerTokenDecimals: offer.buyerToken.decimals?.toString() ?? "",
             sellerAddress: offer.seller.address,
             buyerAddress: offer.buyer?.address,
-            price: offer.prices[0].price.toString(),
-            amount: offer.prices[0].amount.toString(),
+            price: offer.price.price.toString(),
+            amount: offer.price.amount.toString(),
             hasPropertyToken: false,
             removedAtBlock: offer.removedAtBlock ?? 0
           };
