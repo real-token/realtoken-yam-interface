@@ -1,7 +1,7 @@
 import { FC, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { MantineSize, Text, Title } from '@mantine/core';
+import { Group, Indicator, MantineSize, Text, Title } from '@mantine/core';
 import {
   ColumnDef,
   ExpandedState,
@@ -21,6 +21,7 @@ import { Table } from '../../Table';
 import { DeleteActions } from '../DeleteActions';
 import { MarketSubRow } from '../MarketSubRow';
 import { UpdateActionsWithPermit } from '../UpdateActions';
+import { ZERO_ADDRESS } from 'src/constants';
 
 export const MarketTableUser: FC = () => {
   const { offers, refreshState } = useOffers(true, false, false, true); // filter offers by seller
@@ -50,15 +51,29 @@ export const MarketTableUser: FC = () => {
           {
             id: 'offerId',
             accessorKey: 'offerId',
+            accessorFn: (row) => [row.offerId,row.buyerAddress],
             header: t('offerId'),
             cell: ({ getValue }) => (
-                <Text
-                  fz={'sm'}
-                  sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
-                  ta={"center"}
-                >
-                  {getValue()}
-                </Text>
+              <Group style={{position:'relative'}}>{
+                /^0x[0-9a-fA-F]{40}/.test(getValue()[1]) && getValue()[1] != ZERO_ADDRESS ?
+                  <Indicator  
+                    label={t('privateTexte')} 
+                    size={15} 
+                    //position={'top-end'}
+                    style={{ top:'10px',left:'50px'}}
+                  >{ <Text
+                    fz={'sm'}
+                    sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
+                    style={{position:'relative', right:'20px', top:'-10px'}}
+                  >{getValue()[0]}</Text>}</Indicator> : 
+                  <Text
+                    fz={'sm'}
+                    sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
+                    style={{position:'relative', left:'40px', top:'0px'}}
+                  >
+                    {getValue()[0]}
+                  </Text>}
+              </Group>
             ),
             enableSorting: true,
             meta: { colSpan: 1 },
