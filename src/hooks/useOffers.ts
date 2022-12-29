@@ -238,7 +238,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
         reject(err)
       }
     });
-  },[account, filterBuyer, filterSeller, filterZeroAmount, filterRemoved, t, chainId])
+  },[account, filterBuyer, filterSeller, filterZeroAmount, filterRemoved, chainId])
 
   const fetch = useCallback(async () => {
     setOffers([{
@@ -268,7 +268,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
     if(offers) setOffers(offers);
     setInitialized(true);
     setIsRefreshing(false);
-  },[fetchOffers,fetchOfferTheGraph])
+  },[t, chainId, fetchOfferTheGraph, fetchOffers])
 
   const interval = useInterval(() => fetch(), 60000);
   const isAutoRefreshEnabled = useAtomValue(isRefreshedAutoAtom);
