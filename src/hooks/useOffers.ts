@@ -208,7 +208,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
           const bnAmount = offerData.amount;
 
           const condFiltreZeroAmount = filterZeroAmount ? parseFloat(bnAmount) !== 0 : true;
-          const condFiltreRemoved = filterRemoved && offerData.removedAtBlock > 0 ? false : true;
+          const condFiltreRemoved = filterRemoved && offerData.removedAtBlock > 0 ? true : false;
 
           if(condFiltreZeroAmount){
             if(condFiltreRemoved){
