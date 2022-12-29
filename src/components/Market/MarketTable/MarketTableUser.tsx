@@ -23,7 +23,7 @@ import { MarketSubRow } from '../MarketSubRow';
 import { UpdateActionsWithPermit } from '../UpdateActions';
 
 export const MarketTableUser: FC = () => {
-  const { offers, refreshState } = useOffers(true, false, false); // filter offers by seller
+  const { offers, refreshState } = useOffers(true, false, false, true); // filter offers by seller
 
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'offerId', desc: false },
