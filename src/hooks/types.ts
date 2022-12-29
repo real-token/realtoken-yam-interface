@@ -1,5 +1,3 @@
-import { Dispatch, SetStateAction } from 'react';
-
 import BigNumber from 'bignumber.js';
 
 export type CreatedOffer = {
