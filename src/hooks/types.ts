@@ -1,5 +1,3 @@
-import { Dispatch, SetStateAction } from 'react';
-
 import BigNumber from 'bignumber.js';
 
 export type CreatedOffer = {
@@ -22,12 +20,14 @@ export type Offer = {
   price: string;
   amount: string;
   hasPropertyToken: boolean;
+  removedAtBlock: number;
 };
 
 export type UseOffers = (
   filterSeller?: boolean,
   filerBuyer?: boolean,
-  filterZeroAmount?: boolean
+  filterZeroAmount?: boolean,
+  filterRemoved?: boolean
 ) => {
   offers: Offer[];
   refreshState: [boolean, () => void];
