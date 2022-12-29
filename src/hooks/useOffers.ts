@@ -35,7 +35,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
     price: t('loading'),
     amount: t('loading'),
     hasPropertyToken: false,
-    removedAtBlock: 0,
+    removed: false,
   }]);
   const { propertiesToken } = usePropertiesToken();
 
@@ -101,7 +101,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
               price: (new BigNumber(price.toString())).shiftedBy(- buyerTokenDecimals).toFixed(10).toString(),
               amount: (bnAmount.shiftedBy(- offerTokenDecimals)).toFixed(10).toString(),
               hasPropertyToken: hasPropertyToken ? true : false,
-              removedAtBlock: 0,
+              removed: false,
             };
 
             const condFiltreZeroAmount = filterZeroAmount ? !bnAmount.isZero() : true;
@@ -256,7 +256,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
       price: t('loading'),
       amount: t('loading'),
       hasPropertyToken: false,
-      removedAtBlock: 0
+      removed: false
     }]);
     setIsRefreshing(true);
 
