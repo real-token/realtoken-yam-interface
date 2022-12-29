@@ -202,16 +202,15 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
             price: offer.price.price.toString(),
             amount: offer.price.amount.toString(),
             hasPropertyToken: false,
-            removedAtBlock: offer.removedAtBlock ?? 0
+            removed: offer.removedAtBlock === null ? false : true
           };
 
           const bnAmount = offerData.amount;
 
           const condFiltreZeroAmount = filterZeroAmount ? parseFloat(bnAmount) !== 0 : true;
-          const condFiltreRemoved = filterRemoved && offerData.removedAtBlock > 0 ? true : false;
+          const toBeRemoved = filterRemoved && offerData.removed ? true : false;
 
-          if(condFiltreZeroAmount){
-            if(condFiltreRemoved){
+          if(condFiltreZeroAmount && !toBeRemoved){
               if (filterSeller) {
                 // console.log("is seller")
                 if (offerData.sellerAddress === account) {
@@ -230,7 +229,6 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
                   offersData.push(offerData);
                 }
               }
-            }
           }
           
         });
