@@ -16,7 +16,8 @@ FROM node:16-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-COPY config/.env.dev ./.env
+ARG BUILD_ENV
+COPY config/.env.${BUILD_ENV} ./.env
 # # This will do the trick, use the corresponding env file for each environment.
 # COPY .env.production.sample .env.production
 RUN yarn build
