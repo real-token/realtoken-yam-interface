@@ -90,14 +90,14 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
             const bnAmount = new BigNumber(amount.toString());
             const offerData: Offer = {
               offerId: i.toString(),
-              offerTokenAddress: offerTokenAddress,
+              offerTokenAddress: offerTokenAddress.toLowerCase(),
               offerTokenName: <string>offerTokenName,
               offerTokenDecimals: offerTokenDecimals.toString(),
-              buyerTokenAddress: buyerTokenAddress,
+              buyerTokenAddress: buyerTokenAddress.toLowerCase(),
               buyerTokenName: <string>buyerTokenName,
               buyerTokenDecimals: buyerTokenDecimals.toString(),
-              sellerAddress: sellerAddress,
-              buyerAddress: buyerAddress,
+              sellerAddress: sellerAddress.toLowerCase(),
+              buyerAddress: buyerAddress.toLowerCase(),
               price: (new BigNumber(price.toString())).shiftedBy(- buyerTokenDecimals).toFixed(10).toString(),
               amount: (bnAmount.shiftedBy(- offerTokenDecimals)).toFixed(10).toString(),
               hasPropertyToken: hasPropertyToken ? true : false,
