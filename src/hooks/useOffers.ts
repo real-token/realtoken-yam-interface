@@ -278,7 +278,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
     setIsRefreshing(true);
 
     let offers; 
-    if(chainId == 1 || chainId == 5 || chainId == 100){
+    if(chainId == 1 || (chainId == 5 && process.env.NEXT_PUBLIC_ENV == 'dev') || chainId == 100){
       offers = await fetchOfferTheGraph();
     }else{
       offers = await fetchOffers();
