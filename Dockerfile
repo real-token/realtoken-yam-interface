@@ -21,10 +21,6 @@ COPY config/.env.${BUILD_ENV} ./.env
 
 RUN if [ "$BUILD_ENV" = "production" ]; then \
 			export BUILD_PRODUCTION=1; \
-		elif [ "$BUILD_ENV" = "staging" ]; then \
-			export BUILD_PRODUCTION=0; \
-		else \
-			export BUILD_PRODUCTION=0; \
 		fi
 # # This will do the trick, use the corresponding env file for each environment.
 # COPY .env.production.sample .env.production
