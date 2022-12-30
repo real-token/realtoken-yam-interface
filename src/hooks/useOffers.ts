@@ -156,6 +156,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
           offers(first: 1000){
             id
             removedAtBlock
+            availableAmount
             offerToken {
               address
               name
@@ -200,7 +201,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
             sellerAddress: offer.seller.address,
             buyerAddress: offer.buyer?.address,
             price: offer.price.price.toString(),
-            amount: offer.price.amount.toString(),
+            amount: offer.availableAmount.toString(),
             hasPropertyToken: false,
             removed: offer.removedAtBlock === null ? false : true
           };

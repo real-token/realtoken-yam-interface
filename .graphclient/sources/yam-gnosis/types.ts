@@ -169,6 +169,8 @@ export type Offer = {
   prices: Array<OfferPrice>;
   /**  Current price  */
   price: OfferPrice;
+  /**  Available amount  */
+  availableAmount: Scalars['BigDecimal'];
   /**  Purchase array  */
   purchases: Array<Purchase>;
   /**  Purchase count  */
@@ -394,6 +396,14 @@ export type Offer_filter = {
   price_not_ends_with?: InputMaybe<Scalars['String']>;
   price_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
   price_?: InputMaybe<OfferPrice_filter>;
+  availableAmount?: InputMaybe<Scalars['BigDecimal']>;
+  availableAmount_not?: InputMaybe<Scalars['BigDecimal']>;
+  availableAmount_gt?: InputMaybe<Scalars['BigDecimal']>;
+  availableAmount_lt?: InputMaybe<Scalars['BigDecimal']>;
+  availableAmount_gte?: InputMaybe<Scalars['BigDecimal']>;
+  availableAmount_lte?: InputMaybe<Scalars['BigDecimal']>;
+  availableAmount_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  availableAmount_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   purchases?: InputMaybe<Array<Scalars['String']>>;
   purchases_not?: InputMaybe<Array<Scalars['String']>>;
   purchases_contains?: InputMaybe<Array<Scalars['String']>>;
@@ -473,6 +483,7 @@ export type Offer_orderBy =
   | 'buyerToken'
   | 'prices'
   | 'price'
+  | 'availableAmount'
   | 'purchases'
   | 'purchaseCount'
   | 'buyer'
