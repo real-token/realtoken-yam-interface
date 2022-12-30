@@ -35,7 +35,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
     price: t('loading'),
     amount: t('loading'),
     hasPropertyToken: false,
-    removedAtBlock: 0,
+    removed: false,
   }]);
   const { propertiesToken } = usePropertiesToken();
 
@@ -101,7 +101,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
               price: (new BigNumber(price.toString())).shiftedBy(- buyerTokenDecimals).toFixed(10).toString(),
               amount: (bnAmount.shiftedBy(- offerTokenDecimals)).toFixed(10).toString(),
               hasPropertyToken: hasPropertyToken ? true : false,
-              removedAtBlock: 0,
+              removed: false,
             };
 
             const condFiltreZeroAmount = filterZeroAmount ? !bnAmount.isZero() : true;
@@ -202,16 +202,15 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
             price: offer.price.price.toString(),
             amount: offer.price.amount.toString(),
             hasPropertyToken: false,
-            removedAtBlock: offer.removedAtBlock ?? 0
+            removed: offer.removedAtBlock === null ? false : true
           };
 
           const bnAmount = offerData.amount;
 
           const condFiltreZeroAmount = filterZeroAmount ? parseFloat(bnAmount) !== 0 : true;
-          const condFiltreRemoved = filterRemoved && offerData.removedAtBlock > 0 ? false : true;
+          const toBeRemoved = filterRemoved && offerData.removed ? true : false;
 
-          if(condFiltreZeroAmount){
-            if(condFiltreRemoved){
+          if(condFiltreZeroAmount && !toBeRemoved){
               if (filterSeller) {
                 // console.log("is seller")
                 if (offerData.sellerAddress === account) {
@@ -230,7 +229,6 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
                   offersData.push(offerData);
                 }
               }
-            }
           }
           
         });
@@ -258,7 +256,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
       price: t('loading'),
       amount: t('loading'),
       hasPropertyToken: false,
-      removedAtBlock: 0
+      removed: false
     }]);
     setIsRefreshing(true);
 
