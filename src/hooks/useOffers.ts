@@ -146,8 +146,24 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
         // const { data } = await execute(getOffersDocument, {}, {
         //   source: source
         // });
+        let uri = undefined
+        switch (chainId) {
+          case 1:
+            uri = "https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph";
+            break;
+          case 5:
+            uri = "https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-goerli";
+            break;
+          case 100:
+            uri = "https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-gnosis";
+            break;
+          default:
+
+            break;
+        }
+
         const client = new ApolloClient({
-          uri: chainId == 100 ? "https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-gnosis" : "https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph",
+          uri: uri,
           cache: new InMemoryCache(),
         });
 
@@ -262,7 +278,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
     setIsRefreshing(true);
 
     let offers; 
-    if(chainId == 1 || chainId == 100){
+    if(chainId == 1 || chainId == 5 || chainId == 100){
       offers = await fetchOfferTheGraph();
     }else{
       offers = await fetchOffers();
