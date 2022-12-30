@@ -35,7 +35,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
     price: t('loading'),
     amount: t('loading'),
     hasPropertyToken: false,
-    removedAtBlock: 0,
+    removed: false,
   }]);
   const { propertiesToken } = usePropertiesToken();
 
@@ -90,18 +90,18 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
             const bnAmount = new BigNumber(amount.toString());
             const offerData: Offer = {
               offerId: i.toString(),
-              offerTokenAddress: offerTokenAddress,
+              offerTokenAddress: offerTokenAddress.toLowerCase(),
               offerTokenName: <string>offerTokenName,
               offerTokenDecimals: offerTokenDecimals.toString(),
-              buyerTokenAddress: buyerTokenAddress,
+              buyerTokenAddress: buyerTokenAddress.toLowerCase(),
               buyerTokenName: <string>buyerTokenName,
               buyerTokenDecimals: buyerTokenDecimals.toString(),
-              sellerAddress: sellerAddress,
-              buyerAddress: buyerAddress,
+              sellerAddress: sellerAddress.toLowerCase(),
+              buyerAddress: buyerAddress.toLowerCase(),
               price: (new BigNumber(price.toString())).shiftedBy(- buyerTokenDecimals).toFixed(10).toString(),
               amount: (bnAmount.shiftedBy(- offerTokenDecimals)).toFixed(10).toString(),
               hasPropertyToken: hasPropertyToken ? true : false,
-              removedAtBlock: 0,
+              removed: false,
             };
 
             const condFiltreZeroAmount = filterZeroAmount ? !bnAmount.isZero() : true;
@@ -146,8 +146,24 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
         // const { data } = await execute(getOffersDocument, {}, {
         //   source: source
         // });
+        let uri = undefined
+        switch (chainId) {
+          case 1:
+            uri = "https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph";
+            break;
+          case 5:
+            uri = "https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-goerli";
+            break;
+          case 100:
+            uri = "https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-gnosis";
+            break;
+          default:
+
+            break;
+        }
+
         const client = new ApolloClient({
-          uri: chainId == 100 ? "https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-gnosis" : "https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph",
+          uri: uri,
           cache: new InMemoryCache(),
         });
 
@@ -156,6 +172,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
           offers(first: 1000){
             id
             removedAtBlock
+            availableAmount
             offerToken {
               address
               name
@@ -163,6 +180,10 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
               symbol
             }
             prices {
+              amount
+              price
+            }
+            price{
               amount
               price
             }
@@ -189,25 +210,24 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
             offerId: parseInt(offer.id, 16).toString(),
             offerTokenAddress: offer.offerToken.address,
             offerTokenName: offer.offerToken.name ?? "",
-            offerTokenDecimals: offer.offerToken.decimals,
+            offerTokenDecimals: offer.offerToken.decimals?.toString() ?? "",
             buyerTokenAddress: offer.buyerToken.address,
             buyerTokenName: offer.buyerToken.name ?? "",
-            buyerTokenDecimals: offer.buyerToken.decimals,
+            buyerTokenDecimals: offer.buyerToken.decimals?.toString() ?? "",
             sellerAddress: offer.seller.address,
             buyerAddress: offer.buyer?.address,
-            price: offer.prices[0].price.toString(),
-            amount: offer.prices[0].amount.toString(),
+            price: offer.price.price.toString(),
+            amount: offer.availableAmount.toString(),
             hasPropertyToken: false,
-            removedAtBlock: offer.removedAtBlock ?? 0
+            removed: offer.removedAtBlock === null ? false : true
           };
 
           const bnAmount = offerData.amount;
 
           const condFiltreZeroAmount = filterZeroAmount ? parseFloat(bnAmount) !== 0 : true;
-          const condFiltreRemoved = filterRemoved && offerData.removedAtBlock > 0 ? false : true;
+          const toBeRemoved = filterRemoved && offerData.removed ? true : false;
 
-          if(condFiltreZeroAmount){
-            if(condFiltreRemoved){
+          if(condFiltreZeroAmount && !toBeRemoved){
               if (filterSeller) {
                 // console.log("is seller")
                 if (offerData.sellerAddress === account) {
@@ -226,7 +246,6 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
                   offersData.push(offerData);
                 }
               }
-            }
           }
           
         });
@@ -254,12 +273,12 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
       price: t('loading'),
       amount: t('loading'),
       hasPropertyToken: false,
-      removedAtBlock: 0
+      removed: false
     }]);
     setIsRefreshing(true);
 
     let offers; 
-    if(chainId == 1 || chainId == 100){
+    if(chainId == 1 || (chainId == 5 && process.env.NEXT_PUBLIC_ENV == 'dev') || chainId == 100){
       offers = await fetchOfferTheGraph();
     }else{
       offers = await fetchOffers();

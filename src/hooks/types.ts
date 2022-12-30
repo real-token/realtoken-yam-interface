@@ -20,7 +20,7 @@ export type Offer = {
   price: string;
   amount: string;
   hasPropertyToken: boolean;
-  removedAtBlock: number;
+  removed: boolean;
 };
 
 export type UseOffers = (

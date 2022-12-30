@@ -29,8 +29,16 @@ export type Account = {
   address: Scalars['Bytes'];
   /**  User offers  */
   offers: Array<Offer>;
-  /**  user purchases  */
+  /**  User purchases  */
   purchases: Array<Purchase>;
+  /**  User sell  */
+  sells: Array<Purchase>;
+  /**  Purchase count  */
+  purchaseCount: Scalars['BigInt'];
+  /**  Sell count  */
+  sellCount: Scalars['BigInt'];
+  /**  Offer count  */
+  offerCount: Scalars['BigInt'];
 };
 
 
@@ -46,6 +54,16 @@ export type AccountoffersArgs = {
 
 /**  Account entity  */
 export type AccountpurchasesArgs = {
+  skip?: InputMaybe<Scalars['Int']>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Purchase_orderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<Purchase_filter>;
+};
+
+
+/**  Account entity  */
+export type AccountsellsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   first?: InputMaybe<Scalars['Int']>;
   orderBy?: InputMaybe<Purchase_orderBy>;
@@ -82,6 +100,37 @@ export type Account_filter = {
   purchases_not_contains?: InputMaybe<Array<Scalars['String']>>;
   purchases_not_contains_nocase?: InputMaybe<Array<Scalars['String']>>;
   purchases_?: InputMaybe<Purchase_filter>;
+  sells?: InputMaybe<Array<Scalars['String']>>;
+  sells_not?: InputMaybe<Array<Scalars['String']>>;
+  sells_contains?: InputMaybe<Array<Scalars['String']>>;
+  sells_contains_nocase?: InputMaybe<Array<Scalars['String']>>;
+  sells_not_contains?: InputMaybe<Array<Scalars['String']>>;
+  sells_not_contains_nocase?: InputMaybe<Array<Scalars['String']>>;
+  sells_?: InputMaybe<Purchase_filter>;
+  purchaseCount?: InputMaybe<Scalars['BigInt']>;
+  purchaseCount_not?: InputMaybe<Scalars['BigInt']>;
+  purchaseCount_gt?: InputMaybe<Scalars['BigInt']>;
+  purchaseCount_lt?: InputMaybe<Scalars['BigInt']>;
+  purchaseCount_gte?: InputMaybe<Scalars['BigInt']>;
+  purchaseCount_lte?: InputMaybe<Scalars['BigInt']>;
+  purchaseCount_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  purchaseCount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  sellCount?: InputMaybe<Scalars['BigInt']>;
+  sellCount_not?: InputMaybe<Scalars['BigInt']>;
+  sellCount_gt?: InputMaybe<Scalars['BigInt']>;
+  sellCount_lt?: InputMaybe<Scalars['BigInt']>;
+  sellCount_gte?: InputMaybe<Scalars['BigInt']>;
+  sellCount_lte?: InputMaybe<Scalars['BigInt']>;
+  sellCount_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  sellCount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  offerCount?: InputMaybe<Scalars['BigInt']>;
+  offerCount_not?: InputMaybe<Scalars['BigInt']>;
+  offerCount_gt?: InputMaybe<Scalars['BigInt']>;
+  offerCount_lt?: InputMaybe<Scalars['BigInt']>;
+  offerCount_gte?: InputMaybe<Scalars['BigInt']>;
+  offerCount_lte?: InputMaybe<Scalars['BigInt']>;
+  offerCount_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  offerCount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
 };
@@ -90,7 +139,11 @@ export type Account_orderBy =
   | 'id'
   | 'address'
   | 'offers'
-  | 'purchases';
+  | 'purchases'
+  | 'sells'
+  | 'purchaseCount'
+  | 'sellCount'
+  | 'offerCount';
 
 export type BlockChangedFilter = {
   number_gte: Scalars['Int'];
@@ -114,8 +167,14 @@ export type Offer = {
   buyerToken: Token;
   /**  Price array  */
   prices: Array<OfferPrice>;
+  /**  Current price  */
+  price: OfferPrice;
+  /**  Available amount  */
+  availableAmount: Scalars['BigDecimal'];
   /**  Purchase array  */
   purchases: Array<Purchase>;
+  /**  Purchase count  */
+  purchaseCount: Scalars['BigInt'];
   /**  Buyer if offer is private  */
   buyer?: Maybe<Account>;
   /**  Offer creation block  */
@@ -154,9 +213,9 @@ export type OfferPrice = {
   /**  Offer entity  */
   offer: Offer;
   /**  Price  */
-  price: Scalars['BigInt'];
+  price: Scalars['BigDecimal'];
   /**  Amount  */
-  amount: Scalars['BigInt'];
+  amount: Scalars['BigDecimal'];
   /**  Creation block  */
   createdAtBlock: Scalars['BigInt'];
   /**  Creation timestamp  */
@@ -193,22 +252,22 @@ export type OfferPrice_filter = {
   offer_not_ends_with?: InputMaybe<Scalars['String']>;
   offer_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
   offer_?: InputMaybe<Offer_filter>;
-  price?: InputMaybe<Scalars['BigInt']>;
-  price_not?: InputMaybe<Scalars['BigInt']>;
-  price_gt?: InputMaybe<Scalars['BigInt']>;
-  price_lt?: InputMaybe<Scalars['BigInt']>;
-  price_gte?: InputMaybe<Scalars['BigInt']>;
-  price_lte?: InputMaybe<Scalars['BigInt']>;
-  price_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  price_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  amount?: InputMaybe<Scalars['BigInt']>;
-  amount_not?: InputMaybe<Scalars['BigInt']>;
-  amount_gt?: InputMaybe<Scalars['BigInt']>;
-  amount_lt?: InputMaybe<Scalars['BigInt']>;
-  amount_gte?: InputMaybe<Scalars['BigInt']>;
-  amount_lte?: InputMaybe<Scalars['BigInt']>;
-  amount_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  amount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  price?: InputMaybe<Scalars['BigDecimal']>;
+  price_not?: InputMaybe<Scalars['BigDecimal']>;
+  price_gt?: InputMaybe<Scalars['BigDecimal']>;
+  price_lt?: InputMaybe<Scalars['BigDecimal']>;
+  price_gte?: InputMaybe<Scalars['BigDecimal']>;
+  price_lte?: InputMaybe<Scalars['BigDecimal']>;
+  price_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  price_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  amount?: InputMaybe<Scalars['BigDecimal']>;
+  amount_not?: InputMaybe<Scalars['BigDecimal']>;
+  amount_gt?: InputMaybe<Scalars['BigDecimal']>;
+  amount_lt?: InputMaybe<Scalars['BigDecimal']>;
+  amount_gte?: InputMaybe<Scalars['BigDecimal']>;
+  amount_lte?: InputMaybe<Scalars['BigDecimal']>;
+  amount_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  amount_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   createdAtBlock?: InputMaybe<Scalars['BigInt']>;
   createdAtBlock_not?: InputMaybe<Scalars['BigInt']>;
   createdAtBlock_gt?: InputMaybe<Scalars['BigInt']>;
@@ -316,6 +375,35 @@ export type Offer_filter = {
   prices_not_contains?: InputMaybe<Array<Scalars['String']>>;
   prices_not_contains_nocase?: InputMaybe<Array<Scalars['String']>>;
   prices_?: InputMaybe<OfferPrice_filter>;
+  price?: InputMaybe<Scalars['String']>;
+  price_not?: InputMaybe<Scalars['String']>;
+  price_gt?: InputMaybe<Scalars['String']>;
+  price_lt?: InputMaybe<Scalars['String']>;
+  price_gte?: InputMaybe<Scalars['String']>;
+  price_lte?: InputMaybe<Scalars['String']>;
+  price_in?: InputMaybe<Array<Scalars['String']>>;
+  price_not_in?: InputMaybe<Array<Scalars['String']>>;
+  price_contains?: InputMaybe<Scalars['String']>;
+  price_contains_nocase?: InputMaybe<Scalars['String']>;
+  price_not_contains?: InputMaybe<Scalars['String']>;
+  price_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  price_starts_with?: InputMaybe<Scalars['String']>;
+  price_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  price_not_starts_with?: InputMaybe<Scalars['String']>;
+  price_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  price_ends_with?: InputMaybe<Scalars['String']>;
+  price_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  price_not_ends_with?: InputMaybe<Scalars['String']>;
+  price_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  price_?: InputMaybe<OfferPrice_filter>;
+  availableAmount?: InputMaybe<Scalars['BigDecimal']>;
+  availableAmount_not?: InputMaybe<Scalars['BigDecimal']>;
+  availableAmount_gt?: InputMaybe<Scalars['BigDecimal']>;
+  availableAmount_lt?: InputMaybe<Scalars['BigDecimal']>;
+  availableAmount_gte?: InputMaybe<Scalars['BigDecimal']>;
+  availableAmount_lte?: InputMaybe<Scalars['BigDecimal']>;
+  availableAmount_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  availableAmount_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   purchases?: InputMaybe<Array<Scalars['String']>>;
   purchases_not?: InputMaybe<Array<Scalars['String']>>;
   purchases_contains?: InputMaybe<Array<Scalars['String']>>;
@@ -323,6 +411,14 @@ export type Offer_filter = {
   purchases_not_contains?: InputMaybe<Array<Scalars['String']>>;
   purchases_not_contains_nocase?: InputMaybe<Array<Scalars['String']>>;
   purchases_?: InputMaybe<Purchase_filter>;
+  purchaseCount?: InputMaybe<Scalars['BigInt']>;
+  purchaseCount_not?: InputMaybe<Scalars['BigInt']>;
+  purchaseCount_gt?: InputMaybe<Scalars['BigInt']>;
+  purchaseCount_lt?: InputMaybe<Scalars['BigInt']>;
+  purchaseCount_gte?: InputMaybe<Scalars['BigInt']>;
+  purchaseCount_lte?: InputMaybe<Scalars['BigInt']>;
+  purchaseCount_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  purchaseCount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   buyer?: InputMaybe<Scalars['String']>;
   buyer_not?: InputMaybe<Scalars['String']>;
   buyer_gt?: InputMaybe<Scalars['String']>;
@@ -386,7 +482,10 @@ export type Offer_orderBy =
   | 'offerToken'
   | 'buyerToken'
   | 'prices'
+  | 'price'
+  | 'availableAmount'
   | 'purchases'
+  | 'purchaseCount'
   | 'buyer'
   | 'createdAtBlock'
   | 'createdAtTimestamp'
@@ -405,9 +504,9 @@ export type Purchase = {
   /**  Buyer 0x  */
   buyer: Account;
   /**  Price  */
-  price: Scalars['BigInt'];
+  price: Scalars['BigDecimal'];
   /**  Quantity  */
-  quantity: Scalars['BigInt'];
+  quantity: Scalars['BigDecimal'];
   /**  Creation block  */
   createdAtBlock: Scalars['BigInt'];
   /**  Creation timestamp  */
@@ -465,22 +564,22 @@ export type Purchase_filter = {
   buyer_not_ends_with?: InputMaybe<Scalars['String']>;
   buyer_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
   buyer_?: InputMaybe<Account_filter>;
-  price?: InputMaybe<Scalars['BigInt']>;
-  price_not?: InputMaybe<Scalars['BigInt']>;
-  price_gt?: InputMaybe<Scalars['BigInt']>;
-  price_lt?: InputMaybe<Scalars['BigInt']>;
-  price_gte?: InputMaybe<Scalars['BigInt']>;
-  price_lte?: InputMaybe<Scalars['BigInt']>;
-  price_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  price_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  quantity?: InputMaybe<Scalars['BigInt']>;
-  quantity_not?: InputMaybe<Scalars['BigInt']>;
-  quantity_gt?: InputMaybe<Scalars['BigInt']>;
-  quantity_lt?: InputMaybe<Scalars['BigInt']>;
-  quantity_gte?: InputMaybe<Scalars['BigInt']>;
-  quantity_lte?: InputMaybe<Scalars['BigInt']>;
-  quantity_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  quantity_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  price?: InputMaybe<Scalars['BigDecimal']>;
+  price_not?: InputMaybe<Scalars['BigDecimal']>;
+  price_gt?: InputMaybe<Scalars['BigDecimal']>;
+  price_lt?: InputMaybe<Scalars['BigDecimal']>;
+  price_gte?: InputMaybe<Scalars['BigDecimal']>;
+  price_lte?: InputMaybe<Scalars['BigDecimal']>;
+  price_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  price_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  quantity?: InputMaybe<Scalars['BigDecimal']>;
+  quantity_not?: InputMaybe<Scalars['BigDecimal']>;
+  quantity_gt?: InputMaybe<Scalars['BigDecimal']>;
+  quantity_lt?: InputMaybe<Scalars['BigDecimal']>;
+  quantity_gte?: InputMaybe<Scalars['BigDecimal']>;
+  quantity_lte?: InputMaybe<Scalars['BigDecimal']>;
+  quantity_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  quantity_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   createdAtBlock?: InputMaybe<Scalars['BigInt']>;
   createdAtBlock_not?: InputMaybe<Scalars['BigInt']>;
   createdAtBlock_gt?: InputMaybe<Scalars['BigInt']>;
@@ -739,10 +838,14 @@ export type Token = {
   offers: Array<Offer>;
   /**  Array of purchases  */
   purchases: Array<Purchase>;
+  /**  Purchase count  */
+  purchaseCount: Scalars['BigInt'];
+  /**  Offer count  */
+  offerCount: Scalars['BigInt'];
   /**  TokenType: 0:NOWL|1:REALTOKEN|2:ERC20PERMIT|3:ERC20NOPERMIT  */
   tokenType: Scalars['Int'];
   /**  Token decimal  */
-  decimals?: Maybe<Scalars['BigInt']>;
+  decimals?: Maybe<Scalars['Int']>;
   /**  Token name  */
   name?: Maybe<Scalars['String']>;
   /**  Token symbol  */
@@ -798,6 +901,22 @@ export type Token_filter = {
   purchases_not_contains?: InputMaybe<Array<Scalars['String']>>;
   purchases_not_contains_nocase?: InputMaybe<Array<Scalars['String']>>;
   purchases_?: InputMaybe<Purchase_filter>;
+  purchaseCount?: InputMaybe<Scalars['BigInt']>;
+  purchaseCount_not?: InputMaybe<Scalars['BigInt']>;
+  purchaseCount_gt?: InputMaybe<Scalars['BigInt']>;
+  purchaseCount_lt?: InputMaybe<Scalars['BigInt']>;
+  purchaseCount_gte?: InputMaybe<Scalars['BigInt']>;
+  purchaseCount_lte?: InputMaybe<Scalars['BigInt']>;
+  purchaseCount_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  purchaseCount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  offerCount?: InputMaybe<Scalars['BigInt']>;
+  offerCount_not?: InputMaybe<Scalars['BigInt']>;
+  offerCount_gt?: InputMaybe<Scalars['BigInt']>;
+  offerCount_lt?: InputMaybe<Scalars['BigInt']>;
+  offerCount_gte?: InputMaybe<Scalars['BigInt']>;
+  offerCount_lte?: InputMaybe<Scalars['BigInt']>;
+  offerCount_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  offerCount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   tokenType?: InputMaybe<Scalars['Int']>;
   tokenType_not?: InputMaybe<Scalars['Int']>;
   tokenType_gt?: InputMaybe<Scalars['Int']>;
@@ -806,14 +925,14 @@ export type Token_filter = {
   tokenType_lte?: InputMaybe<Scalars['Int']>;
   tokenType_in?: InputMaybe<Array<Scalars['Int']>>;
   tokenType_not_in?: InputMaybe<Array<Scalars['Int']>>;
-  decimals?: InputMaybe<Scalars['BigInt']>;
-  decimals_not?: InputMaybe<Scalars['BigInt']>;
-  decimals_gt?: InputMaybe<Scalars['BigInt']>;
-  decimals_lt?: InputMaybe<Scalars['BigInt']>;
-  decimals_gte?: InputMaybe<Scalars['BigInt']>;
-  decimals_lte?: InputMaybe<Scalars['BigInt']>;
-  decimals_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  decimals_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  decimals?: InputMaybe<Scalars['Int']>;
+  decimals_not?: InputMaybe<Scalars['Int']>;
+  decimals_gt?: InputMaybe<Scalars['Int']>;
+  decimals_lt?: InputMaybe<Scalars['Int']>;
+  decimals_gte?: InputMaybe<Scalars['Int']>;
+  decimals_lte?: InputMaybe<Scalars['Int']>;
+  decimals_in?: InputMaybe<Array<Scalars['Int']>>;
+  decimals_not_in?: InputMaybe<Array<Scalars['Int']>>;
   name?: InputMaybe<Scalars['String']>;
   name_not?: InputMaybe<Scalars['String']>;
   name_gt?: InputMaybe<Scalars['String']>;
@@ -863,6 +982,8 @@ export type Token_orderBy =
   | 'address'
   | 'offers'
   | 'purchases'
+  | 'purchaseCount'
+  | 'offerCount'
   | 'tokenType'
   | 'decimals'
   | 'name'
