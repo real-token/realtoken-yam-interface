@@ -1,7 +1,7 @@
 import { FC, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Group, Indicator, MantineSize, Text, Title } from '@mantine/core';
+import { Group, Indicator, MantineSize, Text, Title, Tooltip } from '@mantine/core';
 import {
   ColumnDef,
   ExpandedState,
@@ -129,19 +129,22 @@ export const MarketTableUser: FC = () => {
           },
           {
             id: 'amount',
-            accessorKey: 'amount',
+            accessorKey: 'availableAmount',
+            accessorFn: (row) => [row.amount,row.availableAmount, row.allowanceToken],
             header: t('amount'),
             cell: ({ getValue }) => (
-              <Text
-                fz={'sm'}
-                sx={{
-                  textOverflow: 'ellipsis',
-                  overflow: 'hidden',
-                }}
-                ta={"right"}
-              >
-                {getValue()}
-              </Text>
+              <Tooltip multiline={true} label={`Wallet : ${getValue()[0]} | Allowance : ${getValue()[2]}`}>
+                <Text
+                  fz={'sm'}
+                  sx={{
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                  }}
+                  ta={"right"}
+                >
+                  {getValue()[1]}
+                </Text>
+              </Tooltip>
             ),
             enableSorting: true,
             meta: { colSpan: 2 },

@@ -158,7 +158,8 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
 
         setSubmitting(true);
 
-        const transactionDeadline = Math.floor(Date.now() / 1000) + 3600; // permit valable during 1h
+        const transactionDeadline = Math.floor(Date.now() / 1000) + 3600; // permit valable during 1h 
+        //TODO: rendre configurable par le user
 
         const offerTokenType = await realTokenYamUpgradeable.getTokenType(
           formValues.offerTokenAddress
@@ -169,7 +170,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           const { r, s, v }: any = await coinBridgeTokenPermitSignature(
             account,
             realTokenYamUpgradeable.address,
-            amountInWeiToPermit.toString(),
+            amountInWeiToPermit.toString(10),
             transactionDeadline,
             offerToken,
             provider
@@ -178,19 +179,15 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           const updateOfferWithPermitTx =
             await realTokenYamUpgradeable.updateOfferWithPermit(
               formValues.offerId,
-              new BigNumber(formValues.price.toString())
-                .shiftedBy(Number(buyerTokenDecimals))
-                .toString(),
-              new BigNumber(formValues.amount.toString())
-                .shiftedBy(Number(offerTokenDecimals))
-                .toString(),
+              new BigNumber(formValues.price).shiftedBy(Number(buyerTokenDecimals)).toString(),
+              new BigNumber(formValues.amount).shiftedBy(Number(offerTokenDecimals)).toString(10),
               transactionDeadline.toString(),
               v,
               r,
               s
             );
 
-          const notificationPayload = {
+            const notificationPayload = {
             key: updateOfferWithPermitTx.hash,
             href: `${activeChain?.blockExplorerUrl}tx/${updateOfferWithPermitTx.hash}`,
             hash: updateOfferWithPermitTx.hash,

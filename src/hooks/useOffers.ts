@@ -34,6 +34,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
     buyerAddress: t('loading'),
     price: t('loading'),
     amount: t('loading'),
+    availableAmount: '0',
     hasPropertyToken: false,
     removed: false,
   }]);
@@ -100,12 +101,18 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
               buyerAddress: buyerAddress.toLowerCase(),
               price: (new BigNumber(price.toString())).shiftedBy(- buyerTokenDecimals).toFixed(10).toString(),
               amount: (bnAmount.shiftedBy(- offerTokenDecimals)).toFixed(10).toString(),
+              availableAmount:(bnAmount.shiftedBy(- offerTokenDecimals)).toFixed(10).toString(),
               hasPropertyToken: hasPropertyToken ? true : false,
               removed: false,
             };
 
             const condFiltreZeroAmount = filterZeroAmount ? !bnAmount.isZero() : true;
+// console.log('offerData.offerId', offerData.offerId);
+            
+// if(offerData.offerId == "9"){
+// console.log('Debug Offer Data', offerData.amount);
 
+// }
             if(condFiltreZeroAmount){
               if (filterSeller) {
                 //console.log("is seller", account, sellerAddress,buyerAddress)
@@ -146,28 +153,37 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
         // const { data } = await execute(getOffersDocument, {}, {
         //   source: source
         // });
-        let uri = undefined
+        let uriYAM = undefined
+        let uriWallet = undefined
         switch (chainId) {
           case 1:
-            uri = "https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph";
+            uriYAM = "https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph";
+            uriWallet = "https://api.thegraph.com/subgraphs/name/realtoken-thegraph/realtoken-eth";
             break;
           case 5:
-            uri = "https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-goerli";
+            uriYAM = "https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-goerli";
+            uriWallet = "https://api.thegraph.com/subgraphs/name/realtoken-thegraph/realtoken-xdai";//TODO ajouter le bon URL quant le Graph Goerli sera dispo
             break;
           case 100:
-            uri = "https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-gnosis";
+            uriYAM = "https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-gnosis";
+            uriWallet = "https://api.thegraph.com/subgraphs/name/realtoken-thegraph/realtoken-xdai";
             break;
           default:
 
             break;
         }
 
-        const client = new ApolloClient({
-          uri: uri,
+        const clientYAM = new ApolloClient({
+          uri: uriYAM,
           cache: new InMemoryCache(),
         });
 
-        const { data } = await client.query({query: gql`
+        const clientWallet = new ApolloClient({
+          uri: uriWallet,
+          cache: new InMemoryCache(),
+        });
+
+        const dataYAM = await clientYAM.query({query: gql`
         query getOffers{
           offers(first: 1000){
             id
@@ -204,7 +220,50 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
         }
         `})
 
-        await data.offers?.forEach((offer: OfferGraphQl) => {
+        const promisesYAM = dataYAM.data.offers?.map(async (offer: OfferGraphQl) => {
+          //TODO optmisier pour ne pas caller toutes les offre si affiche mes offre ou les offres privé
+          //TODO en l'état ça fais beaucoup de call sur le graph des tokens, il faudrais optimiser en fesant la reques plus haut avec un array de user
+              
+          let dataWallet = { data: { account: { balances: [{ amount: '0' }] } } };
+          //Récupère la blance pour le token du vendeur 
+          let condSeller = true;
+          if(filterSeller){
+            condSeller = account === offer.seller.address.toLowerCase();
+          }
+          //console.log('DEBUG condSeller', new BigNumber( offer.id).toString(), condSeller,account === offer.seller.address.toLowerCase())
+
+          if(
+            condSeller && 
+            /^realtoken/.test(offer.offerToken.name!.toLowerCase()) &&
+            offer.availableAmount.toString() != '0' &&
+            offer.removedAtBlock === null
+          ){
+            // console.log('DEBUG fetch balance', new BigNumber( offer.id).toString(),
+            // account, offer.seller.address.toLowerCase(), 
+            // condSeller,
+            // offer
+            // );
+            
+            try {
+              dataWallet = await clientWallet.query({query: gql`
+              query account{
+                account(id: "${offer.seller.address}") {
+                  balances(
+                    where: {token_: {address: "${offer.offerToken.address}"}}
+                  ) {
+                    amount
+                  }
+                }
+              }
+            `})
+            } catch (e) {
+              console.log(e);
+            }
+            
+          //  if(parseFloat(offer.availableAmount.toString()) > 0){
+          //    console.log('DEBUG dataWallet', dataWallet.data.account?.balances[0]?.amount ?? '0',offer.availableAmount.toString(), new BigNumber( offer.id).toString(), offer);}
+
+          }
           
           const offerData: Offer = {
             offerId: parseInt(offer.id, 16).toString(),
@@ -217,16 +276,23 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
             sellerAddress: offer.seller.address,
             buyerAddress: offer.buyer?.address,
             price: offer.price.price.toString(),
-            amount: offer.availableAmount.toString(),
-            hasPropertyToken: false,
+            amount: '0',
+            availableAmount: offer.availableAmount.toString(),
+            balanceWallet: dataWallet.data.account?.balances[0]?.amount ?? '0',
+            allowanceToken: offer.availableAmount.toString(),//TODO ajouter le fetch de la bonne données quant disponnible dans le graph, tmporairement = a la valeur autoriser dans le YAM
+            hasPropertyToken: propertiesToken.find(propertyToken => (
+              propertyToken.contractAddress == offer.buyerToken.address || 
+              propertyToken.contractAddress == offer.offerToken.address)) ? true : false,
             removed: offer.removedAtBlock === null ? false : true
           };
 
-          const bnAmount = offerData.amount;
+          //TODO passer en gestion BN pour éviter les crach avec les allowance infini, ne pas utiliser parseFloat mais les fonction de bignumber js
+          const bnAmount = Math.min(parseFloat(offerData.availableAmount), parseFloat(offerData.balanceWallet!), parseFloat(offerData.allowanceToken!));
+          offerData.amount = bnAmount <= 0 ? '0' : bnAmount.toString() ;
 
-          const condFiltreZeroAmount = filterZeroAmount ? parseFloat(bnAmount) !== 0 : true;
+          const condFiltreZeroAmount = filterZeroAmount ? parseFloat(offerData.amount) !== 0 : true;
           const toBeRemoved = filterRemoved && offerData.removed ? true : false;
-
+            
           if(condFiltreZeroAmount && !toBeRemoved){
               if (filterSeller) {
                 // console.log("is seller")
@@ -249,7 +315,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
           }
           
         });
-
+        await Promise.all(promisesYAM)
         resolve(offersData);
 
       }catch(err){
@@ -272,6 +338,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
       buyerAddress: t('loading'),
       price: t('loading'),
       amount: t('loading'),
+			availableAmount: t('loading'),
       hasPropertyToken: false,
       removed: false
     }]);

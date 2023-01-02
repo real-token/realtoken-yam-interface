@@ -14,7 +14,9 @@ const ConnectEagerly: FC = () => {
   }, []);
   
   useEffect(() => {
-    console.log('process.env.NEXT_PUBLIC_ENV', process.env.NEXT_PUBLIC_ENV)
+		console.log('Variable version: ', 2);
+		console.log('process.env.NODE_ENV', process.env.NODE_ENV);
+    console.log('process.env.NEXT_PUBLIC_ENV', process.env.NEXT_PUBLIC_ENV);
     process.env.NEXT_PUBLIC_ENV === "dev" ?  
     void gnosisSafe.connectEagerly().catch(() => {
       console.debug('Failed to connect eagerly to gnosis safe')
