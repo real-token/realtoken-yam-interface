@@ -130,10 +130,10 @@ export const MarketTableUser: FC = () => {
           {
             id: 'amount',
             accessorKey: 'availableAmount',
-            accessorFn: (row) => [row.amount,row.availableAmount],
+            accessorFn: (row) => [row.amount,row.availableAmount, row.allowanceToken],
             header: t('amount'),
             cell: ({ getValue }) => (
-              <Tooltip label={getValue()[0]}>
+              <Tooltip multiline={true} label={`Wallet : ${getValue()[0]} | Allowance : ${getValue()[2]}`}>
                 <Text
                   fz={'sm'}
                   sx={{

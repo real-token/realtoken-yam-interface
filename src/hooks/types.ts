@@ -21,6 +21,7 @@ export type Offer = {
   amount: string;
   availableAmount: string;
   balanceWallet?: string;
+  allowanceToken?: string;
   hasPropertyToken: boolean;
   removed: boolean;
 };

@@ -279,19 +279,18 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
             amount: '0',
             availableAmount: offer.availableAmount.toString(),
             balanceWallet: dataWallet.data.account?.balances[0]?.amount ?? '0',
+            allowanceToken: offer.availableAmount.toString(),//TODO ajouter le fetch de la bonne données quant disponnible dans le graph, tmporairement = a la valeur autoriser dans le YAM
             hasPropertyToken: propertiesToken.find(propertyToken => (
               propertyToken.contractAddress == offer.buyerToken.address || 
               propertyToken.contractAddress == offer.offerToken.address)) ? true : false,
             removed: offer.removedAtBlock === null ? false : true
           };
 
-          const nAvailableAmount = parseFloat(offerData.availableAmount);
-          const nBalanceWallet = parseFloat(offerData.balanceWallet!);
-          const bnAmount = nAvailableAmount <= nBalanceWallet ?  nAvailableAmount.toString() : nBalanceWallet.toString() ;//TODO ajouter le teste de l'allowance
+          //TODO passer en gestion BN pour éviter les crach avec les allowance infini, ne pas utiliser parseFloat mais les fonction de bignumber js
+          const bnAmount = Math.min(parseFloat(offerData.availableAmount), parseFloat(offerData.balanceWallet!), parseFloat(offerData.allowanceToken!));
+          offerData.amount = bnAmount <= 0 ? '0' : bnAmount.toString() ;
 
-          offerData.amount = bnAmount;
-
-          const condFiltreZeroAmount = filterZeroAmount ? parseFloat(bnAmount) !== 0 : true;
+          const condFiltreZeroAmount = filterZeroAmount ? parseFloat(offerData.amount) !== 0 : true;
           const toBeRemoved = filterRemoved && offerData.removed ? true : false;
             
           if(condFiltreZeroAmount && !toBeRemoved){
