@@ -245,6 +245,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
             // );
             
             try {
+              chainId === 5 ? //TODO temporairement sans allowance sur Eth et Gnosis le temps d'avoir les graph a jours
               dataWallet = await clientWallet.query({query: gql`
               query account{
                 account(id: "${offer.seller.address}") {
@@ -261,6 +262,18 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
                 }
               }
             `})
+            :
+            dataWallet = await clientWallet.query({query: gql`
+              query account{
+                account(id: "${offer.seller.address}") {
+                  balances(
+                    where: {token_: {address: "${offer.offerToken.address}"}}
+                  ) {
+                    amount
+                  }
+                }
+              }
+            `})
             } catch (e) {
               console.log(e);
             }
@@ -270,7 +283,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
             //}
 
           }
-          
+
           const offerData: Offer = {
             offerId: parseInt(offer.id, 16).toString(),
             offerTokenAddress: offer.offerToken.address,
@@ -285,7 +298,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
             amount: '0',
             availableAmount: offer.availableAmount.toString(),
             balanceWallet: dataWallet.data.account?.balances[0]?.amount ?? '0',
-            allowanceToken: dataWallet.data.account.balances[0]?.allowances[0]?.allowance,//TODO ajouter le fetch de la bonne données quant disponnible dans le graph, tmporairement = a la valeur autoriser dans le YAM
+            allowanceToken: chainId === 5 ? dataWallet.data.account.balances[0]?.allowances[0]?.allowance : offer.availableAmount.toString(),//TODO temporairement sur la valeur autoriser sur el contrat du YAM le temps d'avoir les graph a jours sur Eth et Gnosis
             hasPropertyToken: propertiesToken.find(propertyToken => (
               propertyToken.contractAddress == offer.buyerToken.address || 
               propertyToken.contractAddress == offer.offerToken.address)) ? true : false,

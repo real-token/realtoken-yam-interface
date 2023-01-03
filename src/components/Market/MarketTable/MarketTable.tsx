@@ -25,6 +25,7 @@ import { MarketSubRow } from '../MarketSubRow';
 import { useAtom } from 'jotai';
 import { nameFilterValueAtom } from 'src/states';
 import React from 'react';
+import { BigNumber } from 'bignumber.js';
 
 export const MarketTable: FC = () => {
 
@@ -185,7 +186,7 @@ export const MarketTable: FC = () => {
                   overflow: 'hidden',
                 }}
               >
-                {getValue()}
+                {BigNumber(getValue()).toString(10)}
               </Text>
             ),
             enableSorting: true,
