@@ -162,7 +162,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
             break;
           case 5:
             uriYAM = "https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-goerli";
-            uriWallet = "https://api.thegraph.com/subgraphs/name/realtoken-thegraph/realtoken-xdai";//TODO ajouter le bon URL quant le Graph Goerli sera dispo
+            uriWallet = "https://api.thegraph.com/subgraphs/name/realtoken-thegraph/realtoken-goerli";
             break;
           case 100:
             uriYAM = "https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-gnosis";
@@ -261,7 +261,8 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
             }
             
           //  if(parseFloat(offer.availableAmount.toString()) > 0){
-          //    console.log('DEBUG dataWallet', dataWallet.data.account?.balances[0]?.amount ?? '0',offer.availableAmount.toString(), new BigNumber( offer.id).toString(), offer);}
+              //console.log('DEBUG dataWallet', dataWallet.data.account?.balances[0]?.amount ?? '0',offer.availableAmount.toString(), new BigNumber( offer.id).toString(), offer);
+            //}
 
           }
           
@@ -295,8 +296,9 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
             
           if(condFiltreZeroAmount && !toBeRemoved){
               if (filterSeller) {
-                // console.log("is seller")
+                //console.log("is seller")
                 if (offerData.sellerAddress === account) {
+                  //console.log("is seller",offerData)
                   offersData.push(offerData);
                 }
               } else if (filterBuyer) {
@@ -345,7 +347,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
     setIsRefreshing(true);
 
     let offers; 
-    if(chainId == 1 || (chainId == 5 && process.env.NEXT_PUBLIC_ENV == 'dev') || chainId == 100){
+    if(chainId == 1 || chainId == 5 || chainId == 100){
       offers = await fetchOfferTheGraph();
     }else{
       offers = await fetchOffers();

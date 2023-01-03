@@ -17,7 +17,7 @@ const ConnectEagerly: FC = () => {
 		console.log('Variable version: ', 2);
 		console.log('process.env.NODE_ENV', process.env.NODE_ENV);
     console.log('process.env.NEXT_PUBLIC_ENV', process.env.NEXT_PUBLIC_ENV);
-    process.env.NEXT_PUBLIC_ENV === "dev" ?  
+    process.env.NEXT_PUBLIC_ENV === "dev" ? //TODO utiliser un varaible dans le storage pour savoir quelle a été la dernière connexion active 
     void gnosisSafe.connectEagerly().catch(() => {
       console.debug('Failed to connect eagerly to gnosis safe')
     }): 
