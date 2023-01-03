@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useInterval } from '@mantine/hooks';
-import { ContractsID, ZERO_ADDRESS } from 'src/constants';
+import { ContractsID, ZERO_ADDRESS, CHAINS } from 'src/constants';
 import { asyncRetry, getContract } from 'src/utils';
 import { Offer, UseOffers } from './types';
 import { useContract } from './useContract';
@@ -41,7 +41,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
   const { propertiesToken } = usePropertiesToken();
 
   const realTokenYamUpgradeable = useContract(ContractsID.realTokenYamUpgradeable);
-  const { account: acc, provider, chainId } = useWeb3React();
+  const { account: acc, provider, chainId} = useWeb3React();
 
   const account = (acc as string)?.toLowerCase();
 
@@ -224,7 +224,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
           //TODO optmisier pour ne pas caller toutes les offre si affiche mes offre ou les offres privé
           //TODO en l'état ça fais beaucoup de call sur le graph des tokens, il faudrais optimiser en fesant la reques plus haut avec un array de user
               
-          let dataWallet = { data: { account: { balances: [{ amount: '0' }] } } };
+          let dataWallet = { data: { account: { balances: [{ amount: '0', allowances:[{allowance: '0'}] }] } } };
           //Récupère la blance pour le token du vendeur 
           let condSeller = true;
           if(filterSeller){
@@ -252,6 +252,11 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
                     where: {token_: {address: "${offer.offerToken.address}"}}
                   ) {
                     amount
+                    allowances(
+                      where: {spender_: {address: "${realTokenYamUpgradeable!.address}"}}
+                    ) {
+                      allowance
+                    }
                   }
                 }
               }
@@ -280,7 +285,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
             amount: '0',
             availableAmount: offer.availableAmount.toString(),
             balanceWallet: dataWallet.data.account?.balances[0]?.amount ?? '0',
-            allowanceToken: offer.availableAmount.toString(),//TODO ajouter le fetch de la bonne données quant disponnible dans le graph, tmporairement = a la valeur autoriser dans le YAM
+            allowanceToken: dataWallet.data.account.balances[0]?.allowances[0]?.allowance,//TODO ajouter le fetch de la bonne données quant disponnible dans le graph, tmporairement = a la valeur autoriser dans le YAM
             hasPropertyToken: propertiesToken.find(propertyToken => (
               propertyToken.contractAddress == offer.buyerToken.address || 
               propertyToken.contractAddress == offer.offerToken.address)) ? true : false,
@@ -325,7 +330,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
         reject(err)
       }
     });
-  },[account, filterBuyer, filterSeller, filterZeroAmount, filterRemoved, chainId])
+  },[account, filterBuyer, filterSeller, filterZeroAmount, filterRemoved, chainId, realTokenYamUpgradeable])
 
   const fetch = useCallback(async () => {
     setOffers([{
