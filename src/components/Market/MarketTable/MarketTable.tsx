@@ -61,7 +61,7 @@ export const MarketTable: FC = () => {
             cell: ({ row, getValue }) => { 
               return (
                 <Group noWrap={true} spacing={'xs'}>
-                  { row.original.hasPropertyToken && process.env.NEXT_PUBLIC_ENV == "staging" ?
+                  { row.original.hasPropertyToken && process.env.NEXT_PUBLIC_ENV != "production" ?
                     <ActionIcon
                       variant={'transparent'}
                       color={'brand'}
