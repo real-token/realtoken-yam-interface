@@ -5,15 +5,9 @@ on:
       - dev
       - staging
       - production
-    #paths – The workflow triggers when there is a change in server.py, Dockerfile, the deployment YAML file in config folder or the workflow YAML file in the workflow folder in the repository
-    # paths:
-    #   - 'config/**'
-    #   - 'server.py'
-    #   - 'Dockerfile'
-    #   - '.github/workflows/**' 
 jobs:
   build-job:
-    name: Build yam.realtoken.network
+    name: Build YAM
     runs-on: ubuntu-latest
     steps:
     - name: Checkout latest git repo
@@ -39,23 +33,22 @@ jobs:
     - name: Update Docker Image in Deployment file
       run: TAG=$(echo $GITHUB_SHA | head -c7) && ENV_PREFIX=$(echo ${GITHUB_REF##*/}) && sed -i 's|<IMAGE>|registry.digitalocean.com/yam-realtoken-cr/'${ENV_PREFIX}':'${TAG}'|' $GITHUB_WORKSPACE/k8s-yaml/deployment.yaml && cat $GITHUB_WORKSPACE/k8s-yaml/deployment.yaml
 
-    - name: Update Environment Prefix in Deployment file
-      run: ENV_PREFIX=$(echo ${GITHUB_REF##*/}) && sed -i 's|<ENV_PREFIX>|'${ENV_PREFIX}'|' $GITHUB_WORKSPACE/k8s-yaml/deployment.yaml && cat $GITHUB_WORKSPACE/k8s-yaml/deployment.yaml
+    - name: Update Environment Prefix in Deployment|Service|Ingress files
+      run: ENV_PREFIX=$(echo ${GITHUB_REF##*/}) && sed -i 's|<ENV_PREFIX>|'${ENV_PREFIX}'|' $GITHUB_WORKSPACE/k8s-yaml/*.yaml && cat $GITHUB_WORKSPACE/k8s-yaml/*.yaml
 
-    - name: Update Environment Prefix in Ingress file
-      run: ENV_PREFIX=$(echo ${GITHUB_REF##*/}) && sed -i 's|<ENV_PREFIX>|'${ENV_PREFIX}'|' $GITHUB_WORKSPACE/k8s-yaml/ingress.yaml && cat $GITHUB_WORKSPACE/k8s-yaml/ingress.yaml
+    - name: Update Environment Prefix in Cert-issuer files
+      run: ENV_PREFIX=$(echo ${GITHUB_REF##*/}) && sed -i 's|<ENV_PREFIX>|'${ENV_PREFIX}'|' $GITHUB_WORKSPACE/k8s-yaml/cert-manager/*.yaml && cat $GITHUB_WORKSPACE/k8s-yaml/cert-manager/*.yaml
 
-    - name: Update Environment Prefix in Service file
-      run: ENV_PREFIX=$(echo ${GITHUB_REF##*/}) && sed -i 's|<ENV_PREFIX>|'${ENV_PREFIX}'|' $GITHUB_WORKSPACE/k8s-yaml/service.yaml && cat $GITHUB_WORKSPACE/k8s-yaml/service.yaml
-
-    - name: Update Environment Prefix in cert-issuer file
-      run: ENV_PREFIX=$(echo ${GITHUB_REF##*/}) && sed -i 's|<ENV_PREFIX>|'${ENV_PREFIX}'|' $GITHUB_WORKSPACE/k8s-yaml/cert-manager/cert-issuer.yaml && cat $GITHUB_WORKSPACE/k8s-yaml/cert-manager/cert-issuer.yaml
+    - name: Update Ingress Host if Production
+      if: github.ref == 'refs/heads/production'
+      run: |
+        sed -i 's|production-yam.realtoken.network|'yam.realtoken.network'|' $GITHUB_WORKSPACE/k8s-yaml/ingress.yaml && cat $GITHUB_WORKSPACE/k8s-yaml/ingress.yaml
 
     - name: Save DigitalOcean kubeconfig with short-lived credentials
       run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 yam-realtoken-k8s
 
     - name: Deploy to DigitalOcean Kubernetes
-      run: kubectl apply -f $GITHUB_WORKSPACE/k8s-yaml/deployment.yaml
+      run: kubectl apply -f $GITHUB_WORKSPACE/k8s-yaml --recursive
 
     - name: Verify deployment
       run: kubectl rollout status deployment/${GITHUB_REF##*/}-yam-realtoken
