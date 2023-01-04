@@ -13,18 +13,18 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: dev-yam.realtoken.network
+  - host: <ENV_PREFIX>-yam.realtoken.network
     http:
       paths:
       - backend:
           service:
-            name: dev-yam-realtoken-svc
+            name: <ENV_PREFIX>-yam-realtoken-svc
             port:
               number: 80
         path: /
         pathType: ImplementationSpecific
   tls:
   - hosts:
-    - dev-yam.realtoken.network
-    secretName: letsencrypt-dev
+    - <ENV_PREFIX>-yam.realtoken.network
+    secretName: letsencrypt-<ENV_PREFIX>
     
