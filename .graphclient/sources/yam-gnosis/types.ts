@@ -840,6 +840,8 @@ export type Token = {
   purchases: Array<Purchase>;
   /**  Purchase count  */
   purchaseCount: Scalars['BigInt'];
+  /**  Dollars volume  */
+  dollarsVolume: Scalars['BigDecimal'];
   /**  Offer count  */
   offerCount: Scalars['BigInt'];
   /**  TokenType: 0:NOWL|1:REALTOKEN|2:ERC20PERMIT|3:ERC20NOPERMIT  */
@@ -909,6 +911,14 @@ export type Token_filter = {
   purchaseCount_lte?: InputMaybe<Scalars['BigInt']>;
   purchaseCount_in?: InputMaybe<Array<Scalars['BigInt']>>;
   purchaseCount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  dollarsVolume?: InputMaybe<Scalars['BigDecimal']>;
+  dollarsVolume_not?: InputMaybe<Scalars['BigDecimal']>;
+  dollarsVolume_gt?: InputMaybe<Scalars['BigDecimal']>;
+  dollarsVolume_lt?: InputMaybe<Scalars['BigDecimal']>;
+  dollarsVolume_gte?: InputMaybe<Scalars['BigDecimal']>;
+  dollarsVolume_lte?: InputMaybe<Scalars['BigDecimal']>;
+  dollarsVolume_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  dollarsVolume_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   offerCount?: InputMaybe<Scalars['BigInt']>;
   offerCount_not?: InputMaybe<Scalars['BigInt']>;
   offerCount_gt?: InputMaybe<Scalars['BigInt']>;
@@ -983,6 +993,7 @@ export type Token_orderBy =
   | 'offers'
   | 'purchases'
   | 'purchaseCount'
+  | 'dollarsVolume'
   | 'offerCount'
   | 'tokenType'
   | 'decimals'

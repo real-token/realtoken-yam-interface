@@ -1,13 +1,12 @@
 import { FC, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
-
 import {
+  Skeleton,
   createStyles,
   Table as MantineTable,
   TableProps as MantineTableProps,
 } from '@mantine/core';
 import { Table as ReactTable, Row, flexRender } from '@tanstack/react-table';
-
 import { TableCaption, TableCaptionOptions } from '../TableCaption';
 import { TableHeader } from '../TableHeader';
 
@@ -42,68 +41,68 @@ export const Table = <T,>({
   const { classes } = useStyles();
 
   return (
-    <MantineTable {...tableProps} className={classes.table}>
-      <thead className={classes.thead}>
-        {table.getHeaderGroups().map(({ id, headers }) => (
-          <tr key={id}>
-            {headers.map((header) => (
-              <th
-                key={header.id}
-                colSpan={header.column.columnDef.meta?.colSpan}
+      <MantineTable {...tableProps} className={classes.table}>
+        <thead className={classes.thead}>
+          {table.getHeaderGroups().map(({ id, headers }) => (
+            <tr key={id}>
+              {headers.map((header) => (
+                <th
+                  key={header.id}
+                  colSpan={header.column.columnDef.meta?.colSpan}
+                  style={{ textAlign: 'center' }}
+                >
+                  <TableHeader header={header} />
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody>
+          {table.getRowModel().rows.length ? (
+            table.getRowModel().rows.map((row) => (
+              <Fragment key={row.id}>
+                <tr>
+                  {row.getVisibleCells().map(({ id, column, getContext, getValue }) => (
+                    <td key={id} colSpan={column.columnDef.meta?.colSpan}>
+                      { String(getValue()) ? flexRender(column.columnDef.cell, getContext()) : <Skeleton height={15}/>}
+                    </td>
+                  ))}
+                </tr>
+                {TableSubRow && row.original && row.getIsExpanded() && process.env.NEXT_PUBLIC_ENV == "staging" ? (
+                  <tr>
+                    <td
+                      colSpan={table.options.meta?.colSpan}
+                      style={{ padding: 0 }}
+                    >
+                      <TableSubRow row={row} />
+                    </td>
+                  </tr>
+                ) : undefined}
+              </Fragment>
+            ))
+          ) : (
+            <tr>
+              <td
+                colSpan={table.options.meta?.colSpan}
                 style={{ textAlign: 'center' }}
               >
-                <TableHeader header={header} />
-              </th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody>
-        {table.getRowModel().rows.length ? (
-          table.getRowModel().rows.map((row) => (
-            <Fragment key={row.id}>
-              <tr>
-                {row.getVisibleCells().map(({ id, column, getContext }) => (
-                  <td key={id} colSpan={column.columnDef.meta?.colSpan}>
-                    {flexRender(column.columnDef.cell, getContext())}
-                  </td>
-                ))}
-              </tr>
-              {TableSubRow && row.original && row.getIsExpanded() && process.env.NEXT_PUBLIC_ENV != "production" ? (
-                <tr>
-                  <td
-                    colSpan={table.options.meta?.colSpan}
-                    style={{ padding: 0 }}
-                  >
-                    <TableSubRow row={row} />
-                  </td>
-                </tr>
-              ) : undefined}
-            </Fragment>
-          ))
-        ) : (
+                {t('noData')}
+              </td>
+            </tr>
+          )}
+        </tbody>
+        {tablecaptionOptions?.visible && (
+        <tfoot>
           <tr>
-            <td
-              colSpan={table.options.meta?.colSpan}
-              style={{ textAlign: 'center' }}
-            >
-              {t('noData')}
+            <td colSpan={table.options.meta?.colSpan}>
+              <TableCaption
+                table={table}
+                tablecaptionOptions={tablecaptionOptions}
+              />
             </td>
           </tr>
+        </tfoot>
         )}
-      </tbody>
-      {tablecaptionOptions?.visible && (
-      <tfoot>
-        <tr>
-          <td colSpan={table.options.meta?.colSpan}>
-            <TableCaption
-              table={table}
-              tablecaptionOptions={tablecaptionOptions}
-            />
-          </td>
-        </tr>
-      </tfoot>
-      )}
-    </MantineTable>
+      </MantineTable>
   );
 };

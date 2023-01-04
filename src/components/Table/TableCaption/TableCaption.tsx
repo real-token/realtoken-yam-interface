@@ -19,6 +19,7 @@ import { Table } from '@tanstack/react-table';
 import { styles } from './TableCaption.styles';
 import { useAtom } from 'jotai';
 import { isRefreshedAutoAtom } from 'src/states';
+import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 
 export type TableCaptionOptions = {
   visible?: boolean;
@@ -32,7 +33,6 @@ type TableCaptionProps<T> = {
 
 export const TableCaption = <T,>({
   table,
-  tablecaptionOptions = { refreshState: undefined },
 }: TableCaptionProps<T>) => {
   const [isOpen, handlers] = useDisclosure(false);
   const [data, setData] = useState<string[]>([
@@ -45,8 +45,6 @@ export const TableCaption = <T,>({
   ]);
   const [isAutoRefresh,setIsAutoRefresh] = useAtom(isRefreshedAutoAtom);
 
-  const { refreshState } = tablecaptionOptions;
-
   const paginationProps: PaginationProps = {
     total: table.getPageCount(),
     page: table.getState().pagination.pageIndex + 1,
@@ -58,6 +56,8 @@ export const TableCaption = <T,>({
 
   const { t } = useTranslation('table', { keyPrefix: 'caption' });
 
+  const { refreshOffers, offersIsLoading } = useRefreshOffers(false);
+
   return (
     <Group
       position={'center'}
@@ -66,15 +66,15 @@ export const TableCaption = <T,>({
       p={'sm'}
       sx={styles.caption}
     >
-      <ActionIcon
+
+    <ActionIcon
         size={32}
         color={'brand'}
-        disabled={!refreshState}
-        loading={refreshState && refreshState[0]}
+        loading={offersIsLoading}
         loaderProps={{ size: 'xs' }}
-        onClick={() => refreshState![1](true)}
+        onClick={() => refreshOffers()}
       >
-        <IconRefresh size={16} />
+        <IconRefresh size={16}/>
       </ActionIcon>
 
       <MediaQuery smallerThan={'xs'} styles={{ display: 'none' }}>

@@ -10,7 +10,7 @@ import {
 } from '@tanstack/react-table';
 
 import { useTokenInfo } from 'src/hooks';
-import { Offer } from 'src/hooks/types';
+import { Offer } from 'src/types/Offer';
 
 import { Table, TableSubRowProps } from '../../Table';
 
@@ -93,7 +93,7 @@ export const MarketSubRow: FC<TableSubRowProps<Offer>> = ({
         id: 'priceDifference',
         accessorKey: 'priceDifference',
         header: () => <Title order={6}>{t('priceDifference')}</Title>,
-        cell: ({ getValue }) => (
+        cell: ({ getValue }: CellContext<TokenInfoShow,string>) => (
           <Text
             size={'sm'}
             sx={{

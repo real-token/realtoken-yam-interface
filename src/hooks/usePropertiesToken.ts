@@ -1,15 +1,32 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useWeb3React } from "@web3-react/core";
 import { useEffect, useState } from "react"
+import { useSelector } from "react-redux";
+import { selectProperties, selectPropertiesIsLoading } from "src/store/features/interface/interfaceSelector";
+import { chainPropertiesChangedDispatchType, fetchProperties } from "src/store/features/interface/interfaceSlice";
 import { APIPropertiesToken, PropertiesToken } from "src/types/PropertiesToken";
+import { useAppDispatch } from "./react-hooks";
 
 type usePropertiesTokenReturn = {
     propertiesToken: PropertiesToken[]
+    propertiesIsloading: boolean
 }
 
-export const usePropertiesToken = (): usePropertiesTokenReturn => {
+export const usePropertiesToken = (refreshOnMount: boolean): usePropertiesTokenReturn => {
 
     const { chainId } = useWeb3React();
     const [propertiesToken,setPropertiesToken] = useState<PropertiesToken[]>([]);
+    const properties = useSelector(selectProperties);
+    const propertiesIsloading = useSelector(selectPropertiesIsLoading)
+    const dispatch = useAppDispatch();
+
+    const refreshProperties = () => {
+        dispatch(fetchProperties());
+    }
+
+    useEffect(() => {
+        if(refreshOnMount) refreshProperties();
+    },[refreshOnMount])
 
     const getContractAddressFromChainId = (propertyToken: APIPropertiesToken): string|undefined => {
         switch(chainId){
@@ -26,6 +43,8 @@ export const usePropertiesToken = (): usePropertiesTokenReturn => {
 
     const getPropertiesTokenList = async () => {
         try{
+
+            setPropertiesToken([])
 
             if(!chainId) setPropertiesToken([]);
             
@@ -112,29 +131,25 @@ export const usePropertiesToken = (): usePropertiesTokenReturn => {
                     }
                 ]
 
-                setPropertiesToken(properties);
-                return;
-            }
+                setPropertiesToken(properties)
 
-            const response = await fetch("https://api.realt.community/v1/token");
-
-            if(response.ok){
-                const responseJson: APIPropertiesToken[] = await response.json();
-                const propertiesToken: PropertiesToken[] = [];
-                responseJson.forEach((propertyToken: APIPropertiesToken) => {
+                dispatch({ type: chainPropertiesChangedDispatchType, payload: properties });
+            }else{
+                properties.forEach((propertyToken: APIPropertiesToken) => {
                     const contractAddress = getContractAddressFromChainId(propertyToken);
                     if(contractAddress){
-                        propertiesToken.push({
+                        setPropertiesToken((prev) => [...prev,{
                             uuid: propertyToken.uuid,
                             shortName: propertyToken.shortName,
                             fullName: propertyToken.fullName,
-                            contractAddress: contractAddress,
+                            contractAddress: contractAddress.toLowerCase(),
                             officialPrice: propertyToken.tokenPrice
-                        })
+                        }])
                     }
                     
                 });
-                setPropertiesToken(propertiesToken);
+    
+                dispatch({ type: chainPropertiesChangedDispatchType, payload: propertiesToken });
             }
 
         }catch(err){
@@ -142,10 +157,11 @@ export const usePropertiesToken = (): usePropertiesTokenReturn => {
         }
     }
 
-    useEffect(() => { if(chainId) getPropertiesTokenList() },[chainId])
+    useEffect(() => { if(chainId && properties) getPropertiesTokenList() },[chainId,properties])
 
     return{
-        propertiesToken
+        propertiesToken,
+        propertiesIsloading
     }
 
 }

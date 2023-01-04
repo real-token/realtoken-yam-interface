@@ -18,8 +18,8 @@ type NumberInputProps = {
   showMax?: boolean | undefined;
   showMin?: boolean | undefined;
   controlsProps?: ButtonProps;
-  groupMarginBottom: MantineNumberSize;
-  setFieldValue: SetFieldValue<unknown>
+  groupMarginBottom?: MantineNumberSize;
+  setFieldValue?: SetFieldValue<any>
 } & MantineNumberInputProps;
 
 export const NumberInput: FRC<NumberInputProps, HTMLInputElement> = forwardRef(
@@ -51,7 +51,7 @@ export const NumberInput: FRC<NumberInputProps, HTMLInputElement> = forwardRef(
             aria-label={'Max'}
             variant={'light'}
             disabled={disabled}
-            onClick={() => setFieldValue("amount",Number(props.max))}
+            onClick={() => { if(setFieldValue) setFieldValue("amount",Number(props.max)) }}
             {...controlsProps}
           >
             {!props.max ? <Loader size={"xs"}/> : 'Max'}
