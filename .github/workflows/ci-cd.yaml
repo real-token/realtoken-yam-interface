@@ -6,7 +6,7 @@ on:
       - staging
 jobs:
   build-job:
-    name: Build ${GITHUB_REF_NAME}-yam.realtoken.network
+    name: Build YAM
     runs-on: ubuntu-latest
     steps:
     - name: Checkout latest git repo
