@@ -19,6 +19,9 @@ export type Offer = {
   buyerAddress: string;
   price: string;
   amount: string;
+  availableAmount: string;
+  balanceWallet?: string;
+  allowanceToken?: string;
   hasPropertyToken: boolean;
   removed: boolean;
 };

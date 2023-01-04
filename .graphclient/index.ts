@@ -411,6 +411,8 @@ export type Offer = {
   prices: Array<OfferPrice>;
   /**  Current price  */
   price: OfferPrice;
+  /**  Available amount  */
+  availableAmount: Scalars['BigDecimal'];
   /**  Purchase array  */
   purchases: Array<Purchase>;
   /**  Purchase count  */
@@ -636,6 +638,14 @@ export type Offer_filter = {
   price_not_ends_with?: InputMaybe<Scalars['String']>;
   price_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
   price_?: InputMaybe<OfferPrice_filter>;
+  availableAmount?: InputMaybe<Scalars['BigDecimal']>;
+  availableAmount_not?: InputMaybe<Scalars['BigDecimal']>;
+  availableAmount_gt?: InputMaybe<Scalars['BigDecimal']>;
+  availableAmount_lt?: InputMaybe<Scalars['BigDecimal']>;
+  availableAmount_gte?: InputMaybe<Scalars['BigDecimal']>;
+  availableAmount_lte?: InputMaybe<Scalars['BigDecimal']>;
+  availableAmount_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
+  availableAmount_not_in?: InputMaybe<Array<Scalars['BigDecimal']>>;
   purchases?: InputMaybe<Array<Scalars['String']>>;
   purchases_not?: InputMaybe<Array<Scalars['String']>>;
   purchases_contains?: InputMaybe<Array<Scalars['String']>>;
@@ -715,6 +725,7 @@ export type Offer_orderBy =
   | 'buyerToken'
   | 'prices'
   | 'price'
+  | 'availableAmount'
   | 'purchases'
   | 'purchaseCount'
   | 'buyer'
@@ -1251,6 +1262,7 @@ export type OfferResolvers<ContextType = MeshContext, ParentType extends Resolve
   buyerToken?: Resolver<ResolversTypes['Token'], ParentType, ContextType>;
   prices?: Resolver<Array<ResolversTypes['OfferPrice']>, ParentType, ContextType, RequireFields<OfferpricesArgs, 'skip' | 'first'>>;
   price?: Resolver<ResolversTypes['OfferPrice'], ParentType, ContextType>;
+  availableAmount?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
   purchases?: Resolver<Array<ResolversTypes['Purchase']>, ParentType, ContextType, RequireFields<OfferpurchasesArgs, 'skip' | 'first'>>;
   purchaseCount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   buyer?: Resolver<Maybe<ResolversTypes['Account']>, ParentType, ContextType>;
@@ -1331,7 +1343,7 @@ export type DirectiveResolvers<ContextType = MeshContext> = ResolversObject<{
   derivedFrom?: derivedFromDirectiveResolver<any, any, ContextType>;
 }>;
 
-export type MeshContext = YamEthTypes.Context & YamGnosisTypes.Context & BaseMeshContext;
+export type MeshContext = YamGnosisTypes.Context & YamEthTypes.Context & BaseMeshContext;
 
 
 import { fileURLToPath } from '@graphql-mesh/utils';
@@ -1340,11 +1352,11 @@ const baseDir = pathModule.join(pathModule.dirname(fileURLToPath(import.meta.url
 const importFn: ImportFn = <T>(moduleId: string) => {
   const relativeModuleId = (pathModule.isAbsolute(moduleId) ? pathModule.relative(baseDir, moduleId) : moduleId).split('\\').join('/').replace(baseDir + '/', '');
   switch(relativeModuleId) {
-    case ".graphclient/sources/yam-eth/introspectionSchema":
-      return import("./sources/yam-eth/introspectionSchema") as T;
-    
     case ".graphclient/sources/yam-gnosis/introspectionSchema":
       return import("./sources/yam-gnosis/introspectionSchema") as T;
+    
+    case ".graphclient/sources/yam-eth/introspectionSchema":
+      return import("./sources/yam-eth/introspectionSchema") as T;
     
     default:
       return Promise.reject(new Error(`Cannot find module '${relativeModuleId}'.`));

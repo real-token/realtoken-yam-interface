@@ -407,6 +407,8 @@ type Offer {
   prices(skip: Int = 0, first: Int = 100, orderBy: OfferPrice_orderBy, orderDirection: OrderDirection, where: OfferPrice_filter): [OfferPrice!]!
   """ Current price """
   price: OfferPrice!
+  """ Available amount """
+  availableAmount: BigDecimal!
   """ Purchase array """
   purchases(skip: Int = 0, first: Int = 100, orderBy: Purchase_orderBy, orderDirection: OrderDirection, where: Purchase_filter): [Purchase!]!
   """ Purchase count """
@@ -613,6 +615,14 @@ input Offer_filter {
   price_not_ends_with: String
   price_not_ends_with_nocase: String
   price_: OfferPrice_filter
+  availableAmount: BigDecimal
+  availableAmount_not: BigDecimal
+  availableAmount_gt: BigDecimal
+  availableAmount_lt: BigDecimal
+  availableAmount_gte: BigDecimal
+  availableAmount_lte: BigDecimal
+  availableAmount_in: [BigDecimal!]
+  availableAmount_not_in: [BigDecimal!]
   purchases: [String!]
   purchases_not: [String!]
   purchases_contains: [String!]
@@ -692,6 +702,7 @@ enum Offer_orderBy {
   buyerToken
   prices
   price
+  availableAmount
   purchases
   purchaseCount
   buyer

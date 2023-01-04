@@ -1,7 +1,7 @@
 import { FC, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Group, Indicator, MantineSize, Text, Title } from '@mantine/core';
+import { Group, Indicator, MantineSize, Text, Title, Tooltip } from '@mantine/core';
 import {
   ColumnDef,
   ExpandedState,
@@ -51,11 +51,10 @@ export const MarketTableUser: FC = () => {
           {
             id: 'offerId',
             accessorKey: 'offerId',
-            accessorFn: (row) => [row.offerId,row.buyerAddress],
             header: t('offerId'),
-            cell: ({ getValue }) => (
+            cell: ({ row, getValue }) => (
               <Group style={{position:'relative'}}>{
-                /^0x[0-9a-fA-F]{40}/.test(getValue()[1]) && getValue()[1] != ZERO_ADDRESS ?
+                /^0x[0-9a-fA-F]{40}/.test(row.original.buyerAddress) && row.original.buyerAddress != ZERO_ADDRESS ?
                   <Indicator  
                     label={t('privateTexte')} 
                     size={15} 
@@ -65,13 +64,13 @@ export const MarketTableUser: FC = () => {
                     fz={'sm'}
                     sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
                     style={{position:'relative', right:'20px', top:'-10px'}}
-                  >{getValue()[0]}</Text>}</Indicator> : 
+                  >{getValue()}</Text>}</Indicator> : 
                   <Text
                     fz={'sm'}
                     sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
                     style={{position:'relative', left:'40px', top:'0px'}}
                   >
-                    {getValue()[0]}
+                    {getValue()}
                   </Text>}
               </Group>
             ),
@@ -83,7 +82,7 @@ export const MarketTableUser: FC = () => {
             accessorKey: 'offerTokenName',
             header: t('offerTokenName'),
             cell: ({ getValue }) => (
-                <Text
+                <Text 
                   fz={'sm'}
                   sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
                 >
@@ -129,19 +128,21 @@ export const MarketTableUser: FC = () => {
           },
           {
             id: 'amount',
-            accessorKey: 'amount',
+            accessorKey: 'availableAmount',
             header: t('amount'),
-            cell: ({ getValue }) => (
-              <Text
-                fz={'sm'}
-                sx={{
-                  textOverflow: 'ellipsis',
-                  overflow: 'hidden',
-                }}
-                ta={"right"}
-              >
-                {getValue()}
-              </Text>
+            cell: ({ row, getValue }) => (
+              <Tooltip multiline={true} label={`Wallet : ${row.original.balanceWallet} | Allowance : ${row.original.allowanceToken}`}>
+                <Text
+                  fz={'sm'}
+                  sx={{
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                  }}
+                  ta={"right"}
+                >
+                  {getValue()}
+                </Text>
+              </Tooltip>
             ),
             enableSorting: true,
             meta: { colSpan: 2 },
