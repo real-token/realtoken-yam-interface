@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Text, Title } from '@mantine/core';
 import {
+  CellContext,
   ColumnDef,
   getCoreRowModel,
   useReactTable,
@@ -26,13 +27,13 @@ export const MarketSubRow: FC<TableSubRowProps<Offer>> = ({
 }) => {
   const { t } = useTranslation('buy', { keyPrefix: 'subRow' });
 
-  const columns = useMemo<ColumnDef<TokenInfoShow>[]>(
+  const columns = useMemo<ColumnDef<TokenInfoShow,string>[]>(
     () => [
       {
         id: 'fullName',
         accessorKey: 'fullName',
         header: () => <Title order={6}>{t('offerTokenName')}</Title>,
-        cell: ({ getValue }) => (
+        cell: ({ getValue }: CellContext<TokenInfoShow,string>) => (
           <Text
             size={'sm'}
             sx={{
@@ -52,7 +53,7 @@ export const MarketSubRow: FC<TableSubRowProps<Offer>> = ({
         id: 'initialPrice',
         accessorKey: 'initialPrice',
         header: () => <Title order={6}>{t('officialPrice')}</Title>,
-        cell: ({ getValue }) => (
+        cell: ({ getValue }: CellContext<TokenInfoShow,string>) => (
           <Text
             size={'sm'}
             sx={{
@@ -72,7 +73,7 @@ export const MarketSubRow: FC<TableSubRowProps<Offer>> = ({
         id: 'offerPrice',
         accessorKey: 'offerPrice',
         header: () => <Title order={6}>{t('offerPrice')}</Title>,
-        cell: ({ getValue }) => (
+        cell: ({ getValue }: CellContext<TokenInfoShow,string>) => (
           <Text
             size={'sm'}
             sx={{
@@ -92,7 +93,7 @@ export const MarketSubRow: FC<TableSubRowProps<Offer>> = ({
         id: 'priceDifference',
         accessorKey: 'priceDifference',
         header: () => <Title order={6}>{t('priceDifference')}</Title>,
-        cell: ({ getValue }) => (
+        cell: ({ getValue }: CellContext<TokenInfoShow,string>) => (
           <Text
             size={'sm'}
             sx={{

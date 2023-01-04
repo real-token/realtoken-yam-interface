@@ -12,13 +12,12 @@ import { Button, Text, Flex, Group, Stack, Divider } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { ContextModalProps } from '@mantine/modals';
 import { showNotification, updateNotification } from '@mantine/notifications';
-import { useWeb3React } from '@web3-react/core';
 
 import BigNumber from 'bignumber.js';
 
 import { CoinBridgeToken, coinBridgeTokenABI, Erc20, Erc20ABI } from 'src/abis';
 import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
-import { useActiveChain, useContract, useOffers } from 'src/hooks';
+import { useActiveChain, useContract } from 'src/hooks';
 import coinBridgeTokenPermitSignature from 'src/hooks/coinBridgeTokenPermitSignature';
 import erc20PermitSignature from 'src/hooks/erc20PermitSignature';
 import { getContract } from 'src/utils';
@@ -26,6 +25,11 @@ import { getContract } from 'src/utils';
 import { NumberInput } from '../../NumberInput';
 import { cleanNumber } from 'src/utils/number';
 import { Web3Provider } from '@ethersproject/providers';
+import { Offer } from 'src/types/Offer';
+import { useWeb3React } from '@web3-react/core';
+import { useAppDispatch, useAppSelector } from 'src/hooks/react-hooks';
+import { selectPublicOffers } from 'src/store/features/interface/interfaceSelector';
+import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 
 type UpdateModalProps = {
   offerId: string;
@@ -85,10 +89,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
     ContractsID.realTokenYamUpgradeable
   );
 
-  const {
-    offers,
-    refreshState: [isRefreshing],
-  } = useOffers();
+  const offers = useAppSelector(selectPublicOffers);
 
   const { t } = useTranslation('modals', { keyPrefix: 'update' });
   const { t: t1 } = useTranslation('modals', { keyPrefix: 'sell' });
@@ -101,7 +102,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
   useEffect(() => {
     setAmountMax(
       Number(
-        offers.find((offer) => offer.offerId === values.offerId)
+        offers.find((offer: Offer) => offer.offerId === values.offerId)
           ?.amount as string
       )
     );

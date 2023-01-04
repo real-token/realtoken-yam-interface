@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { Box, Button, Checkbox, Flex, Group, Select, SelectItem, Stack, TextInput, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { showNotification, updateNotification } from '@mantine/notifications';
-import { useWeb3React } from '@web3-react/core';
 import BigNumber from 'bignumber.js';
 import { CoinBridgeToken, Erc20, Erc20ABI, coinBridgeTokenABI } from 'src/abis';
 import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
@@ -20,6 +19,7 @@ import { PropertiesToken } from 'src/types/PropertiesToken';
 import { useAllowedBuyTokens } from 'src/hooks/useAllowedBuyTokens';
 import { AllowedBuyToken } from 'src/types/allowedBuyTokens';
 import { cleanNumber } from 'src/utils/number';
+import { useWeb3React } from '@web3-react/core';
 
 interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
   label: string;
@@ -61,7 +61,7 @@ export const SellActions = () => {
   const [isSubmitting, setSubmitting] = useState<boolean>(false);
   const activeChain = useActiveChain();
 
-  const { propertiesToken } = usePropertiesToken();
+  const { propertiesToken } = usePropertiesToken(false);
   const { allowedBuyTokens } = useAllowedBuyTokens();
 
   const formatedPropetiesTokenForSelect: SelectItem[] = useMemo((): SelectItem[] => {
