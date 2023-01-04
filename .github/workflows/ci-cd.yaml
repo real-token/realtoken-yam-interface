@@ -4,6 +4,7 @@ on:
     branches:
       - dev
       - staging
+      - production
 jobs:
   build-job:
     name: Build YAM
@@ -34,7 +35,10 @@ jobs:
 
     - name: Update Environment Prefix in Deployment|Service|Ingress files
       run: ENV_PREFIX=$(echo ${GITHUB_REF##*/}) && sed -i 's|<ENV_PREFIX>|'${ENV_PREFIX}'|' $GITHUB_WORKSPACE/k8s-yaml/*.yaml && cat $GITHUB_WORKSPACE/k8s-yaml/*.yaml
-    
+
+    - name: Update Environment Prefix in Cert-issuer files
+      run: ENV_PREFIX=$(echo ${GITHUB_REF##*/}) && sed -i 's|<ENV_PREFIX>|'${ENV_PREFIX}'|' $GITHUB_WORKSPACE/k8s-yaml/cert-manager/*.yaml && cat $GITHUB_WORKSPACE/k8s-yaml/cert-manager/*.yaml
+
     - name: Update Ingress Host if Production
       if: github.ref == 'refs/heads/production'
       run: |
@@ -44,7 +48,7 @@ jobs:
       run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 yam-realtoken-k8s
 
     - name: Deploy to DigitalOcean Kubernetes
-      run: kubectl apply -f $GITHUB_WORKSPACE/k8s-yaml
+      run: kubectl apply -f $GITHUB_WORKSPACE/k8s-yaml --recursive
 
     - name: Verify deployment
       run: kubectl rollout status deployment/${GITHUB_REF##*/}-yam-realtoken
