@@ -243,7 +243,6 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
             // condSeller,
             // offer
             // );
-            
             try {
               chainId === 5 ? //TODO temporairement sans allowance sur Eth et Gnosis le temps d'avoir les graph a jours
               dataWallet = await clientWallet.query({query: gql`
@@ -283,7 +282,8 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
             //}
 
           }
-
+          const tmpIsRealtoken = /^realtoken/.test(offer.offerToken.name!.toLowerCase())
+            
           const offerData: Offer = {
             offerId: parseInt(offer.id, 16).toString(),
             offerTokenAddress: offer.offerToken.address,
@@ -297,7 +297,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
             price: offer.price.price.toString(),
             amount: '0',
             availableAmount: offer.availableAmount.toString(),
-            balanceWallet: dataWallet.data.account?.balances[0]?.amount ?? '0',
+            balanceWallet: tmpIsRealtoken ? dataWallet.data.account?.balances[0]?.amount : offer.availableAmount.toString() ?? '0', //TODO temporairement sur la valeur autoriser sur el contrat du YAM le temps d'avoir les graph a jours sur Eth et Gnosis
             allowanceToken: chainId === 5 ? dataWallet.data.account.balances[0]?.allowances[0]?.allowance : offer.availableAmount.toString(),//TODO temporairement sur la valeur autoriser sur el contrat du YAM le temps d'avoir les graph a jours sur Eth et Gnosis
             hasPropertyToken: propertiesToken.find(propertyToken => (
               propertyToken.contractAddress == offer.buyerToken.address || 
