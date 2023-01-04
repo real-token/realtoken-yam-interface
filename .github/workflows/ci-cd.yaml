@@ -31,9 +31,14 @@ jobs:
 
     - name: Update Docker Image in Deployment file
       run: TAG=$(echo $GITHUB_SHA | head -c7) && ENV_PREFIX=$(echo ${GITHUB_REF##*/}) && sed -i 's|<IMAGE>|registry.digitalocean.com/yam-realtoken-cr/'${ENV_PREFIX}':'${TAG}'|' $GITHUB_WORKSPACE/k8s-yaml/deployment.yaml && cat $GITHUB_WORKSPACE/k8s-yaml/deployment.yaml
-      
+
     - name: Update Environment Prefix in Deployment|Service|Ingress files
       run: ENV_PREFIX=$(echo ${GITHUB_REF##*/}) && sed -i 's|<ENV_PREFIX>|'${ENV_PREFIX}'|' $GITHUB_WORKSPACE/k8s-yaml/*.yaml && cat $GITHUB_WORKSPACE/k8s-yaml/*.yaml
+    
+    - name: Update Ingress Host if Production
+      if: github.ref == 'refs/heads/production'
+      run: |
+        sed -i 's|production-yam.realtoken.network|'yam.realtoken.network'|' $GITHUB_WORKSPACE/k8s-yaml/ingress.yaml && cat $GITHUB_WORKSPACE/k8s-yaml/ingress.yaml
 
     - name: Save DigitalOcean kubeconfig with short-lived credentials
       run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 yam-realtoken-k8s
