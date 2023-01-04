@@ -19,19 +19,29 @@ export type Offer = {
   buyerAddress: string;
   price: string;
   amount: string;
+  hasPropertyToken: boolean;
+  removed: boolean;
   availableAmount: string;
   balanceWallet?: string;
   allowanceToken?: string;
-  hasPropertyToken: boolean;
-  removed: boolean;
 };
 
-export type UseOffers = (
-  filterSeller?: boolean,
-  filerBuyer?: boolean,
-  filterZeroAmount?: boolean,
-  filterRemoved?: boolean
-) => {
-  offers: Offer[];
-  refreshState: [boolean, () => void];
-};
+export const DEFAULT_OFFERS: Offer = {
+  offerId: "",
+  offerTokenAddress: "",
+  offerTokenName: "",
+  offerTokenDecimals: "",
+  buyerTokenAddress: "",
+  buyerTokenName: "",
+  buyerTokenDecimals: "",
+  sellerAddress: "",
+  buyerAddress: "",
+  price: "",
+  amount: "",
+  hasPropertyToken: false,
+  removed: false,
+  availableAmount: "",
+  balanceWallet: ""
+}
+
+export const OFFER_LOADING = [DEFAULT_OFFERS, DEFAULT_OFFERS, DEFAULT_OFFERS]

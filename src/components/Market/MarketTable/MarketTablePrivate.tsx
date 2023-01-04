@@ -14,15 +14,19 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
-import { useOffers } from 'src/hooks';
-import { Offer } from 'src/hooks/types';
-
+import { Offer } from 'src/types/Offer';
 import { Table } from '../../Table';
 import { BuyActionsWithPermit } from '../BuyActions';
 import { MarketSubRow } from '../MarketSubRow';
+import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
+import { selectPrivateOffers } from 'src/store/features/interface/interfaceSelector';
+import { useSelector } from 'react-redux';
 
 export const MarketTablePrivate: FC = () => {
-  const { offers, refreshState } = useOffers(false, true, true, true); // filter offers by buyer
+  
+  const { refreshOffers, offersIsLoading } = useRefreshOffers(false);
+  const offers = useSelector(selectPrivateOffers);
+
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'offerId', desc: false },
   ]);
@@ -157,7 +161,7 @@ export const MarketTablePrivate: FC = () => {
             cell: ({ row }) => (
               <BuyActionsWithPermit
                 buyOffer={row.original}
-                triggerRefresh={refreshState[1]}
+                triggerRefresh={refreshOffers}
               />
             ),
             meta: { colSpan: 1 },
@@ -165,7 +169,7 @@ export const MarketTablePrivate: FC = () => {
         ],
       },
     ],
-    [refreshState, t]
+    [refreshOffers, t]
   );
 
   const table = useReactTable({
@@ -197,7 +201,7 @@ export const MarketTablePrivate: FC = () => {
         }),
       }}
       table={table}
-      tablecaptionOptions={{ refreshState: refreshState, visible: true }}
+      tablecaptionOptions={{ refreshState: [offersIsLoading, refreshOffers], visible: true }}
       TableSubRow={MarketSubRow}
     />
   );

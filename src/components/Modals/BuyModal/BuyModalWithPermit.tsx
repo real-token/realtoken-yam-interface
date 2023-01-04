@@ -139,10 +139,6 @@ export const BuyModalWithPermit: FC<
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[buyerToken])
 
-  const {
-    offers,
-    refreshState: [isRefreshing],
-  } = useOffers();
   const { t } = useTranslation('modals', { keyPrefix: 'buy' });
 
   const onClose = useCallback(() => {

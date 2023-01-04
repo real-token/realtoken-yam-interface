@@ -1,21 +1,17 @@
 import { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
 import { GetServerSidePropsContext } from 'next';
 import type { AppProps as NextAppProps } from 'next/app';
-
 import { ColorScheme } from '@mantine/core';
-
+import store from 'src/store/store';
 import { getCookie } from 'cookies-next';
-
 import 'src/i18next';
 import { Layout } from 'src/layouts/Layout';
 import { MantineProviders, Web3Providers } from 'src/providers';
 import { Head } from '../src/components';
-import { Provider } from 'jotai';
-import { gnosisSafe, gnosisSafeHooks, metaMask, metaMaskHooks, walletConnect, walletConnectHooks } from 'src/connectors';
-import { Web3ReactHooks, Web3ReactProvider } from '@web3-react/core';
-import { Connector } from '@web3-react/types';
+import InitStoreProvider from 'src/providers/InitStoreProvider';
+import { Provider as JotaiProvider} from 'jotai';
+import { Provider } from 'react-redux';
 
 type TestProps = {
   initialLocale: string;
@@ -38,19 +34,21 @@ type AppProps = NextAppProps & { colorScheme: ColorScheme; locale: string };
 
 const App = ({ Component, pageProps, colorScheme, locale }: AppProps) => {
   return (
-    <>
-      <Head title={'Realtoken YAM'} />
-      <Provider>
-        <Web3Providers>
-          <MantineProviders initialColorScheme={colorScheme}>
-            <LanguageInit initialLocale={locale} />
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </MantineProviders>
-        </Web3Providers>
+    <Web3Providers>
+      <Provider store={store}>
+        <InitStoreProvider>
+          <Head title={'Realtoken YAM'} />
+          <JotaiProvider>
+              <MantineProviders initialColorScheme={colorScheme}>
+                  <LanguageInit initialLocale={locale} />
+                  <Layout>
+                    <Component {...pageProps} />
+                  </Layout>
+              </MantineProviders>
+          </JotaiProvider>
+        </InitStoreProvider>
       </Provider>
-    </>
+    </Web3Providers>
   );
 };
 

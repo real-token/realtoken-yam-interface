@@ -1,7 +1,6 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import SafeAppsSDK from '@gnosis.pm/safe-apps-sdk';
-
 import {
   Anchor,
   Button,
@@ -16,7 +15,6 @@ import {
 import { ContextModalProps } from '@mantine/modals';
 import { NextLink } from '@mantine/next';
 import { Connector } from '@web3-react/types';
-
 import { GnosisSafe, MetaMask, WalletConnect } from 'src/assets';
 import { gnosisSafe, metaMask, walletConnect } from 'src/connectors';
 

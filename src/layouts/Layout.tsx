@@ -5,7 +5,7 @@ import { Header } from '../components/Header';
 
 type LayoutProps = { children: ReactNode };
 
-const useStyles = createStyles((theme, _params, getRef) => ({
+const useStyles = createStyles((theme) => ({
   container: {
     display: "flex",
     flexDirection: "column",
@@ -15,7 +15,8 @@ const useStyles = createStyles((theme, _params, getRef) => ({
     display: "flex",
     flexDirection: "column",
     flexGrow: 1,
-    overflowY: "auto"
+    overflowY: "auto",
+    padding: `0 ${theme.spacing.xl}px`
   }
 }));
 

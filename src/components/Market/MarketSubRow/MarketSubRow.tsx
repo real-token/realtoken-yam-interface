@@ -3,14 +3,13 @@ import { useTranslation } from 'react-i18next';
 
 import { Text, Title } from '@mantine/core';
 import {
-  CellContext,
   ColumnDef,
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 
 import { useTokenInfo } from 'src/hooks';
-import { Offer } from 'src/hooks/types';
+import { Offer } from 'src/types/Offer';
 
 import { Table, TableSubRowProps } from '../../Table';
 
@@ -27,13 +26,13 @@ export const MarketSubRow: FC<TableSubRowProps<Offer>> = ({
 }) => {
   const { t } = useTranslation('buy', { keyPrefix: 'subRow' });
 
-  const columns = useMemo<ColumnDef<TokenInfoShow,string>[]>(
+  const columns = useMemo<ColumnDef<TokenInfoShow>[]>(
     () => [
       {
         id: 'fullName',
         accessorKey: 'fullName',
         header: () => <Title order={6}>{t('offerTokenName')}</Title>,
-        cell: ({ getValue }: CellContext<TokenInfoShow,string>) => (
+        cell: ({ getValue }) => (
           <Text
             size={'sm'}
             sx={{
@@ -53,7 +52,7 @@ export const MarketSubRow: FC<TableSubRowProps<Offer>> = ({
         id: 'initialPrice',
         accessorKey: 'initialPrice',
         header: () => <Title order={6}>{t('officialPrice')}</Title>,
-        cell: ({ getValue }: CellContext<TokenInfoShow,string>) => (
+        cell: ({ getValue }) => (
           <Text
             size={'sm'}
             sx={{
@@ -73,7 +72,7 @@ export const MarketSubRow: FC<TableSubRowProps<Offer>> = ({
         id: 'offerPrice',
         accessorKey: 'offerPrice',
         header: () => <Title order={6}>{t('offerPrice')}</Title>,
-        cell: ({ getValue }: CellContext<TokenInfoShow,string>) => (
+        cell: ({ getValue }) => (
           <Text
             size={'sm'}
             sx={{
