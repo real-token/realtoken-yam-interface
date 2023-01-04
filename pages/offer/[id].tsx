@@ -30,7 +30,7 @@ const ShowOfferPage: FC = () => {
                 </Flex>
             ):
             (
-                <div>Offer doesn't exist :/</div>
+                <div>{"Offer doesn't exist :/"}</div>
             )
         }
         </>
