@@ -1,210 +1,257 @@
-import { useState } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import { ActionIcon, Group, MantineSize, Text, Title, Tooltip } from '@mantine/core';
+import { IconChevronDown, IconChevronUp } from '@tabler/icons';
 import {
-  Center,
-  Group,
-  ScrollArea,
-  Table,
-  Text,
-  TextInput,
-  UnstyledButton,
-  createStyles,
-} from '@mantine/core';
-import { keys } from '@mantine/utils';
-import {
-  IconChevronDown,
-  IconChevronUp,
-  IconSearch,
-  IconSelector,
-} from '@tabler/icons';
+  ColumnDef,
+  ExpandedState,
+  PaginationState,
+  SortingState,
+  getCoreRowModel,
+  getExpandedRowModel,
+  getPaginationRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 
+import { useOffers } from 'src/hooks';
 import { Offer } from 'src/hooks/types';
 
-const useStyles = createStyles((theme) => ({
-  th: {
-    padding: '0 !important',
-  },
+import { Table } from '../../Table';
+import { BuyActionsWithPermit } from '../BuyActions';
+import { MarketSubRow } from '../MarketSubRow';
+import { useAtom } from 'jotai';
+import { nameFilterValueAtom } from 'src/states';
+import React from 'react';
 
-  control: {
-    width: '100%',
-    padding: `${theme.spacing.xs}px ${theme.spacing.md}px`,
+export const MarketTable: FC = () => {
 
-    '&:hover': {
-      backgroundColor:
-        theme.colorScheme === 'dark'
-          ? theme.colors.dark[6]
-          : theme.colors.gray[0],
-    },
-  },
+  const { offers, refreshState } = useOffers(false, false, true, true);
+  const [nameFilterValue,setNamefilterValue] = useAtom(nameFilterValueAtom);
+  
+  const [sorting, setSorting] = useState<SortingState>([
+    { id: 'offerId', desc: false },
+  ]);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+  const [expanded, setExpanded] = useState<ExpandedState>({});
 
-  icon: {
-    width: 21,
-    height: 21,
-    borderRadius: 21,
-  },
-}));
+  const { t } = useTranslation('buy', { keyPrefix: 'table' });
+  const reverse = (value: number) => 1/value
 
-interface TableSortProps {
-  data: Offer[];
-}
-
-interface ThProps {
-  children: React.ReactNode;
-  reversed: boolean;
-  sorted: boolean;
-  onSort(): void;
-}
-
-function Th({ children, reversed, sorted, onSort }: ThProps) {
-  const { classes } = useStyles();
-  const Icon = sorted
-    ? reversed
-      ? IconChevronUp
-      : IconChevronDown
-    : IconSelector;
-  return (
-    <th className={classes.th}>
-      <UnstyledButton onClick={onSort} className={classes.control}>
-        <Group position='apart'>
-          <Text weight={500} size='sm'>
-            {children}
-          </Text>
-          <Center className={classes.icon}>
-            <Icon size={14} stroke={1.5} />
-          </Center>
-        </Group>
-      </UnstyledButton>
-    </th>
-  );
-}
-
-function filterData(data: Offer[], search: string) {
-  const query = search.toLowerCase().trim();
-  return data.filter((item) =>
-    keys(data[0]).some((key) => item[key].toLowerCase().includes(query))
-  );
-}
-
-function sortData(
-  data: Offer[],
-  payload: { sortBy: keyof Offer | null; reversed: boolean; search: string }
-) {
-  const { sortBy } = payload;
-
-  if (!sortBy) {
-    return filterData(data, payload.search);
-  }
-
-  return filterData(
-    [...data].sort((a, b) => {
-      if (payload.reversed) {
-        return b[sortBy].localeCompare(a[sortBy]);
-      }
-
-      return a[sortBy].localeCompare(b[sortBy]);
-    }),
-    payload.search
-  );
-}
-
-export function MarketTable({ data }: TableSortProps) {
-  const [search, setSearch] = useState('');
-  const [sortedData, setSortedData] = useState(data);
-  const [sortBy, setSortBy] = useState<keyof Offer | null>(null);
-  const [reverseSortDirection, setReverseSortDirection] = useState(false);
-
-  const setSorting = (field: keyof Offer) => {
-    const reversed = field === sortBy ? !reverseSortDirection : false;
-    setReverseSortDirection(reversed);
-    setSortBy(field);
-    setSortedData(sortData(data, { sortBy: field, reversed, search }));
-  };
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = event.currentTarget;
-    setSearch(value);
-    setSortedData(
-      sortData(data, { sortBy, reversed: reverseSortDirection, search: value })
-    );
-  };
-
-  const rows = sortedData.map((row) => (
-    <tr key={row.offerId}>
-      <td>{row.offerId}</td>
-      <td>{row.offerTokenName}</td>
-      <td>{row.buyerTokenName}</td>
-      <td>{row.price}</td>
-      <td>{row.amount}</td>
-    </tr>
-  ));
-
-  return (
-    <ScrollArea>
-      <TextInput
-        placeholder='Search by any field'
-        mb='md'
-        icon={<IconSearch size={14} stroke={1.5} />}
-        value={search}
-        onChange={handleSearchChange}
-      />
-      <Table
-        horizontalSpacing='md'
-        verticalSpacing='xs'
-        sx={{ tableLayout: 'fixed', minWidth: 700 }}
-      >
-        <thead>
-          <tr>
-            <Th
-              sorted={sortBy === 'offerId'}
-              reversed={reverseSortDirection}
-              onSort={() => setSorting('offerId')}
-            >
-              offerId
-            </Th>
-            <Th
-              sorted={sortBy === 'offerTokenName'}
-              reversed={reverseSortDirection}
-              onSort={() => setSorting('offerTokenName')}
-            >
-              offerTokenName
-            </Th>
-            <Th
-              sorted={sortBy === 'buyerTokenName'}
-              reversed={reverseSortDirection}
-              onSort={() => setSorting('buyerTokenName')}
-            >
-              buyerTokenName
-            </Th>
-            <Th
-              sorted={sortBy === 'price'}
-              reversed={reverseSortDirection}
-              onSort={() => setSorting('price')}
-            >
-              Price
-            </Th>
-            <Th
-              sorted={sortBy === 'amount'}
-              reversed={reverseSortDirection}
-              onSort={() => setSorting('amount')}
-            >
-              Amount
-            </Th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.length > 0 ? (
-            rows
-          ) : (
-            <tr>
-              <td colSpan={Object.keys(data[0]).length}>
-                <Text weight={500} align='center'>
-                  Nothing found
+  const columns = useMemo<ColumnDef<Offer>[]>(
+    () => [
+      {
+        id: 'title',
+        header: () => (
+          <Title order={4} style={{ textAlign: 'center' }}>
+            {t('title')}
+          </Title>
+        ),
+        meta: { colSpan: 15 },
+        columns: [
+          {
+            id: 'offerId',
+            accessorKey: 'offerId',
+            header: t('offerId'),
+            cell: ({ row, getValue }) => { 
+              return (
+                <Group noWrap={true} spacing={'xs'}>
+                  { row.original.hasPropertyToken && process.env.NEXT_PUBLIC_ENV != "production" ?
+                    <ActionIcon
+                      variant={'transparent'}
+                      color={'brand'}
+                      onClick={() => row.toggleExpanded()}
+                    >
+                      {row.getIsExpanded() ? (
+                        <IconChevronUp size={16} />
+                      ) : (
+                        <IconChevronDown size={16} />
+                      )}
+                    </ActionIcon>
+                    :
+                    <ActionIcon variant={'transparent'} color={'brand'} disabled={true}/>
+                  }
+                  <Text
+                      size={'sm'}
+                      sx={{
+                        textOverflow: 'ellipsis',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      {getValue()}
+                    </Text>
+                </Group>
+              )
+            },
+            enableSorting: true,
+            meta: { colSpan: 2 },
+          },
+          {
+            id: 'offerTokenName',
+            accessorKey: 'offerTokenName',
+            header: t('offerTokenName'),
+            cell: ({ getValue }) => (
+              <Group noWrap={true} spacing={'xs'}>
+                <Text
+                  size={'sm'}
+                  sx={{
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                  }}
+                >
+                  {getValue()}
                 </Text>
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </Table>
-    </ScrollArea>
+              </Group>
+            ),
+            enableSorting: true,
+            meta: { colSpan: 2 },
+          },
+          {
+            id: 'buyerTokenName',
+            accessorKey: 'buyerTokenName',
+            header: t('buyerTokenName'),
+            cell: ({ getValue }) => (
+              <Group noWrap={true} spacing={'xs'}>
+                <Text
+                  size={'sm'}
+                  sx={{
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                  }}
+                >
+                  {getValue()}
+                </Text>
+              </Group>
+            ),
+            enableSorting: true,
+            meta: { colSpan: 2 },
+          },
+          {
+            id: 'sellerAddress',
+            accessorKey: 'sellerAddress',
+            header: t('sellerAddress'),
+            cell: ({ getValue }) => (
+              <Group noWrap={true} spacing={'xs'}>
+                <Text
+                  size={'sm'}
+                  sx={{
+                    textOverflow: 'ellipsis',
+                    overflow: 'hidden',
+                  }}
+                >
+                  {getValue()}
+                </Text>
+              </Group>
+            ),
+            enableSorting: true,
+            meta: { colSpan: 4 },
+          },
+          {
+            id: 'price',
+            accessorKey: 'price',
+            header: t('price'),
+            cell: ({ getValue }) => (
+              <Tooltip label={`${reverse(getValue())}`}>
+              <Text
+                size={'sm'}
+                sx={{
+                  textAlign: 'center',
+                  textOverflow: 'ellipsis',
+                  overflow: 'hidden',
+                }}
+              >
+                {getValue()}
+              </Text>
+              </Tooltip>
+            ),
+            enableSorting: true,
+            meta: { colSpan: 2 },
+          },
+          {
+            id: 'amount',
+            accessorKey: 'amount',
+            header: t('amount'),
+            cell: ({ getValue }) => (
+              <Text
+                size={'sm'}
+                sx={{
+                  textAlign: 'center',
+                  textOverflow: 'ellipsis',
+                  overflow: 'hidden',
+                }}
+              >
+                {getValue()}
+              </Text>
+            ),
+            enableSorting: true,
+            meta: { colSpan: 2 },
+          },
+          {
+            id: 'actions',
+            header: undefined,
+            cell: ({ row }) => (
+              <BuyActionsWithPermit
+                buyOffer={row.original}
+                triggerRefresh={refreshState[1]}
+              />
+            ),
+            meta: { colSpan: 1 },
+          },
+        ],
+      },
+    ],
+    [refreshState, t]
   );
-}
+
+  useEffect(() => {
+    if(nameFilterValue !== ""){
+      setSorting([
+        { id: "buyerTokenName", desc: true },
+        { id: "price", desc: false }
+      ])
+    }else{
+      setSorting([{ id: 'offerId', desc: false }])
+    }
+  },[nameFilterValue])
+
+  const table = useReactTable({
+    data: offers,
+    columns: columns,
+    state: { sorting: sorting, pagination: pagination, expanded: expanded, globalFilter: nameFilterValue },
+    globalFilterFn: 'includesString',
+    onSortingChange: setSorting,
+    onGlobalFilterChange: setNamefilterValue,
+    onPaginationChange: setPagination,
+    onExpandedChange: setExpanded,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
+    meta: { colSpan: 15 },
+  });
+
+  return (
+    <Table
+      tableProps={{
+        highlightOnHover: true,
+        verticalSpacing: 'sm',
+        horizontalSpacing: 'xs',
+        sx: (theme) => ({
+          border: theme.other.border(theme),
+          borderRadius: theme.radius[theme.defaultRadius as MantineSize],
+          borderCollapse: 'separate',
+          borderSpacing: 0,
+        }),
+      }}
+      table={table}
+      tablecaptionOptions={{ refreshState: refreshState, visible: true }}
+      TableSubRow={MarketSubRow}
+    />
+  );
+};

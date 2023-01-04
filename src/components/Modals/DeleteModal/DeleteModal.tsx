@@ -42,7 +42,9 @@ export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
   const [amountMax, setAmountMax] = useState<number>();
 
   const activeChain = useActiveChain();
-  const swapCatUpgradeable = useContract(ContractsID.swapCatUpgradeable);
+  const realTokenYamUpgradeable = useContract(
+    ContractsID.realTokenYamUpgradeable
+  );
 
   const {
     offers,
@@ -78,14 +80,14 @@ export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
           !account ||
           !provider ||
           !formValues.offerId ||
-          !swapCatUpgradeable
+          !realTokenYamUpgradeable
         ) {
           return;
         }
 
         setSubmitting(true);
 
-        const transaction = await swapCatUpgradeable.deleteOffer(
+        const transaction = await realTokenYamUpgradeable.deleteOffer(
           formValues.offerId
         );
 
@@ -121,7 +123,7 @@ export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
     [
       account,
       activeChain,
-      swapCatUpgradeable,
+      realTokenYamUpgradeable,
       onClose,
       provider,
       triggerTableRefresh,
@@ -136,10 +138,14 @@ export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
           <Container>{offerId ? offerId : 'Offer not found'}</Container>
         </Box>
         <Group grow={true}>
-          <Button color={'red'} onClick={onClose}>
+          <Button color={'red'} onClick={onClose} aria-label={t('cancel')}>
             {t('cancel')}
           </Button>
-          <Button type={'submit'} loading={isSubmitting}>
+          <Button
+            type={'submit'}
+            loading={isSubmitting}
+            aria-label={t('confirm')}
+          >
             {t('confirm')}
           </Button>
         </Group>

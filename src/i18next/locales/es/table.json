@@ -5,6 +5,11 @@
   "caption": {
     "lineNumber": "Number of lines",
     "goTo": "Go to page",
-    "noOption": "No options"
+    "noOption": "No options",
+    "autoRefresh": "Enable automatic refresh"
+  },
+  "filters": {
+    "title": "Filters",
+    "nameFilterPlaceholder": "Search"
   }
 }

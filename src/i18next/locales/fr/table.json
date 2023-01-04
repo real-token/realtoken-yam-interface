@@ -1,10 +1,15 @@
 {
   "table": {
-    "noData": "No data"
+    "noData": "Aucune donnée"
   },
   "caption": {
-    "lineNumber": "Number of lines",
-    "goTo": "Go to page",
-    "noOption": "No options"
+    "lineNumber": "Nombre de lignes",
+    "goTo": "Aller vers",
+    "noOption": "Aucune option",
+    "autoRefresh": "Rafraîchissement automatique"
+  },
+  "filters": {
+    "title": "Filtres",
+    "nameFilterPlaceholder": "Recherche"
   }
 }

@@ -1,0 +1,5 @@
+
+k8s-yaml/*.yaml merge=ours
+k8s-yaml/cert-manager/*.yaml merge=ours
+Dockerfile merge=ours
+.github/workflows/*.yaml merge=ours

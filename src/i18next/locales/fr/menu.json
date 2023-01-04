@@ -1,17 +1,25 @@
 {
   "wallet": {
-    "control": "Connect wallet",
-    "copy": "Copy address",
-    "viewOn": "View on explorer",
-    "disconnect": "Disconnect",
-    "network": "Network"
+    "control": "Connecter mon portefeuille",
+    "copy": "Copie d'adresse",
+    "viewOn": "Voir sur l'explorateur",
+    "disconnect": "Déconnexion",
+    "network": "Réseau"
   },
   "settings": {
-    "title": "Language",
-    "french": "French",
-    "english": "English",
-    "spanish": "Spanish",
-    "light": "Light",
-    "dark": "Dark"
+    "title": "Langue",
+    "french": "Français",
+    "english": "Anglais",
+    "spanish": "Espagnol",
+    "light": "Clair",
+    "dark": "Sombre"
+  },
+  "subMenuMyOffer": {
+    "myOffers": "Mes Offres",
+    "addOffer": "Créer une offre",
+    "privateOffers": "Offres privées"
+  },
+  "messages": {
+    "DisabledGnosisSafe": "Connexion direct aux Safe impossible, pour vous connecté à un GnosisSafe, veuillez vous rendre sur safe.global et vous connecter à votre Safe. Dans la partie \"App\", ajouter une \"custom app\" à l'aide de l'url du site du yam (https://yam.realtoken.network). Vous pourrez insi avoir le YAM directement dans l'interface de votre Safe"
   }
 }

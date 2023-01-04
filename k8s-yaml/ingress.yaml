@@ -2,13 +2,13 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-dev
+    cert-manager.io/cluster-issuer: letsencrypt-<ENV_PREFIX>
     #kubernetes.io/ingress.class: nginx
     kubernetes.io/tls-acme: "true"
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/cors-allow-origin: "*"
     nginx.ingress.kubernetes.io/proxy-body-size: 128m
-  name: dev-yam-realtoken-ingress
+  name: <ENV_PREFIX>-yam-realtoken-ingress
   namespace: default
 spec:
   ingressClassName: nginx

@@ -53,6 +53,7 @@ export const BuyModal: FC<ContextModalProps<BuyModalProps>> = ({
   const { account, provider } = useWeb3React();
   const { getInputProps, onSubmit, reset, setFieldValue, values } =
     useForm<BuyFormValues>({
+      // eslint-disable-next-line object-shorthand
       initialValues: {
         offerId: offerId,
         price: price,
@@ -66,7 +67,9 @@ export const BuyModal: FC<ContextModalProps<BuyModalProps>> = ({
   const [amountMax, setAmountMax] = useState<number>();
 
   const activeChain = useActiveChain();
-  const swapCatUpgradeable = useContract(ContractsID.swapCatUpgradeable);
+  const realTokenYamUpgradeable = useContract(
+    ContractsID.realTokenYamUpgradeable
+  );
 
   const {
     offers,
@@ -87,7 +90,7 @@ export const BuyModal: FC<ContextModalProps<BuyModalProps>> = ({
           ?.amount as string
       )
     );
-  }, [values]);
+  }, [offers, values]);
 
   useEffect(() => {
     if (!amountMax) return;
@@ -104,14 +107,14 @@ export const BuyModal: FC<ContextModalProps<BuyModalProps>> = ({
           !formValues.offerId ||
           !formValues.price ||
           !formValues.amount ||
-          !swapCatUpgradeable
+          !realTokenYamUpgradeable
         ) {
           return;
         }
 
         setSubmitting(true);
 
-        const transaction = await swapCatUpgradeable.buy(
+        const transaction = await realTokenYamUpgradeable.buy(
           formValues.offerId,
           new BigNumber(formValues.price.toString())
             .shiftedBy(Number(buyerTokenDecimals))
@@ -152,11 +155,13 @@ export const BuyModal: FC<ContextModalProps<BuyModalProps>> = ({
     },
     [
       account,
-      activeChain,
-      swapCatUpgradeable,
-      onClose,
       provider,
+      realTokenYamUpgradeable,
+      buyerTokenDecimals,
+      offerTokenDecimals,
+      activeChain?.blockExplorerUrl,
       triggerTableRefresh,
+      onClose,
     ]
   );
 
@@ -184,10 +189,14 @@ export const BuyModal: FC<ContextModalProps<BuyModalProps>> = ({
           {...getInputProps('amount')}
         />
         <Group grow={true}>
-          <Button color={'red'} onClick={onClose}>
+          <Button color={'red'} onClick={onClose} aria-label={t('cancel')}>
             {t('cancel')}
           </Button>
-          <Button type={'submit'} loading={isSubmitting}>
+          <Button
+            type={'submit'}
+            loading={isSubmitting}
+            aria-label={t('confirm')}
+          >
             {t('confirm')}
           </Button>
         </Group>

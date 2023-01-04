@@ -1,16 +1,20 @@
 {
   "table": {
     "market": "Market",
-    "title": "RealToken YAM",
+    "title": "RealToken YAM (You And Me)",
     "offerId": "Offer ID",
     "offerTokenAddress": "Sell Token Address",
     "offerTokenName": "Offer Token",
     "buyerTokenAddress": "Buyer Token Address",
     "buyerTokenName": "Buyer Token",
     "sellerAddress": "Seller Address",
-    "price": "Price",
-    "amount": "Amount",
-    "address": "Address"
+    "price": "Price/token",
+    "amount": "Available quantity",
+    "address": "Address",
+    "actionEdit": "Edit",
+    "actionDelete": "Delete",
+    "buy": "Buy",
+    "privateTexte": "private"
   },
   "subRow": {
     "offerId": "Offer ID",
@@ -19,11 +23,11 @@
     "buyerTokenAddress": "Buyer Token Address",
     "buyerTokenName": "Buyer Token",
     "sellerAddress": "Seller Address",
-    "price": "Price",
-    "initialPrice": "Initial Price",
+    "price": "Price/token",
+    "officialPrice": "Official price (RealT)",
     "offerPrice": "Offer Price",
     "priceDifference": "Price Difference",
-    "amount": "Amount",
+    "amount": "Available quantity",
     "address": "Address",
     "name": "Name",
     "value": "Value (~)"

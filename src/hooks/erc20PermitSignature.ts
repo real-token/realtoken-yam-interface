@@ -35,6 +35,7 @@ const erc20PermitSignature = async (
       { name: 'nonce', type: 'uint256' },
       { name: 'deadline', type: 'uint256' },
     ];
+    // eslint-disable-next-line object-shorthand
     const message = {
       owner,
       spender,
@@ -42,6 +43,7 @@ const erc20PermitSignature = async (
       nonce: nonce.toHexString(),
       deadline: transactionDeadline,
     };
+    // eslint-disable-next-line object-shorthand
     const data = JSON.stringify({
       types: {
         EIP712Domain,

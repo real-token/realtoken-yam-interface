@@ -2,6 +2,7 @@ import { FC, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
+  createStyles,
   Table as MantineTable,
   TableProps as MantineTableProps,
 } from '@mantine/core';
@@ -11,6 +12,18 @@ import { TableCaption, TableCaptionOptions } from '../TableCaption';
 import { TableHeader } from '../TableHeader';
 
 export type TableSubRowProps<T> = { row: Row<T> };
+
+const useStyles = createStyles((theme) => ({
+  table: {
+    overflow: "clip"
+  },
+  thead: {
+    position: "sticky", 
+    top: 0, 
+    backgroundColor: theme.colorScheme == "dark" ? "#1A1B1E" : "#FFFF", 
+    zIndex: 1,
+  }
+}));
 
 type TableProps<T> = {
   tableProps?: MantineTableProps;
@@ -26,10 +39,11 @@ export const Table = <T,>({
   TableSubRow,
 }: TableProps<T>) => {
   const { t } = useTranslation('table', { keyPrefix: 'table' });
+  const { classes } = useStyles();
 
   return (
-    <MantineTable {...tableProps}>
-      <thead>
+    <MantineTable {...tableProps} className={classes.table}>
+      <thead className={classes.thead}>
         {table.getHeaderGroups().map(({ id, headers }) => (
           <tr key={id}>
             {headers.map((header) => (
@@ -55,7 +69,7 @@ export const Table = <T,>({
                   </td>
                 ))}
               </tr>
-              {TableSubRow && row.original && row.getIsExpanded() && (
+              {TableSubRow && row.original && row.getIsExpanded() && process.env.NEXT_PUBLIC_ENV != "production" ? (
                 <tr>
                   <td
                     colSpan={table.options.meta?.colSpan}
@@ -64,7 +78,7 @@ export const Table = <T,>({
                     <TableSubRow row={row} />
                   </td>
                 </tr>
-              )}
+              ) : undefined}
             </Fragment>
           ))
         ) : (
@@ -79,16 +93,16 @@ export const Table = <T,>({
         )}
       </tbody>
       {tablecaptionOptions?.visible && (
-        <tfoot>
-          <tr>
-            <td colSpan={table.options.meta?.colSpan}>
-              <TableCaption
-                table={table}
-                tablecaptionOptions={tablecaptionOptions}
-              />
-            </td>
-          </tr>
-        </tfoot>
+      <tfoot>
+        <tr>
+          <td colSpan={table.options.meta?.colSpan}>
+            <TableCaption
+              table={table}
+              tablecaptionOptions={tablecaptionOptions}
+            />
+          </td>
+        </tr>
+      </tfoot>
       )}
     </MantineTable>
   );
