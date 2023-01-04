@@ -29,26 +29,14 @@ jobs:
     - name: Push image to DigitalOcean Container Registry
       run: docker push registry.digitalocean.com/yam-realtoken-cr/${GITHUB_REF##*/}:$(echo $GITHUB_SHA | head -c7)
 
-    - name: Update Docker Image in Deployment file
-      run: TAG=$(echo $GITHUB_SHA | head -c7) && ENV_PREFIX=$(echo ${GITHUB_REF##*/}) && sed -i 's|<IMAGE>|registry.digitalocean.com/yam-realtoken-cr/'${ENV_PREFIX}':'${TAG}'|' $GITHUB_WORKSPACE/k8s-yaml/deployment.yaml && cat $GITHUB_WORKSPACE/k8s-yaml/deployment.yaml
-
     - name: Update Environment Prefix in Deployment|Service|Ingress files
       run: ENV_PREFIX=$(echo ${GITHUB_REF##*/}) && sed -i 's|<ENV_PREFIX>|'${ENV_PREFIX}'|' $GITHUB_WORKSPACE/k8s-yaml/*.yaml && cat $GITHUB_WORKSPACE/k8s-yaml/*.yaml
-
-    - name: Update Environment Prefix in Ingress file
-      run: ENV_PREFIX=$(echo ${GITHUB_REF##*/}) && sed -i 's|<ENV_PREFIX>|'${ENV_PREFIX}'|' $GITHUB_WORKSPACE/k8s-yaml/ingress.yaml && cat $GITHUB_WORKSPACE/k8s-yaml/ingress.yaml
-
-    - name: Update Environment Prefix in Service file
-      run: ENV_PREFIX=$(echo ${GITHUB_REF##*/}) && sed -i 's|<ENV_PREFIX>|'${ENV_PREFIX}'|' $GITHUB_WORKSPACE/k8s-yaml/service.yaml && cat $GITHUB_WORKSPACE/k8s-yaml/service.yaml
-
-    - name: Update Environment Prefix in cert-issuer file
-      run: ENV_PREFIX=$(echo ${GITHUB_REF##*/}) && sed -i 's|<ENV_PREFIX>|'${ENV_PREFIX}'|' $GITHUB_WORKSPACE/k8s-yaml/cert-manager/cert-issuer.yaml && cat $GITHUB_WORKSPACE/k8s-yaml/cert-manager/cert-issuer.yaml
 
     - name: Save DigitalOcean kubeconfig with short-lived credentials
       run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 yam-realtoken-k8s
 
     - name: Deploy to DigitalOcean Kubernetes
-      run: kubectl apply -f $GITHUB_WORKSPACE/k8s-yaml/*.yaml
+      run: kubectl apply -f $GITHUB_WORKSPACE/k8s-yaml
 
     - name: Verify deployment
       run: kubectl rollout status deployment/${GITHUB_REF##*/}-yam-realtoken
