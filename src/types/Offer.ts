@@ -12,9 +12,11 @@ export type Offer = {
   offerTokenAddress: string;
   offerTokenName: string;
   offerTokenDecimals: string;
+  offerTokenType:number;
   buyerTokenAddress: string;
   buyerTokenName: string;
   buyerTokenDecimals: string;
+  buyerTokenType: number;
   sellerAddress: string;
   buyerAddress: string;
   price: string;
@@ -24,6 +26,7 @@ export type Offer = {
   availableAmount: string;
   balanceWallet?: string;
   allowanceToken?: string;
+
 };
 
 export const DEFAULT_OFFERS: Offer = {
@@ -31,9 +34,11 @@ export const DEFAULT_OFFERS: Offer = {
   offerTokenAddress: "",
   offerTokenName: "",
   offerTokenDecimals: "",
+  offerTokenType: 0,
   buyerTokenAddress: "",
   buyerTokenName: "",
   buyerTokenDecimals: "",
+  buyerTokenType: 0,
   sellerAddress: "",
   buyerAddress: "",
   price: "",
@@ -41,7 +46,7 @@ export const DEFAULT_OFFERS: Offer = {
   hasPropertyToken: false,
   removed: false,
   availableAmount: "",
-  balanceWallet: ""
+  balanceWallet: "",
 }
 
 export const OFFER_LOADING = [DEFAULT_OFFERS, DEFAULT_OFFERS, DEFAULT_OFFERS]

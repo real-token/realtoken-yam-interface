@@ -1,36 +1,56 @@
 // @ts-nocheck
-import { GraphQLResolveInfo, SelectionSetNode, FieldNode, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
-import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
-import { gql } from '@graphql-mesh/utils';
-
+import MeshCache from '@graphql-mesh/cache-localforage';
+import { path as pathModule } from '@graphql-mesh/cross-helpers';
+import GraphqlHandler from '@graphql-mesh/graphql';
+import { MeshHTTPHandler, createMeshHTTPHandler } from '@graphql-mesh/http';
+import StitchingMerger from '@graphql-mesh/merger-stitching';
 import type { GetMeshOptions } from '@graphql-mesh/runtime';
+import { MeshResolvedSource } from '@graphql-mesh/runtime';
+import {
+  MeshContext as BaseMeshContext,
+  ExecuteMeshFn,
+  MeshInstance,
+  SubscribeMeshFn,
+  getMesh,
+} from '@graphql-mesh/runtime';
+import { FsStoreStorageAdapter, MeshStore } from '@graphql-mesh/store';
 import type { YamlConfig } from '@graphql-mesh/types';
+import { MeshPlugin, MeshTransform } from '@graphql-mesh/types';
+import { ImportFn } from '@graphql-mesh/types';
+import { gql } from '@graphql-mesh/utils';
 import { PubSub } from '@graphql-mesh/utils';
 import { DefaultLogger } from '@graphql-mesh/utils';
-import MeshCache from "@graphql-mesh/cache-localforage";
+import { printWithCache } from '@graphql-mesh/utils';
+import { fileURLToPath } from '@graphql-mesh/utils';
+import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 import { fetch as fetchFn } from '@whatwg-node/fetch';
 
-import { MeshResolvedSource } from '@graphql-mesh/runtime';
-import { MeshTransform, MeshPlugin } from '@graphql-mesh/types';
-import GraphqlHandler from "@graphql-mesh/graphql"
-import StitchingMerger from "@graphql-mesh/merger-stitching";
-import { printWithCache } from '@graphql-mesh/utils';
-import { createMeshHTTPHandler, MeshHTTPHandler } from '@graphql-mesh/http';
-import { getMesh, ExecuteMeshFn, SubscribeMeshFn, MeshContext as BaseMeshContext, MeshInstance } from '@graphql-mesh/runtime';
-import { MeshStore, FsStoreStorageAdapter } from '@graphql-mesh/store';
-import { path as pathModule } from '@graphql-mesh/cross-helpers';
-import { ImportFn } from '@graphql-mesh/types';
-import type { YamGnosisTypes } from './sources/yam-gnosis/types';
+import {
+  FieldNode,
+  GraphQLResolveInfo,
+  GraphQLScalarType,
+  GraphQLScalarTypeConfig,
+  SelectionSetNode,
+} from 'graphql';
+
 import type { WalletGoerliTypes } from './sources/wallet-goerli/types';
 import type { YamEthTypes } from './sources/yam-eth/types';
+import type { YamGnosisTypes } from './sources/yam-gnosis/types';
+
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
-
-
+export type Exact<T extends { [key: string]: unknown }> = {
+  [K in keyof T]: T[K];
+};
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]?: Maybe<T[SubKey]>;
+};
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]: Maybe<T[SubKey]>;
+};
+export type RequireFields<T, K extends keyof T> = Omit<T, K> & {
+  [P in K]-?: NonNullable<T[P]>;
+};
 
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -75,13 +95,11 @@ export type Query = {
   tokenEvents: Array<TokenEvent>;
 };
 
-
 export type QueryaccountArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type QueryaccountsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -93,13 +111,11 @@ export type QueryaccountsArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type QuerytokenArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type QuerytokensArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -111,13 +127,11 @@ export type QuerytokensArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type QueryofferPriceArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type QueryofferPricesArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -129,13 +143,11 @@ export type QueryofferPricesArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type QuerypurchaseArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type QuerypurchasesArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -147,13 +159,11 @@ export type QuerypurchasesArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type QueryofferArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type QueryoffersArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -165,18 +175,15 @@ export type QueryoffersArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type Query_metaArgs = {
   block?: InputMaybe<Block_height>;
 };
-
 
 export type QueryburnEventArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type QueryburnEventsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -188,13 +195,11 @@ export type QueryburnEventsArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type QuerymintEventArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type QuerymintEventsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -206,13 +211,11 @@ export type QuerymintEventsArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type QuerytransferEventArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type QuerytransferEventsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -224,13 +227,11 @@ export type QuerytransferEventsArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type QueryallowanceArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type QueryallowancesArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -242,13 +243,11 @@ export type QueryallowancesArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type QueryaccountBalanceArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type QueryaccountBalancesArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -260,13 +259,11 @@ export type QueryaccountBalancesArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type QueryaccountBalanceSnapshotArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type QueryaccountBalanceSnapshotsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -278,13 +275,11 @@ export type QueryaccountBalanceSnapshotsArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type QuerytransactionArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type QuerytransactionsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -296,13 +291,11 @@ export type QuerytransactionsArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type QuerytokenEventArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type QuerytokenEventsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -345,13 +338,11 @@ export type Subscription = {
   tokenEvents: Array<TokenEvent>;
 };
 
-
 export type SubscriptionaccountArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type SubscriptionaccountsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -363,13 +354,11 @@ export type SubscriptionaccountsArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type SubscriptiontokenArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type SubscriptiontokensArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -381,13 +370,11 @@ export type SubscriptiontokensArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type SubscriptionofferPriceArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type SubscriptionofferPricesArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -399,13 +386,11 @@ export type SubscriptionofferPricesArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type SubscriptionpurchaseArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type SubscriptionpurchasesArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -417,13 +402,11 @@ export type SubscriptionpurchasesArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type SubscriptionofferArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type SubscriptionoffersArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -435,18 +418,15 @@ export type SubscriptionoffersArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type Subscription_metaArgs = {
   block?: InputMaybe<Block_height>;
 };
-
 
 export type SubscriptionburnEventArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type SubscriptionburnEventsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -458,13 +438,11 @@ export type SubscriptionburnEventsArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type SubscriptionmintEventArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type SubscriptionmintEventsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -476,13 +454,11 @@ export type SubscriptionmintEventsArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type SubscriptiontransferEventArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type SubscriptiontransferEventsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -494,13 +470,11 @@ export type SubscriptiontransferEventsArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type SubscriptionallowanceArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type SubscriptionallowancesArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -512,13 +486,11 @@ export type SubscriptionallowancesArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type SubscriptionaccountBalanceArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type SubscriptionaccountBalancesArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -530,13 +502,11 @@ export type SubscriptionaccountBalancesArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type SubscriptionaccountBalanceSnapshotArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type SubscriptionaccountBalanceSnapshotsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -548,13 +518,11 @@ export type SubscriptionaccountBalanceSnapshotsArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type SubscriptiontransactionArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type SubscriptiontransactionsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -566,13 +534,11 @@ export type SubscriptiontransactionsArgs = {
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-
 export type SubscriptiontokenEventArgs = {
   id: Scalars['ID'];
   block?: InputMaybe<Block_height>;
   subgraphError?: _SubgraphErrorPolicy_;
 };
-
 
 export type SubscriptiontokenEventsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -607,7 +573,6 @@ export type Account = {
   allowances: Array<Allowance>;
 };
 
-
 export type AccountoffersArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   first?: InputMaybe<Scalars['Int']>;
@@ -615,7 +580,6 @@ export type AccountoffersArgs = {
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<Offer_filter>;
 };
-
 
 export type AccountpurchasesArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -625,7 +589,6 @@ export type AccountpurchasesArgs = {
   where?: InputMaybe<Purchase_filter>;
 };
 
-
 export type AccountsellsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   first?: InputMaybe<Scalars['Int']>;
@@ -634,7 +597,6 @@ export type AccountsellsArgs = {
   where?: InputMaybe<Purchase_filter>;
 };
 
-
 export type AccountbalancesArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   first?: InputMaybe<Scalars['Int']>;
@@ -642,7 +604,6 @@ export type AccountbalancesArgs = {
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<AccountBalance_filter>;
 };
-
 
 export type AccountallowancesArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -742,6 +703,8 @@ export type Block_height = {
 
 /**  Offer entity  */
 export type Offer = {
+  allowance: any;
+  balance: any;
   /**  Offer ID  */
   id: Scalars['ID'];
   /**  Seller 0x  */
@@ -772,7 +735,6 @@ export type Offer = {
   removedAtTimestamp?: Maybe<Scalars['BigInt']>;
 };
 
-
 /**  Offer entity  */
 export type OfferpricesArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -781,7 +743,6 @@ export type OfferpricesArgs = {
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<OfferPrice_filter>;
 };
-
 
 /**  Offer entity  */
 export type OfferpurchasesArgs = {
@@ -1078,9 +1039,7 @@ export type Offer_orderBy =
   | 'removedAtTimestamp';
 
 /** Defines the order direction, either ascending or descending */
-export type OrderDirection =
-  | 'asc'
-  | 'desc';
+export type OrderDirection = 'asc' | 'desc';
 
 export type Purchase = {
   id: Scalars['ID'];
@@ -1248,7 +1207,6 @@ export type Token = {
   transactions: Array<Transaction>;
 };
 
-
 export type TokenoffersArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   first?: InputMaybe<Scalars['Int']>;
@@ -1256,7 +1214,6 @@ export type TokenoffersArgs = {
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<Offer_filter>;
 };
-
 
 export type TokenpurchasesArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -1266,7 +1223,6 @@ export type TokenpurchasesArgs = {
   where?: InputMaybe<Purchase_filter>;
 };
 
-
 export type TokenapproveEventArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   first?: InputMaybe<Scalars['Int']>;
@@ -1274,7 +1230,6 @@ export type TokenapproveEventArgs = {
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<Allowance_filter>;
 };
-
 
 export type TokenburnEventsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -1284,7 +1239,6 @@ export type TokenburnEventsArgs = {
   where?: InputMaybe<BurnEvent_filter>;
 };
 
-
 export type TokenmintEventsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   first?: InputMaybe<Scalars['Int']>;
@@ -1293,7 +1247,6 @@ export type TokenmintEventsArgs = {
   where?: InputMaybe<MintEvent_filter>;
 };
 
-
 export type TokentransferEventsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   first?: InputMaybe<Scalars['Int']>;
@@ -1301,7 +1254,6 @@ export type TokentransferEventsArgs = {
   orderDirection?: InputMaybe<OrderDirection>;
   where?: InputMaybe<TransferEvent_filter>;
 };
-
 
 export type TokentransactionsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -1604,7 +1556,6 @@ export type AccountBalance = {
   /**  Hash of the last transaction that modified the balance  */
   transaction: Transaction;
 };
-
 
 export type AccountBalanceallowancesArgs = {
   skip?: InputMaybe<Scalars['Int']>;
@@ -2375,7 +2326,6 @@ export type Transaction = {
   to?: Maybe<Scalars['Bytes']>;
 };
 
-
 export type TransactiontransferEventsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   first?: InputMaybe<Scalars['Int']>;
@@ -2612,7 +2562,6 @@ export type ResolversObject<TObject> = WithIndex<TObject>;
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
 
-
 export type ResolverWithResolve<TResult, TParent, TContext, TArgs> = {
   resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
 };
@@ -2626,7 +2575,9 @@ export type NewStitchingResolver<TResult, TParent, TContext, TArgs> = {
   selectionSet: string | ((fieldNode: FieldNode) => SelectionSetNode);
   resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
 };
-export type StitchingResolver<TResult, TParent, TContext, TArgs> = LegacyStitchingResolver<TResult, TParent, TContext, TArgs> | NewStitchingResolver<TResult, TParent, TContext, TArgs>;
+export type StitchingResolver<TResult, TParent, TContext, TArgs> =
+  | LegacyStitchingResolver<TResult, TParent, TContext, TArgs>
+  | NewStitchingResolver<TResult, TParent, TContext, TArgs>;
 export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> =
   | ResolverFn<TResult, TParent, TContext, TArgs>
   | ResolverWithResolve<TResult, TParent, TContext, TArgs>
@@ -2653,9 +2604,25 @@ export type SubscriptionResolveFn<TResult, TParent, TContext, TArgs> = (
   info: GraphQLResolveInfo
 ) => TResult | Promise<TResult>;
 
-export interface SubscriptionSubscriberObject<TResult, TKey extends string, TParent, TContext, TArgs> {
-  subscribe: SubscriptionSubscribeFn<{ [key in TKey]: TResult }, TParent, TContext, TArgs>;
-  resolve?: SubscriptionResolveFn<TResult, { [key in TKey]: TResult }, TContext, TArgs>;
+export interface SubscriptionSubscriberObject<
+  TResult,
+  TKey extends string,
+  TParent,
+  TContext,
+  TArgs
+> {
+  subscribe: SubscriptionSubscribeFn<
+    { [key in TKey]: TResult },
+    TParent,
+    TContext,
+    TArgs
+  >;
+  resolve?: SubscriptionResolveFn<
+    TResult,
+    { [key in TKey]: TResult },
+    TContext,
+    TArgs
+  >;
 }
 
 export interface SubscriptionResolverObject<TResult, TParent, TContext, TArgs> {
@@ -2663,12 +2630,26 @@ export interface SubscriptionResolverObject<TResult, TParent, TContext, TArgs> {
   resolve: SubscriptionResolveFn<TResult, any, TContext, TArgs>;
 }
 
-export type SubscriptionObject<TResult, TKey extends string, TParent, TContext, TArgs> =
+export type SubscriptionObject<
+  TResult,
+  TKey extends string,
+  TParent,
+  TContext,
+  TArgs
+> =
   | SubscriptionSubscriberObject<TResult, TKey, TParent, TContext, TArgs>
   | SubscriptionResolverObject<TResult, TParent, TContext, TArgs>;
 
-export type SubscriptionResolver<TResult, TKey extends string, TParent = {}, TContext = {}, TArgs = {}> =
-  | ((...args: any[]) => SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>)
+export type SubscriptionResolver<
+  TResult,
+  TKey extends string,
+  TParent = {},
+  TContext = {},
+  TArgs = {}
+> =
+  | ((
+      ...args: any[]
+    ) => SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>)
   | SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>;
 
 export type TypeResolveFn<TTypes, TParent = {}, TContext = {}> = (
@@ -2677,11 +2658,20 @@ export type TypeResolveFn<TTypes, TParent = {}, TContext = {}> = (
   info: GraphQLResolveInfo
 ) => Maybe<TTypes> | Promise<Maybe<TTypes>>;
 
-export type IsTypeOfResolverFn<T = {}, TContext = {}> = (obj: T, context: TContext, info: GraphQLResolveInfo) => boolean | Promise<boolean>;
+export type IsTypeOfResolverFn<T = {}, TContext = {}> = (
+  obj: T,
+  context: TContext,
+  info: GraphQLResolveInfo
+) => boolean | Promise<boolean>;
 
 export type NextResolverFn<T> = () => Promise<T>;
 
-export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs = {}> = (
+export type DirectiveResolverFn<
+  TResult = {},
+  TParent = {},
+  TContext = {},
+  TArgs = {}
+> = (
   next: NextResolverFn<TResult>,
   parent: TParent,
   args: TArgs,
@@ -2737,7 +2727,10 @@ export type ResolversTypes = ResolversObject<{
   MintEvent: ResolverTypeWrapper<MintEvent>;
   MintEvent_filter: MintEvent_filter;
   MintEvent_orderBy: MintEvent_orderBy;
-  TokenEvent: ResolversTypes['BurnEvent'] | ResolversTypes['MintEvent'] | ResolversTypes['TransferEvent'];
+  TokenEvent:
+    | ResolversTypes['BurnEvent']
+    | ResolversTypes['MintEvent']
+    | ResolversTypes['TransferEvent'];
   TokenEvent_filter: TokenEvent_filter;
   TokenEvent_orderBy: TokenEvent_orderBy;
   Transaction: ResolverTypeWrapper<Transaction>;
@@ -2784,7 +2777,10 @@ export type ResolversParentTypes = ResolversObject<{
   BurnEvent_filter: BurnEvent_filter;
   MintEvent: MintEvent;
   MintEvent_filter: MintEvent_filter;
-  TokenEvent: ResolversParentTypes['BurnEvent'] | ResolversParentTypes['MintEvent'] | ResolversParentTypes['TransferEvent'];
+  TokenEvent:
+    | ResolversParentTypes['BurnEvent']
+    | ResolversParentTypes['MintEvent']
+    | ResolversParentTypes['TransferEvent'];
   TokenEvent_filter: TokenEvent_filter;
   Transaction: Transaction;
   Transaction_filter: Transaction_filter;
@@ -2792,154 +2788,596 @@ export type ResolversParentTypes = ResolversObject<{
   TransferEvent_filter: TransferEvent_filter;
 }>;
 
-export type entityDirectiveArgs = { };
+export type entityDirectiveArgs = {};
 
-export type entityDirectiveResolver<Result, Parent, ContextType = MeshContext, Args = entityDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+export type entityDirectiveResolver<
+  Result,
+  Parent,
+  ContextType = MeshContext,
+  Args = entityDirectiveArgs
+> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type subgraphIdDirectiveArgs = {
   id: Scalars['String'];
 };
 
-export type subgraphIdDirectiveResolver<Result, Parent, ContextType = MeshContext, Args = subgraphIdDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+export type subgraphIdDirectiveResolver<
+  Result,
+  Parent,
+  ContextType = MeshContext,
+  Args = subgraphIdDirectiveArgs
+> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type derivedFromDirectiveArgs = {
   field: Scalars['String'];
 };
 
-export type derivedFromDirectiveResolver<Result, Parent, ContextType = MeshContext, Args = derivedFromDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+export type derivedFromDirectiveResolver<
+  Result,
+  Parent,
+  ContextType = MeshContext,
+  Args = derivedFromDirectiveArgs
+> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
-export type QueryResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
-  account?: Resolver<Maybe<ResolversTypes['Account']>, ParentType, ContextType, RequireFields<QueryaccountArgs, 'id' | 'subgraphError'>>;
-  accounts?: Resolver<Array<ResolversTypes['Account']>, ParentType, ContextType, RequireFields<QueryaccountsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  token?: Resolver<Maybe<ResolversTypes['Token']>, ParentType, ContextType, RequireFields<QuerytokenArgs, 'id' | 'subgraphError'>>;
-  tokens?: Resolver<Array<ResolversTypes['Token']>, ParentType, ContextType, RequireFields<QuerytokensArgs, 'skip' | 'first' | 'subgraphError'>>;
-  offerPrice?: Resolver<Maybe<ResolversTypes['OfferPrice']>, ParentType, ContextType, RequireFields<QueryofferPriceArgs, 'id' | 'subgraphError'>>;
-  offerPrices?: Resolver<Array<ResolversTypes['OfferPrice']>, ParentType, ContextType, RequireFields<QueryofferPricesArgs, 'skip' | 'first' | 'subgraphError'>>;
-  purchase?: Resolver<Maybe<ResolversTypes['Purchase']>, ParentType, ContextType, RequireFields<QuerypurchaseArgs, 'id' | 'subgraphError'>>;
-  purchases?: Resolver<Array<ResolversTypes['Purchase']>, ParentType, ContextType, RequireFields<QuerypurchasesArgs, 'skip' | 'first' | 'subgraphError'>>;
-  offer?: Resolver<Maybe<ResolversTypes['Offer']>, ParentType, ContextType, RequireFields<QueryofferArgs, 'id' | 'subgraphError'>>;
-  offers?: Resolver<Array<ResolversTypes['Offer']>, ParentType, ContextType, RequireFields<QueryoffersArgs, 'skip' | 'first' | 'subgraphError'>>;
-  _meta?: Resolver<Maybe<ResolversTypes['_Meta_']>, ParentType, ContextType, Partial<Query_metaArgs>>;
-  burnEvent?: Resolver<Maybe<ResolversTypes['BurnEvent']>, ParentType, ContextType, RequireFields<QueryburnEventArgs, 'id' | 'subgraphError'>>;
-  burnEvents?: Resolver<Array<ResolversTypes['BurnEvent']>, ParentType, ContextType, RequireFields<QueryburnEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  mintEvent?: Resolver<Maybe<ResolversTypes['MintEvent']>, ParentType, ContextType, RequireFields<QuerymintEventArgs, 'id' | 'subgraphError'>>;
-  mintEvents?: Resolver<Array<ResolversTypes['MintEvent']>, ParentType, ContextType, RequireFields<QuerymintEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  transferEvent?: Resolver<Maybe<ResolversTypes['TransferEvent']>, ParentType, ContextType, RequireFields<QuerytransferEventArgs, 'id' | 'subgraphError'>>;
-  transferEvents?: Resolver<Array<ResolversTypes['TransferEvent']>, ParentType, ContextType, RequireFields<QuerytransferEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  allowance?: Resolver<Maybe<ResolversTypes['Allowance']>, ParentType, ContextType, RequireFields<QueryallowanceArgs, 'id' | 'subgraphError'>>;
-  allowances?: Resolver<Array<ResolversTypes['Allowance']>, ParentType, ContextType, RequireFields<QueryallowancesArgs, 'skip' | 'first' | 'subgraphError'>>;
-  accountBalance?: Resolver<Maybe<ResolversTypes['AccountBalance']>, ParentType, ContextType, RequireFields<QueryaccountBalanceArgs, 'id' | 'subgraphError'>>;
-  accountBalances?: Resolver<Array<ResolversTypes['AccountBalance']>, ParentType, ContextType, RequireFields<QueryaccountBalancesArgs, 'skip' | 'first' | 'subgraphError'>>;
-  accountBalanceSnapshot?: Resolver<Maybe<ResolversTypes['AccountBalanceSnapshot']>, ParentType, ContextType, RequireFields<QueryaccountBalanceSnapshotArgs, 'id' | 'subgraphError'>>;
-  accountBalanceSnapshots?: Resolver<Array<ResolversTypes['AccountBalanceSnapshot']>, ParentType, ContextType, RequireFields<QueryaccountBalanceSnapshotsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  transaction?: Resolver<Maybe<ResolversTypes['Transaction']>, ParentType, ContextType, RequireFields<QuerytransactionArgs, 'id' | 'subgraphError'>>;
-  transactions?: Resolver<Array<ResolversTypes['Transaction']>, ParentType, ContextType, RequireFields<QuerytransactionsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  tokenEvent?: Resolver<Maybe<ResolversTypes['TokenEvent']>, ParentType, ContextType, RequireFields<QuerytokenEventArgs, 'id' | 'subgraphError'>>;
-  tokenEvents?: Resolver<Array<ResolversTypes['TokenEvent']>, ParentType, ContextType, RequireFields<QuerytokenEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
+export type QueryResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']
+> = ResolversObject<{
+  account?: Resolver<
+    Maybe<ResolversTypes['Account']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryaccountArgs, 'id' | 'subgraphError'>
+  >;
+  accounts?: Resolver<
+    Array<ResolversTypes['Account']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryaccountsArgs, 'skip' | 'first' | 'subgraphError'>
+  >;
+  token?: Resolver<
+    Maybe<ResolversTypes['Token']>,
+    ParentType,
+    ContextType,
+    RequireFields<QuerytokenArgs, 'id' | 'subgraphError'>
+  >;
+  tokens?: Resolver<
+    Array<ResolversTypes['Token']>,
+    ParentType,
+    ContextType,
+    RequireFields<QuerytokensArgs, 'skip' | 'first' | 'subgraphError'>
+  >;
+  offerPrice?: Resolver<
+    Maybe<ResolversTypes['OfferPrice']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryofferPriceArgs, 'id' | 'subgraphError'>
+  >;
+  offerPrices?: Resolver<
+    Array<ResolversTypes['OfferPrice']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryofferPricesArgs, 'skip' | 'first' | 'subgraphError'>
+  >;
+  purchase?: Resolver<
+    Maybe<ResolversTypes['Purchase']>,
+    ParentType,
+    ContextType,
+    RequireFields<QuerypurchaseArgs, 'id' | 'subgraphError'>
+  >;
+  purchases?: Resolver<
+    Array<ResolversTypes['Purchase']>,
+    ParentType,
+    ContextType,
+    RequireFields<QuerypurchasesArgs, 'skip' | 'first' | 'subgraphError'>
+  >;
+  offer?: Resolver<
+    Maybe<ResolversTypes['Offer']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryofferArgs, 'id' | 'subgraphError'>
+  >;
+  offers?: Resolver<
+    Array<ResolversTypes['Offer']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryoffersArgs, 'skip' | 'first' | 'subgraphError'>
+  >;
+  _meta?: Resolver<
+    Maybe<ResolversTypes['_Meta_']>,
+    ParentType,
+    ContextType,
+    Partial<Query_metaArgs>
+  >;
+  burnEvent?: Resolver<
+    Maybe<ResolversTypes['BurnEvent']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryburnEventArgs, 'id' | 'subgraphError'>
+  >;
+  burnEvents?: Resolver<
+    Array<ResolversTypes['BurnEvent']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryburnEventsArgs, 'skip' | 'first' | 'subgraphError'>
+  >;
+  mintEvent?: Resolver<
+    Maybe<ResolversTypes['MintEvent']>,
+    ParentType,
+    ContextType,
+    RequireFields<QuerymintEventArgs, 'id' | 'subgraphError'>
+  >;
+  mintEvents?: Resolver<
+    Array<ResolversTypes['MintEvent']>,
+    ParentType,
+    ContextType,
+    RequireFields<QuerymintEventsArgs, 'skip' | 'first' | 'subgraphError'>
+  >;
+  transferEvent?: Resolver<
+    Maybe<ResolversTypes['TransferEvent']>,
+    ParentType,
+    ContextType,
+    RequireFields<QuerytransferEventArgs, 'id' | 'subgraphError'>
+  >;
+  transferEvents?: Resolver<
+    Array<ResolversTypes['TransferEvent']>,
+    ParentType,
+    ContextType,
+    RequireFields<QuerytransferEventsArgs, 'skip' | 'first' | 'subgraphError'>
+  >;
+  allowance?: Resolver<
+    Maybe<ResolversTypes['Allowance']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryallowanceArgs, 'id' | 'subgraphError'>
+  >;
+  allowances?: Resolver<
+    Array<ResolversTypes['Allowance']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryallowancesArgs, 'skip' | 'first' | 'subgraphError'>
+  >;
+  accountBalance?: Resolver<
+    Maybe<ResolversTypes['AccountBalance']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryaccountBalanceArgs, 'id' | 'subgraphError'>
+  >;
+  accountBalances?: Resolver<
+    Array<ResolversTypes['AccountBalance']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryaccountBalancesArgs, 'skip' | 'first' | 'subgraphError'>
+  >;
+  accountBalanceSnapshot?: Resolver<
+    Maybe<ResolversTypes['AccountBalanceSnapshot']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryaccountBalanceSnapshotArgs, 'id' | 'subgraphError'>
+  >;
+  accountBalanceSnapshots?: Resolver<
+    Array<ResolversTypes['AccountBalanceSnapshot']>,
+    ParentType,
+    ContextType,
+    RequireFields<
+      QueryaccountBalanceSnapshotsArgs,
+      'skip' | 'first' | 'subgraphError'
+    >
+  >;
+  transaction?: Resolver<
+    Maybe<ResolversTypes['Transaction']>,
+    ParentType,
+    ContextType,
+    RequireFields<QuerytransactionArgs, 'id' | 'subgraphError'>
+  >;
+  transactions?: Resolver<
+    Array<ResolversTypes['Transaction']>,
+    ParentType,
+    ContextType,
+    RequireFields<QuerytransactionsArgs, 'skip' | 'first' | 'subgraphError'>
+  >;
+  tokenEvent?: Resolver<
+    Maybe<ResolversTypes['TokenEvent']>,
+    ParentType,
+    ContextType,
+    RequireFields<QuerytokenEventArgs, 'id' | 'subgraphError'>
+  >;
+  tokenEvents?: Resolver<
+    Array<ResolversTypes['TokenEvent']>,
+    ParentType,
+    ContextType,
+    RequireFields<QuerytokenEventsArgs, 'skip' | 'first' | 'subgraphError'>
+  >;
 }>;
 
-export type SubscriptionResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = ResolversObject<{
-  account?: SubscriptionResolver<Maybe<ResolversTypes['Account']>, "account", ParentType, ContextType, RequireFields<SubscriptionaccountArgs, 'id' | 'subgraphError'>>;
-  accounts?: SubscriptionResolver<Array<ResolversTypes['Account']>, "accounts", ParentType, ContextType, RequireFields<SubscriptionaccountsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  token?: SubscriptionResolver<Maybe<ResolversTypes['Token']>, "token", ParentType, ContextType, RequireFields<SubscriptiontokenArgs, 'id' | 'subgraphError'>>;
-  tokens?: SubscriptionResolver<Array<ResolversTypes['Token']>, "tokens", ParentType, ContextType, RequireFields<SubscriptiontokensArgs, 'skip' | 'first' | 'subgraphError'>>;
-  offerPrice?: SubscriptionResolver<Maybe<ResolversTypes['OfferPrice']>, "offerPrice", ParentType, ContextType, RequireFields<SubscriptionofferPriceArgs, 'id' | 'subgraphError'>>;
-  offerPrices?: SubscriptionResolver<Array<ResolversTypes['OfferPrice']>, "offerPrices", ParentType, ContextType, RequireFields<SubscriptionofferPricesArgs, 'skip' | 'first' | 'subgraphError'>>;
-  purchase?: SubscriptionResolver<Maybe<ResolversTypes['Purchase']>, "purchase", ParentType, ContextType, RequireFields<SubscriptionpurchaseArgs, 'id' | 'subgraphError'>>;
-  purchases?: SubscriptionResolver<Array<ResolversTypes['Purchase']>, "purchases", ParentType, ContextType, RequireFields<SubscriptionpurchasesArgs, 'skip' | 'first' | 'subgraphError'>>;
-  offer?: SubscriptionResolver<Maybe<ResolversTypes['Offer']>, "offer", ParentType, ContextType, RequireFields<SubscriptionofferArgs, 'id' | 'subgraphError'>>;
-  offers?: SubscriptionResolver<Array<ResolversTypes['Offer']>, "offers", ParentType, ContextType, RequireFields<SubscriptionoffersArgs, 'skip' | 'first' | 'subgraphError'>>;
-  _meta?: SubscriptionResolver<Maybe<ResolversTypes['_Meta_']>, "_meta", ParentType, ContextType, Partial<Subscription_metaArgs>>;
-  burnEvent?: SubscriptionResolver<Maybe<ResolversTypes['BurnEvent']>, "burnEvent", ParentType, ContextType, RequireFields<SubscriptionburnEventArgs, 'id' | 'subgraphError'>>;
-  burnEvents?: SubscriptionResolver<Array<ResolversTypes['BurnEvent']>, "burnEvents", ParentType, ContextType, RequireFields<SubscriptionburnEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  mintEvent?: SubscriptionResolver<Maybe<ResolversTypes['MintEvent']>, "mintEvent", ParentType, ContextType, RequireFields<SubscriptionmintEventArgs, 'id' | 'subgraphError'>>;
-  mintEvents?: SubscriptionResolver<Array<ResolversTypes['MintEvent']>, "mintEvents", ParentType, ContextType, RequireFields<SubscriptionmintEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  transferEvent?: SubscriptionResolver<Maybe<ResolversTypes['TransferEvent']>, "transferEvent", ParentType, ContextType, RequireFields<SubscriptiontransferEventArgs, 'id' | 'subgraphError'>>;
-  transferEvents?: SubscriptionResolver<Array<ResolversTypes['TransferEvent']>, "transferEvents", ParentType, ContextType, RequireFields<SubscriptiontransferEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  allowance?: SubscriptionResolver<Maybe<ResolversTypes['Allowance']>, "allowance", ParentType, ContextType, RequireFields<SubscriptionallowanceArgs, 'id' | 'subgraphError'>>;
-  allowances?: SubscriptionResolver<Array<ResolversTypes['Allowance']>, "allowances", ParentType, ContextType, RequireFields<SubscriptionallowancesArgs, 'skip' | 'first' | 'subgraphError'>>;
-  accountBalance?: SubscriptionResolver<Maybe<ResolversTypes['AccountBalance']>, "accountBalance", ParentType, ContextType, RequireFields<SubscriptionaccountBalanceArgs, 'id' | 'subgraphError'>>;
-  accountBalances?: SubscriptionResolver<Array<ResolversTypes['AccountBalance']>, "accountBalances", ParentType, ContextType, RequireFields<SubscriptionaccountBalancesArgs, 'skip' | 'first' | 'subgraphError'>>;
-  accountBalanceSnapshot?: SubscriptionResolver<Maybe<ResolversTypes['AccountBalanceSnapshot']>, "accountBalanceSnapshot", ParentType, ContextType, RequireFields<SubscriptionaccountBalanceSnapshotArgs, 'id' | 'subgraphError'>>;
-  accountBalanceSnapshots?: SubscriptionResolver<Array<ResolversTypes['AccountBalanceSnapshot']>, "accountBalanceSnapshots", ParentType, ContextType, RequireFields<SubscriptionaccountBalanceSnapshotsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  transaction?: SubscriptionResolver<Maybe<ResolversTypes['Transaction']>, "transaction", ParentType, ContextType, RequireFields<SubscriptiontransactionArgs, 'id' | 'subgraphError'>>;
-  transactions?: SubscriptionResolver<Array<ResolversTypes['Transaction']>, "transactions", ParentType, ContextType, RequireFields<SubscriptiontransactionsArgs, 'skip' | 'first' | 'subgraphError'>>;
-  tokenEvent?: SubscriptionResolver<Maybe<ResolversTypes['TokenEvent']>, "tokenEvent", ParentType, ContextType, RequireFields<SubscriptiontokenEventArgs, 'id' | 'subgraphError'>>;
-  tokenEvents?: SubscriptionResolver<Array<ResolversTypes['TokenEvent']>, "tokenEvents", ParentType, ContextType, RequireFields<SubscriptiontokenEventsArgs, 'skip' | 'first' | 'subgraphError'>>;
+export type SubscriptionResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']
+> = ResolversObject<{
+  account?: SubscriptionResolver<
+    Maybe<ResolversTypes['Account']>,
+    'account',
+    ParentType,
+    ContextType,
+    RequireFields<SubscriptionaccountArgs, 'id' | 'subgraphError'>
+  >;
+  accounts?: SubscriptionResolver<
+    Array<ResolversTypes['Account']>,
+    'accounts',
+    ParentType,
+    ContextType,
+    RequireFields<SubscriptionaccountsArgs, 'skip' | 'first' | 'subgraphError'>
+  >;
+  token?: SubscriptionResolver<
+    Maybe<ResolversTypes['Token']>,
+    'token',
+    ParentType,
+    ContextType,
+    RequireFields<SubscriptiontokenArgs, 'id' | 'subgraphError'>
+  >;
+  tokens?: SubscriptionResolver<
+    Array<ResolversTypes['Token']>,
+    'tokens',
+    ParentType,
+    ContextType,
+    RequireFields<SubscriptiontokensArgs, 'skip' | 'first' | 'subgraphError'>
+  >;
+  offerPrice?: SubscriptionResolver<
+    Maybe<ResolversTypes['OfferPrice']>,
+    'offerPrice',
+    ParentType,
+    ContextType,
+    RequireFields<SubscriptionofferPriceArgs, 'id' | 'subgraphError'>
+  >;
+  offerPrices?: SubscriptionResolver<
+    Array<ResolversTypes['OfferPrice']>,
+    'offerPrices',
+    ParentType,
+    ContextType,
+    RequireFields<
+      SubscriptionofferPricesArgs,
+      'skip' | 'first' | 'subgraphError'
+    >
+  >;
+  purchase?: SubscriptionResolver<
+    Maybe<ResolversTypes['Purchase']>,
+    'purchase',
+    ParentType,
+    ContextType,
+    RequireFields<SubscriptionpurchaseArgs, 'id' | 'subgraphError'>
+  >;
+  purchases?: SubscriptionResolver<
+    Array<ResolversTypes['Purchase']>,
+    'purchases',
+    ParentType,
+    ContextType,
+    RequireFields<SubscriptionpurchasesArgs, 'skip' | 'first' | 'subgraphError'>
+  >;
+  offer?: SubscriptionResolver<
+    Maybe<ResolversTypes['Offer']>,
+    'offer',
+    ParentType,
+    ContextType,
+    RequireFields<SubscriptionofferArgs, 'id' | 'subgraphError'>
+  >;
+  offers?: SubscriptionResolver<
+    Array<ResolversTypes['Offer']>,
+    'offers',
+    ParentType,
+    ContextType,
+    RequireFields<SubscriptionoffersArgs, 'skip' | 'first' | 'subgraphError'>
+  >;
+  _meta?: SubscriptionResolver<
+    Maybe<ResolversTypes['_Meta_']>,
+    '_meta',
+    ParentType,
+    ContextType,
+    Partial<Subscription_metaArgs>
+  >;
+  burnEvent?: SubscriptionResolver<
+    Maybe<ResolversTypes['BurnEvent']>,
+    'burnEvent',
+    ParentType,
+    ContextType,
+    RequireFields<SubscriptionburnEventArgs, 'id' | 'subgraphError'>
+  >;
+  burnEvents?: SubscriptionResolver<
+    Array<ResolversTypes['BurnEvent']>,
+    'burnEvents',
+    ParentType,
+    ContextType,
+    RequireFields<
+      SubscriptionburnEventsArgs,
+      'skip' | 'first' | 'subgraphError'
+    >
+  >;
+  mintEvent?: SubscriptionResolver<
+    Maybe<ResolversTypes['MintEvent']>,
+    'mintEvent',
+    ParentType,
+    ContextType,
+    RequireFields<SubscriptionmintEventArgs, 'id' | 'subgraphError'>
+  >;
+  mintEvents?: SubscriptionResolver<
+    Array<ResolversTypes['MintEvent']>,
+    'mintEvents',
+    ParentType,
+    ContextType,
+    RequireFields<
+      SubscriptionmintEventsArgs,
+      'skip' | 'first' | 'subgraphError'
+    >
+  >;
+  transferEvent?: SubscriptionResolver<
+    Maybe<ResolversTypes['TransferEvent']>,
+    'transferEvent',
+    ParentType,
+    ContextType,
+    RequireFields<SubscriptiontransferEventArgs, 'id' | 'subgraphError'>
+  >;
+  transferEvents?: SubscriptionResolver<
+    Array<ResolversTypes['TransferEvent']>,
+    'transferEvents',
+    ParentType,
+    ContextType,
+    RequireFields<
+      SubscriptiontransferEventsArgs,
+      'skip' | 'first' | 'subgraphError'
+    >
+  >;
+  allowance?: SubscriptionResolver<
+    Maybe<ResolversTypes['Allowance']>,
+    'allowance',
+    ParentType,
+    ContextType,
+    RequireFields<SubscriptionallowanceArgs, 'id' | 'subgraphError'>
+  >;
+  allowances?: SubscriptionResolver<
+    Array<ResolversTypes['Allowance']>,
+    'allowances',
+    ParentType,
+    ContextType,
+    RequireFields<
+      SubscriptionallowancesArgs,
+      'skip' | 'first' | 'subgraphError'
+    >
+  >;
+  accountBalance?: SubscriptionResolver<
+    Maybe<ResolversTypes['AccountBalance']>,
+    'accountBalance',
+    ParentType,
+    ContextType,
+    RequireFields<SubscriptionaccountBalanceArgs, 'id' | 'subgraphError'>
+  >;
+  accountBalances?: SubscriptionResolver<
+    Array<ResolversTypes['AccountBalance']>,
+    'accountBalances',
+    ParentType,
+    ContextType,
+    RequireFields<
+      SubscriptionaccountBalancesArgs,
+      'skip' | 'first' | 'subgraphError'
+    >
+  >;
+  accountBalanceSnapshot?: SubscriptionResolver<
+    Maybe<ResolversTypes['AccountBalanceSnapshot']>,
+    'accountBalanceSnapshot',
+    ParentType,
+    ContextType,
+    RequireFields<
+      SubscriptionaccountBalanceSnapshotArgs,
+      'id' | 'subgraphError'
+    >
+  >;
+  accountBalanceSnapshots?: SubscriptionResolver<
+    Array<ResolversTypes['AccountBalanceSnapshot']>,
+    'accountBalanceSnapshots',
+    ParentType,
+    ContextType,
+    RequireFields<
+      SubscriptionaccountBalanceSnapshotsArgs,
+      'skip' | 'first' | 'subgraphError'
+    >
+  >;
+  transaction?: SubscriptionResolver<
+    Maybe<ResolversTypes['Transaction']>,
+    'transaction',
+    ParentType,
+    ContextType,
+    RequireFields<SubscriptiontransactionArgs, 'id' | 'subgraphError'>
+  >;
+  transactions?: SubscriptionResolver<
+    Array<ResolversTypes['Transaction']>,
+    'transactions',
+    ParentType,
+    ContextType,
+    RequireFields<
+      SubscriptiontransactionsArgs,
+      'skip' | 'first' | 'subgraphError'
+    >
+  >;
+  tokenEvent?: SubscriptionResolver<
+    Maybe<ResolversTypes['TokenEvent']>,
+    'tokenEvent',
+    ParentType,
+    ContextType,
+    RequireFields<SubscriptiontokenEventArgs, 'id' | 'subgraphError'>
+  >;
+  tokenEvents?: SubscriptionResolver<
+    Array<ResolversTypes['TokenEvent']>,
+    'tokenEvents',
+    ParentType,
+    ContextType,
+    RequireFields<
+      SubscriptiontokenEventsArgs,
+      'skip' | 'first' | 'subgraphError'
+    >
+  >;
 }>;
 
-export type AccountResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Account'] = ResolversParentTypes['Account']> = ResolversObject<{
+export type AccountResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['Account'] = ResolversParentTypes['Account']
+> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   address?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
-  offers?: Resolver<Array<ResolversTypes['Offer']>, ParentType, ContextType, RequireFields<AccountoffersArgs, 'skip' | 'first'>>;
-  purchases?: Resolver<Array<ResolversTypes['Purchase']>, ParentType, ContextType, RequireFields<AccountpurchasesArgs, 'skip' | 'first'>>;
-  sells?: Resolver<Array<ResolversTypes['Purchase']>, ParentType, ContextType, RequireFields<AccountsellsArgs, 'skip' | 'first'>>;
+  offers?: Resolver<
+    Array<ResolversTypes['Offer']>,
+    ParentType,
+    ContextType,
+    RequireFields<AccountoffersArgs, 'skip' | 'first'>
+  >;
+  purchases?: Resolver<
+    Array<ResolversTypes['Purchase']>,
+    ParentType,
+    ContextType,
+    RequireFields<AccountpurchasesArgs, 'skip' | 'first'>
+  >;
+  sells?: Resolver<
+    Array<ResolversTypes['Purchase']>,
+    ParentType,
+    ContextType,
+    RequireFields<AccountsellsArgs, 'skip' | 'first'>
+  >;
   purchaseCount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   sellCount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   offerCount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  balances?: Resolver<Array<ResolversTypes['AccountBalance']>, ParentType, ContextType, RequireFields<AccountbalancesArgs, 'skip' | 'first'>>;
-  allowances?: Resolver<Array<ResolversTypes['Allowance']>, ParentType, ContextType, RequireFields<AccountallowancesArgs, 'skip' | 'first'>>;
+  balances?: Resolver<
+    Array<ResolversTypes['AccountBalance']>,
+    ParentType,
+    ContextType,
+    RequireFields<AccountbalancesArgs, 'skip' | 'first'>
+  >;
+  allowances?: Resolver<
+    Array<ResolversTypes['Allowance']>,
+    ParentType,
+    ContextType,
+    RequireFields<AccountallowancesArgs, 'skip' | 'first'>
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export interface BigDecimalScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['BigDecimal'], any> {
+export interface BigDecimalScalarConfig
+  extends GraphQLScalarTypeConfig<ResolversTypes['BigDecimal'], any> {
   name: 'BigDecimal';
 }
 
-export interface BigIntScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['BigInt'], any> {
+export interface BigIntScalarConfig
+  extends GraphQLScalarTypeConfig<ResolversTypes['BigInt'], any> {
   name: 'BigInt';
 }
 
-export interface BytesScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Bytes'], any> {
+export interface BytesScalarConfig
+  extends GraphQLScalarTypeConfig<ResolversTypes['Bytes'], any> {
   name: 'Bytes';
 }
 
-export type OfferResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Offer'] = ResolversParentTypes['Offer']> = ResolversObject<{
+export type OfferResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['Offer'] = ResolversParentTypes['Offer']
+> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   seller?: Resolver<ResolversTypes['Account'], ParentType, ContextType>;
   offerToken?: Resolver<ResolversTypes['Token'], ParentType, ContextType>;
   buyerToken?: Resolver<ResolversTypes['Token'], ParentType, ContextType>;
-  prices?: Resolver<Array<ResolversTypes['OfferPrice']>, ParentType, ContextType, RequireFields<OfferpricesArgs, 'skip' | 'first'>>;
+  prices?: Resolver<
+    Array<ResolversTypes['OfferPrice']>,
+    ParentType,
+    ContextType,
+    RequireFields<OfferpricesArgs, 'skip' | 'first'>
+  >;
   price?: Resolver<ResolversTypes['OfferPrice'], ParentType, ContextType>;
-  availableAmount?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
-  purchases?: Resolver<Array<ResolversTypes['Purchase']>, ParentType, ContextType, RequireFields<OfferpurchasesArgs, 'skip' | 'first'>>;
+  availableAmount?: Resolver<
+    ResolversTypes['BigDecimal'],
+    ParentType,
+    ContextType
+  >;
+  purchases?: Resolver<
+    Array<ResolversTypes['Purchase']>,
+    ParentType,
+    ContextType,
+    RequireFields<OfferpurchasesArgs, 'skip' | 'first'>
+  >;
   purchaseCount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   buyer?: Resolver<Maybe<ResolversTypes['Account']>, ParentType, ContextType>;
   createdAtBlock?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  createdAtTimestamp?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  removedAtBlock?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
-  removedAtTimestamp?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  createdAtTimestamp?: Resolver<
+    ResolversTypes['BigInt'],
+    ParentType,
+    ContextType
+  >;
+  removedAtBlock?: Resolver<
+    Maybe<ResolversTypes['BigInt']>,
+    ParentType,
+    ContextType
+  >;
+  removedAtTimestamp?: Resolver<
+    Maybe<ResolversTypes['BigInt']>,
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type OfferPriceResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['OfferPrice'] = ResolversParentTypes['OfferPrice']> = ResolversObject<{
+export type OfferPriceResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['OfferPrice'] = ResolversParentTypes['OfferPrice']
+> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   offer?: Resolver<ResolversTypes['Offer'], ParentType, ContextType>;
   price?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
   amount?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
   createdAtBlock?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  createdAtTimestamp?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  createdAtTimestamp?: Resolver<
+    ResolversTypes['BigInt'],
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type PurchaseResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Purchase'] = ResolversParentTypes['Purchase']> = ResolversObject<{
+export type PurchaseResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['Purchase'] = ResolversParentTypes['Purchase']
+> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   offer?: Resolver<ResolversTypes['Offer'], ParentType, ContextType>;
   buyer?: Resolver<ResolversTypes['Account'], ParentType, ContextType>;
   price?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
   quantity?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
   createdAtBlock?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  createdAtTimestamp?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  createdAtTimestamp?: Resolver<
+    ResolversTypes['BigInt'],
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type TokenResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Token'] = ResolversParentTypes['Token']> = ResolversObject<{
+export type TokenResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['Token'] = ResolversParentTypes['Token']
+> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   address?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
-  offers?: Resolver<Array<ResolversTypes['Offer']>, ParentType, ContextType, RequireFields<TokenoffersArgs, 'skip' | 'first'>>;
-  purchases?: Resolver<Array<ResolversTypes['Purchase']>, ParentType, ContextType, RequireFields<TokenpurchasesArgs, 'skip' | 'first'>>;
+  offers?: Resolver<
+    Array<ResolversTypes['Offer']>,
+    ParentType,
+    ContextType,
+    RequireFields<TokenoffersArgs, 'skip' | 'first'>
+  >;
+  purchases?: Resolver<
+    Array<ResolversTypes['Purchase']>,
+    ParentType,
+    ContextType,
+    RequireFields<TokenpurchasesArgs, 'skip' | 'first'>
+  >;
   purchaseCount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  dollarsVolume?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
+  dollarsVolume?: Resolver<
+    ResolversTypes['BigDecimal'],
+    ParentType,
+    ContextType
+  >;
   offerCount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   tokenType?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   decimals?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -2949,47 +3387,109 @@ export type TokenResolvers<ContextType = MeshContext, ParentType extends Resolve
   eventCount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   burnEventCount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   mintEventCount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  transferEventCount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  approveEventCount?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
+  transferEventCount?: Resolver<
+    ResolversTypes['BigInt'],
+    ParentType,
+    ContextType
+  >;
+  approveEventCount?: Resolver<
+    ResolversTypes['BigInt'],
+    ParentType,
+    ContextType
+  >;
   totalSupply?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
   totalBurned?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
   totalMinted?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
-  totalTransferred?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
-  approveEvent?: Resolver<Array<ResolversTypes['Allowance']>, ParentType, ContextType, RequireFields<TokenapproveEventArgs, 'skip' | 'first'>>;
-  burnEvents?: Resolver<Array<ResolversTypes['BurnEvent']>, ParentType, ContextType, RequireFields<TokenburnEventsArgs, 'skip' | 'first'>>;
-  mintEvents?: Resolver<Array<ResolversTypes['MintEvent']>, ParentType, ContextType, RequireFields<TokenmintEventsArgs, 'skip' | 'first'>>;
-  transferEvents?: Resolver<Array<ResolversTypes['TransferEvent']>, ParentType, ContextType, RequireFields<TokentransferEventsArgs, 'skip' | 'first'>>;
-  transactions?: Resolver<Array<ResolversTypes['Transaction']>, ParentType, ContextType, RequireFields<TokentransactionsArgs, 'skip' | 'first'>>;
+  totalTransferred?: Resolver<
+    ResolversTypes['BigDecimal'],
+    ParentType,
+    ContextType
+  >;
+  approveEvent?: Resolver<
+    Array<ResolversTypes['Allowance']>,
+    ParentType,
+    ContextType,
+    RequireFields<TokenapproveEventArgs, 'skip' | 'first'>
+  >;
+  burnEvents?: Resolver<
+    Array<ResolversTypes['BurnEvent']>,
+    ParentType,
+    ContextType,
+    RequireFields<TokenburnEventsArgs, 'skip' | 'first'>
+  >;
+  mintEvents?: Resolver<
+    Array<ResolversTypes['MintEvent']>,
+    ParentType,
+    ContextType,
+    RequireFields<TokenmintEventsArgs, 'skip' | 'first'>
+  >;
+  transferEvents?: Resolver<
+    Array<ResolversTypes['TransferEvent']>,
+    ParentType,
+    ContextType,
+    RequireFields<TokentransferEventsArgs, 'skip' | 'first'>
+  >;
+  transactions?: Resolver<
+    Array<ResolversTypes['Transaction']>,
+    ParentType,
+    ContextType,
+    RequireFields<TokentransactionsArgs, 'skip' | 'first'>
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type _Block_Resolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['_Block_'] = ResolversParentTypes['_Block_']> = ResolversObject<{
+export type _Block_Resolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['_Block_'] = ResolversParentTypes['_Block_']
+> = ResolversObject<{
   hash?: Resolver<Maybe<ResolversTypes['Bytes']>, ParentType, ContextType>;
   number?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   timestamp?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type _Meta_Resolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['_Meta_'] = ResolversParentTypes['_Meta_']> = ResolversObject<{
+export type _Meta_Resolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['_Meta_'] = ResolversParentTypes['_Meta_']
+> = ResolversObject<{
   block?: Resolver<ResolversTypes['_Block_'], ParentType, ContextType>;
   deployment?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  hasIndexingErrors?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  hasIndexingErrors?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type AccountBalanceResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['AccountBalance'] = ResolversParentTypes['AccountBalance']> = ResolversObject<{
+export type AccountBalanceResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['AccountBalance'] = ResolversParentTypes['AccountBalance']
+> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   account?: Resolver<ResolversTypes['Account'], ParentType, ContextType>;
   token?: Resolver<ResolversTypes['Token'], ParentType, ContextType>;
   amount?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
-  allowances?: Resolver<Array<ResolversTypes['Allowance']>, ParentType, ContextType, RequireFields<AccountBalanceallowancesArgs, 'skip' | 'first'>>;
+  allowances?: Resolver<
+    Array<ResolversTypes['Allowance']>,
+    ParentType,
+    ContextType,
+    RequireFields<AccountBalanceallowancesArgs, 'skip' | 'first'>
+  >;
   block?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   modified?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  transaction?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType>;
+  transaction?: Resolver<
+    ResolversTypes['Transaction'],
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type AccountBalanceSnapshotResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['AccountBalanceSnapshot'] = ResolversParentTypes['AccountBalanceSnapshot']> = ResolversObject<{
+export type AccountBalanceSnapshotResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['AccountBalanceSnapshot'] = ResolversParentTypes['AccountBalanceSnapshot']
+> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   account?: Resolver<ResolversTypes['Account'], ParentType, ContextType>;
   token?: Resolver<ResolversTypes['Token'], ParentType, ContextType>;
@@ -2997,11 +3497,18 @@ export type AccountBalanceSnapshotResolvers<ContextType = MeshContext, ParentTyp
   event?: Resolver<ResolversTypes['TransferEvent'], ParentType, ContextType>;
   block?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   timestamp?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  transaction?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType>;
+  transaction?: Resolver<
+    ResolversTypes['Transaction'],
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type AllowanceResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Allowance'] = ResolversParentTypes['Allowance']> = ResolversObject<{
+export type AllowanceResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['Allowance'] = ResolversParentTypes['Allowance']
+> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   spender?: Resolver<ResolversTypes['Account'], ParentType, ContextType>;
   account?: Resolver<ResolversTypes['Account'], ParentType, ContextType>;
@@ -3011,7 +3518,10 @@ export type AllowanceResolvers<ContextType = MeshContext, ParentType extends Res
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type BurnEventResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['BurnEvent'] = ResolversParentTypes['BurnEvent']> = ResolversObject<{
+export type BurnEventResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['BurnEvent'] = ResolversParentTypes['BurnEvent']
+> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   token?: Resolver<ResolversTypes['Token'], ParentType, ContextType>;
   amount?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
@@ -3019,11 +3529,18 @@ export type BurnEventResolvers<ContextType = MeshContext, ParentType extends Res
   burner?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   block?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   timestamp?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  transaction?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType>;
+  transaction?: Resolver<
+    ResolversTypes['Transaction'],
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type MintEventResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['MintEvent'] = ResolversParentTypes['MintEvent']> = ResolversObject<{
+export type MintEventResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['MintEvent'] = ResolversParentTypes['MintEvent']
+> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   token?: Resolver<ResolversTypes['Token'], ParentType, ContextType>;
   amount?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
@@ -3031,37 +3548,67 @@ export type MintEventResolvers<ContextType = MeshContext, ParentType extends Res
   destination?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   block?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   timestamp?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  transaction?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType>;
+  transaction?: Resolver<
+    ResolversTypes['Transaction'],
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type TokenEventResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['TokenEvent'] = ResolversParentTypes['TokenEvent']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'BurnEvent' | 'MintEvent' | 'TransferEvent', ParentType, ContextType>;
+export type TokenEventResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['TokenEvent'] = ResolversParentTypes['TokenEvent']
+> = ResolversObject<{
+  __resolveType: TypeResolveFn<
+    'BurnEvent' | 'MintEvent' | 'TransferEvent',
+    ParentType,
+    ContextType
+  >;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   token?: Resolver<ResolversTypes['Token'], ParentType, ContextType>;
   amount?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
   sender?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   block?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   timestamp?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  transaction?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType>;
+  transaction?: Resolver<
+    ResolversTypes['Transaction'],
+    ParentType,
+    ContextType
+  >;
 }>;
 
-export type TransactionResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['Transaction'] = ResolversParentTypes['Transaction']> = ResolversObject<{
+export type TransactionResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['Transaction'] = ResolversParentTypes['Transaction']
+> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  transferEvents?: Resolver<Array<ResolversTypes['TransferEvent']>, ParentType, ContextType, RequireFields<TransactiontransferEventsArgs, 'skip' | 'first'>>;
+  transferEvents?: Resolver<
+    Array<ResolversTypes['TransferEvent']>,
+    ParentType,
+    ContextType,
+    RequireFields<TransactiontransferEventsArgs, 'skip' | 'first'>
+  >;
   input?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   value?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   block?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   timestamp?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   gasLimit?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   gasPrice?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  cumulativeGasUsed?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
+  cumulativeGasUsed?: Resolver<
+    Maybe<ResolversTypes['BigInt']>,
+    ParentType,
+    ContextType
+  >;
   gasUsed?: Resolver<Maybe<ResolversTypes['BigInt']>, ParentType, ContextType>;
   to?: Resolver<Maybe<ResolversTypes['Bytes']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type TransferEventResolvers<ContextType = MeshContext, ParentType extends ResolversParentTypes['TransferEvent'] = ResolversParentTypes['TransferEvent']> = ResolversObject<{
+export type TransferEventResolvers<
+  ContextType = MeshContext,
+  ParentType extends ResolversParentTypes['TransferEvent'] = ResolversParentTypes['TransferEvent']
+> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   token?: Resolver<ResolversTypes['Token'], ParentType, ContextType>;
   amount?: Resolver<ResolversTypes['BigDecimal'], ParentType, ContextType>;
@@ -3070,7 +3617,11 @@ export type TransferEventResolvers<ContextType = MeshContext, ParentType extends
   destination?: Resolver<ResolversTypes['Bytes'], ParentType, ContextType>;
   block?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
   timestamp?: Resolver<ResolversTypes['BigInt'], ParentType, ContextType>;
-  transaction?: Resolver<ResolversTypes['Transaction'], ParentType, ContextType>;
+  transaction?: Resolver<
+    ResolversTypes['Transaction'],
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -3103,110 +3654,136 @@ export type DirectiveResolvers<ContextType = MeshContext> = ResolversObject<{
   derivedFrom?: derivedFromDirectiveResolver<any, any, ContextType>;
 }>;
 
-export type MeshContext = YamGnosisTypes.Context & YamEthTypes.Context & WalletGoerliTypes.Context & BaseMeshContext;
+export type MeshContext = YamGnosisTypes.Context &
+  YamEthTypes.Context &
+  WalletGoerliTypes.Context &
+  BaseMeshContext;
 
-
-import { fileURLToPath } from '@graphql-mesh/utils';
-const baseDir = pathModule.join(pathModule.dirname(fileURLToPath(import.meta.url)), '..');
+const baseDir = pathModule.join(
+  pathModule.dirname(fileURLToPath(import.meta.url)),
+  '..'
+);
 
 const importFn: ImportFn = <T>(moduleId: string) => {
-  const relativeModuleId = (pathModule.isAbsolute(moduleId) ? pathModule.relative(baseDir, moduleId) : moduleId).split('\\').join('/').replace(baseDir + '/', '');
-  switch(relativeModuleId) {
-    case ".graphclient/sources/yam-gnosis/introspectionSchema":
-      return import("./sources/yam-gnosis/introspectionSchema") as T;
-    
-    case ".graphclient/sources/yam-eth/introspectionSchema":
-      return import("./sources/yam-eth/introspectionSchema") as T;
-    
-    case ".graphclient/sources/wallet-goerli/introspectionSchema":
-      return import("./sources/wallet-goerli/introspectionSchema") as T;
-    
+  const relativeModuleId = (
+    pathModule.isAbsolute(moduleId)
+      ? pathModule.relative(baseDir, moduleId)
+      : moduleId
+  )
+    .split('\\')
+    .join('/')
+    .replace(baseDir + '/', '');
+  switch (relativeModuleId) {
+    case '.graphclient/sources/yam-gnosis/introspectionSchema':
+      return import('./sources/yam-gnosis/introspectionSchema') as T;
+
+    case '.graphclient/sources/yam-eth/introspectionSchema':
+      return import('./sources/yam-eth/introspectionSchema') as T;
+
+    case '.graphclient/sources/wallet-goerli/introspectionSchema':
+      return import('./sources/wallet-goerli/introspectionSchema') as T;
+
     default:
-      return Promise.reject(new Error(`Cannot find module '${relativeModuleId}'.`));
+      return Promise.reject(
+        new Error(`Cannot find module '${relativeModuleId}'.`)
+      );
   }
 };
 
-const rootStore = new MeshStore('.graphclient', new FsStoreStorageAdapter({
-  cwd: baseDir,
-  importFn,
-  fileType: "ts",
-}), {
-  readonly: true,
-  validate: false
-});
+const rootStore = new MeshStore(
+  '.graphclient',
+  new FsStoreStorageAdapter({
+    cwd: baseDir,
+    importFn,
+    fileType: 'ts',
+  }),
+  {
+    readonly: true,
+    validate: false,
+  }
+);
 
-export const rawServeConfig: YamlConfig.Config['serve'] = undefined as any
+export const rawServeConfig: YamlConfig.Config['serve'] = undefined as any;
 export async function getMeshOptions(): Promise<GetMeshOptions> {
-const pubsub = new PubSub();
-const sourcesStore = rootStore.child('sources');
-const logger = new DefaultLogger("GraphClient");
-const cache = new (MeshCache as any)({
-      ...({} as any),
-      importFn,
-      store: rootStore.child('cache'),
-      pubsub,
-      logger,
-    } as any)
+  const pubsub = new PubSub();
+  const sourcesStore = rootStore.child('sources');
+  const logger = new DefaultLogger('GraphClient');
+  const cache = new (MeshCache as any)({
+    ...({} as any),
+    importFn,
+    store: rootStore.child('cache'),
+    pubsub,
+    logger,
+  } as any);
 
-const sources: MeshResolvedSource[] = [];
-const transforms: MeshTransform[] = [];
-const additionalEnvelopPlugins: MeshPlugin<any>[] = [];
-const yamGnosisTransforms = [];
-const yamEthTransforms = [];
-const walletGoerliTransforms = [];
-const additionalTypeDefs = [] as any[];
-const yamGnosisHandler = new GraphqlHandler({
-              name: "yam-gnosis",
-              config: {"endpoint":"https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-gnosis"},
-              baseDir,
-              cache,
-              pubsub,
-              store: sourcesStore.child("yam-gnosis"),
-              logger: logger.child("yam-gnosis"),
-              importFn,
-            });
-const yamEthHandler = new GraphqlHandler({
-              name: "yam-eth",
-              config: {"endpoint":"https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph"},
-              baseDir,
-              cache,
-              pubsub,
-              store: sourcesStore.child("yam-eth"),
-              logger: logger.child("yam-eth"),
-              importFn,
-            });
-const walletGoerliHandler = new GraphqlHandler({
-              name: "wallet-goerli",
-              config: {"endpoint":"https://api.thegraph.com/subgraphs/name/realtoken-thegraph/realtoken-goerli"},
-              baseDir,
-              cache,
-              pubsub,
-              store: sourcesStore.child("wallet-goerli"),
-              logger: logger.child("wallet-goerli"),
-              importFn,
-            });
-sources[0] = {
-          name: 'yam-gnosis',
-          handler: yamGnosisHandler,
-          transforms: yamGnosisTransforms
-        }
-sources[1] = {
-          name: 'yam-eth',
-          handler: yamEthHandler,
-          transforms: yamEthTransforms
-        }
-sources[2] = {
-          name: 'wallet-goerli',
-          handler: walletGoerliHandler,
-          transforms: walletGoerliTransforms
-        }
-const additionalResolvers = [] as any[]
-const merger = new(StitchingMerger as any)({
-        cache,
-        pubsub,
-        logger: logger.child('stitchingMerger'),
-        store: rootStore.child('stitchingMerger')
-      })
+  const sources: MeshResolvedSource[] = [];
+  const transforms: MeshTransform[] = [];
+  const additionalEnvelopPlugins: MeshPlugin<any>[] = [];
+  const yamGnosisTransforms = [];
+  const yamEthTransforms = [];
+  const walletGoerliTransforms = [];
+  const additionalTypeDefs = [] as any[];
+  const yamGnosisHandler = new GraphqlHandler({
+    name: 'yam-gnosis',
+    config: {
+      endpoint:
+        'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-gnosis',
+    },
+    baseDir,
+    cache,
+    pubsub,
+    store: sourcesStore.child('yam-gnosis'),
+    logger: logger.child('yam-gnosis'),
+    importFn,
+  });
+  const yamEthHandler = new GraphqlHandler({
+    name: 'yam-eth',
+    config: {
+      endpoint:
+        'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph',
+    },
+    baseDir,
+    cache,
+    pubsub,
+    store: sourcesStore.child('yam-eth'),
+    logger: logger.child('yam-eth'),
+    importFn,
+  });
+  const walletGoerliHandler = new GraphqlHandler({
+    name: 'wallet-goerli',
+    config: {
+      endpoint:
+        'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/realtoken-goerli',
+    },
+    baseDir,
+    cache,
+    pubsub,
+    store: sourcesStore.child('wallet-goerli'),
+    logger: logger.child('wallet-goerli'),
+    importFn,
+  });
+  sources[0] = {
+    name: 'yam-gnosis',
+    handler: yamGnosisHandler,
+    transforms: yamGnosisTransforms,
+  };
+  sources[1] = {
+    name: 'yam-eth',
+    handler: yamEthHandler,
+    transforms: yamEthTransforms,
+  };
+  sources[2] = {
+    name: 'wallet-goerli',
+    handler: walletGoerliHandler,
+    transforms: walletGoerliTransforms,
+  };
+  const additionalResolvers = [] as any[];
+  const merger = new (StitchingMerger as any)({
+    cache,
+    pubsub,
+    logger: logger.child('stitchingMerger'),
+    store: rootStore.child('stitchingMerger'),
+  });
 
   return {
     sources,
@@ -3220,14 +3797,14 @@ const merger = new(StitchingMerger as any)({
     additionalEnvelopPlugins,
     get documents() {
       return [
-      {
-        document: GetOffersDocument,
-        get rawSDL() {
-          return printWithCache(GetOffersDocument);
+        {
+          document: GetOffersDocument,
+          get rawSDL() {
+            return printWithCache(GetOffersDocument);
+          },
+          location: 'GetOffersDocument.graphql',
         },
-        location: 'GetOffersDocument.graphql'
-      }
-    ];
+      ];
     },
     fetchFn,
   };
@@ -3238,79 +3815,103 @@ export function createBuiltMeshHTTPHandler(): MeshHTTPHandler<MeshContext> {
     baseDir,
     getBuiltMesh: getBuiltGraphClient,
     rawServeConfig: undefined,
-  })
+  });
 }
-
 
 let meshInstance$: Promise<MeshInstance> | undefined;
 
 export function getBuiltGraphClient(): Promise<MeshInstance> {
   if (meshInstance$ == null) {
-    meshInstance$ = getMeshOptions().then(meshOptions => getMesh(meshOptions)).then(mesh => {
-      const id = mesh.pubsub.subscribe('destroy', () => {
-        meshInstance$ = undefined;
-        mesh.pubsub.unsubscribe(id);
+    meshInstance$ = getMeshOptions()
+      .then((meshOptions) => getMesh(meshOptions))
+      .then((mesh) => {
+        const id = mesh.pubsub.subscribe('destroy', () => {
+          meshInstance$ = undefined;
+          mesh.pubsub.unsubscribe(id);
+        });
+        return mesh;
       });
-      return mesh;
-    });
   }
   return meshInstance$;
 }
 
-export const execute: ExecuteMeshFn = (...args) => getBuiltGraphClient().then(({ execute }) => execute(...args));
+export const execute: ExecuteMeshFn = (...args) =>
+  getBuiltGraphClient().then(({ execute }) => execute(...args));
 
-export const subscribe: SubscribeMeshFn = (...args) => getBuiltGraphClient().then(({ subscribe }) => subscribe(...args));
-export function getBuiltGraphSDK<TGlobalContext = any, TOperationContext = any>(globalContext?: TGlobalContext) {
-  const sdkRequester$ = getBuiltGraphClient().then(({ sdkRequesterFactory }) => sdkRequesterFactory(globalContext));
-  return getSdk<TOperationContext, TGlobalContext>((...args) => sdkRequester$.then(sdkRequester => sdkRequester(...args)));
+export const subscribe: SubscribeMeshFn = (...args) =>
+  getBuiltGraphClient().then(({ subscribe }) => subscribe(...args));
+export function getBuiltGraphSDK<TGlobalContext = any, TOperationContext = any>(
+  globalContext?: TGlobalContext
+) {
+  const sdkRequester$ = getBuiltGraphClient().then(({ sdkRequesterFactory }) =>
+    sdkRequesterFactory(globalContext)
+  );
+  return getSdk<TOperationContext, TGlobalContext>((...args) =>
+    sdkRequester$.then((sdkRequester) => sdkRequester(...args))
+  );
 }
-export type getOffersQueryVariables = Exact<{ [key: string]: never; }>;
+export type getOffersQueryVariables = Exact<{ [key: string]: never }>;
 
-
-export type getOffersQuery = { offers: Array<(
-    Pick<Offer, 'id'>
-    & { offerToken: Pick<Token, 'address' | 'name' | 'decimals' | 'symbol'>, prices: Array<Pick<OfferPrice, 'amount' | 'price'>>, seller: Pick<Account, 'id' | 'address'>, buyerToken: Pick<Token, 'name' | 'symbol' | 'address' | 'decimals'>, buyer?: Maybe<Pick<Account, 'address'>> }
-  )> };
-
+export type getOffersQuery = {
+  offers: Array<
+    Pick<Offer, 'id'> & {
+      offerToken: Pick<Token, 'address' | 'name' | 'decimals' | 'symbol'>;
+      prices: Array<Pick<OfferPrice, 'amount' | 'price'>>;
+      seller: Pick<Account, 'id' | 'address'>;
+      buyerToken: Pick<Token, 'name' | 'symbol' | 'address' | 'decimals'>;
+      buyer?: Maybe<Pick<Account, 'address'>>;
+    }
+  >;
+};
 
 export const getOffersDocument = gql`
-    query getOffers {
-  offers {
-    id
-    offerToken {
-      address
-      name
-      decimals
-      symbol
-    }
-    prices {
-      amount
-      price
-    }
-    seller {
+  query getOffers {
+    offers {
       id
-      address
-    }
-    buyerToken {
-      name
-      symbol
-      address
-      decimals
-    }
-    buyer {
-      address
+      offerToken {
+        address
+        name
+        decimals
+        symbol
+      }
+      prices {
+        amount
+        price
+      }
+      seller {
+        id
+        address
+      }
+      buyerToken {
+        name
+        symbol
+        address
+        decimals
+      }
+      buyer {
+        address
+      }
     }
   }
-}
-    ` as unknown as DocumentNode<getOffersQuery, getOffersQueryVariables>;
+` as unknown as DocumentNode<getOffersQuery, getOffersQueryVariables>;
 
-
-export type Requester<C = {}, E = unknown> = <R, V>(doc: DocumentNode, vars?: V, options?: C) => Promise<R> | AsyncIterable<R>
+export type Requester<C = {}, E = unknown> = <R, V>(
+  doc: DocumentNode,
+  vars?: V,
+  options?: C
+) => Promise<R> | AsyncIterable<R>;
 export function getSdk<C, E>(requester: Requester<C, E>) {
   return {
-    getOffers(variables?: getOffersQueryVariables, options?: C): Promise<getOffersQuery> {
-      return requester<getOffersQuery, getOffersQueryVariables>(getOffersDocument, variables, options) as Promise<getOffersQuery>;
-    }
+    getOffers(
+      variables?: getOffersQueryVariables,
+      options?: C
+    ): Promise<getOffersQuery> {
+      return requester<getOffersQuery, getOffersQueryVariables>(
+        getOffersDocument,
+        variables,
+        options
+      ) as Promise<getOffersQuery>;
+    },
   };
 }
 export type Sdk = ReturnType<typeof getSdk>;

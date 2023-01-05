@@ -3,9 +3,7 @@ import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
 import { CHAINS, ChainsID } from 'src/constants';
 import { Account } from 'src/types/Account';
 
-import {
-  Account as AccountGraphQL,
-} from '../../../.graphclient/index';
+import { Account as AccountGraphQL } from '../../../.graphclient/index';
 
 const getTheGraphURL = (chainId: number): string => {
   switch (chainId) {
@@ -48,6 +46,9 @@ export const fetchWallet = (
                 where: { spender_: { address: $realTokenYamUpgradeable } }
               ) {
                 allowance
+                token {
+                  fullName
+                }
               }
             }
           }
@@ -73,19 +74,21 @@ export const fetchWallet = (
           realTokenYamUpgradeable: realTokenYamUpgradeable.toLowerCase(),
         },
       });
-      // console.log('data', data);
       const graphAccount: AccountGraphQL = data.account;
 
       const account: Account = {
         balance: 0,
         allowance: 0,
       };
-      // console.log('graphAccount', graphAccount);
+
+      console.log('graphAccount', graphAccount);
 
       if (graphAccount) {
-
-        if(graphAccount.balances[0]?.amount) account.balance = graphAccount.balances[0].amount;
-        account.allowance = graphAccount.allowances ? graphAccount.allowances[0].allowance : account.balance.toString()
+        if (graphAccount.balances[0]?.amount)
+          account.balance = graphAccount.balances[0].amount;
+        account.allowance = graphAccount.balances[0].allowances.length
+          ? graphAccount.balances[0].allowances[0].allowance
+          : account.balance.toString();
 
         // graphAccount.balances.forEach((balance) => {
         //   account.balances.push({
@@ -101,7 +104,6 @@ export const fetchWallet = (
         //     });
         //   })
         // }
-        
       }
 
       // console.log('account', account);
