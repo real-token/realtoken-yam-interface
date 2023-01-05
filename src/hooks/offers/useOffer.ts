@@ -1,21 +1,22 @@
-import { useWeb3React } from "@web3-react/core";
-import { useEffect, useState } from "react"
-import { fetchOffer } from "src/utils/offers/fetchOffers";
-import { Offer } from "../../types/Offer";
-import { usePropertiesToken } from "../usePropertiesToken";
+import { useEffect, useState } from 'react';
 
-type UseOfferProps  = (offerId: number) => {
-    offer: Offer | undefined
+import { useWeb3React } from '@web3-react/core';
+
+//import { fetchOffer } from "src/utils/offers/fetchOffers";
+import { Offer } from '../../types/Offer';
+import { usePropertiesToken } from '../usePropertiesToken';
+
+type UseOfferProps = (offerId: number) => {
+  offer: Offer | undefined;
 };
 
 export const useOffer: UseOfferProps = (offerId: number) => {
+  const { chainId } = useWeb3React();
+  const [offer, setOffer] = useState<Offer>();
 
-    const { chainId } = useWeb3React();
-    const [offer,setOffer] = useState<Offer>();
+  const { propertiesToken } = usePropertiesToken(false);
 
-    const { propertiesToken } = usePropertiesToken(false);
-
-    const fetch = async (chainId: number, offerId: number) => {
+  /*    const fetch = async (chainId: number, offerId: number) => {
         fetchOffer(chainId,offerId, propertiesToken)
             .then(setOffer)
             .catch(err => console.log(err))
@@ -23,9 +24,9 @@ export const useOffer: UseOfferProps = (offerId: number) => {
 
     useEffect(() => {
         if(offerId && chainId && propertiesToken) fetch(chainId, offerId);
-    },[offerId, chainId])
+    },[offerId, chainId]) */
 
-    return{
-        offer
-    }
-}
+  return {
+    offer,
+  };
+};

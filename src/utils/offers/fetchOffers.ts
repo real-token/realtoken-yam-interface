@@ -280,7 +280,7 @@ const parseOffer = (
   });
 };
 
-export const fetchOffer = (
+/* export const fetchOffer = (
   chainId: number,
   offerId: number,
   propertiesToken: PropertiesToken[]
@@ -348,7 +348,7 @@ export const fetchOffer = (
       reject(err);
     }
   });
-};
+}; */
 
 // export const fetchOffers = (realTokenYamUpgradeable: Contract, provider: ethers.providers.BaseProvider, account: string, propertiesToken: PropertiesToken[]) : Promise<Offer[]> => {
 //     return new Promise<Offer[]>(async (resolve, reject) => {
