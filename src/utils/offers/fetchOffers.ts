@@ -6,15 +6,16 @@ import { Contract, ethers } from 'ethers';
 import { off } from 'process';
 
 import { Erc20, Erc20ABI } from 'src/abis';
+import { CHAINS, ChainsID } from 'src/constants';
 import { PropertiesToken } from 'src/types';
-import { Account } from 'src/types/Account';
+import { Account, AccountRealtoken } from 'src/types/Account';
 import { Offer } from 'src/types/Offer';
 
 import { Offer as OfferGraphQl } from '../../../.graphclient/index';
 import { getContract } from '../getContract';
 import { fetchWallet } from '../wallet/fetchWallet';
 
-const getTheGraphURL = (chainId: number): string => {
+const getTheGraphUrlYAM = (chainId: number): string => {
   switch (chainId) {
     case 1:
       return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph';
@@ -27,9 +28,22 @@ const getTheGraphURL = (chainId: number): string => {
   }
 };
 
+const getTheGraphUrlRealtoken = (chainId: number): string => {
+  switch (chainId) {
+    case 1:
+      return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/realtoken-eth';
+    case 5:
+      return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/realtoken-goerli';
+    case 100:
+      return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/realtoken-xdai';
+    default:
+      return '';
+  }
+};
+
 export const fetchOfferTheGraph = (
-  chainId: number,
-  propertiesToken: PropertiesToken[]
+  chainId: number
+  //propertiesToken: PropertiesToken[]
 ): Promise<Offer[]> => {
   return new Promise<Offer[]>(async (resolve, reject) => {
     try {
@@ -37,12 +51,17 @@ export const fetchOfferTheGraph = (
       // const { data } = await execute(getOffersDocument, {}, {
       //   source: source
       // });
-      const client = new ApolloClient({
-        uri: getTheGraphURL(chainId),
+      const clientYAM = new ApolloClient({
+        uri: getTheGraphUrlYAM(chainId),
         cache: new InMemoryCache(),
       });
 
-      const { data } = await client.query({
+      const clientRealtoken = new ApolloClient({
+        uri: getTheGraphUrlRealtoken(chainId),
+        cache: new InMemoryCache(),
+      });
+
+      const { data: dataYAM } = await clientYAM.query({
         query: gql`
           query getOffers {
             offers(first: 1000, where: { removedAtBlock: null }) {
@@ -81,20 +100,85 @@ export const fetchOfferTheGraph = (
                 address
               }
             }
+            accounts {
+              address
+            }
+          }
+        `,
+      });
+      console.log('Debug Query dataYAM', dataYAM);
+
+      const { address: realTokenYamUpgradeable } =
+        CHAINS[chainId as ChainsID].contracts.realTokenYamUpgradeable;
+
+      const accountRealtoken: string =
+        '"' +
+        dataYAM.accounts
+          .map((account: { address: string }) => account.address)
+          .join('","') +
+        '"';
+
+      console.log('Debug liste accountRealtoken', accountRealtoken);
+
+      const { data: dataRealtoken } = await clientRealtoken.query({
+        query: gql`
+          query getAccountsRealtoken {
+            accounts(
+              where: {
+                address_in: [${accountRealtoken}]
+              }
+            ) {
+              address
+              allowances(
+                where: { spender: "${realTokenYamUpgradeable}" }
+              ) {
+                allowance
+                token {
+                  fullName
+                  address
+                }
+                spender {
+                  address
+                }
+              }
+              balances {
+                amount
+                token {
+                  fullName
+                  address
+                }
+              }
+            }
           }
         `,
       });
 
-      await Promise.all(
-        data.offers.map(async (offer: OfferGraphQl) => {
-          const offerData: Offer = await parseOffer(offer, chainId);
+      console.log('Debug Query dataRealtoken', dataRealtoken);
 
-          const hasPropertyToken = propertiesToken.find(
+      await Promise.all(
+        dataYAM.offers.map(async (offer: OfferGraphQl) => {
+          const accountUserRealtoken: AccountRealtoken =
+            dataRealtoken.accounts.find(
+              (account: { address: string }) =>
+                account.address === offer.seller.address
+            );
+
+          const offerData: Offer = await parseOffer(
+            offer,
+            accountUserRealtoken,
+            chainId
+          );
+
+          /* const hasPropertyToken = propertiesToken.find(
             (propertyToken) =>
               propertyToken.contractAddress == offerData.buyerTokenAddress ||
               propertyToken.contractAddress == offerData.offerTokenAddress
-          );
-          offerData.hasPropertyToken = hasPropertyToken ? true : false;
+          ); */
+          //offerData.hasPropertyToken = hasPropertyToken ? true : false;
+
+          offerData.hasPropertyToken =
+            BigNumber(offerData.buyerTokenType).eq(1) ||
+            BigNumber(offerData.offerTokenType).eq(1);
 
           offersData.push({ ...offerData });
         })
@@ -108,27 +192,42 @@ export const fetchOfferTheGraph = (
   });
 };
 
-const parseOffer = (offer: OfferGraphQl, chainId: number): Promise<Offer> => {
+const parseOffer = (
+  offer: OfferGraphQl,
+  accountUserRealtoken: AccountRealtoken,
+  chainId: number
+): Promise<Offer> => {
   return new Promise<Offer>(async (resolve, reject) => {
     try {
       let balanceWallet = '0';
       let allowance = '0';
       if (BigNumber(offer.availableAmount).gt(0)) {
         if (offer.offerToken.tokenType === 1) {
-          const account: Account = await fetchWallet(
-            (offer.seller.address as string)?.toLowerCase(),
-            (offer.offerToken.address as string)?.toLowerCase(),
-            chainId
-          );
+          balanceWallet =
+            accountUserRealtoken.balances
+              .find(
+                (balance) => balance.token.address === offer.offerToken.address
+              )
+              ?.amount.toString() ?? '0';
+          allowance =
+            accountUserRealtoken.allowances
+              .find(
+                (allowance) =>
+                  allowance.token.address === offer.offerToken.address
+              )
+              ?.allowance.toString() ?? '0';
+
           console.log(
             'type 1 blance/allowance',
+            BigNumber(offer.id).toString(),
             offer.offerToken.name,
-            account.balance,
-            account.allowance
+            accountUserRealtoken.address,
+            balanceWallet,
+            allowance
           );
 
-          if (account.balance) balanceWallet = account.balance.toString();
-          if (account.allowance) allowance = account.allowance.toString();
+          //if (account.balance) balanceWallet = account.balance.toString();
+          //if (account.allowance) allowance = account.allowance.toString();
         } else if (
           offer.offerToken.tokenType === 2 ||
           offer.offerToken.tokenType === 3

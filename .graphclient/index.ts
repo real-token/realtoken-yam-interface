@@ -703,8 +703,8 @@ export type Block_height = {
 
 /**  Offer entity  */
 export type Offer = {
-  allowance: any;
-  balance: any;
+  balance: AccountBalance | null;
+  allowance: Allowance | null;
   /**  Offer ID  */
   id: Scalars['ID'];
   /**  Seller 0x  */
