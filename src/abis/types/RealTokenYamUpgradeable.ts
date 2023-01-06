@@ -27,14 +27,13 @@ export interface RealTokenYamUpgradeableInterface extends ethers.utils.Interface
     "UPGRADER_ROLE()": FunctionFragment;
     "buy(uint256,uint256,uint256)": FunctionFragment;
     "buyOfferBatch(uint256[],uint256[],uint256[])": FunctionFragment;
-    "buyWithNativeCurrency(uint256,uint256,uint256)": FunctionFragment;
     "buyWithPermit(uint256,uint256,uint256,uint256,uint8,bytes32,bytes32)": FunctionFragment;
     "createOffer(address,address,address,uint256,uint256)": FunctionFragment;
     "createOfferBatch(address[],address[],address[],uint256[],uint256[])": FunctionFragment;
-    "createOfferWithPermit(address,address,address,uint256,uint256,uint256,uint8,bytes32,bytes32)": FunctionFragment;
+    "createOfferWithPermit(address,address,address,uint256,uint256,uint256,uint256,uint8,bytes32,bytes32)": FunctionFragment;
     "deleteOffer(uint256)": FunctionFragment;
     "deleteOfferBatch(uint256[])": FunctionFragment;
-    "deleteOfferByAdmin(uint256)": FunctionFragment;
+    "deleteOfferByAdmin(uint256[])": FunctionFragment;
     "fee()": FunctionFragment;
     "getInitialOffer(uint256)": FunctionFragment;
     "getOfferCount()": FunctionFragment;
@@ -43,7 +42,6 @@ export interface RealTokenYamUpgradeableInterface extends ethers.utils.Interface
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
     "initialize(address,address)": FunctionFragment;
-    "isWhitelisted(address)": FunctionFragment;
     "pause()": FunctionFragment;
     "paused()": FunctionFragment;
     "pricePreview(uint256,uint256)": FunctionFragment;
@@ -54,13 +52,12 @@ export interface RealTokenYamUpgradeableInterface extends ethers.utils.Interface
     "setFee(uint256)": FunctionFragment;
     "showOffer(uint256)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
-    "toggleWhitelist(address[],bool[])": FunctionFragment;
     "toggleWhitelistWithType(address[],uint8[])": FunctionFragment;
     "tokenInfo(address)": FunctionFragment;
     "unpause()": FunctionFragment;
     "updateOffer(uint256,uint256,uint256)": FunctionFragment;
     "updateOfferBatch(uint256[],uint256[],uint256[])": FunctionFragment;
-    "updateOfferWithPermit(uint256,uint256,uint256,uint256,uint8,bytes32,bytes32)": FunctionFragment;
+    "updateOfferWithPermit(uint256,uint256,uint256,uint256,uint256,uint8,bytes32,bytes32)": FunctionFragment;
     "upgradeTo(address)": FunctionFragment;
     "upgradeToAndCall(address,bytes)": FunctionFragment;
   };
@@ -84,10 +81,6 @@ export interface RealTokenYamUpgradeableInterface extends ethers.utils.Interface
   encodeFunctionData(
     functionFragment: "buyOfferBatch",
     values: [BigNumberish[], BigNumberish[], BigNumberish[]]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "buyWithNativeCurrency",
-    values: [BigNumberish, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "buyWithPermit",
@@ -119,6 +112,7 @@ export interface RealTokenYamUpgradeableInterface extends ethers.utils.Interface
       BigNumberish,
       BigNumberish,
       BigNumberish,
+      BigNumberish,
       BytesLike,
       BytesLike
     ]
@@ -133,7 +127,7 @@ export interface RealTokenYamUpgradeableInterface extends ethers.utils.Interface
   ): string;
   encodeFunctionData(
     functionFragment: "deleteOfferByAdmin",
-    values: [BigNumberish]
+    values: [BigNumberish[]]
   ): string;
   encodeFunctionData(functionFragment: "fee", values?: undefined): string;
   encodeFunctionData(
@@ -163,10 +157,6 @@ export interface RealTokenYamUpgradeableInterface extends ethers.utils.Interface
   encodeFunctionData(
     functionFragment: "initialize",
     values: [string, string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "isWhitelisted",
-    values: [string]
   ): string;
   encodeFunctionData(functionFragment: "pause", values?: undefined): string;
   encodeFunctionData(functionFragment: "paused", values?: undefined): string;
@@ -203,10 +193,6 @@ export interface RealTokenYamUpgradeableInterface extends ethers.utils.Interface
     values: [BytesLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "toggleWhitelist",
-    values: [string[], boolean[]]
-  ): string;
-  encodeFunctionData(
     functionFragment: "toggleWhitelistWithType",
     values: [string[], BigNumberish[]]
   ): string;
@@ -223,6 +209,7 @@ export interface RealTokenYamUpgradeableInterface extends ethers.utils.Interface
   encodeFunctionData(
     functionFragment: "updateOfferWithPermit",
     values: [
+      BigNumberish,
       BigNumberish,
       BigNumberish,
       BigNumberish,
@@ -253,10 +240,6 @@ export interface RealTokenYamUpgradeableInterface extends ethers.utils.Interface
   decodeFunctionResult(functionFragment: "buy", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "buyOfferBatch",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "buyWithNativeCurrency",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -307,10 +290,6 @@ export interface RealTokenYamUpgradeableInterface extends ethers.utils.Interface
   decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "isWhitelisted",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "pause", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
   decodeFunctionResult(
@@ -334,10 +313,6 @@ export interface RealTokenYamUpgradeableInterface extends ethers.utils.Interface
   decodeFunctionResult(functionFragment: "showOffer", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "supportsInterface",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "toggleWhitelist",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -377,7 +352,6 @@ export interface RealTokenYamUpgradeableInterface extends ethers.utils.Interface
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
     "RoleGranted(bytes32,address,address)": EventFragment;
     "RoleRevoked(bytes32,address,address)": EventFragment;
-    "TokenWhitelistToggled(address[],bool[])": EventFragment;
     "TokenWhitelistWithTypeToggled(address[],uint8[])": EventFragment;
     "Unpaused(address)": EventFragment;
     "Upgraded(address)": EventFragment;
@@ -395,7 +369,6 @@ export interface RealTokenYamUpgradeableInterface extends ethers.utils.Interface
   getEvent(nameOrSignatureOrTopic: "RoleAdminChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleGranted"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleRevoked"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "TokenWhitelistToggled"): EventFragment;
   getEvent(
     nameOrSignatureOrTopic: "TokenWhitelistWithTypeToggled"
   ): EventFragment;
@@ -471,10 +444,6 @@ export type RoleRevokedEvent = TypedEvent<
   [string, string, string] & { role: string; account: string; sender: string }
 >;
 
-export type TokenWhitelistToggledEvent = TypedEvent<
-  [string[], boolean[]] & { tokens: string[]; status: boolean[] }
->;
-
 export type TokenWhitelistWithTypeToggledEvent = TypedEvent<
   [string[], number[]] & { tokens: string[]; types: number[] }
 >;
@@ -547,13 +516,6 @@ export interface RealTokenYamUpgradeable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    buyWithNativeCurrency(
-      _offerId: BigNumberish,
-      _price: BigNumberish,
-      _amount: BigNumberish,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     buyWithPermit(
       offerId: BigNumberish,
       price: BigNumberish,
@@ -589,6 +551,7 @@ export interface RealTokenYamUpgradeable extends BaseContract {
       buyer: string,
       price: BigNumberish,
       amount: BigNumberish,
+      newAllowance: BigNumberish,
       deadline: BigNumberish,
       v: BigNumberish,
       r: BytesLike,
@@ -602,12 +565,12 @@ export interface RealTokenYamUpgradeable extends BaseContract {
     ): Promise<ContractTransaction>;
 
     deleteOfferBatch(
-      _offerIds: BigNumberish[],
+      offerIds: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     deleteOfferByAdmin(
-      offerId: BigNumberish,
+      offerIds: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -641,11 +604,6 @@ export interface RealTokenYamUpgradeable extends BaseContract {
       moderator_: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
-
-    isWhitelisted(
-      token_: string,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
 
     pause(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -693,12 +651,6 @@ export interface RealTokenYamUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
-    toggleWhitelist(
-      tokens_: string[],
-      status_: boolean[],
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     toggleWhitelistWithType(
       tokens_: string[],
       types_: BigNumberish[],
@@ -732,6 +684,7 @@ export interface RealTokenYamUpgradeable extends BaseContract {
       offerId: BigNumberish,
       price: BigNumberish,
       amount: BigNumberish,
+      newAllowance: BigNumberish,
       deadline: BigNumberish,
       v: BigNumberish,
       r: BytesLike,
@@ -771,13 +724,6 @@ export interface RealTokenYamUpgradeable extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  buyWithNativeCurrency(
-    _offerId: BigNumberish,
-    _price: BigNumberish,
-    _amount: BigNumberish,
-    overrides?: PayableOverrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   buyWithPermit(
     offerId: BigNumberish,
     price: BigNumberish,
@@ -813,6 +759,7 @@ export interface RealTokenYamUpgradeable extends BaseContract {
     buyer: string,
     price: BigNumberish,
     amount: BigNumberish,
+    newAllowance: BigNumberish,
     deadline: BigNumberish,
     v: BigNumberish,
     r: BytesLike,
@@ -826,12 +773,12 @@ export interface RealTokenYamUpgradeable extends BaseContract {
   ): Promise<ContractTransaction>;
 
   deleteOfferBatch(
-    _offerIds: BigNumberish[],
+    offerIds: BigNumberish[],
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   deleteOfferByAdmin(
-    offerId: BigNumberish,
+    offerIds: BigNumberish[],
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -865,8 +812,6 @@ export interface RealTokenYamUpgradeable extends BaseContract {
     moderator_: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
-
-  isWhitelisted(token_: string, overrides?: CallOverrides): Promise<boolean>;
 
   pause(
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -914,12 +859,6 @@ export interface RealTokenYamUpgradeable extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  toggleWhitelist(
-    tokens_: string[],
-    status_: boolean[],
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   toggleWhitelistWithType(
     tokens_: string[],
     types_: BigNumberish[],
@@ -953,6 +892,7 @@ export interface RealTokenYamUpgradeable extends BaseContract {
     offerId: BigNumberish,
     price: BigNumberish,
     amount: BigNumberish,
+    newAllowance: BigNumberish,
     deadline: BigNumberish,
     v: BigNumberish,
     r: BytesLike,
@@ -992,13 +932,6 @@ export interface RealTokenYamUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    buyWithNativeCurrency(
-      _offerId: BigNumberish,
-      _price: BigNumberish,
-      _amount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     buyWithPermit(
       offerId: BigNumberish,
       price: BigNumberish,
@@ -1034,6 +967,7 @@ export interface RealTokenYamUpgradeable extends BaseContract {
       buyer: string,
       price: BigNumberish,
       amount: BigNumberish,
+      newAllowance: BigNumberish,
       deadline: BigNumberish,
       v: BigNumberish,
       r: BytesLike,
@@ -1047,12 +981,12 @@ export interface RealTokenYamUpgradeable extends BaseContract {
     ): Promise<void>;
 
     deleteOfferBatch(
-      _offerIds: BigNumberish[],
+      offerIds: BigNumberish[],
       overrides?: CallOverrides
     ): Promise<void>;
 
     deleteOfferByAdmin(
-      offerId: BigNumberish,
+      offerIds: BigNumberish[],
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1086,8 +1020,6 @@ export interface RealTokenYamUpgradeable extends BaseContract {
       moderator_: string,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    isWhitelisted(token_: string, overrides?: CallOverrides): Promise<boolean>;
 
     pause(overrides?: CallOverrides): Promise<void>;
 
@@ -1127,12 +1059,6 @@ export interface RealTokenYamUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    toggleWhitelist(
-      tokens_: string[],
-      status_: boolean[],
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     toggleWhitelistWithType(
       tokens_: string[],
       types_: BigNumberish[],
@@ -1164,6 +1090,7 @@ export interface RealTokenYamUpgradeable extends BaseContract {
       offerId: BigNumberish,
       price: BigNumberish,
       amount: BigNumberish,
+      newAllowance: BigNumberish,
       deadline: BigNumberish,
       v: BigNumberish,
       r: BytesLike,
@@ -1418,22 +1345,6 @@ export interface RealTokenYamUpgradeable extends BaseContract {
       { role: string; account: string; sender: string }
     >;
 
-    "TokenWhitelistToggled(address[],bool[])"(
-      tokens?: string[] | null,
-      status?: boolean[] | null
-    ): TypedEventFilter<
-      [string[], boolean[]],
-      { tokens: string[]; status: boolean[] }
-    >;
-
-    TokenWhitelistToggled(
-      tokens?: string[] | null,
-      status?: boolean[] | null
-    ): TypedEventFilter<
-      [string[], boolean[]],
-      { tokens: string[]; status: boolean[] }
-    >;
-
     "TokenWhitelistWithTypeToggled(address[],uint8[])"(
       tokens?: string[] | null,
       types?: BigNumberish[] | null
@@ -1486,13 +1397,6 @@ export interface RealTokenYamUpgradeable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    buyWithNativeCurrency(
-      _offerId: BigNumberish,
-      _price: BigNumberish,
-      _amount: BigNumberish,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     buyWithPermit(
       offerId: BigNumberish,
       price: BigNumberish,
@@ -1528,6 +1432,7 @@ export interface RealTokenYamUpgradeable extends BaseContract {
       buyer: string,
       price: BigNumberish,
       amount: BigNumberish,
+      newAllowance: BigNumberish,
       deadline: BigNumberish,
       v: BigNumberish,
       r: BytesLike,
@@ -1541,12 +1446,12 @@ export interface RealTokenYamUpgradeable extends BaseContract {
     ): Promise<BigNumber>;
 
     deleteOfferBatch(
-      _offerIds: BigNumberish[],
+      offerIds: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     deleteOfferByAdmin(
-      offerId: BigNumberish,
+      offerIds: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1582,11 +1487,6 @@ export interface RealTokenYamUpgradeable extends BaseContract {
       admin_: string,
       moderator_: string,
       overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    isWhitelisted(
-      token_: string,
-      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     pause(
@@ -1635,12 +1535,6 @@ export interface RealTokenYamUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    toggleWhitelist(
-      tokens_: string[],
-      status_: boolean[],
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     toggleWhitelistWithType(
       tokens_: string[],
       types_: BigNumberish[],
@@ -1671,6 +1565,7 @@ export interface RealTokenYamUpgradeable extends BaseContract {
       offerId: BigNumberish,
       price: BigNumberish,
       amount: BigNumberish,
+      newAllowance: BigNumberish,
       deadline: BigNumberish,
       v: BigNumberish,
       r: BytesLike,
@@ -1713,13 +1608,6 @@ export interface RealTokenYamUpgradeable extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    buyWithNativeCurrency(
-      _offerId: BigNumberish,
-      _price: BigNumberish,
-      _amount: BigNumberish,
-      overrides?: PayableOverrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     buyWithPermit(
       offerId: BigNumberish,
       price: BigNumberish,
@@ -1755,6 +1643,7 @@ export interface RealTokenYamUpgradeable extends BaseContract {
       buyer: string,
       price: BigNumberish,
       amount: BigNumberish,
+      newAllowance: BigNumberish,
       deadline: BigNumberish,
       v: BigNumberish,
       r: BytesLike,
@@ -1768,12 +1657,12 @@ export interface RealTokenYamUpgradeable extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     deleteOfferBatch(
-      _offerIds: BigNumberish[],
+      offerIds: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     deleteOfferByAdmin(
-      offerId: BigNumberish,
+      offerIds: BigNumberish[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1812,11 +1701,6 @@ export interface RealTokenYamUpgradeable extends BaseContract {
       admin_: string,
       moderator_: string,
       overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    isWhitelisted(
-      token_: string,
-      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     pause(
@@ -1865,12 +1749,6 @@ export interface RealTokenYamUpgradeable extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    toggleWhitelist(
-      tokens_: string[],
-      status_: boolean[],
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     toggleWhitelistWithType(
       tokens_: string[],
       types_: BigNumberish[],
@@ -1904,6 +1782,7 @@ export interface RealTokenYamUpgradeable extends BaseContract {
       offerId: BigNumberish,
       price: BigNumberish,
       amount: BigNumberish,
+      newAllowance: BigNumberish,
       deadline: BigNumberish,
       v: BigNumberish,
       r: BytesLike,

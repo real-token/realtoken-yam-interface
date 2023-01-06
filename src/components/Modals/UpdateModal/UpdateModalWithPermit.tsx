@@ -179,8 +179,9 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           const updateOfferWithPermitTx =
             await realTokenYamUpgradeable.updateOfferWithPermit(
               formValues.offerId,
-              new BigNumber(formValues.price).shiftedBy(Number(buyerTokenDecimals)).toString(),
+              new BigNumber(formValues.price).shiftedBy(Number(buyerTokenDecimals)).toString(10),
               new BigNumber(formValues.amount).shiftedBy(Number(offerTokenDecimals)).toString(10),
+              amountInWeiToPermit.toString(10),
               transactionDeadline.toString(),
               v,
               r,
@@ -230,6 +231,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
               new BigNumber(formValues.amount.toString())
                 .shiftedBy(Number(offerTokenDecimals))
                 .toString(),
+                amountInWeiToPermit.toString(10),
               transactionDeadline.toString(),
               v,
               r,

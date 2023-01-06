@@ -251,7 +251,8 @@ export const SellActions = () => {
                   ? ZERO_ADDRESS
                   : formValues.buyerAddress,
                 priceInWei.toString(),
-                amountInWei.toString(),
+                amountInWei.toString(10),
+                amountInWeiToPermit.toString(10),
                 transactionDeadline.toString(),
                 v,
                 r,
@@ -370,6 +371,7 @@ export const SellActions = () => {
                 : formValues.buyerAddress,
               priceInWei.toString(),
               amountInWei.toString(),
+              amountInWeiToPermit.toString(10),
               transactionDeadline.toString(),
               v,
               r,
@@ -386,6 +388,7 @@ export const SellActions = () => {
               notificationPayload
             )
           );
+          
 
           createOfferWithPermitTx
             .wait()
