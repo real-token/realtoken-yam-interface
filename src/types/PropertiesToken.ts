@@ -1,5 +1,3 @@
-
-
 export type APIPropertiesToken = {
     fullName: string
     shortName: string
@@ -7,9 +5,11 @@ export type APIPropertiesToken = {
     tokenPrice: number
     currency: string
     uuid: string,
-    ethereumContract: string,
-    xDaiContract: string,
-    gnosisContract: string,
+    ethereumContract: string
+    xDaiContract: string
+    gnosisContract: string
+    marketplaceLink: string
+    imageLink: string[]
 }
 
 export type PropertiesToken = {
@@ -17,5 +17,7 @@ export type PropertiesToken = {
     shortName: string
     fullName: string
     contractAddress: string
-    officialPrice?: number
+    officialPrice?: number,
+    marketplaceLink: string
+    imageLink: string[]
 }
