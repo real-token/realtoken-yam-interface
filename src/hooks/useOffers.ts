@@ -243,7 +243,6 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
             // condSeller,
             // offer
             // );
-            if(chainId != 100){
             try {
               chainId === 5 ? //TODO temporairement sans allowance sur Eth et Gnosis le temps d'avoir les graph a jours
               dataWallet = await clientWallet.query({query: gql`
@@ -282,8 +281,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
               //console.log('DEBUG dataWallet', dataWallet.data.account?.balances[0]?.amount ?? '0',offer.availableAmount.toString(), new BigNumber( offer.id).toString(), offer);
             //}
 
-          }
-          const tmpIsRealtoken = /^realtoken/.test(offer.offerToken.name!.toLowerCase()) && chainId != 100 //TODO: fix temporais pour le Graph hs
+          const tmpIsRealtoken = /^realtoken/.test(offer.offerToken.name!.toLowerCase())
             
           const offerData: Offer = {
             offerId: parseInt(offer.id, 16).toString(),

@@ -112,10 +112,9 @@ export const BuyModalWithPermit: FC<
           )
         //const newOfferAmount = new BigNumber(((await offerToken?.balanceOf(sellerAddress))?._hex ?? '0')).toNumber();
         //console.log('DEBUG BuyWithPermitFormValues value',newOfferAmount,values)
-          
+
   const getOfferTokenInfos = async () => {
     try{
-  console.log('DEBUG getOfferTokenInfos',offerToken,await offerToken?.balanceOf(sellerAddress));
 
       const tokenName = await offerToken?.name();
       const tokenSymbol = await offerToken?.symbol();
@@ -124,8 +123,6 @@ export const BuyModalWithPermit: FC<
       setOfferTokenName(tokenName);
       setOfferTokenSymbol(tokenSymbol)
 
-      console.log('DEBUG ', balanceSeller,offerTokenSellerBalance, offerAmount);
-      
     }catch(err){
       console.log(err)
     }
@@ -374,7 +371,6 @@ export const BuyModalWithPermit: FC<
     if(balance == undefined) return undefined;
 
     const max = balance/price;
-    console.log('DEBUG maxTokenBuy',balance, price,offerAmount);
 
     return max >= offerAmount ? offerAmount : max;
   },[balance,price,offerAmount])
