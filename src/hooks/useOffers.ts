@@ -282,7 +282,7 @@ export const useOffers: UseOffers = (filterSeller, filterBuyer, filterZeroAmount
             //}
 
           }
-          const tmpIsRealtoken = /^realtoken/.test(offer.offerToken.name!.toLowerCase())
+          const tmpIsRealtoken = /^realtoken/.test(offer.offerToken.name!.toLowerCase()) && chainId != 100 //TODO: fix temporais pour le Graph hs
             
           const offerData: Offer = {
             offerId: parseInt(offer.id, 16).toString(),
