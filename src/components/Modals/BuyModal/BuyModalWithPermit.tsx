@@ -54,7 +54,7 @@ type BuyWithPermitFormValues = {
 
 export const BuyModalWithPermit: FC<
   ContextModalProps<BuyModalWithPermitProps>
-> = ({
+> =  ({
   context,
   id,
   innerProps: {
@@ -83,44 +83,55 @@ export const BuyModalWithPermit: FC<
         buyerTokenDecimals: buyerTokenDecimals
       },
     });
+  
 
-    // console.log(values)
+    
+    const [isSubmitting, setSubmitting] = useState<boolean>(false);
+    const activeChain = useActiveChain();
+    
+    const [offerTokenName,setOfferTokenName] = useState<string|undefined>("");
+    const [offerTokenSymbol,setOfferTokenSymbol] = useState<string|undefined>("");
+    const [offerTokenSellerBalance,setOfferTokenSellerBalance] = useState<string|undefined>("");
 
-  const [isSubmitting, setSubmitting] = useState<boolean>(false);
-  const activeChain = useActiveChain();
-
-  const [offerTokenName,setOfferTokenName] = useState<string|undefined>("");
-  const [offerTokenSymbol,setOfferTokenSymbol] = useState<string|undefined>("");
-  const [buyTokenSymbol,setBuyTokenSymbol] = useState<string|undefined>("");
-
-  const realTokenYamUpgradeable = useContract(
-    ContractsID.realTokenYamUpgradeable
-  );
-  const buyerToken = getContract<CoinBridgeToken>(
-    buyerTokenAddress,
-    coinBridgeTokenABI,
-    provider as Web3Provider,
-    account
-  );
-  const offerToken = getContract<Erc20>(
-    offerTokenAddress,
-    Erc20ABI,
-    provider as Web3Provider,
-    account
-  )
-
+    const [buyTokenSymbol,setBuyTokenSymbol] = useState<string|undefined>("");
+    
+    const realTokenYamUpgradeable = useContract(
+      ContractsID.realTokenYamUpgradeable
+      );
+      const buyerToken = getContract<CoinBridgeToken>(
+        buyerTokenAddress,
+        coinBridgeTokenABI,
+        provider as Web3Provider,
+        account
+        );
+        const offerToken = getContract<Erc20>(
+          offerTokenAddress,
+          Erc20ABI,
+          provider as Web3Provider,
+          account
+          )
+        //const newOfferAmount = new BigNumber(((await offerToken?.balanceOf(sellerAddress))?._hex ?? '0')).toNumber();
+        //console.log('DEBUG BuyWithPermitFormValues value',newOfferAmount,values)
+          
   const getOfferTokenInfos = async () => {
     try{
+  console.log('DEBUG getOfferTokenInfos',offerToken,await offerToken?.balanceOf(sellerAddress));
+
       const tokenName = await offerToken?.name();
       const tokenSymbol = await offerToken?.symbol();
+      const balanceSeller = await offerToken?.balanceOf(sellerAddress)
+      setOfferTokenSellerBalance( (balanceSeller ?? BigNumber(0)).toString())
       setOfferTokenName(tokenName);
       setOfferTokenSymbol(tokenSymbol)
+
+      console.log('DEBUG ', balanceSeller,offerTokenSellerBalance, offerAmount);
+      
     }catch(err){
       console.log(err)
     }
   }
   useEffect(() => {
-    if(offerToken) getOfferTokenInfos();
+    if(offerToken) getOfferTokenInfos();    
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[offerToken])
 
@@ -363,6 +374,8 @@ export const BuyModalWithPermit: FC<
     if(balance == undefined) return undefined;
 
     const max = balance/price;
+    console.log('DEBUG maxTokenBuy',balance, price,offerAmount);
+
     return max >= offerAmount ? offerAmount : max;
   },[balance,price,offerAmount])
 
@@ -387,7 +400,7 @@ export const BuyModalWithPermit: FC<
             </Flex>
             <Flex direction={"column"} >
               <Text fw={700}>{t("amount")}</Text>
-              <Text>{offerAmount}</Text>
+              <Text>{BigNumber.minimum(offerAmount,offerTokenSellerBalance!).toString()}</Text>
             </Flex>
             <Flex direction={"column"}>
                 <Text fw={700}>{t("price")}</Text>
