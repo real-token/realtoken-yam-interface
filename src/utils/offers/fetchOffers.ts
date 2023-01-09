@@ -57,7 +57,7 @@ const getTheGraphUrlRealtoken = (chainId: number): string => {
 const getBigDataGraphRealtoken = async (
   chainId: number,
   client: ApolloClient<NormalizedCacheObject>,
-  realtokenAccount: [string]
+  realtokenAccount: string[]
 ) => {
   const { address: realTokenYamUpgradeable } =
     CHAINS[chainId as ChainsID].contracts.realTokenYamUpgradeable;
@@ -110,7 +110,7 @@ const getBigDataGraphRealtoken = async (
 const getBigDataGraphRealtokenTMP = async (
   chainId: number,
   client: ApolloClient<NormalizedCacheObject>,
-  realtokenAccount: [string]
+  realtokenAccount: string[]
 ) => {
   const { address: realTokenYamUpgradeable } =
     CHAINS[chainId as ChainsID].contracts.realTokenYamUpgradeable;
@@ -308,14 +308,14 @@ export const fetchOfferTheGraph = (
           .map((account: { address: string }) => account.address)
           .join('","') +
         '"'; */
-      const accountRealtoken: [string] = usersDataYAM.accounts.map(
+      const accountRealtoken: string[] = usersDataYAM.accounts.map(
         (account: { address: string; offers: [] }) =>
           account.offers.map(
             (offer: { id: string; offerToken: { address: string } }) =>
               account.address + '-' + offer.offerToken.address
           )
       );
-      const accountBalanceId = accountRealtoken.flat();
+      const accountBalanceId: string[] = accountRealtoken.flat();
       //console.log('Debug liste accountBalanceId', accountBalanceId);
 
       const batchSize = 500;
@@ -326,10 +326,12 @@ export const fetchOfferTheGraph = (
         },
       ];
       for (let i = 0; i < accountBalanceId.length; i += batchSize) {
-        const batch = accountBalanceId.slice(i, i + batchSize);
+        const batch: string[] = accountBalanceId.slice(i, i + batchSize);
         /* dataRealtoken.push(
           await getBigDataGraphRealtoken(chainId, clientRealtoken, batch)
         ); */
+        if (batch.length <= 0) break;
+
         const realtokenData =
           chainId === 5
             ? await getBigDataGraphRealtoken(chainId, clientRealtoken, batch)
