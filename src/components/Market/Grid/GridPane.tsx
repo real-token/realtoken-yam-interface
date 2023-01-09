@@ -15,11 +15,17 @@ const useStyle = createStyles((theme) => ({
         borderColor: theme.colors.brand,
         borderRadius: theme.radius.md,
         overflow: "hidden",
-        // height: "100%",
+        height: "100%",
     },
     header: {
         backgroundColor: theme.colors.brand,
         padding: theme.spacing.sm
+    },
+    content: {
+        height: "100%",
+    },
+    data: {
+        flexGrow: 1
     },
     offerTokenName: {
         color: "white",
@@ -68,8 +74,8 @@ export const GridPane: FC<GridPaneProps> = ({ offer }) => {
                     <Text className={classes.offerTokenName}>{offer.offerTokenName}</Text>
                     <Text className={classes.buyerTokenName}>{offer.buyerTokenName}</Text>
                 </Flex>
-                <Flex direction={"column"} p={"sm"} gap={"sm"}>
-                    <Flex direction={"column"} mb={10}>
+                <Flex direction={"column"} p={"sm"} gap={"sm"} className={classes.content}>
+                    <Flex direction={"column"} mb={10} className={classes.data}>
                         <Flex direction={"column"}>
                             <Text fw={700}>{t("sellerAddress")}</Text>
                             {offer.sellerAddress}
