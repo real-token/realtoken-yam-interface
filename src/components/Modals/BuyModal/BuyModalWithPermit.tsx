@@ -359,18 +359,12 @@ export const BuyModalWithPermit: FC<
   const total = values?.amount * values?.price;
 
   const maxTokenBuy: number|undefined = useMemo(() => {
-    console.log("test: ", balance?.toString())
-
     if(balance == undefined || !price) return undefined;
 
     const max = balance != 0 ? balance/price : 0;
 
-    console.log("max: ", max)
-
     return max >= offerAmount ? offerAmount : max;
   },[balance,price,offerAmount])
-
-  console.log("maxTokenBuy: ", maxTokenBuy)
 
   return (
     <form onSubmit={onSubmit(onHandleSubmit)}>
