@@ -1,24 +1,41 @@
 import { createStyles, Flex, Skeleton, Text } from "@mantine/core"
-import { FC } from "react"
+import { FC, useMemo } from "react"
 import { useTranslation } from "react-i18next";
 import { useRefreshOffers } from "src/hooks/offers/useRefreshOffers";
+import { usePropertiesToken } from "src/hooks/usePropertiesToken";
 import { Offer } from "src/types/Offer"
 import { BuyActionsWithPermit } from "../BuyActions";
 import { ShowOfferAction } from "../ShowOfferAction/ShowOfferAction";
 
-const useStyle = createStyles((theme) => ({
+enum OFFER_TYPE{
+    BUY = "BUY",
+    SELL = "SELL",
+    EXCHANGE = "EXCHANGE"
+}
+
+const OFFER_COLOR: Map<OFFER_TYPE,string> = new Map<OFFER_TYPE,string>([
+    [OFFER_TYPE.BUY,"green"],
+    [OFFER_TYPE.SELL,"red"],
+    [OFFER_TYPE.EXCHANGE,"blue"]
+])
+
+interface StyleProps{
+    offerTypeColor: string
+}
+
+const useStyle = createStyles((theme, { offerTypeColor } : StyleProps) => ({
     container: {
         display: "flex",
         flexDirection: "column",
         borderWidth: "2px",
         borderStyle: "solid",
-        borderColor: theme.colors.brand,
+        borderColor: "#624105",
         borderRadius: theme.radius.md,
         overflow: "hidden",
         height: "100%",
     },
     header: {
-        backgroundColor: theme.colors.brand,
+        backgroundColor: "#624105",
         padding: theme.spacing.sm
     },
     content: {
@@ -50,6 +67,29 @@ const useStyle = createStyles((theme) => ({
     loader: {
         height: "500px",
         width: "500px"
+    },
+    offerType: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: offerTypeColor,
+        borderRadius: theme.radius.md,
+        fontSize: theme.fontSizes.lg,
+        fontWeight: 700,
+        // width: "80px",
+        // height: "80px",
+        padding: `0 ${theme.spacing.sm}px`,
+        color: "white"
+    }, 
+    offerId:{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: `0 ${theme.spacing.sm}px`,
+        borderRadius: theme.radius.md,
+        backgroundColor: theme.colors.dark,
+        fontSize: theme.fontSizes.lg,
+        fontWeight: 700,
     }
 }));
 
@@ -58,10 +98,30 @@ interface GridPaneProps{
 }
 export const GridPane: FC<GridPaneProps> = ({ offer }) => {
 
-    const { classes } = useStyle();
     const { refreshOffers } = useRefreshOffers(false);
 
     const { t } = useTranslation('buy', { keyPrefix: 'table' });
+
+    const { propertiesToken } = usePropertiesToken(false);
+
+    const offerType: OFFER_TYPE = useMemo((): OFFER_TYPE => {
+        if(!offer && !propertiesToken) return OFFER_TYPE.EXCHANGE
+        const buyerTokenIsProperty = propertiesToken.find(propertyToken => propertyToken.contractAddress.toLowerCase() == offer.buyerTokenAddress) !== undefined;
+        const offerTokenIsProperty = propertiesToken.find(propertyToken => propertyToken.contractAddress.toLowerCase() == offer.offerTokenAddress) !== undefined;
+
+        // console.log(buyerTokenIsProperty,offerTokenIsProperty)
+
+        if(buyerTokenIsProperty && offerTokenIsProperty) return OFFER_TYPE.EXCHANGE
+        if(buyerTokenIsProperty) return OFFER_TYPE.BUY
+        if(offerTokenIsProperty) return OFFER_TYPE.SELL
+
+        return OFFER_TYPE.EXCHANGE
+
+    },[propertiesToken,offer])
+
+    const { classes } = useStyle({
+        offerTypeColor: OFFER_COLOR.get(offerType) ?? "blue"
+    });
 
     return(
         <>
@@ -70,7 +130,12 @@ export const GridPane: FC<GridPaneProps> = ({ offer }) => {
                 <Skeleton height={300} width={430}/>
             :
             <Flex className={classes.container}>
-                <Flex direction={"column"} color={"brand"} className={classes.header} >
+                <Flex direction={"column"} align={"start"} color={"brand"} className={classes.header} >
+                    <Flex gap={"sm"}>
+                        <Flex className={classes.offerId} mb={10}>{offer.offerId}</Flex>
+                        <Flex className={classes.offerType} mb={10}>{offerType}</Flex>
+                    </Flex>
+                
                     <Text className={classes.offerTokenName}>{offer.offerTokenName}</Text>
                     <Text className={classes.buyerTokenName}>{offer.buyerTokenName}</Text>
                 </Flex>
