@@ -25,6 +25,7 @@ import React from 'react';
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 import { useAppSelector } from 'src/hooks/react-hooks';
 import { selectPublicOffers } from 'src/store/features/interface/interfaceSelector';
+import { BigNumber } from 'bignumber.js';
 
 export const MarketTable: FC = () => {
 
@@ -186,7 +187,7 @@ export const MarketTable: FC = () => {
                   overflow: 'hidden',
                 }}
               >
-                {getValue()}
+                {BigNumber(getValue()).toString(10)}
               </Text>
             ),
             enableSorting: true,

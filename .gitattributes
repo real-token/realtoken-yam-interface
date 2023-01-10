@@ -1,3 +1,4 @@
+# Define here the files that should be ignored by git merge, to personnalize each branch
 
 k8s-yaml/*.yaml merge=ours
 k8s-yaml/cert-manager/*.yaml merge=ours
