@@ -54,7 +54,7 @@ export const NumberInput: FRC<NumberInputProps, HTMLInputElement> = forwardRef(
             onClick={() => setFieldValue("amount",Number(props.max))}
             {...controlsProps}
           >
-            {!props.max ? <Loader size={"xs"}/> : 'Max'}
+            {props.max == undefined ? <Loader size={"xs"}/> : 'Max'}
           </Button>
         )}
       </Flex>
