@@ -9,7 +9,6 @@ import {
 
 const TransfersPage = () => {
   const menu = useTranslation('menu', { keyPrefix: 'subMenuMyOffer' });
-
   return (
     <Flex
       direction={"column"}

@@ -12,14 +12,13 @@ import { Box, Button, Container, Group, Input, Stack } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { ContextModalProps } from '@mantine/modals';
 import { showNotification, updateNotification } from '@mantine/notifications';
-import { useWeb3React } from '@web3-react/core';
-
 import BigNumber from 'bignumber.js';
-
 import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
-import { useActiveChain, useContract, useOffers } from 'src/hooks';
-
+import { useActiveChain, useContract } from 'src/hooks';
 import { NumberInput } from '../../NumberInput';
+import { useWeb3React } from '@web3-react/core';
+import { selectPublicOffers } from 'src/store/features/interface/interfaceSelector';
+import { useAppSelector } from 'src/hooks/react-hooks';
 
 type BuyModalProps = {
   offerId: string;
@@ -71,10 +70,7 @@ export const BuyModal: FC<ContextModalProps<BuyModalProps>> = ({
     ContractsID.realTokenYamUpgradeable
   );
 
-  const {
-    offers,
-    refreshState: [isRefreshing],
-  } = useOffers();
+  const offers = useAppSelector(selectPublicOffers);
 
   const { t } = useTranslation('modals', { keyPrefix: 'buy' });
 

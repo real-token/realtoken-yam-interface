@@ -27,4 +27,3 @@ spec:
   - hosts:
     - <ENV_PREFIX>-yam.realtoken.network
     secretName: letsencrypt-<ENV_PREFIX>
-    

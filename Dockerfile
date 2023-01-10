@@ -16,7 +16,7 @@ FROM node:16-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-# Copy environment variables from dev env file
+# Copy environment variables from production env file
 ARG BUILD_ENV
 COPY config/.env.${BUILD_ENV} ./.env
 # # This will do the trick, use the corresponding env file for each environment.
@@ -27,7 +27,7 @@ RUN yarn build
 FROM node:16-alpine AS runner
 WORKDIR /app
 
-ENV NODE_ENV=development
+ENV NODE_ENV=production
 
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nextjs -u 1001

@@ -1,7 +1,7 @@
 import { FC, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ActionIcon, Group, MantineSize, Text, Title, Tooltip } from '@mantine/core';
+import { ActionIcon, Flex, Group, MantineSize, Text, Title, Tooltip } from '@mantine/core';
 import { IconChevronDown, IconChevronUp } from '@tabler/icons';
 import {
   ColumnDef,
@@ -15,21 +15,22 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-
-import { useOffers } from 'src/hooks';
-import { Offer } from 'src/hooks/types';
-
+import { Offer } from 'src/types/Offer';
 import { Table } from '../../Table';
 import { BuyActionsWithPermit } from '../BuyActions';
 import { MarketSubRow } from '../MarketSubRow';
 import { useAtom } from 'jotai';
 import { nameFilterValueAtom } from 'src/states';
 import React from 'react';
+import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
+import { useAppSelector } from 'src/hooks/react-hooks';
+import { selectPublicOffers } from 'src/store/features/interface/interfaceSelector';
 import { BigNumber } from 'bignumber.js';
 
 export const MarketTable: FC = () => {
 
-  const { offers, refreshState } = useOffers(false, false, true, true);
+  const { refreshOffers, offersIsLoading } = useRefreshOffers(false);
+  const offers = useAppSelector(selectPublicOffers)
   const [nameFilterValue,setNamefilterValue] = useAtom(nameFilterValueAtom);
   
   const [sorting, setSorting] = useState<SortingState>([
@@ -196,17 +197,21 @@ export const MarketTable: FC = () => {
             id: 'actions',
             header: undefined,
             cell: ({ row }) => (
-              <BuyActionsWithPermit
-                buyOffer={row.original}
-                triggerRefresh={refreshState[1]}
-              />
+              <Flex gap={"md"}>
+                <BuyActionsWithPermit
+                  buyOffer={row.original}
+                  triggerRefresh={refreshOffers}
+                />
+                {/* //TODO: ADD SHOW OFFER BUTTON  */}
+                {/* <ShowOfferAction offer={row.original}/> */}
+              </Flex>
             ),
             meta: { colSpan: 1 },
           },
         ],
       },
     ],
-    [refreshState, t]
+    [refreshOffers, t]
   );
 
   useEffect(() => {
@@ -251,7 +256,7 @@ export const MarketTable: FC = () => {
         }),
       }}
       table={table}
-      tablecaptionOptions={{ refreshState: refreshState, visible: true }}
+      tablecaptionOptions={{ refreshState: [offersIsLoading,refreshOffers], visible: true }}
       TableSubRow={MarketSubRow}
     />
   );

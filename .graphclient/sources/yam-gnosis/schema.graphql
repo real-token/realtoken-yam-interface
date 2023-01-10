@@ -842,6 +842,8 @@ type Token {
   purchases(skip: Int = 0, first: Int = 100, orderBy: Purchase_orderBy, orderDirection: OrderDirection, where: Purchase_filter): [Purchase!]!
   """ Purchase count """
   purchaseCount: BigInt!
+  """ Dollars volume """
+  dollarsVolume: BigDecimal!
   """ Offer count """
   offerCount: BigInt!
   """ TokenType: 0:NOWL|1:REALTOKEN|2:ERC20PERMIT|3:ERC20NOPERMIT """
@@ -891,6 +893,14 @@ input Token_filter {
   purchaseCount_lte: BigInt
   purchaseCount_in: [BigInt!]
   purchaseCount_not_in: [BigInt!]
+  dollarsVolume: BigDecimal
+  dollarsVolume_not: BigDecimal
+  dollarsVolume_gt: BigDecimal
+  dollarsVolume_lt: BigDecimal
+  dollarsVolume_gte: BigDecimal
+  dollarsVolume_lte: BigDecimal
+  dollarsVolume_in: [BigDecimal!]
+  dollarsVolume_not_in: [BigDecimal!]
   offerCount: BigInt
   offerCount_not: BigInt
   offerCount_gt: BigInt
@@ -965,6 +975,7 @@ enum Token_orderBy {
   offers
   purchases
   purchaseCount
+  dollarsVolume
   offerCount
   tokenType
   decimals

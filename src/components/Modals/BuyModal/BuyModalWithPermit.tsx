@@ -8,26 +8,22 @@ import {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-
 import { Web3Provider } from '@ethersproject/providers';
-import { Button, Divider, Flex, Group, Input, Stack, Text } from '@mantine/core';
+import { Button, Divider, Flex, Group, Stack, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { ContextModalProps } from '@mantine/modals';
 import { showNotification, updateNotification } from '@mantine/notifications';
-import { useWeb3React } from '@web3-react/core';
-
 import BigNumber from 'bignumber.js';
-
 import { CoinBridgeToken, coinBridgeTokenABI, Erc20, Erc20ABI } from 'src/abis';
 import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
-import { useActiveChain, useContract, useOffers } from 'src/hooks';
+import { useActiveChain, useContract } from 'src/hooks';
 import coinBridgeTokenPermitSignature from 'src/hooks/coinBridgeTokenPermitSignature';
 import erc20PermitSignature from 'src/hooks/erc20PermitSignature';
 import { getContract } from 'src/utils';
-
 import { NumberInput } from '../../NumberInput';
 import { useWalletERC20Balance } from 'src/hooks/useWalletERC20Balance';
 import { cleanNumber } from 'src/utils/number';
+import { useWeb3React } from '@web3-react/core';
 
 type BuyModalWithPermitProps = {
   offerId: string;
@@ -54,7 +50,7 @@ type BuyWithPermitFormValues = {
 
 export const BuyModalWithPermit: FC<
   ContextModalProps<BuyModalWithPermitProps>
-> = ({
+> =  ({
   context,
   id,
   innerProps: {
@@ -83,44 +79,52 @@ export const BuyModalWithPermit: FC<
         buyerTokenDecimals: buyerTokenDecimals
       },
     });
+  
 
-    // console.log(values)
+    
+    const [isSubmitting, setSubmitting] = useState<boolean>(false);
+    const activeChain = useActiveChain();
+    
+    const [offerTokenName,setOfferTokenName] = useState<string|undefined>("");
+    const [offerTokenSymbol,setOfferTokenSymbol] = useState<string|undefined>("");
+    const [offerTokenSellerBalance,setOfferTokenSellerBalance] = useState<string|undefined>("");
 
-  const [isSubmitting, setSubmitting] = useState<boolean>(false);
-  const activeChain = useActiveChain();
-
-  const [offerTokenName,setOfferTokenName] = useState<string|undefined>("");
-  const [offerTokenSymbol,setOfferTokenSymbol] = useState<string|undefined>("");
-  const [buyTokenSymbol,setBuyTokenSymbol] = useState<string|undefined>("");
-
-  const realTokenYamUpgradeable = useContract(
-    ContractsID.realTokenYamUpgradeable
-  );
-  const buyerToken = getContract<CoinBridgeToken>(
-    buyerTokenAddress,
-    coinBridgeTokenABI,
-    provider as Web3Provider,
-    account
-  );
-  const offerToken = getContract<Erc20>(
-    offerTokenAddress,
-    Erc20ABI,
-    provider as Web3Provider,
-    account
-  )
+    const [buyTokenSymbol,setBuyTokenSymbol] = useState<string|undefined>("");
+    
+    const realTokenYamUpgradeable = useContract(
+      ContractsID.realTokenYamUpgradeable
+      );
+      const buyerToken = getContract<CoinBridgeToken>(
+        buyerTokenAddress,
+        coinBridgeTokenABI,
+        provider as Web3Provider,
+        account
+        );
+        const offerToken = getContract<Erc20>(
+          offerTokenAddress,
+          Erc20ABI,
+          provider as Web3Provider,
+          account
+          )
+        //const newOfferAmount = new BigNumber(((await offerToken?.balanceOf(sellerAddress))?._hex ?? '0')).toNumber();
+        //console.log('DEBUG BuyWithPermitFormValues value',newOfferAmount,values)
 
   const getOfferTokenInfos = async () => {
     try{
+
       const tokenName = await offerToken?.name();
       const tokenSymbol = await offerToken?.symbol();
+      const balanceSeller = await offerToken?.balanceOf(sellerAddress)
+      setOfferTokenSellerBalance( (balanceSeller ?? BigNumber(0)).toString())
       setOfferTokenName(tokenName);
       setOfferTokenSymbol(tokenSymbol)
+
     }catch(err){
       console.log(err)
     }
   }
   useEffect(() => {
-    if(offerToken) getOfferTokenInfos();
+    if(offerToken) getOfferTokenInfos();    
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[offerToken])
 
@@ -139,10 +143,6 @@ export const BuyModalWithPermit: FC<
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[buyerToken])
 
-  const {
-    offers,
-    refreshState: [isRefreshing],
-  } = useOffers();
   const { t } = useTranslation('modals', { keyPrefix: 'buy' });
 
   const onClose = useCallback(() => {
@@ -359,10 +359,10 @@ export const BuyModalWithPermit: FC<
   const total = values?.amount * values?.price;
 
   const maxTokenBuy: number|undefined = useMemo(() => {
-    if(!balance && price) return undefined;
-    if(balance == undefined) return undefined;
+    if(balance == undefined || !price) return undefined;
 
-    const max = balance/price;
+    const max = balance != 0 ? balance/price : 0;
+
     return max >= offerAmount ? offerAmount : max;
   },[balance,price,offerAmount])
 
@@ -387,7 +387,7 @@ export const BuyModalWithPermit: FC<
             </Flex>
             <Flex direction={"column"} >
               <Text fw={700}>{t("amount")}</Text>
-              <Text>{offerAmount}</Text>
+              <Text>{BigNumber.minimum(offerAmount,offerTokenSellerBalance!).toString()}</Text>
             </Flex>
             <Flex direction={"column"}>
                 <Text fw={700}>{t("price")}</Text>

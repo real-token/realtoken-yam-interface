@@ -6,7 +6,7 @@ import { useModals } from '@mantine/modals';
 import { IconTrash } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
 
-import { Offer } from 'src/hooks/types';
+import { Offer } from 'src/types/Offer';
 
 type DeleteActions = {
   deleteOffer: Offer;

@@ -46,7 +46,7 @@ export const CHAINS: Record<ChainsID, Chain> = {
     contracts: {
       [ContractsID.realTokenYamUpgradeable]: {
         abi: realTokenYamUpgradeableABI,
-        address: '0xC759AA7f9dd9720A1502c104DaE4F9852bb17C14',
+        address: '0xc759aa7f9dd9720a1502c104dae4f9852bb17c14',
         metadata: { fromBlock: 16220000 },
       },
     },
@@ -65,7 +65,7 @@ export const CHAINS: Record<ChainsID, Chain> = {
     contracts: {
       [ContractsID.realTokenYamUpgradeable]: {
         abi: realTokenYamUpgradeableABI,
-        address: '0xBA2E37248804eB636Cf4e0B0Aba50CF48ab49E2B',
+        address: '0xba2e37248804eb636cf4e0b0aba50cf48ab49e2b',
         metadata: { fromBlock: 7385668 },
       },
     },

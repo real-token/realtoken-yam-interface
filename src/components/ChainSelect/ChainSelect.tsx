@@ -19,6 +19,8 @@ type ChainSelectItemsProps = {
   logo: string;
 };
 
+console.log('env',process.env.NEXT_PUBLIC_ENV);
+
 const data = ALLOWED_CHAINS
   .filter((chain) => (chain.toString() !== "5" && process.env.NEXT_PUBLIC_ENV === "production") || process.env.NEXT_PUBLIC_ENV !== "production")
   .map<SelectItem>((chain) => ( {
