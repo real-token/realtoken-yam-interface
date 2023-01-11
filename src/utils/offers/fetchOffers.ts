@@ -26,7 +26,12 @@ import {
 import { getContract } from '../getContract';
 import { fetchWallet } from '../wallet/fetchWallet';
 
-type DataRealtokenType = { amount: string; id: string; allowance?: string };
+type DataRealtokenType = {
+  amount: string;
+  id: string;
+  allowances?: [{ id: string; allowance: string }];
+  allowance?: string;
+};
 
 const getTheGraphUrlYAM = (chainId: number): string => {
   switch (chainId) {
@@ -62,12 +67,12 @@ const getBigDataGraphRealtoken = async (
   const { address: realTokenYamUpgradeable } =
     CHAINS[chainId as ChainsID].contracts.realTokenYamUpgradeable;
 
+  console.log('getBigDataGraphRealtoken', realtokenAccount.length);
+
   const accountRealtoken: string =
     '"' + realtokenAccount.map((account: string) => account).join('","') + '"';
-  /* console.log(
-    'DEBUG getBigDataGraphRealtoken accountRealtoken',
-    accountRealtoken
-  ); */
+  //console.log('DEBUG accountRealtoken', accountRealtoken);
+
   const { data } = await client.query({
     query: gql`
       query getAccountsRealtoken {
@@ -77,13 +82,12 @@ const getBigDataGraphRealtoken = async (
         ) {
           id
           amount
-        }
-        allowances(
-          first: 1000
-          where: {spender: "${realTokenYamUpgradeable}"}
-        ) {
-          allowance
-          id
+          allowances(
+            where: {spender: "${realTokenYamUpgradeable}"}
+          ) {
+            allowance
+            id
+          }
         }
       }
     `,
@@ -91,10 +95,11 @@ const getBigDataGraphRealtoken = async (
   //console.log('DEBUG getBigDataGraphRealtoken data', data);
 
   return data.accountBalances.map((accountBalance: DataRealtokenType) => {
-    const allowance: { id: string; allowance: string } = data.allowances.find(
-      (allowance: { id: string; allowance: string }) =>
-        accountBalance.id + '-' + realTokenYamUpgradeable === allowance.id
-    );
+    const allowance: { id: string; allowance: string } | undefined =
+      accountBalance.allowances?.find(
+        (allowance: { id: string; allowance: string }) =>
+          accountBalance.id + '-' + realTokenYamUpgradeable === allowance.id
+      );
     /*  console.log(
       'DEBUG data.accountBalances.map allowance',
       allowance,
@@ -108,76 +113,6 @@ const getBigDataGraphRealtoken = async (
       allowance: allowance?.allowance ?? '0',
     };
   });
-};
-
-const getBigDataGraphRealtokenTMP = async (
-  chainId: number,
-  client: ApolloClient<NormalizedCacheObject>,
-  realtokenAccount: string[]
-) => {
-  const { address: realTokenYamUpgradeable } =
-    CHAINS[chainId as ChainsID].contracts.realTokenYamUpgradeable;
-
-  const accountRealtoken: string =
-    '"' + realtokenAccount.map((account: string) => account).join('","') + '"';
-  /* console.log(
-    'DEBUG getBigDataGraphRealtokenTMP accountRealtoken',
-    accountRealtoken
-  ); */
-
-  /* 
-  //TODO: optimisation, filtrer les balance pour ne garder que celles des offres du seller a la place de toutes les récupérer
-  const { data } = await client.query({
-    query: gql`
-          query getAccountsRealtoken {
-            accounts(
-              where: {
-                address_in: [${accountRealtoken}]
-              }
-            ) {
-              address
-              balances (first:10) {
-                amount
-                token {
-                  fullName
-                  address
-                }
-              }
-            }
-          }
-        `,
-  }); */
-
-  const { data } = await client.query({
-    query: gql`
-          query getAccountsRealtoken {
-            accountBalances(
-              first: 1000
-              where: {id_in: [${accountRealtoken}], amount_gt: "0"}
-            ) {
-              id
-              amount
-            }
-          }
-        `,
-  });
-
-  /*{
-  accountBalances(first: 1000, where: {amount_gt: "0"}) {
-    id
-    amount
-  }
-  allowances(
-    first: 1000
-    where: {spender: ${realTokenYamUpgradeable}}
-  ) {
-    allowance
-    id
-  }
-} */
-  //console.log('DEBUG getBigDataGraphRealtokenTMP data', data);
-
-  return data.accountBalances;
 };
 
 export const fetchOfferTheGraph = (
@@ -303,14 +238,8 @@ export const fetchOfferTheGraph = (
             `,
           }));
 
-      //console.log('Debug Query dataYAM', dataYAM);
+      console.log('Query dataYAM', dataYAM.offers.length);
 
-      /* const accountRealtoken: string =
-        '"' +
-        dataYAM.accounts
-          .map((account: { address: string }) => account.address)
-          .join('","') +
-        '"'; */
       const accountRealtoken: string[] = usersDataYAM.accounts.map(
         (account: { address: string; offers: [] }) =>
           account.offers.map(
@@ -321,7 +250,7 @@ export const fetchOfferTheGraph = (
       const accountBalanceId: string[] = accountRealtoken.flat();
       //console.log('Debug liste accountBalanceId', accountBalanceId);
 
-      const batchSize = 500;
+      const batchSize = 1000;
       const dataRealtoken: [DataRealtokenType] = [
         {
           amount: '0',
@@ -335,72 +264,12 @@ export const fetchOfferTheGraph = (
         ); */
         if (batch.length <= 0) break;
 
-        const realtokenData =
-          chainId === 5
-            ? await getBigDataGraphRealtoken(chainId, clientRealtoken, batch)
-            : await getBigDataGraphRealtokenTMP(
-                chainId,
-                clientRealtoken,
-                batch
-              );
+        const realtokenData: [DataRealtokenType] =
+          await getBigDataGraphRealtoken(chainId, clientRealtoken, batch);
 
         //console.log('DEBUG for realtokenData', i, batchSize, realtokenData);
         dataRealtoken.push(...realtokenData);
       }
-      //let dataRealtoken: { accounts: any[] }; //TODO: tmp supprimer la partie false quant déploiement ok sur Eth et Gonosis, remettre en const a la place de let
-      /* chainId === 5
-        ? ({ data: dataRealtoken } = await clientRealtoken.query({
-            query: gql`
-          query getAccountsRealtoken {
-            accounts(
-              where: {
-                address_in: [${accountRealtoken}]
-              }
-            ) {
-              address
-              allowances(
-                where: { spender: "${realTokenYamUpgradeable}" }
-              ) {
-                allowance
-                token {
-                  fullName
-                  address
-                }
-                spender {
-                  address
-                }
-              }
-              balances {
-                amount
-                token {
-                  fullName
-                  address
-                }
-              }
-            }
-          }
-        `,
-          }))
-        : ({ data: dataRealtoken } = await clientRealtoken.query({
-            query: gql`
-          query getAccountsRealtoken {
-            accounts(
-              where: {
-                address_in: [${accountRealtoken}]
-              }
-            ) {
-              address
-              balances {
-                amount
-                token {
-                  fullName
-                  address
-                }
-              }
-            }
-          }
-        `,
-          }));*/
 
       //console.log('Debug Query dataRealtoken', dataRealtoken);
 
@@ -433,6 +302,8 @@ export const fetchOfferTheGraph = (
         })
       );
 
+      console.log('Offers formated', offersData.length);
+
       resolve(offersData);
     } catch (err) {
       console.log('Error while fetching offers from TheGraph', err);
@@ -464,10 +335,7 @@ const parseOffer = (
         ) {
           balanceWallet = accountUserRealtoken.amount ?? '0';
 
-          allowance =
-            chainId === 5 //TODO: chainId === 5, temporaire le temps que les graph soie mis a jours
-              ? accountUserRealtoken.allowance ?? '0'
-              : offer.availableAmount;
+          allowance = accountUserRealtoken.allowance ?? '0';
 
           logLabel = 'parseOffer type 1 blance/allowance';
 
@@ -521,7 +389,6 @@ const parseOffer = (
       };
 
       // console.log(offer.availableAmount, balanceWallet, allowance)
-
       resolve(o);
     } catch (err) {
       console.log('Error when fetching account from TheGraph', err);
@@ -529,144 +396,3 @@ const parseOffer = (
     }
   });
 };
-
-/* export const fetchOffer = (
-  chainId: number,
-  offerId: number,
-  propertiesToken: PropertiesToken[]
-): Promise<Offer> => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const client = new ApolloClient({
-        uri:
-          chainId == 100
-            ? 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-gnosis'
-            : 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph',
-        cache: new InMemoryCache(),
-      });
-
-      const { data } = await client.query({
-        query: gql`
-          query MyQuery($id: String!) {
-            offer(id: $id) {
-              id
-              offerToken {
-                address
-                name
-                decimals
-                symbol
-              }
-              price {
-                price
-                amount
-              }
-              prices {
-                amount
-                price
-              }
-              seller {
-                address
-              }
-              buyerToken {
-                name
-                symbol
-                address
-                decimals
-              }
-              removedAtBlock
-              availableAmount
-            }
-          }
-        `,
-        variables: {
-          id: `0x${offerId.toString(16)}`,
-        },
-      });
-
-      const offer = await parseOffer(data.offer, chainId);
-
-      const hasPropertyToken = propertiesToken.find(
-        (propertyToken) =>
-          propertyToken.contractAddress == offer.buyerTokenAddress ||
-          propertyToken.contractAddress == offer.offerTokenAddress
-      );
-      offer.hasPropertyToken = hasPropertyToken ? true : false;
-
-      resolve(offer);
-    } catch (err) {
-      console.log(err);
-      reject(err);
-    }
-  });
-}; */
-
-// export const fetchOffers = (realTokenYamUpgradeable: Contract, provider: ethers.providers.BaseProvider, account: string, propertiesToken: PropertiesToken[]) : Promise<Offer[]> => {
-//     return new Promise<Offer[]>(async (resolve, reject) => {
-//         try{
-
-//           const offersData: Offer[] = [];
-
-//           const getEvents = () =>
-//             realTokenYamUpgradeable.queryFilter(
-//             realTokenYamUpgradeable.filters.OfferDeleted(),
-//             realTokenYamUpgradeable.metadata.fromBlock
-//           );
-
-//           const events = await getEvents();
-//           const offersDeleted = events.map(event => event.args?.offerId.toNumber());
-//           const offerCount = realTokenYamUpgradeable.getOfferCount().toNumber();
-
-//           const offerCountArray = Array.from(Array(offerCount).keys());
-//           const offersToFetch = offerCountArray.filter(x => !offersDeleted.includes(x));
-
-//           for (const i of offersToFetch) {
-//             const getOffer = () => realTokenYamUpgradeable.showOffer(i);
-
-//             const [
-//               offerTokenAddress,
-//               buyerTokenAddress,
-//               sellerAddress,
-//               buyerAddress,
-//               price,
-//               amount,
-//             ] = await getOffer();
-
-//             const offerToken = getContract<Erc20>(offerTokenAddress, Erc20ABI, <Web3Provider>provider, account);
-//             const buyerToken = getContract<Erc20>(buyerTokenAddress, Erc20ABI, <Web3Provider>provider, account);
-//             const offerTokenName = <string>(await offerToken?.name());
-//             const buyerTokenName = <string>(await buyerToken?.name());
-//             const offerTokenDecimals = <number>await offerToken?.decimals();
-//             const buyerTokenDecimals = <number>await buyerToken?.decimals();
-
-//             const hasPropertyToken = propertiesToken.find(propertyToken => (propertyToken.contractAddress == buyerTokenAddress || propertyToken.contractAddress == offerTokenAddress));
-
-//             const bnAmount = new BigNumber(amount.toString());
-//             const offerData: Offer = {
-//               offerId: i.toString(),
-//               offerTokenAddress: offerTokenAddress,
-//               offerTokenName: <string>offerTokenName,
-//               offerTokenDecimals: offerTokenDecimals.toString(),
-//               buyerTokenAddress: buyerTokenAddress,
-//               buyerTokenName: <string>buyerTokenName,
-//               buyerTokenDecimals: buyerTokenDecimals.toString(),
-//               sellerAddress: sellerAddress,
-//               buyerAddress: buyerAddress,
-//               price: (new BigNumber(price.toString())).shiftedBy(- buyerTokenDecimals).toFixed(10).toString(),
-//               amount: (bnAmount.shiftedBy(- offerTokenDecimals)).toFixed(10).toString(),
-//               hasPropertyToken: hasPropertyToken ? true : false,
-//               removed: false,
-//               availableAmount: ""
-//             };
-
-//             offersData.push(offerData);
-
-//           }
-
-//           resolve(offersData);
-
-//         }catch(err){
-//           console.log("Error getting when fetching offers: ", err);
-//           reject(err);
-//         }
-//     })
-// }
