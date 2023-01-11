@@ -6,7 +6,7 @@ import { useModals } from '@mantine/modals';
 import { IconShoppingCart } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
 
-import { Offer } from 'src/types/Offer';
+import { Offer } from 'src/types/Offer/Offer';
 import { useSelector } from 'react-redux';
 import { selectOffersIsLoading } from 'src/store/features/interface/interfaceSelector';
 

@@ -15,7 +15,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { Offer } from 'src/types/Offer';
+import { Offer } from 'src/types/Offer/Offer';
 import { Table } from '../../Table';
 import { BuyActionsWithPermit } from '../BuyActions';
 import { MarketSubRow } from '../MarketSubRow';

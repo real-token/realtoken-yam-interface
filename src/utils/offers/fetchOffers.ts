@@ -17,7 +17,7 @@ import { Erc20, Erc20ABI } from 'src/abis';
 import { CHAINS, ChainsID } from 'src/constants';
 import { PropertiesToken } from 'src/types';
 import { Account, AccountRealtoken } from 'src/types/Account';
-import { Offer } from 'src/types/Offer';
+import { Offer } from 'src/types/Offer/Offer';
 
 import {
   AccountBalance,

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useWeb3React } from '@web3-react/core';
 
 //import { fetchOffer } from "src/utils/offers/fetchOffers";
-import { Offer } from '../../types/Offer';
+import { Offer } from '../../types/Offer/Offer';
 import { usePropertiesToken } from '../usePropertiesToken';
 
 type UseOfferProps = (offerId: number) => {

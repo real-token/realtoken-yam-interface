@@ -1,12 +1,5 @@
 import BigNumber from 'bignumber.js';
 
-export type CreatedOffer = {
-  offerToken: string;
-  buyerToken: string;
-  price: BigNumber;
-  offerId: BigNumber;
-};
-
 export type Offer = {
   offerId: string;
   offerTokenAddress: string;

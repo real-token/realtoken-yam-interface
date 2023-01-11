@@ -1,6 +1,5 @@
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { PropertiesToken } from 'src/types';
-import { useAsync } from './useAsync';
 import { usePropertiesToken } from './usePropertiesToken';
 
 export type TokenInfo = {
