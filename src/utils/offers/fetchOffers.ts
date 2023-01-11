@@ -71,7 +71,10 @@ const getBigDataGraphRealtoken = async (
   const { data } = await client.query({
     query: gql`
       query getAccountsRealtoken {
-        accountBalances(id_in: [${accountRealtoken}], where: {amount_gt: "0"}) {
+        accountBalances(
+          first: 1000 
+          where: {amount_gt: "0",id_in: [${accountRealtoken}]}
+        ) {
           id
           amount
         }
