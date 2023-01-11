@@ -157,86 +157,92 @@ export const fetchOfferTheGraph = (
 
       //console.log('Debug Query usersDataYAM', usersDataYAM);
 
-      let dataYAM; //TODO: tmp supprimer la partie false quant déploiement ok sur Eth et Gonosis, remettre en const a la place de let
-      chainId === 5
-        ? ({ data: dataYAM } = await clientYAM.query({
-            query: gql`
-              query getOffers {
-                offers(first: 1000, where: { removedAtBlock: null }) {
+      let dataYAM; //TODO: tmp supprimer la partie false quant déploiement ok sur Eth et Gonosis, remettre en const a la place de let try = new graph, catch = old graph
+      try {
+        console.log('TRY dataYAM');
+
+        ({ data: dataYAM } = await clientYAM.query({
+          query: gql`
+            query getOffers {
+              offers(first: 1000, where: { removedAtBlock: null }) {
+                id
+                seller {
                   id
-                  seller {
-                    id
-                    address
-                  }
-                  removedAtBlock
-                  availableAmount
-                  allowance {
-                    allowance
-                  }
-                  balance {
-                    amount
-                  }
-                  offerToken {
-                    address
-                    name
-                    decimals
-                    symbol
-                    tokenType
-                  }
-                  price {
-                    price
-                    amount
-                  }
-                  buyerToken {
-                    name
-                    symbol
-                    address
-                    decimals
-                    tokenType
-                  }
-                  buyer {
-                    address
-                  }
+                  address
+                }
+                removedAtBlock
+                availableAmount
+                allowance {
+                  allowance
+                }
+                balance {
+                  amount
+                }
+                offerToken {
+                  address
+                  name
+                  decimals
+                  symbol
+                  tokenType
+                }
+                price {
+                  price
+                  amount
+                }
+                buyerToken {
+                  name
+                  symbol
+                  address
+                  decimals
+                  tokenType
+                }
+                buyer {
+                  address
                 }
               }
-            `,
-          }))
-        : ({ data: dataYAM } = await clientYAM.query({
-            query: gql`
-              query getOffers {
-                offers(first: 1000, where: { removedAtBlock: null }) {
+            }
+          `,
+        }));
+      } catch (error) {
+        console.log('CATCH dataYAM');
+
+        ({ data: dataYAM } = await clientYAM.query({
+          query: gql`
+            query getOffers {
+              offers(first: 1000, where: { removedAtBlock: null }) {
+                id
+                seller {
                   id
-                  seller {
-                    id
-                    address
-                  }
-                  removedAtBlock
-                  availableAmount
-                  offerToken {
-                    address
-                    name
-                    decimals
-                    symbol
-                    tokenType
-                  }
-                  price {
-                    price
-                    amount
-                  }
-                  buyerToken {
-                    name
-                    symbol
-                    address
-                    decimals
-                    tokenType
-                  }
-                  buyer {
-                    address
-                  }
+                  address
+                }
+                removedAtBlock
+                availableAmount
+                offerToken {
+                  address
+                  name
+                  decimals
+                  symbol
+                  tokenType
+                }
+                price {
+                  price
+                  amount
+                }
+                buyerToken {
+                  name
+                  symbol
+                  address
+                  decimals
+                  tokenType
+                }
+                buyer {
+                  address
                 }
               }
-            `,
-          }));
+            }
+          `,
+        }));
+      }
 
       console.log('Query dataYAM', dataYAM.offers.length);
 
