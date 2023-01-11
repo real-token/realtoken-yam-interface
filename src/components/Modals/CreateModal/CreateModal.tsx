@@ -21,9 +21,10 @@ import { AllowedBuyToken } from 'src/types/allowedBuyTokens';
 import { cleanNumber } from 'src/utils/number';
 import { useWeb3React } from '@web3-react/core';
 import { ContextModalProps } from '@mantine/modals';
-import { useAppDispatch } from 'src/hooks/react-hooks';
+import { useAppDispatch, useAppSelector } from 'src/hooks/react-hooks';
 import { createOfferAddedDispatchType } from 'src/store/features/createOffers/createOffersSlice';
 import { CreatedOffer } from 'src/types/Offer/CreatedOffer';
+import { selectCreateOffers } from 'src/store/features/createOffers/createOffersSelector';
 
 interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
   label: string;
@@ -103,10 +104,13 @@ export const CreateOfferModal: FC<ContextModalProps<Record<string,never>>> = ({
     ContractsID.realTokenYamUpgradeable
   );
 
+  const offers = useAppSelector(selectCreateOffers);
+
   const saveCreatedOffer = (formValues: SellFormValues) => {
     try{
 
       const createdOffer: CreatedOffer = {
+        offerId: offers.length,
         offerTokenAddress: formValues.offerTokenAddress,
         buyerTokenAddress: formValues.buyerTokenAddress,
         price: formValues.price ?? 0,
@@ -117,7 +121,7 @@ export const CreateOfferModal: FC<ContextModalProps<Record<string,never>>> = ({
 
       dispatch({ type: createOfferAddedDispatchType, payload: createdOffer });
 
-      context.closeModal()
+      context.closeModal(id)
 
     }catch(err){
       console.log(err)

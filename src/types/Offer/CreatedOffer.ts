@@ -1,4 +1,5 @@
 export interface CreatedOffer{
+    offerId: number;
     offerTokenAddress: string;
     buyerTokenAddress: string;
     price: number|undefined;
