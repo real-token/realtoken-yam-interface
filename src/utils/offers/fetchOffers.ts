@@ -33,7 +33,7 @@ type DataRealtokenType = {
   allowance?: string;
 };
 
-const getTheGraphUrlYAM = (chainId: number): string => {
+export const getTheGraphUrlYAM = (chainId: number): string => {
   switch (chainId) {
     case 1:
       return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph';

@@ -1,5 +1,6 @@
 import { createStyles } from '@mantine/core';
 import { FC, ReactNode } from 'react';
+import { Banner } from 'src/components/Banner/Banner';
 import { Footer } from '../components/Footer';
 import { Header } from '../components/Header';
 
@@ -26,6 +27,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
 
   return (
     <div className={classes.container}>
+      <Banner />
       <Header />
       <div className={classes.main}>
         {children}
