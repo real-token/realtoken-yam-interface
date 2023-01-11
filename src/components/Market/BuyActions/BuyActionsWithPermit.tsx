@@ -6,7 +6,9 @@ import { useModals } from '@mantine/modals';
 import { IconShoppingCart } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
 
-import { Offer } from 'src/hooks/types';
+import { Offer } from 'src/types/Offer';
+import { useSelector } from 'react-redux';
+import { selectOffersIsLoading } from 'src/store/features/interface/interfaceSelector';
 
 type BuyActions = {
   buyOffer: Offer;
@@ -21,6 +23,7 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
   const modals = useModals();
 
   const { t } = useTranslation('modals');
+  const offersIsLoading = useSelector(selectOffersIsLoading);
 
   const onOpenBuyModal = useCallback(
     (offer: Offer) => {
@@ -57,16 +60,19 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
 
   return (
     <>
-      { !isAccountOffer ? <Group position={'center'}>
-        <ActionIcon
-          color={'green'}
-          onClick={() =>
-            account ? onOpenBuyModal(buyOffer) : onOpenWalletModal()
-          }
-        >
-          <IconShoppingCart size={16} aria-label={'Buy'} />
-        </ActionIcon>
-      </Group> : undefined }
+      { !isAccountOffer && !offersIsLoading ? 
+        (
+          <Group position={'center'}>
+            <ActionIcon
+              color={'green'}
+              onClick={() =>
+                account ? onOpenBuyModal(buyOffer) : onOpenWalletModal()
+              }
+            >
+              <IconShoppingCart size={16} aria-label={'Buy'} />
+            </ActionIcon>
+          </Group> 
+        ): undefined }
     </>
   );
 };

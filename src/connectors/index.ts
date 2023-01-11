@@ -22,8 +22,8 @@ export {
   walletConnectHooks,
   coinbaseWallet,
   coinbaseWalletHooks,
-  gnosisSafe,
-  gnosisSafeHooks,
   network,
   networkHooks,
+  gnosisSafe,
+  gnosisSafeHooks
 };

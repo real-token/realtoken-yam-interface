@@ -2,7 +2,8 @@ import { FC, ReactNode, useEffect } from 'react';
 
 import { Web3ReactProvider } from '@web3-react/core';
 
-import { connectors, metaMask, gnosisSafe, network } from 'src/connectors';
+import { connectors, metaMask, network } from 'src/connectors';
+import { gnosisSafe } from 'src/connectors/gnosisSafe';
 
 type Web3ProvidersProps = {
   children: ReactNode;
@@ -12,7 +13,7 @@ const ConnectEagerly: FC = () => {
   useEffect(() => {
     void network.activate();
   }, []);
-  
+
   useEffect(() => {
 		console.log('Variable version: ', 2);
 		console.log('process.env.NODE_ENV', process.env.NODE_ENV);
@@ -23,7 +24,6 @@ const ConnectEagerly: FC = () => {
     }): 
     void metaMask.connectEagerly();
   }, [])
-
 
   return null;
 };

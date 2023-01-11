@@ -8,26 +8,22 @@ import {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-
 import { Web3Provider } from '@ethersproject/providers';
-import { Button, Divider, Flex, Group, Input, Stack, Text } from '@mantine/core';
+import { Button, Divider, Flex, Group, Stack, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { ContextModalProps } from '@mantine/modals';
 import { showNotification, updateNotification } from '@mantine/notifications';
-import { useWeb3React } from '@web3-react/core';
-
 import BigNumber from 'bignumber.js';
-
 import { CoinBridgeToken, coinBridgeTokenABI, Erc20, Erc20ABI } from 'src/abis';
 import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
-import { useActiveChain, useContract, useOffers } from 'src/hooks';
+import { useActiveChain, useContract } from 'src/hooks';
 import coinBridgeTokenPermitSignature from 'src/hooks/coinBridgeTokenPermitSignature';
 import erc20PermitSignature from 'src/hooks/erc20PermitSignature';
 import { getContract } from 'src/utils';
-
 import { NumberInput } from '../../NumberInput';
 import { useWalletERC20Balance } from 'src/hooks/useWalletERC20Balance';
 import { cleanNumber } from 'src/utils/number';
+import { useWeb3React } from '@web3-react/core';
 
 type BuyModalWithPermitProps = {
   offerId: string;
@@ -147,9 +143,6 @@ export const BuyModalWithPermit: FC<
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[buyerToken])
 
-  const {
-    refreshState: [isRefreshing],
-  } = useOffers();
   const { t } = useTranslation('modals', { keyPrefix: 'buy' });
 
   const onClose = useCallback(() => {
@@ -366,18 +359,12 @@ export const BuyModalWithPermit: FC<
   const total = values?.amount * values?.price;
 
   const maxTokenBuy: number|undefined = useMemo(() => {
-    console.log("test: ", balance?.toString())
-
     if(balance == undefined || !price) return undefined;
 
     const max = balance != 0 ? balance/price : 0;
 
-    console.log("max: ", max)
-
     return max >= offerAmount ? offerAmount : max;
   },[balance,price,offerAmount])
-
-  console.log("maxTokenBuy: ", maxTokenBuy)
 
   return (
     <form onSubmit={onSubmit(onHandleSubmit)}>

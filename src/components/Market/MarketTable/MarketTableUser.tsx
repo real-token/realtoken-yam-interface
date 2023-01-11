@@ -1,6 +1,5 @@
 import { FC, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
 import { Group, Indicator, MantineSize, Text, Title, Tooltip } from '@mantine/core';
 import {
   ColumnDef,
@@ -13,19 +12,21 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-
-import { useOffers } from 'src/hooks';
-import { Offer } from 'src/hooks/types';
-
+import { Offer } from 'src/types/Offer';
 import { Table } from '../../Table';
 import { DeleteActions } from '../DeleteActions';
 import { MarketSubRow } from '../MarketSubRow';
 import { UpdateActionsWithPermit } from '../UpdateActions';
+import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
+import { selectAddressOffers } from 'src/store/features/interface/interfaceSelector';
+import { useSelector } from 'react-redux';
 import { ZERO_ADDRESS } from 'src/constants';
 
 export const MarketTableUser: FC = () => {
-  const { offers, refreshState } = useOffers(true, false, false, true); // filter offers by seller
 
+  const { refreshOffers, offersIsLoading } = useRefreshOffers(false);
+
+  const offers = useSelector(selectAddressOffers);
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'offerId', desc: false },
   ]);
@@ -52,7 +53,7 @@ export const MarketTableUser: FC = () => {
             id: 'offerId',
             accessorKey: 'offerId',
             header: t('offerId'),
-            cell: ({ row, getValue }) => (
+            cell: ({row, getValue }) => (
               <Group style={{position:'relative'}}>{
                 /^0x[0-9a-fA-F]{40}/.test(row.original.buyerAddress) && row.original.buyerAddress != ZERO_ADDRESS ?
                   <Indicator  
@@ -82,7 +83,7 @@ export const MarketTableUser: FC = () => {
             accessorKey: 'offerTokenName',
             header: t('offerTokenName'),
             cell: ({ getValue }) => (
-                <Text 
+                <Text
                   fz={'sm'}
                   sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
                 >
@@ -153,7 +154,7 @@ export const MarketTableUser: FC = () => {
             cell: ({ row }) => (
               <UpdateActionsWithPermit
                 updateOffer={row.original}
-                triggerRefresh={refreshState[1]}
+                triggerRefresh={refreshOffers}
               />
             ),
             enableSorting: false,
@@ -165,7 +166,7 @@ export const MarketTableUser: FC = () => {
             cell: ({ row }) => (
               <DeleteActions
                 deleteOffer={row.original}
-                triggerRefresh={refreshState[1]}
+                triggerRefresh={refreshOffers}
               />
             ),
             enableSorting: false,
@@ -174,7 +175,7 @@ export const MarketTableUser: FC = () => {
         ],
       },
     ],
-    [refreshState, t]
+    [refreshOffers, t]
   );
 
   const table = useReactTable({
@@ -206,7 +207,7 @@ export const MarketTableUser: FC = () => {
         }),
       }}
       table={table}
-      tablecaptionOptions={{ refreshState: refreshState, visible: true }}
+      tablecaptionOptions={{ refreshState: [offersIsLoading, refreshOffers], visible: true }}
       TableSubRow={MarketSubRow}
     />
   );

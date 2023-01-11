@@ -8,7 +8,8 @@ import {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Button, Text, Flex, Group, Stack, Divider } from '@mantine/core';
+import { Web3Provider } from '@ethersproject/providers';
+import { Button, Divider, Flex, Group, Stack, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { ContextModalProps } from '@mantine/modals';
 import { showNotification, updateNotification } from '@mantine/notifications';
@@ -16,16 +17,19 @@ import { useWeb3React } from '@web3-react/core';
 
 import BigNumber from 'bignumber.js';
 
-import { CoinBridgeToken, coinBridgeTokenABI, Erc20, Erc20ABI } from 'src/abis';
+import { CoinBridgeToken, Erc20, Erc20ABI, coinBridgeTokenABI } from 'src/abis';
 import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
-import { useActiveChain, useContract, useOffers } from 'src/hooks';
+import { useActiveChain, useContract } from 'src/hooks';
 import coinBridgeTokenPermitSignature from 'src/hooks/coinBridgeTokenPermitSignature';
 import erc20PermitSignature from 'src/hooks/erc20PermitSignature';
+import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
+import { useAppDispatch, useAppSelector } from 'src/hooks/react-hooks';
+import { selectPublicOffers } from 'src/store/features/interface/interfaceSelector';
+import { Offer } from 'src/types/Offer';
 import { getContract } from 'src/utils';
+import { cleanNumber } from 'src/utils/number';
 
 import { NumberInput } from '../../NumberInput';
-import { cleanNumber } from 'src/utils/number';
-import { Web3Provider } from '@ethersproject/providers';
 
 type UpdateModalProps = {
   offerId: string;
@@ -85,10 +89,8 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
     ContractsID.realTokenYamUpgradeable
   );
 
-  const {
-    offers,
-    refreshState: [isRefreshing],
-  } = useOffers();
+  const offers = useAppSelector(selectPublicOffers);
+  const offer = offers.find((offer: Offer) => offer.offerId === values.offerId);
 
   const { t } = useTranslation('modals', { keyPrefix: 'update' });
   const { t: t1 } = useTranslation('modals', { keyPrefix: 'sell' });
@@ -99,13 +101,8 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
   }, [context, id, reset]);
 
   useEffect(() => {
-    setAmountMax(
-      Number(
-        offers.find((offer) => offer.offerId === values.offerId)
-          ?.amount as string
-      )
-    );
-  }, [offers, values]);
+    setAmountMax(Number(offer?.amount as string));
+  }, [offer, values]);
 
   useEffect(() => {
     if (!amountMax) return;
@@ -138,28 +135,36 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           return;
         }
 
-        const oldAllowance = await offerToken.allowance(
+        const oldAllowanceOfferToken = await offerToken.allowance(
           account,
           realTokenYamUpgradeable.address
         );
 
-        const newAmountInWei = new BigNumber(
-          formValues.amount.toString()
-        ).shiftedBy(Number(offerTokenDecimals));
-
         const [, , , , , amount] =
           await realTokenYamUpgradeable.getInitialOffer(offerId);
 
-        const oldAmountInWei = new BigNumber(amount.toString());
+        const oldAmountInWei = BigNumber(amount._hex);
+        offerToken.decimals();
+        const newAmountInWei = new BigNumber(formValues.amount).multipliedBy(
+          10 ** (await offerToken.decimals())
+        );
 
-        const amountInWeiToPermit = new BigNumber(oldAllowance.toString())
-          .plus(newAmountInWei)
-          .minus(oldAmountInWei);
+        /*
+         * Si old allowance est supperieur au amount old Yam : retirer du old alowance le old YAM amount et ajouter le new Amount YAM
+         * Si old allowance est inférieur au amount old Yam : set le nouvelle allowance
+         */
+        //TODO: a voir la gestion plus complexe de l'allowance avec multiple création d'offres
+        const amountInWeiToPermit =
+          BigNumber(oldAllowanceOfferToken._hex).comparedTo(oldAmountInWei) > 0
+            ? BigNumber(oldAllowanceOfferToken._hex)
+                .plus(newAmountInWei)
+                .minus(oldAmountInWei)
+            : BigNumber(newAmountInWei);
 
         setSubmitting(true);
 
-        const transactionDeadline = Math.floor(Date.now() / 1000) + 3600; // permit valable during 1h 
         //TODO: rendre configurable par le user
+        const transactionDeadline = Math.floor(Date.now() / 1000) + 3600; // permit valable during 1h
 
         const offerTokenType = await realTokenYamUpgradeable.getTokenType(
           formValues.offerTokenAddress
@@ -176,18 +181,24 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
             provider
           );
 
+          //TODO faire une getsion d'erreur ICI
           const updateOfferWithPermitTx =
             await realTokenYamUpgradeable.updateOfferWithPermit(
-              formValues.offerId,
-              new BigNumber(formValues.price).shiftedBy(Number(buyerTokenDecimals)).toString(),
-              new BigNumber(formValues.amount).shiftedBy(Number(offerTokenDecimals)).toString(10),
+              offerId,
+              BigNumber(price)
+                .multipliedBy(10 ** buyerTokenDecimals)
+                .toString(10),
+              BigNumber(formValues.amount)
+                .multipliedBy(10 ** offerTokenDecimals)
+                .toString(10),
+              amountInWeiToPermit.toString(10),
               transactionDeadline.toString(),
               v,
               r,
               s
             );
 
-            const notificationPayload = {
+          const notificationPayload = {
             key: updateOfferWithPermitTx.hash,
             href: `${activeChain?.blockExplorerUrl}tx/${updateOfferWithPermitTx.hash}`,
             hash: updateOfferWithPermitTx.hash,
@@ -215,7 +226,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           const { r, s, v }: any = await erc20PermitSignature(
             account,
             realTokenYamUpgradeable.address,
-            amountInWeiToPermit.toString(),
+            amountInWeiToPermit.toString(10),
             transactionDeadline,
             offerToken,
             provider
@@ -225,11 +236,12 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
             await realTokenYamUpgradeable.updateOfferWithPermit(
               formValues.offerId,
               new BigNumber(formValues.price.toString())
-                .shiftedBy(Number(buyerTokenDecimals))
-                .toString(),
+                .shiftedBy(10 ** buyerTokenDecimals)
+                .toString(10),
               new BigNumber(formValues.amount.toString())
-                .shiftedBy(Number(offerTokenDecimals))
-                .toString(),
+                .shiftedBy(10 ** offerTokenDecimals)
+                .toString(10),
+              amountInWeiToPermit.toString(10),
               transactionDeadline.toString(),
               v,
               r,
@@ -295,11 +307,11 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           const updateOfferTx = await realTokenYamUpgradeable.updateOffer(
             formValues.offerId,
             new BigNumber(formValues.price.toString())
-              .shiftedBy(Number(buyerTokenDecimals))
-              .toString(),
+              .shiftedBy(10 ** buyerTokenDecimals)
+              .toString(10),
             new BigNumber(formValues.amount.toString())
-              .shiftedBy(Number(offerTokenDecimals))
-              .toString()
+              .shiftedBy(10 ** offerTokenDecimals)
+              .toString(10)
           );
 
           const notificationUpdate = {
@@ -346,11 +358,14 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
       values,
       triggerTableRefresh,
       onClose,
+      offer,
     ]
   );
 
-  const [offerTokenSymbol,setOfferTokenSymbol] = useState<string|undefined>("");
-  const [buyTokenSymbol,setBuyTokenSymbol] = useState<string|undefined>("");
+  const [offerTokenSymbol, setOfferTokenSymbol] = useState<string | undefined>(
+    ''
+  );
+  const [buyTokenSymbol, setBuyTokenSymbol] = useState<string | undefined>('');
 
   const buyerToken = getContract<CoinBridgeToken>(
     buyerTokenAddress,
@@ -363,61 +378,58 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
     Erc20ABI,
     provider as Web3Provider,
     account
-  )
+  );
 
   const getOfferTokenInfos = async () => {
-    try{
+    try {
       const tokenSymbol = await offerToken?.symbol();
-      setOfferTokenSymbol(tokenSymbol)
-    }catch(err){
-      console.log(err)
+      setOfferTokenSymbol(tokenSymbol);
+    } catch (err) {
+      console.log(err);
     }
-  }
+  };
   useEffect(() => {
-    if(offerToken) getOfferTokenInfos();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[offerToken])
+    if (offerToken) getOfferTokenInfos();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [offerToken]);
 
   const getBuyTokenInfos = async () => {
-
-    try{
+    try {
       const tokenSymbol = await buyerToken?.symbol();
       setBuyTokenSymbol(tokenSymbol);
-    }catch(err){
-      console.log(err)
+    } catch (err) {
+      console.log(err);
     }
-
-  }
+  };
   useEffect(() => {
-    if(buyerToken) getBuyTokenInfos();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[buyerToken])
+    if (buyerToken) getBuyTokenInfos();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [buyerToken]);
 
   const total = values?.amount * values?.price;
 
   return (
     <form onSubmit={onSubmit(onHandleSubmit)}>
       <Stack justify={'center'} align={'stretch'}>
-        
-        <Flex direction={"column"} gap={"sm"}>
-          <Text size={"xl"}>{t('selectedOffer')}</Text>
-          <Flex direction={"column"} gap={8}>
-              <Flex direction={"column"}>
-                <Text fw={700}>{t("offerId")}</Text>
-                <Text>{offerId ? offerId : 'Offer not found'}</Text>
-              </Flex>
-              <Flex direction={"column"}>
-                <Text fw={700}>{t("price")}</Text>
-                <Text>{price}</Text>
-              </Flex>
-              <Flex direction={"column"}>
-                <Text fw={700}>{t("amount")}</Text>
-                <Text>{amount}</Text>
-              </Flex>
+        <Flex direction={'column'} gap={'sm'}>
+          <Text size={'xl'}>{t('selectedOffer')}</Text>
+          <Flex direction={'column'} gap={8}>
+            <Flex direction={'column'}>
+              <Text fw={700}>{t('offerId')}</Text>
+              <Text>{offerId ? offerId : 'Offer not found'}</Text>
+            </Flex>
+            <Flex direction={'column'}>
+              <Text fw={700}>{t('price')}</Text>
+              <Text>{price}</Text>
+            </Flex>
+            <Flex direction={'column'}>
+              <Text fw={700}>{t('amount')}</Text>
+              <Text>{amount}</Text>
+            </Flex>
           </Flex>
         </Flex>
 
-        <Divider/>
+        <Divider />
 
         <NumberInput
           label={t('price')}
@@ -436,10 +448,14 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           {...getInputProps('amount')}
         />
 
-        <Text size={"xl"}>{t("summary")}</Text>
-        { values.price > 0 && values.amount > 0 && (
-          <Text size={"md"} mb={10}>
-            {` ${t1("summaryText1")} ${values?.amount} ${offerTokenSymbol} ${t1("summaryText2")} ${cleanNumber(values?.price)} ${buyTokenSymbol} ${t1("summaryText3")} ${total} ${buyTokenSymbol}`}
+        <Text size={'xl'}>{t('summary')}</Text>
+        {values.price > 0 && values.amount > 0 && (
+          <Text size={'md'} mb={10}>
+            {` ${t1('summaryText1')} ${values?.amount} ${offerTokenSymbol} ${t1(
+              'summaryText2'
+            )} ${cleanNumber(values?.price)} ${buyTokenSymbol} ${t1(
+              'summaryText3'
+            )} ${total} ${buyTokenSymbol}`}
             {/* {` ${t1('summaryText1')} ${cleanNumber(price)} ${t1('summaryText3')} ${cleanNumber(values.price)} ${t1('summaryText2')} ${cleanNumber(amount)} ${t1('summaryText3')} ${cleanNumber(values.amount)}`} */}
           </Text>
         )}
@@ -452,7 +468,12 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
             type={'submit'}
             loading={isSubmitting}
             aria-label={t('confirm')}
-            disabled={values.price == 0 || values.amount == 0 || values.price == undefined || values.amount == undefined}
+            disabled={
+              values.price == 0 ||
+              values.amount == 0 ||
+              values.price == undefined ||
+              values.amount == undefined
+            }
           >
             {t('confirm')}
           </Button>
