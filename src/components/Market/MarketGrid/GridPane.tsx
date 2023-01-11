@@ -1,4 +1,5 @@
-import { createStyles, Flex, Skeleton, Text } from "@mantine/core"
+import { useTheme } from "@emotion/react";
+import { createStyles, Flex, Skeleton, Text, useMantineColorScheme } from "@mantine/core"
 import { FC, useMemo } from "react"
 import { useTranslation } from "react-i18next";
 import { useRefreshOffers } from "src/hooks/offers/useRefreshOffers";
@@ -8,9 +9,9 @@ import { BuyActionsWithPermit } from "../BuyActions";
 import { ShowOfferAction } from "../ShowOfferAction/ShowOfferAction";
 
 enum OFFER_TYPE{
-    BUY = "BUY",
-    SELL = "SELL",
-    EXCHANGE = "EXCHANGE"
+    BUY,
+    SELL,
+    EXCHANGE
 }
 
 const OFFER_COLOR: Map<OFFER_TYPE,string> = new Map<OFFER_TYPE,string>([
@@ -51,7 +52,8 @@ const useStyle = createStyles((theme, { offerTypeColor } : StyleProps) => ({
     },
     buyerTokenName: {
         fontStyle: 'italic',
-        fontWeight: 500
+        fontWeight: 500,
+        color: theme.colors.gray[5]
     },
     buyButtonGroup: {
         width: "50%",
@@ -90,6 +92,7 @@ const useStyle = createStyles((theme, { offerTypeColor } : StyleProps) => ({
         backgroundColor: theme.colors.dark,
         fontSize: theme.fontSizes.lg,
         fontWeight: 700,
+        color: "white"
     }
 }));
 
@@ -101,6 +104,7 @@ export const GridPane: FC<GridPaneProps> = ({ offer }) => {
     const { refreshOffers } = useRefreshOffers(false);
 
     const { t } = useTranslation('buy', { keyPrefix: 'table' });
+    const { t: t1 } = useTranslation('buy', { keyPrefix: 'grid' })
 
     const { propertiesToken } = usePropertiesToken(false);
 
@@ -119,6 +123,17 @@ export const GridPane: FC<GridPaneProps> = ({ offer }) => {
 
     },[propertiesToken,offer])
 
+    const offerTypeName = () => {
+        switch(offerType){
+            case OFFER_TYPE.BUY:
+                return t("buy").toUpperCase()
+            case OFFER_TYPE.SELL:
+                return t1("sell").toUpperCase()
+            default:
+                return t1("exchange").toUpperCase()
+        }
+    }
+
     const { classes } = useStyle({
         offerTypeColor: OFFER_COLOR.get(offerType) ?? "blue"
     });
@@ -133,7 +148,7 @@ export const GridPane: FC<GridPaneProps> = ({ offer }) => {
                 <Flex direction={"column"} align={"start"} color={"brand"} className={classes.header} >
                     <Flex gap={"sm"}>
                         <Flex className={classes.offerId} mb={10}>{offer.offerId}</Flex>
-                        <Flex className={classes.offerType} mb={10}>{offerType}</Flex>
+                        <Flex className={classes.offerType} mb={10}>{offerTypeName()}</Flex>
                     </Flex>
                 
                     <Text className={classes.offerTokenName}>{offer.offerTokenName}</Text>

@@ -4,7 +4,7 @@ import 'src/components/Market';
 import { MarketTableFilter } from 'src/components/Market/Filters';
 import { Flex } from '@mantine/core';
 import Display from 'src/components/Display/Display';
-import { MarketGrid } from 'src/components/Market/Grid/MarketGrid';
+import { MarketGrid } from 'src/components/Market/MarketGrid/MarketGrid';
 import { selectPublicOffers } from 'src/store/features/interface/interfaceSelector';
 import { useSelector } from 'react-redux';
 
