@@ -11,6 +11,7 @@ import { Offer } from 'src/types/Offer';
 import { Offer as OfferGraphQl } from '../../../.graphclient/index';
 import { parseOffer } from './parseOffer';
 import { getTheGraphUrlYAM, getTheGraphUrlRealtoken } from './getClientURL';
+import { getOfferQuery } from './getOfferQuery';
 
 export const getBigDataGraphRealtoken = async (
   chainId: number,
@@ -118,83 +119,13 @@ export const fetchOfferTheGraph = (
           query: gql`
             query getOffers {
               offers(first: 1000, where: { removedAtBlock: null }) {
-                id
-                seller {
-                  id
-                  address
-                }
-                removedAtBlock
-                availableAmount
-                allowance {
-                  allowance
-                }
-                balance {
-                  amount
-                }
-                offerToken {
-                  address
-                  name
-                  decimals
-                  symbol
-                  tokenType
-                }
-                price {
-                  price
-                  amount
-                }
-                buyerToken {
-                  name
-                  symbol
-                  address
-                  decimals
-                  tokenType
-                }
-                buyer {
-                  address
-                }
+                ${getOfferQuery()}
               }
             }
           `,
         }));
       } catch (error) {
         console.log('CATCH dataYAM');
-
-        ({ data: dataYAM } = await clientYAM.query({
-          query: gql`
-            query getOffers {
-              offers(first: 1000, where: { removedAtBlock: null }) {
-                id
-                seller {
-                  id
-                  address
-                }
-                removedAtBlock
-                availableAmount
-                offerToken {
-                  address
-                  name
-                  decimals
-                  symbol
-                  tokenType
-                }
-                price {
-                  price
-                  amount
-                }
-                buyerToken {
-                  name
-                  symbol
-                  address
-                  decimals
-                  tokenType
-                }
-                buyer {
-                  address
-                }
-              }
-            }
-          `,
-        }));
       }
 
       console.log('Query dataYAM', dataYAM.offers.length);
