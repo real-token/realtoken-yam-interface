@@ -24,7 +24,7 @@ jobs:
     - name: Build container image
       run: docker build 
             --build-arg BUILD_ENV=${GITHUB_REF_NAME} 
-            --build-arg COMMUNITY_API_KEY=${{ secrets.COMMUNITY_API_KEY }} 
+            --build-arg COMMUNITY_API_KEY_ARG=${{ secrets.COMMUNITY_API_KEY }} 
             -t registry.digitalocean.com/yam-realtoken-cr/${GITHUB_REF##*/}:$(echo $GITHUB_SHA | head -c7) .
 
     - name: Log in to DigitalOcean Container Registry with short-lived credentials

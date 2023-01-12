@@ -19,8 +19,9 @@ COPY . .
 # Copy environment variables from production env file
 ARG BUILD_ENV
 COPY config/.env.${BUILD_ENV} ./.env
-ARG COMMUNITY_API_KEY
-COPY COMMUNITY_API_KEY ./.env
+ARG COMMUNITY_API_KEY_ARG
+ENV COMMUNITY_API_KEY=${COMMUNITY_API_KEY_ARG}
+
 # # This will do the trick, use the corresponding env file for each environment.
 # COPY .env.production.sample .env.production
 RUN yarn build
