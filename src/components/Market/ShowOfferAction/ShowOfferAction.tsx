@@ -7,7 +7,7 @@ import { Offer } from "src/types/Offer";
 import { selectOffersIsLoading } from "src/store/features/interface/interfaceSelector";
 interface ShowOfferActionProps{
     offer: Offer
-    className: string;
+    className?: string;
 }
 export const ShowOfferAction: FC<ShowOfferActionProps> = ({ offer, className }) => {
 
