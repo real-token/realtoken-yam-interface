@@ -17,6 +17,7 @@
     "privateTexte": "privé"
   },
   "grid": {
+    "buy": "achat",
     "sell": "vente",
     "exchange": "échange"
   },

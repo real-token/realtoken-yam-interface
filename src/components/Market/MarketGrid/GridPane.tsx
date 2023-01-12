@@ -1,9 +1,9 @@
-import { useTheme } from "@emotion/react";
-import { createStyles, Flex, Skeleton, Text, useMantineColorScheme } from "@mantine/core"
+import { createStyles, Flex, Skeleton, Text, useMantineTheme } from "@mantine/core"
 import { FC, useMemo } from "react"
 import { useTranslation } from "react-i18next";
 import { useRefreshOffers } from "src/hooks/offers/useRefreshOffers";
 import { usePropertiesToken } from "src/hooks/usePropertiesToken";
+import { theme } from "src/theme";
 import { Offer } from "src/types/Offer"
 import { BuyActionsWithPermit } from "../BuyActions";
 import { ShowOfferAction } from "../ShowOfferAction/ShowOfferAction";
@@ -13,12 +13,6 @@ enum OFFER_TYPE{
     SELL,
     EXCHANGE
 }
-
-const OFFER_COLOR: Map<OFFER_TYPE,string> = new Map<OFFER_TYPE,string>([
-    [OFFER_TYPE.BUY,"green"],
-    [OFFER_TYPE.SELL,"red"],
-    [OFFER_TYPE.EXCHANGE,"blue"]
-])
 
 interface StyleProps{
     offerTypeColor: string
@@ -101,6 +95,13 @@ interface GridPaneProps{
 }
 export const GridPane: FC<GridPaneProps> = ({ offer }) => {
 
+    const { colors } = useMantineTheme();
+    const OFFER_COLOR: Map<OFFER_TYPE,string> = new Map<OFFER_TYPE,string>([
+        [OFFER_TYPE.BUY,colors.green[9]],
+        [OFFER_TYPE.SELL,colors.red[9]],
+        [OFFER_TYPE.EXCHANGE,colors.orange[6]]
+    ])
+
     const { refreshOffers } = useRefreshOffers(false);
 
     const { t } = useTranslation('buy', { keyPrefix: 'table' });
@@ -126,7 +127,7 @@ export const GridPane: FC<GridPaneProps> = ({ offer }) => {
     const offerTypeName = () => {
         switch(offerType){
             case OFFER_TYPE.BUY:
-                return t("buy").toUpperCase()
+                return t1("buy").toUpperCase()
             case OFFER_TYPE.SELL:
                 return t1("sell").toUpperCase()
             default:
