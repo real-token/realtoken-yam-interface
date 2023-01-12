@@ -11,9 +11,6 @@ import { useModals } from '@mantine/modals';
 import { useWeb3React } from "@web3-react/core";
 import { Offer } from "src/types/Offer";
 import { useRefreshOffers } from "src/hooks/offers/useRefreshOffers";
-import { CoinBridgeToken, coinBridgeTokenABI } from "src/abis";
-import { getContract } from "src/utils";
-import { Web3Provider } from "@ethersproject/providers";
 import BigNumber from "bignumber.js";
 
 const useStyle = createStyles((theme) => ({
@@ -21,9 +18,6 @@ const useStyle = createStyles((theme) => ({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        // borderColor: theme.colors.brand,
-        // borderSize: "2px",
-        // borderStyle: "solid",
         backgroundColor: theme.colors.brand,
         borderRadius: theme.radius.md,
         width: "40px",

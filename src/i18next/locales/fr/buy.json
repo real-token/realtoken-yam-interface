@@ -16,6 +16,10 @@
     "buy": "Acheter",
     "privateTexte": "privé"
   },
+  "grid": {
+    "sell": "vente",
+    "exchange": "échange"
+  },
   "subRow": {
     "offerId": "ID de l'offre",
     "offerTokenAddress": "Adresse du jeton en vente",
