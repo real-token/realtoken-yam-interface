@@ -21,7 +21,8 @@ ARG BUILD_ENV
 COPY config/.env.${BUILD_ENV} ./.env
 ARG COMMUNITY_API_KEY_ARG
 ENV COMMUNITY_API_KEY=${COMMUNITY_API_KEY_ARG}
-
+RUN echo $COMMUNITY_API_KEY_ARG
+RUN echo $COMMUNITY_API_KEY
 # # This will do the trick, use the corresponding env file for each environment.
 # COPY .env.production.sample .env.production
 RUN yarn build
@@ -31,6 +32,7 @@ FROM node:16-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
+RUN echo $COMMUNITY_API_KEY
 
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nextjs -u 1001
