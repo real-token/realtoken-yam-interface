@@ -79,9 +79,7 @@ export const BuyModalWithPermit: FC<
         buyerTokenDecimals: buyerTokenDecimals
       },
     });
-  
 
-    
     const [isSubmitting, setSubmitting] = useState<boolean>(false);
     const activeChain = useActiveChain();
     
@@ -93,29 +91,32 @@ export const BuyModalWithPermit: FC<
     
     const realTokenYamUpgradeable = useContract(
       ContractsID.realTokenYamUpgradeable
-      );
-      const buyerToken = getContract<CoinBridgeToken>(
+    );
+    const buyerToken = getContract<CoinBridgeToken>(
         buyerTokenAddress,
         coinBridgeTokenABI,
         provider as Web3Provider,
         account
-        );
-        const offerToken = getContract<Erc20>(
-          offerTokenAddress,
-          Erc20ABI,
-          provider as Web3Provider,
-          account
-          )
+    );
+    const offerToken = getContract<Erc20>(
+        offerTokenAddress,
+        Erc20ABI,
+        provider as Web3Provider,
+        account
+    )
         //const newOfferAmount = new BigNumber(((await offerToken?.balanceOf(sellerAddress))?._hex ?? '0')).toNumber();
         //console.log('DEBUG BuyWithPermitFormValues value',newOfferAmount,values)
 
   const getOfferTokenInfos = async () => {
+    if(!offerToken) return;
     try{
 
-      const tokenName = await offerToken?.name();
-      const tokenSymbol = await offerToken?.symbol();
-      const balanceSeller = await offerToken?.balanceOf(sellerAddress)
-      setOfferTokenSellerBalance( (balanceSeller ?? BigNumber(0)).toString())
+      // console.log("offerToken: ", offerToken)
+      // console.log("sellerAddress: ", sellerAddress)
+      const tokenName = await offerToken.name();
+      const tokenSymbol = await offerToken.symbol();
+      const balanceSeller = await offerToken.balanceOf(sellerAddress)
+      setOfferTokenSellerBalance((balanceSeller ?? BigNumber(0)).toString())
       setOfferTokenName(tokenName);
       setOfferTokenSymbol(tokenSymbol)
 
