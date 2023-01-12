@@ -4,62 +4,15 @@ import {
   NormalizedCacheObject,
   gql,
 } from '@apollo/client';
-import { Web3Provider } from '@ethersproject/providers';
-
-import { strict } from 'assert';
 import BigNumber from 'bignumber.js';
-import { Contract, ethers } from 'ethers';
-import { id } from 'ethers/lib/utils';
-import { off } from 'process';
-import { stringify } from 'querystring';
-
-import { Erc20, Erc20ABI } from 'src/abis';
 import { CHAINS, ChainsID } from 'src/constants';
-import { PropertiesToken } from 'src/types';
-import { Account, AccountRealtoken } from 'src/types/Account';
+import { DataRealtokenType } from 'src/types/offer/DataRealTokenType';
 import { Offer } from 'src/types/Offer';
+import { Offer as OfferGraphQl } from '../../../.graphclient/index';
+import { parseOffer } from './parseOffer';
+import { getTheGraphUrlYAM, getTheGraphUrlRealtoken } from './getClientURL';
 
-import {
-  AccountBalance,
-  Offer as OfferGraphQl,
-} from '../../../.graphclient/index';
-import { getContract } from '../getContract';
-import { fetchWallet } from '../wallet/fetchWallet';
-
-type DataRealtokenType = {
-  amount: string;
-  id: string;
-  allowances?: [{ id: string; allowance: string }];
-  allowance?: string;
-};
-
-const getTheGraphUrlYAM = (chainId: number): string => {
-  switch (chainId) {
-    case 1:
-      return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph';
-    case 5:
-      return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-goerli';
-    case 100:
-      return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-gnosis';
-    default:
-      return '';
-  }
-};
-
-const getTheGraphUrlRealtoken = (chainId: number): string => {
-  switch (chainId) {
-    case 1:
-      return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/realtoken-eth';
-    case 5:
-      return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/realtoken-goerli';
-    case 100:
-      return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/realtoken-xdai';
-    default:
-      return '';
-  }
-};
-
-const getBigDataGraphRealtoken = async (
+export const getBigDataGraphRealtoken = async (
   chainId: number,
   client: ApolloClient<NormalizedCacheObject>,
   realtokenAccount: string[]
@@ -313,91 +266,6 @@ export const fetchOfferTheGraph = (
       resolve(offersData);
     } catch (err) {
       console.log('Error while fetching offers from TheGraph', err);
-      reject(err);
-    }
-  });
-};
-
-const parseOffer = (
-  offer: OfferGraphQl,
-  accountUserRealtoken: DataRealtokenType,
-  chainId: number
-): Promise<Offer> => {
-  return new Promise<Offer>(async (resolve, reject) => {
-    try {
-      /*       console.log(
-        'DEBUG parseOffer accountUserRealtoken',
-        accountUserRealtoken
-      ); */
-
-      let balanceWallet = '0';
-      let allowance = '0';
-      let logLabel =
-        'Erreur Type token parseOffer or seller not data in graph realtoken';
-      if (BigNumber(offer.availableAmount).gt(0)) {
-        if (
-          offer.offerToken.tokenType === 1 &&
-          accountUserRealtoken != undefined
-        ) {
-          balanceWallet = accountUserRealtoken.amount ?? '0';
-
-          allowance = accountUserRealtoken.allowance ?? '0';
-
-          logLabel = 'parseOffer type 1 blance/allowance';
-
-          //if (account.balance) balanceWallet = account.balance.toString();
-          //if (account.allowance) allowance = account.allowance.toString();
-        } else if (
-          offer.offerToken.tokenType === 2 ||
-          offer.offerToken.tokenType === 3
-        ) {
-          balanceWallet = offer.balance?.amount ?? offer.availableAmount;
-          allowance = offer.allowance?.allowance ?? offer.availableAmount;
-
-          logLabel = 'parseOffer type 2/3 blance/allowance';
-        }
-
-        /*  console.log(logLabel, {
-          sellerAdress: offer.seller.address,
-          'offer ID': BigNumber(offer.id).toString(),
-          'Token name': offer.offerToken.name,
-          'Token type': offer.offerToken.tokenType,
-          BalanceWallet: balanceWallet,
-          Allowance: allowance,
-          'YAM autorisé': offer.availableAmount,
-        }); */
-      }
-
-      const o: Offer = {
-        offerId: BigNumber(offer.id).toString(),
-        offerTokenAddress: (offer.offerToken.address as string)?.toLowerCase(),
-        offerTokenName: offer.offerToken.name ?? '',
-        offerTokenDecimals: offer.offerToken.decimals?.toString() ?? '',
-        offerTokenType: offer.offerToken.tokenType ?? 0,
-        buyerTokenAddress: (offer.buyerToken.address as string)?.toLowerCase(),
-        buyerTokenName: offer.buyerToken.name ?? '',
-        buyerTokenDecimals: offer.buyerToken.decimals?.toString() ?? '',
-        buyerTokenType: offer.buyerToken.tokenType ?? 0,
-        sellerAddress: (offer.seller.address as string)?.toLowerCase(),
-        buyerAddress: (offer.buyer?.address as string)?.toLowerCase(),
-        price: offer.price.price.toString(),
-        amount:
-          BigNumber.minimum(
-            offer.availableAmount,
-            balanceWallet,
-            allowance
-          ).toString(10) ?? '0',
-        availableAmount: offer.availableAmount.toString(),
-        balanceWallet: balanceWallet ?? '0',
-        allowanceToken: allowance ?? '0',
-        hasPropertyToken: false,
-        removed: false,
-      };
-
-      // console.log(offer.availableAmount, balanceWallet, allowance)
-      resolve(o);
-    } catch (err) {
-      console.log('Error when fetching account from TheGraph', err);
       reject(err);
     }
   });

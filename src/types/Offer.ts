@@ -29,7 +29,7 @@ export type Offer = {
 
 };
 
-export const DEFAULT_OFFERS: Offer = {
+export const DEFAULT_OFFER: Offer = {
   offerId: "",
   offerTokenAddress: "",
   offerTokenName: "",
@@ -49,4 +49,4 @@ export const DEFAULT_OFFERS: Offer = {
   balanceWallet: "",
 }
 
-export const OFFER_LOADING = [DEFAULT_OFFERS, DEFAULT_OFFERS, DEFAULT_OFFERS]
+export const OFFER_LOADING = [DEFAULT_OFFER, DEFAULT_OFFER, DEFAULT_OFFER]

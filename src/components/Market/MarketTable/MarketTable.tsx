@@ -26,6 +26,7 @@ import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 import { useAppSelector } from 'src/hooks/react-hooks';
 import { selectPublicOffers } from 'src/store/features/interface/interfaceSelector';
 import { BigNumber } from 'bignumber.js';
+import { ShowOfferAction } from '../ShowOfferAction/ShowOfferAction';
 
 export const MarketTable: FC = () => {
 
@@ -202,8 +203,7 @@ export const MarketTable: FC = () => {
                   buyOffer={row.original}
                   triggerRefresh={refreshOffers}
                 />
-                {/* //TODO: ADD SHOW OFFER BUTTON  */}
-                {/* <ShowOfferAction offer={row.original}/> */}
+                <ShowOfferAction offer={row.original}/>
               </Flex>
             ),
             meta: { colSpan: 1 },

@@ -1,32 +1,36 @@
-import { useEffect, useState } from 'react';
+import { useWeb3React } from "@web3-react/core";
+import { useEffect, useState } from "react"
+import { fetchOffer } from "src/utils/offers/fetchOffer";
+import { DEFAULT_OFFER, Offer } from "../../types/Offer";
+import { usePropertiesToken } from "../usePropertiesToken";
 
-import { useWeb3React } from '@web3-react/core';
-
-//import { fetchOffer } from "src/utils/offers/fetchOffers";
-import { Offer } from '../../types/Offer';
-import { usePropertiesToken } from '../usePropertiesToken';
-
-type UseOfferProps = (offerId: number) => {
-  offer: Offer | undefined;
+type UseOfferProps  = (offerId: number) => {
+    offer: Offer | undefined
+    isLoading: boolean
 };
 
 export const useOffer: UseOfferProps = (offerId: number) => {
-  const { chainId } = useWeb3React();
-  const [offer, setOffer] = useState<Offer>();
+    const { chainId } = useWeb3React();
+    const [offer,setOffer] = useState<Offer>(DEFAULT_OFFER);
+    const [isLoading,setIsLoading] = useState<boolean>(true);
 
-  const { propertiesToken } = usePropertiesToken(false);
+    const { propertiesToken, propertiesIsloading } = usePropertiesToken(false);
 
-  /*    const fetch = async (chainId: number, offerId: number) => {
+    const fetch = async (chainId: number, offerId: number) => {
         fetchOffer(chainId,offerId, propertiesToken)
-            .then(setOffer)
+            .then((offer: Offer) => { 
+                setOffer(offer);
+                setIsLoading(false);
+            })
             .catch(err => console.log(err))
     }
 
     useEffect(() => {
-        if(offerId && chainId && propertiesToken) fetch(chainId, offerId);
-    },[offerId, chainId]) */
+        if(offerId && chainId && propertiesToken && !propertiesIsloading) fetch(chainId, offerId);
+    },[offerId, chainId,propertiesIsloading,propertiesToken])
 
-  return {
-    offer,
-  };
-};
+    return{
+        offer,
+        isLoading
+    }
+}
