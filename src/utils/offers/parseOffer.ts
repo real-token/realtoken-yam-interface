@@ -10,15 +10,15 @@ export const parseOffer = (
   ): Promise<Offer> => {
     return new Promise<Offer>(async (resolve, reject) => {
       try {
-        console.log(
-          'DEBUG parseOffer accountUserRealtoken',
-          accountUserRealtoken
-        );
+        // console.log(
+        //   'DEBUG parseOffer accountUserRealtoken',
+        //   accountUserRealtoken
+        // );
   
         let balanceWallet = '0';
         let allowance = '0';
         // let logLabel = 'Erreur Type token parseOffer or seller not data in graph realtoken';
-        console.log("OFFER: ", offer)
+        // console.log("OFFER: ", offer)
         if (BigNumber(offer.availableAmount).gt(0)) {
           if (
             offer.offerToken.tokenType === 1 &&
@@ -30,11 +30,11 @@ export const parseOffer = (
   
             // logLabel = 'parseOffer type 1 blance/allowance';
 
-            console.log(
-              "TESTTTTTTTT",
-              balanceWallet,
-              allowance
-            )
+            // console.log(
+            //   "TESTTTTTTTT",
+            //   balanceWallet,
+            //   allowance
+            // )
   
             //if (account.balance) balanceWallet = account.balance.toString();
             //if (account.allowance) allowance = account.allowance.toString();

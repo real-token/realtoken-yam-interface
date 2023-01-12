@@ -1,5 +1,5 @@
 import { useWeb3React } from "@web3-react/core";
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { fetchOffer } from "src/utils/offers/fetchOffer";
 import { DEFAULT_OFFER, Offer } from "../../types/Offer";
 import { usePropertiesToken } from "../usePropertiesToken";
@@ -16,18 +16,18 @@ export const useOffer: UseOfferProps = (offerId: number) => {
 
     const { propertiesToken, propertiesIsloading } = usePropertiesToken(false);
 
-    const fetch = async (chainId: number, offerId: number) => {
+    const fetch = useCallback(async (chainId: number, offerId: number) => {
         fetchOffer(chainId,offerId, propertiesToken)
             .then((offer: Offer) => { 
                 setOffer(offer);
                 setIsLoading(false);
             })
             .catch(err => console.log(err))
-    }
+    },[propertiesToken])
 
     useEffect(() => {
-        if(offerId && chainId && propertiesToken && !propertiesIsloading) fetch(chainId, offerId);
-    },[offerId, chainId,propertiesIsloading,propertiesToken])
+        if(offerId && chainId && propertiesToken && !propertiesIsloading && propertiesToken.length > 0) fetch(chainId, offerId);
+    },[offerId, chainId, propertiesIsloading, propertiesToken, fetch])
 
     return{
         offer,

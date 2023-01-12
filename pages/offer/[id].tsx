@@ -65,7 +65,7 @@ const ShowOfferPage: FC = () => {
         return getPropertyToken(offer.offerTokenAddress);
     },[getPropertyToken, offer, propertiesIsloading])
 
-    console.log(offer)
+    // console.log(offer)
     // console.log(propertyToken)
 
     const onOpenWalletModal = useCallback(() => {
