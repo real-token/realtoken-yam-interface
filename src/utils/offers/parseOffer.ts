@@ -1,12 +1,20 @@
 import BigNumber from 'bignumber.js';
-import { Offer } from 'src/types/Offer';
+import { Offer, OFFER_TYPE } from 'src/types/Offer';
 import { DataRealtokenType } from 'src/types/offer/DataRealTokenType';
 import { Offer as OfferGraphQl } from '../../../.graphclient/index';
+
+export const getOfferType = (offerTokenType: number, buyerTokenType: number): OFFER_TYPE => {
+
+  if(offerTokenType == 1 && (buyerTokenType == 2 || buyerTokenType == 3)) return OFFER_TYPE.SELL
+  if((offerTokenType == 2 || offerTokenType == 3) && buyerTokenType == 1) return OFFER_TYPE.BUY;
+
+  return OFFER_TYPE.EXCHANGE;
+
+}
 
 export const parseOffer = (
     offer: OfferGraphQl,
     accountUserRealtoken: DataRealtokenType,
-    chainId: number
   ): Promise<Offer> => {
     return new Promise<Offer>(async (resolve, reject) => {
       try {
@@ -82,8 +90,11 @@ export const parseOffer = (
           balanceWallet: balanceWallet ?? '0',
           allowanceToken: allowance ?? '0',
           hasPropertyToken: false,
+          type: undefined,
           removed: false,
         };
+
+        o.type = getOfferType(o.offerTokenType,o.buyerTokenType);
   
         // console.log(offer.availableAmount, balanceWallet, allowance)
         resolve(o);

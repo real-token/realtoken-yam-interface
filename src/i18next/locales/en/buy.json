@@ -18,8 +18,8 @@
   },
   "grid": {
     "buy": "Buy",
-    "sell": "sell",
-    "exchange": "exchange"
+    "sell": "Sell",
+    "exchange": "Exchange"
   },
   "subRow": {
     "offerId": "Offer ID",

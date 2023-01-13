@@ -174,7 +174,6 @@ export const fetchOfferTheGraph = (
           const offerData: Offer = await parseOffer(
             offer,
             accountUserRealtoken,
-            chainId
           );
 
           /* const hasPropertyToken = propertiesToken.find(

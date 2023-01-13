@@ -32,7 +32,7 @@ export const fetchOffer = (chainId: number, offerId: number, propertiesToken: Pr
         const realtokenData: [DataRealtokenType] = await getBigDataGraphRealtoken(chainId, clientRealToken, batch);
 
         const accountUser = realtokenData[0];
-        const offer = await parseOffer(offerFromTheGraph,accountUser,chainId);
+        const offer = await parseOffer(offerFromTheGraph,accountUser);
   
         const hasPropertyToken = propertiesToken.find(propertyToken => (propertyToken.contractAddress == offer.buyerTokenAddress || propertyToken.contractAddress == offer.offerTokenAddress));
         offer.hasPropertyToken = hasPropertyToken ? true : false;

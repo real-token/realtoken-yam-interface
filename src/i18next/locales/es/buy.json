@@ -17,9 +17,9 @@
     "privateTexte": "private"
   },
   "grid": {
-    "buy": "buy",
-    "sell": "sell",
-    "exchange": "exchange"
+    "buy": "Buy",
+    "sell": "Sell",
+    "exchange": "Exchange"
   },
   "subRow": {
     "offerId": "Offer ID",

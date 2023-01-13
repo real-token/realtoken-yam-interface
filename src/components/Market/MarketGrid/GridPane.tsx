@@ -1,24 +1,14 @@
-import { createStyles, Flex, Skeleton, Text, useMantineTheme } from "@mantine/core"
+import { createStyles, Flex, Skeleton, Text } from "@mantine/core"
 import { FC, useMemo } from "react"
 import { useTranslation } from "react-i18next";
+import { OfferTypeBadge } from "src/components/Offer/OfferTypeBadge";
 import { useRefreshOffers } from "src/hooks/offers/useRefreshOffers";
 import { usePropertiesToken } from "src/hooks/usePropertiesToken";
-import { theme } from "src/theme";
-import { Offer } from "src/types/Offer"
+import { Offer, OFFER_TYPE } from "src/types/Offer"
 import { BuyActionsWithPermit } from "../BuyActions";
 import { ShowOfferAction } from "../ShowOfferAction/ShowOfferAction";
 
-enum OFFER_TYPE{
-    BUY,
-    SELL,
-    EXCHANGE
-}
-
-interface StyleProps{
-    offerTypeColor: string
-}
-
-const useStyle = createStyles((theme, { offerTypeColor } : StyleProps) => ({
+const useStyle = createStyles((theme) => ({
     container: {
         display: "flex",
         flexDirection: "column",
@@ -63,19 +53,6 @@ const useStyle = createStyles((theme, { offerTypeColor } : StyleProps) => ({
     loader: {
         height: "500px",
         width: "500px"
-    },
-    offerType: {
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: offerTypeColor,
-        borderRadius: theme.radius.md,
-        fontSize: theme.fontSizes.lg,
-        fontWeight: 700,
-        // width: "80px",
-        // height: "80px",
-        padding: `0 ${theme.spacing.sm}px`,
-        color: "white"
     }, 
     offerId:{
         display: "flex",
@@ -95,17 +72,10 @@ interface GridPaneProps{
 }
 export const GridPane: FC<GridPaneProps> = ({ offer }) => {
 
-    const { colors } = useMantineTheme();
-    const OFFER_COLOR: Map<OFFER_TYPE,string> = new Map<OFFER_TYPE,string>([
-        [OFFER_TYPE.BUY,colors.green[9]],
-        [OFFER_TYPE.SELL,colors.red[9]],
-        [OFFER_TYPE.EXCHANGE,colors.orange[6]]
-    ])
-
     const { refreshOffers } = useRefreshOffers(false);
 
     const { t } = useTranslation('buy', { keyPrefix: 'table' });
-    const { t: t1 } = useTranslation('buy', { keyPrefix: 'grid' })
+    const { classes } = useStyle();
 
     const { propertiesToken } = usePropertiesToken(false);
 
@@ -124,21 +94,6 @@ export const GridPane: FC<GridPaneProps> = ({ offer }) => {
 
     },[propertiesToken,offer])
 
-    const offerTypeName = () => {
-        switch(offerType){
-            case OFFER_TYPE.BUY:
-                return t1("buy").toUpperCase()
-            case OFFER_TYPE.SELL:
-                return t1("sell").toUpperCase()
-            default:
-                return t1("exchange").toUpperCase()
-        }
-    }
-
-    const { classes } = useStyle({
-        offerTypeColor: OFFER_COLOR.get(offerType) ?? "blue"
-    });
-
     return(
         <>
         {
@@ -149,7 +104,7 @@ export const GridPane: FC<GridPaneProps> = ({ offer }) => {
                 <Flex direction={"column"} align={"start"} color={"brand"} className={classes.header} >
                     <Flex gap={"sm"}>
                         <Flex className={classes.offerId} mb={10}>{offer.offerId}</Flex>
-                        <Flex className={classes.offerType} mb={10}>{offerTypeName()}</Flex>
+                        <OfferTypeBadge offerType={offerType}/>
                     </Flex>
                 
                     <Text className={classes.offerTokenName}>{offer.offerTokenName}</Text>

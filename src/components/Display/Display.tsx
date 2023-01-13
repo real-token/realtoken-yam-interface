@@ -4,6 +4,7 @@ import { useAtom } from "jotai";
 import React, { FC, useState } from "react";
 import { displayChoosedAtom } from "src/states";
 import { Displays } from "src/types/Displays";
+import { MarketSort } from "../Market/MarketSort/MarketSort";
 
 interface DisplayProps{
   table?: JSX.Element,
@@ -29,25 +30,26 @@ const Display: FC<DisplayProps> = ({ table: Table, smallGrid: SmallGrid, grid: G
 
   return(
     <>
-      {/* <Flex justify={"space-between"} mb={16}> */}
-      <Flex justify={"end"} mb={16}>
-        {/* <Flex gap={"xs"}>
-            <ActionIcon
-              size={32}
-              color={'brand'}
-              variant={"outline"}
-              loading={offersIsLoading}
-              loaderProps={{ size: 'xs', color: "brand" }}
-              onClick={() => refreshOffers()}
-            >
-              <IconRefresh size={16}/>
-            </ActionIcon>
-        </Flex> */}
-        {/* TODO: Add display switcher */}
+      <Flex justify={"space-between"} mb={16}>
+      {/* <Flex justify={"end"} mb={16}> */}
+        <MarketSort />
         <Flex gap={"xs"} >
-          <ActionIcon color={"brand"} size={"lg"} variant={choosenDisplay == Displays.TABLE ? "filled" : "outline"} onClick={() => setChoosenDisplay(Displays.TABLE)}><IconLayoutList size={20}/></ActionIcon>
-          <ActionIcon color={"brand"} size={"lg"} variant={choosenDisplay == Displays.GRID ? "filled" :"outline"} onClick={() => setChoosenDisplay(Displays.GRID)}><IconLayoutGrid size={20}/></ActionIcon>
-          {/* <ActionIcon color={"brand"} size={"lg"} variant={choosenDisplay == Displays.SMALL_GRID ? "filled" :"outline"} onClick={() => setChoosenDisplay(Displays.SMALL_GRID)}><IconGridDots size={20}/></ActionIcon> */}
+          <ActionIcon 
+            color={"brand"} 
+            size={"lg"} 
+            variant={choosenDisplay == Displays.TABLE ? "filled" : "outline"} 
+            onClick={() => setChoosenDisplay(Displays.TABLE)}
+          >
+              <IconLayoutList size={20}/>
+          </ActionIcon>
+          <ActionIcon 
+            color={"brand"} 
+            size={"lg"} 
+            variant={choosenDisplay == Displays.GRID ? "filled" :"outline"} 
+            onClick={() => setChoosenDisplay(Displays.GRID)}
+          >
+              <IconLayoutGrid size={20}/>
+          </ActionIcon>
         </Flex> 
       </Flex>
       {getDisplay()}
