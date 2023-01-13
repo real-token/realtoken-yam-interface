@@ -168,7 +168,8 @@ export const usePropertiesToken = (refreshOnMount: boolean): usePropertiesTokenR
                             contractAddress: contractAddress.toLowerCase(),
                             officialPrice: propertyToken.tokenPrice,
                             marketplaceLink: propertyToken.marketplaceLink,
-                            imageLink: propertyToken.imageLink
+                            imageLink: propertyToken.imageLink,
+                            netRentYearPerToken: propertyToken.netRentYearPerToken
                         }])
                     }
                     
