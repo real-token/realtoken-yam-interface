@@ -23,7 +23,6 @@ ARG COMMUNITY_API_KEY_ARG
 RUN echo $COMMUNITY_API_KEY_ARG
 # ENV COMMUNITY_API_KEY=${COMMUNITY_API_KEY_ARG}
 RUN echo COMMUNITY_API_KEY=${COMMUNITY_API_KEY_ARG} >> ./.env
-RUN grep COMMUNITY_API_KEY ./.env
 
 # # This will do the trick, use the corresponding env file for each environment.
 # COPY .env.production.sample .env.production
