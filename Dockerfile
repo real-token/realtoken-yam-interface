@@ -22,7 +22,7 @@ COPY config/.env.${BUILD_ENV} ./.env
 ARG COMMUNITY_API_KEY_ARG
 RUN echo $COMMUNITY_API_KEY_ARG
 # ENV COMMUNITY_API_KEY=${COMMUNITY_API_KEY_ARG}
-RUN echo COMMUNITY_API_KEY=${COMMUNITY_API_KEY_ARG} > ./.env
+RUN echo COMMUNITY_API_KEY=${COMMUNITY_API_KEY_ARG} >> ./.env
 RUN grep COMMUNITY_API_KEY ./.env
 
 # # This will do the trick, use the corresponding env file for each environment.
@@ -34,7 +34,7 @@ FROM node:16-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
-RUN grep COMMUNITY_API_KEY ./.env
+RUN grep COMMUNITY_API_KEY .env
 
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nextjs -u 1001
