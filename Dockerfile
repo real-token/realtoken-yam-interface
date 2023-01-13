@@ -22,7 +22,7 @@ COPY config/.env.${BUILD_ENV} ./.env
 ARG COMMUNITY_API_KEY_ARG
 RUN echo $COMMUNITY_API_KEY_ARG
 # ENV COMMUNITY_API_KEY=${COMMUNITY_API_KEY_ARG}
-RUN echo COMMUNITY_API_KEY=${COMMUNITY_API_KEY_ARG} >> ./.env
+RUN echo "COMMUNITY_API_KEY=${COMMUNITY_API_KEY_ARG}" >> ./.env
 
 # # This will do the trick, use the corresponding env file for each environment.
 # COPY .env.production.sample .env.production
