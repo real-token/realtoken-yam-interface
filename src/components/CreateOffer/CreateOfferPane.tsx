@@ -1,11 +1,10 @@
 import { ActionIcon, clsx, createStyles, Flex, Text } from "@mantine/core"
 import { openConfirmModal, useModals } from "@mantine/modals"
-import { ConfirmModal } from "@mantine/modals/lib/ConfirmModal"
 import { IconEdit, IconPlus, IconTrash } from "@tabler/icons"
 import { FC, useState } from "react"
-import { useAppDispatch, useAppSelector } from "src/hooks/react-hooks"
+import { useTranslation } from "react-i18next"
+import { useAppDispatch } from "src/hooks/react-hooks"
 import { useCreatedOffer } from "src/hooks/useCreatedOffer"
-import { selectCreateOffers } from "src/store/features/createOffers/createOffersSelector"
 import { createOfferRemovedDispatchType } from "src/store/features/createOffers/createOffersSlice"
 import { CreatedOffer } from "src/types/Offer/CreatedOffer"
 import { hexToRgb } from "src/utils/color"
@@ -58,7 +57,7 @@ export const CreateOfferPane: FC<CreateOfferPaneProps> = ({ isCreating, offer })
 
     const [hovered,setHovered] = useState<boolean>(false);
     const { classes } = useStyles();
-    const dispatch = useAppDispatch()
+    const dispatch = useAppDispatch();
 
     const modals = useModals();
 
@@ -67,6 +66,10 @@ export const CreateOfferPane: FC<CreateOfferPaneProps> = ({ isCreating, offer })
 
     const openCreateOfferModal = () => {
         modals.openContextModal('createOffer',{innerProps: {}});
+    }
+
+    const modifyCreateOffer = () => {
+        modals.openContextModal('createOffer',{innerProps: { offer }});
     }
 
     const deleteOffer = () => {
@@ -78,15 +81,13 @@ export const CreateOfferPane: FC<CreateOfferPaneProps> = ({ isCreating, offer })
         labels: { confirm: 'Confirm', cancel: 'Cancel' },
         onConfirm: () => deleteOffer(),
     });
-    
 
-    const { offerTokenSymbol, buyTokenSymbol } = useCreatedOffer(offer)
+    const { offerTokenSymbol, buyTokenSymbol } = useCreatedOffer(offer);
+
+    const { t } = useTranslation('modals', { keyPrefix: 'sell' });
     
     return(
         <>
-        {/* <ConfirmModal 
-            onConfirm={() => deleteOffer()}
-        /> */}
         {
             isCreating ? (
                 <Flex 
@@ -96,7 +97,7 @@ export const CreateOfferPane: FC<CreateOfferPaneProps> = ({ isCreating, offer })
                     p={"sm"}
                 >
                     <IconPlus />
-                    {"Add new offer"}
+                    {t('buttonCreateOffer')}
                 </Flex>
             )
             : offer ?
@@ -107,22 +108,23 @@ export const CreateOfferPane: FC<CreateOfferPaneProps> = ({ isCreating, offer })
                     onMouseEnter={() => setHovered(true)}
                     onMouseLeave={() => setHovered(false)}
                 >
-                    { hovered ? (
-                        <div className={classes.offerActions}>
-                            <ActionIcon
-                                color={'green'}
-                                onClick={() => account ? onOpenBuyModal(buyOffer) : onOpenWalletModal() }
-                            >
-                                <IconEdit size={16} aria-label={'Buy'} />
-                            </ActionIcon>
-                            <ActionIcon
-                                color={'red'}
-                                onClick={() => openModal()}
-                            >
-                                <IconTrash size={16} aria-label={'Buy'} />
-                            </ActionIcon>
-                        </div> 
-                    ): undefined }
+                    {   hovered ? (
+                            <div className={classes.offerActions}>
+                                <ActionIcon
+                                    color={'green'}
+                                    onClick={() => modifyCreateOffer() }
+                                >
+                                    <IconEdit size={16} aria-label={'Buy'} />
+                                </ActionIcon>
+                                <ActionIcon
+                                    color={'red'}
+                                    onClick={() => openModal()}
+                                >
+                                    <IconTrash size={16} aria-label={'Buy'} />
+                                </ActionIcon>
+                            </div> 
+                        ): undefined 
+                    }
                     <Flex direction={"column"} p={"sm"}>
                         <Text fw={700}>{offerTokenSymbol}</Text>
                         <Text fs={"italic"} fw={500} color={"gray"}>{buyTokenSymbol}</Text>

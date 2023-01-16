@@ -91,21 +91,21 @@ export const BuyModalWithPermit: FC<
     
     const realTokenYamUpgradeable = useContract(
       ContractsID.realTokenYamUpgradeable
-    );
+      );
     const buyerToken = getContract<CoinBridgeToken>(
         buyerTokenAddress,
         coinBridgeTokenABI,
         provider as Web3Provider,
         account
-    );
+      );
     const offerToken = getContract<Erc20>(
-        offerTokenAddress,
-        Erc20ABI,
-        provider as Web3Provider,
-        account
-    )
-        //const newOfferAmount = new BigNumber(((await offerToken?.balanceOf(sellerAddress))?._hex ?? '0')).toNumber();
-        //console.log('DEBUG BuyWithPermitFormValues value',newOfferAmount,values)
+          offerTokenAddress,
+          Erc20ABI,
+          provider as Web3Provider,
+          account
+      )
+    //const newOfferAmount = new BigNumber(((await offerToken?.balanceOf(sellerAddress))?._hex ?? '0')).toNumber();
+    //console.log('DEBUG BuyWithPermitFormValues value',newOfferAmount,values)
 
   const getOfferTokenInfos = async () => {
     if(!offerToken) return;

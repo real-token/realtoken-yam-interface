@@ -32,6 +32,10 @@ interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
   value: string;
 }
 
+type CreateOfferModalProps = {
+  offer?: CreatedOffer
+}
+
 type SellFormValues = {
   offerTokenAddress: string;
   buyerTokenAddress: string;
@@ -41,9 +45,12 @@ type SellFormValues = {
   isPrivateOffer: boolean;
 };
 
-export const CreateOfferModal: FC<ContextModalProps<Record<string,never>>> = ({
+export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   context,
   id,
+  innerProps: {
+    offer
+  },
 }) => {
   
   const { t } = useTranslation('modals', { keyPrefix: 'sell' });
@@ -53,12 +60,12 @@ export const CreateOfferModal: FC<ContextModalProps<Record<string,never>>> = ({
     useForm<SellFormValues>({
       // eslint-disable-next-line object-shorthand
       initialValues: {
-        offerTokenAddress: '',
-        buyerTokenAddress: '',
-        price: undefined,
-        amount: undefined,
-        buyerAddress: ZERO_ADDRESS,
-        isPrivateOffer: false,
+        offerTokenAddress: offer?.offerTokenAddress ?? '',
+        buyerTokenAddress: offer?.buyerTokenAddress ?? '',
+        price: offer?.price ?? undefined,
+        amount: offer?.amount ?? undefined,
+        buyerAddress: offer?.buyerAddress ?? ZERO_ADDRESS,
+        isPrivateOffer: offer?.isPrivateOffer ?? false,
       },
       validate: {
         buyerAddress: (value) => (value == account ? t('invalidPrivateOfferAddress'): null),
@@ -473,8 +480,7 @@ export const CreateOfferModal: FC<ContextModalProps<Record<string,never>>> = ({
                 loading={isSubmitting}
                 aria-label={'submit'}
               >
-                {/* {t('buttonCreateOffer')} */}
-                {"Add new offer"}
+                { offer ? t('buttonModifyCreateOffer') : t('buttonCreateOffer')}
               </Button>
             </>
           </Group>
