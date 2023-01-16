@@ -10,8 +10,8 @@ import { usePropertiesToken } from "./usePropertiesToken";
 type UseCreatedOffer = (
     createdOffer: CreatedOffer|undefined
 ) => {
-    offerTokenSymbol: string;
-    buyTokenSymbol: string
+    offerTokenSymbol: string|undefined;
+    buyTokenSymbol: string|undefined
 }
 
 export const useCreatedOffer: UseCreatedOffer = (createdOffer) => {
@@ -19,11 +19,11 @@ export const useCreatedOffer: UseCreatedOffer = (createdOffer) => {
     const { propertiesToken } = usePropertiesToken(false);
     const { account, provider } = useWeb3React();
 
-    const [offerTokenSymbol,setOfferTokenSymbol] = useState<string>("");
-    const [buyTokenSymbol,setBuyTokenSymbol] = useState<string>("");
+    const [offerTokenSymbol,setOfferTokenSymbol] = useState<string|undefined>(undefined);
+    const [buyTokenSymbol,setBuyTokenSymbol] = useState<string|undefined>(undefined);
 
     const getTokenSymbol = async (contract: Contract, setSymbol: Dispatch<string>) => {
-        const symbol = await contract.symbol();;
+        const symbol = await contract.symbol();
         setSymbol(symbol);
     }
 
@@ -33,13 +33,9 @@ export const useCreatedOffer: UseCreatedOffer = (createdOffer) => {
 
             const realtToken: PropertiesToken|undefined = propertiesToken.find((propertiesToken) => propertiesToken.contractAddress.toLowerCase() == createdOffer.offerTokenAddress.toLowerCase());
 
-            console.log("realtToken1: ", realtToken)
-
             if(realtToken){
-                console.log("HERE: ", realtToken.shortName)
                 setOfferTokenSymbol(realtToken.shortName);
             }else{
-                console.log("HERE2")
                 const contract = getContract(createdOffer.offerTokenAddress,Erc20ABI,provider);
                 if(contract) getTokenSymbol(contract,setOfferTokenSymbol);
             }

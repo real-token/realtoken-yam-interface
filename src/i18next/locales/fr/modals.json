@@ -80,5 +80,11 @@
     "summaryText1": "Vous allez modifier le prix de vente de",
     "summaryText2": "et le montant de",
     "summaryText3": "à"
+  },
+  "chooseOfferType": {
+    "title": "Quel type d'offre voulez-vous créer ?",
+    "buyTypeExplain": "Choisissez le type d'offre \"{{ offerType, String }}\" si vous souhaitez acheter un token de propriété RealT avec un autre token non RealT (WXDAI, WETH, USDC etc...)",
+    "sellTypeExplain": "Choisissez le type d'offre \"{{ offerType, String }}\" si vous souhaitez vendre un token de propriété RealT contre un autre token non RealT (WXDAI, WETH, USDC etc...)",
+    "exchangeTypeExplain": "Choisissez le type d'offre \"{{ offerType, String }}\" si vous souhaitez échanger un token de propriété RealT contre un autre token non RealT (WXDAI, WETH, USDC etc...) ou un autre token de propriété RealT ou deux non RealT token entre eux."
   }
 }

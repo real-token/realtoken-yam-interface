@@ -10,7 +10,8 @@
   },
   "general": {
     "loading": "Chargement...",
-    "comingSoon": "Bientôt disponible..."
+    "comingSoon": "Bientôt disponible...",
+    "nextButton": "Suivant"
   },
   "select": {
     "noOption": "Aucune option"

@@ -1,5 +1,6 @@
-import { createStyles, Flex, useMantineTheme } from "@mantine/core"
+import { createStyles, Flex } from "@mantine/core"
 import { useTranslation } from "react-i18next";
+import { useOfferType } from "src/hooks/useOfferType";
 import { OFFER_TYPE } from "src/types/Offer";
 
 interface StyleProps{
@@ -25,28 +26,11 @@ interface OfferTypeBadgeProps{
 }
 export const OfferTypeBadge = ({ offerType, textSize }: OfferTypeBadgeProps) => {
 
-    const { colors } = useMantineTheme();
-    const OFFER_COLOR: Map<OFFER_TYPE,string> = new Map<OFFER_TYPE,string>([
-        [OFFER_TYPE.BUY,colors.green[9]],
-        [OFFER_TYPE.SELL,colors.red[9]],
-        [OFFER_TYPE.EXCHANGE,colors.orange[6]]
-    ])
+    const { getColor, getI18OfferTypeName } = useOfferType();
 
-    const { classes } = useStyle({ offerTypeColor: OFFER_COLOR.get(offerType) ?? "blue" });
-    const { t } = useTranslation('buy', { keyPrefix: 'grid' })
-
-   const offerTypeName = () => {
-        switch(offerType){
-            case OFFER_TYPE.BUY:
-                return t("buy").toUpperCase()
-            case OFFER_TYPE.SELL:
-                return t("sell").toUpperCase()
-            default:
-                return t("exchange").toUpperCase()
-        }
-    }
+    const { classes } = useStyle({ offerTypeColor: getColor(offerType) ?? "blue" });
 
     return(
-        <>{ offerType ? <Flex className={classes.offerType} mb={10}>{offerTypeName()}</Flex> : undefined }</>
+        <>{ offerType ? <Flex className={classes.offerType} mb={10}>{getI18OfferTypeName(offerType)?.toUpperCase()}</Flex> : undefined }</>
     )
 }

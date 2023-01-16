@@ -25,6 +25,7 @@ import { useAppDispatch, useAppSelector } from 'src/hooks/react-hooks';
 import { createOfferAddedDispatchType } from 'src/store/features/createOffers/createOffersSlice';
 import { CreatedOffer } from 'src/types/Offer/CreatedOffer';
 import { selectCreateOffers } from 'src/store/features/createOffers/createOffersSelector';
+import { OFFER_TYPE } from 'src/types/Offer';
 
 interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
   label: string;
@@ -33,6 +34,7 @@ interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
 }
 
 type CreateOfferModalProps = {
+  offerType?: OFFER_TYPE,
   offer?: CreatedOffer
 }
 
@@ -49,6 +51,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   context,
   id,
   innerProps: {
+    offerType,
     offer
   },
 }) => {
@@ -56,7 +59,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   const { t } = useTranslation('modals', { keyPrefix: 'sell' });
   const { account } = useWeb3React();
 
-  const { getInputProps, onSubmit, values } =
+  const { getInputProps, onSubmit, values, isValid } =
     useForm<SellFormValues>({
       // eslint-disable-next-line object-shorthand
       initialValues: {
@@ -479,6 +482,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
                 type={'submit'}
                 loading={isSubmitting}
                 aria-label={'submit'}
+                disabled={!isValid}
               >
                 { offer ? t('buttonModifyCreateOffer') : t('buttonCreateOffer')}
               </Button>

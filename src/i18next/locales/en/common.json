@@ -10,7 +10,8 @@
   },
   "general": {
     "loading": "loading...",
-    "comingSoon": "Coming soon..."
+    "comingSoon": "Coming soon...",
+    "nextButton": "Next"
   },
   "select": {
     "noOption": "No options"

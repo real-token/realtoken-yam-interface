@@ -1,4 +1,4 @@
-import { ActionIcon, clsx, createStyles, Flex, Text } from "@mantine/core"
+import { ActionIcon, clsx, createStyles, Flex, Skeleton, Text } from "@mantine/core"
 import { openConfirmModal, useModals } from "@mantine/modals"
 import { IconEdit, IconPlus, IconTrash } from "@tabler/icons"
 import { FC, useState } from "react"
@@ -61,11 +61,8 @@ export const CreateOfferPane: FC<CreateOfferPaneProps> = ({ isCreating, offer })
 
     const modals = useModals();
 
-    // TODO: quand click sur une offre déjà créer -> modification (on ouvre la modal en lui passant l'offre du store redux)
-    // TODO: quand souris par dessus: modification ou supression 
-
     const openCreateOfferModal = () => {
-        modals.openContextModal('createOffer',{innerProps: {}});
+        modals.openContextModal('chooseOfferType',{innerProps: {}});
     }
 
     const modifyCreateOffer = () => {
@@ -76,7 +73,7 @@ export const CreateOfferPane: FC<CreateOfferPaneProps> = ({ isCreating, offer })
         if(offer) dispatch({ type: createOfferRemovedDispatchType, payload: offer.offerId })
     }
 
-    const openModal = () => openConfirmModal({
+    const openConfirmDeleteModal = () => openConfirmModal({
         title: 'Are you sure you want to delete this offer ?',
         labels: { confirm: 'Confirm', cancel: 'Cancel' },
         onConfirm: () => deleteOffer(),
@@ -118,7 +115,7 @@ export const CreateOfferPane: FC<CreateOfferPaneProps> = ({ isCreating, offer })
                                 </ActionIcon>
                                 <ActionIcon
                                     color={'red'}
-                                    onClick={() => openModal()}
+                                    onClick={() => openConfirmDeleteModal()}
                                 >
                                     <IconTrash size={16} aria-label={'Buy'} />
                                 </ActionIcon>
@@ -126,8 +123,8 @@ export const CreateOfferPane: FC<CreateOfferPaneProps> = ({ isCreating, offer })
                         ): undefined 
                     }
                     <Flex direction={"column"} p={"sm"}>
-                        <Text fw={700}>{offerTokenSymbol}</Text>
-                        <Text fs={"italic"} fw={500} color={"gray"}>{buyTokenSymbol}</Text>
+                        <Text fw={700}>{offerTokenSymbol ? offerTokenSymbol : <Skeleton height={35} width={"100%"}/>}</Text>
+                        <Text fs={"italic"} fw={500} color={"gray"}>{buyTokenSymbol ? buyTokenSymbol : <Skeleton height={35} width={"100%"}/>}</Text>
                     </Flex>
                 </Flex>
             )

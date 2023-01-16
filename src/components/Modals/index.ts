@@ -1,5 +1,6 @@
 import { BuyModal, BuyModalWithPermit } from './BuyModal';
-import { CreateOfferModal } from './CreateModal';
+import { CreateOfferModal } from './CreateOfferModal';
+import { ChooseOfferTypeModal } from './CreateOfferModal/ChooseOfferTypeModal';
 import { DeleteModal } from './DeleteModal';
 import { UpdateModal } from './UpdateModal';
 import { UpdateModalWithPermit } from './UpdateModal/UpdateModalWithPermit';
@@ -12,5 +13,6 @@ export const modals = {
   update: UpdateModal,
   updatePermit: UpdateModalWithPermit,
   delete: DeleteModal,
-  createOffer: CreateOfferModal
+  createOffer: CreateOfferModal,
+  chooseOfferType: ChooseOfferTypeModal
 };
