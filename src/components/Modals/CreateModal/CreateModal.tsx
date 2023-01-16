@@ -47,7 +47,7 @@ export const CreateOfferModal: FC<ContextModalProps<Record<string,never>>> = ({
 }) => {
   
   const { t } = useTranslation('modals', { keyPrefix: 'sell' });
-  const { account, provider } = useWeb3React();
+  const { account } = useWeb3React();
 
   const { getInputProps, onSubmit, values } =
     useForm<SellFormValues>({

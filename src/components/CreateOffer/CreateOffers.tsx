@@ -40,9 +40,7 @@ export const CreateOffer = () => {
                 { offers.length > 0 ? <Divider/> : undefined }
                 <CreateOfferPane isCreating={true}/>
             </Flex>
-            <Button
-                disabled={offers.length == 0}
-            >
+            <Button disabled={offers.length == 0} >
                 { offers.length == 0 ? "Create offer" : `Create ${offers.length} offers` }
             </Button>
         </Flex>

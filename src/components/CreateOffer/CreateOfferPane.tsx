@@ -56,7 +56,7 @@ interface CreateOfferPaneProps{
 
 export const CreateOfferPane: FC<CreateOfferPaneProps> = ({ isCreating, offer }) => {
 
-    const [hovered,setHovered] = useState<boolean>(true);
+    const [hovered,setHovered] = useState<boolean>(false);
     const { classes } = useStyles();
     const dispatch = useAppDispatch()
 
@@ -77,7 +77,7 @@ export const CreateOfferPane: FC<CreateOfferPaneProps> = ({ isCreating, offer })
         title: 'Are you sure you want to delete this offer ?',
         labels: { confirm: 'Confirm', cancel: 'Cancel' },
         onConfirm: () => deleteOffer(),
-      });
+    });
     
 
     const { offerTokenSymbol, buyTokenSymbol } = useCreatedOffer(offer)
@@ -111,7 +111,7 @@ export const CreateOfferPane: FC<CreateOfferPaneProps> = ({ isCreating, offer })
                         <div className={classes.offerActions}>
                             <ActionIcon
                                 color={'green'}
-                                // onClick={() => account ? onOpenBuyModal(buyOffer) : onOpenWalletModal() }
+                                onClick={() => account ? onOpenBuyModal(buyOffer) : onOpenWalletModal() }
                             >
                                 <IconEdit size={16} aria-label={'Buy'} />
                             </ActionIcon>
