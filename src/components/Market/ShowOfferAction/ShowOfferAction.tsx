@@ -7,8 +7,9 @@ import { Offer } from "src/types/Offer/Offer";
 import { selectOffersIsLoading } from "src/store/features/interface/interfaceSelector";
 interface ShowOfferActionProps{
     offer: Offer
+    className?: string;
 }
-export const ShowOfferAction: FC<ShowOfferActionProps> = ({ offer }) => {
+export const ShowOfferAction: FC<ShowOfferActionProps> = ({ offer, className }) => {
 
     const router = useRouter();
     const offersIsLoading = useSelector(selectOffersIsLoading);
@@ -20,6 +21,7 @@ export const ShowOfferAction: FC<ShowOfferActionProps> = ({ offer }) => {
                 <ActionIcon
                     color={'brand'}
                     onClick={() => router.push(`/offer/${offer.offerId}`)}
+                    className={className}
                 >
                     <IconEye size={16} aria-label={'Show Offer'} />
                 </ActionIcon>

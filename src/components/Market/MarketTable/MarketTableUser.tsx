@@ -27,7 +27,6 @@ export const MarketTableUser: FC = () => {
   const { refreshOffers, offersIsLoading } = useRefreshOffers(false);
 
   const offers = useSelector(selectAddressOffers);
-console.log('My Offers offers', offers)
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'offerId', desc: false },
   ]);

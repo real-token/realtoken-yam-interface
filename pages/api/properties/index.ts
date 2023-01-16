@@ -5,12 +5,12 @@ const handler: NextApiHandler = async (req: NextApiRequest,res: NextApiResponse)
     try{
 
         const response = await fetch("https://api.realt.community/v1/token",
-            // {
-            //     method: "GET",
-            //     headers: {
-            //         "X-AUTH-REALT-TOKEN": "2da61f00-preprod-1974-d363-d032fa8edeae"
-            //     }
-            // }
+            {
+                method: "GET",
+                headers: {
+                    "X-AUTH-REALT-TOKEN": process.env.COMMUNITY_API_KEY ?? ""
+                }
+            }
         );
   
         if(response.ok){

@@ -1,4 +1,8 @@
-import BigNumber from 'bignumber.js';
+export enum OFFER_TYPE{
+  BUY = "BUY",
+  SELL = "SELL",
+  EXCHANGE = "EXCHANGE"
+}
 
 export type Offer = {
   offerId: string;
@@ -19,10 +23,10 @@ export type Offer = {
   availableAmount: string;
   balanceWallet?: string;
   allowanceToken?: string;
-
+  type?: OFFER_TYPE|undefined
 };
 
-export const DEFAULT_OFFERS: Offer = {
+export const DEFAULT_OFFER: Offer = {
   offerId: "",
   offerTokenAddress: "",
   offerTokenName: "",
@@ -40,6 +44,7 @@ export const DEFAULT_OFFERS: Offer = {
   removed: false,
   availableAmount: "",
   balanceWallet: "",
+  type: undefined
 }
 
-export const OFFER_LOADING = [DEFAULT_OFFERS, DEFAULT_OFFERS, DEFAULT_OFFERS]
+export const OFFER_LOADING = [DEFAULT_OFFER, DEFAULT_OFFER, DEFAULT_OFFER]

@@ -13,11 +13,15 @@ import { selectOffersIsLoading } from 'src/store/features/interface/interfaceSel
 type BuyActions = {
   buyOffer: Offer;
   triggerRefresh: Dispatch<SetStateAction<boolean>>;
+  buttonClassName?: string;
+  groupClassName?: string;
 };
 
 export const BuyActionsWithPermit: FC<BuyActions> = ({
   buyOffer,
   triggerRefresh,
+  buttonClassName,
+  groupClassName
 }) => {
   const { account } = useWeb3React();
   const modals = useModals();
@@ -62,12 +66,13 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
     <>
       { !isAccountOffer && !offersIsLoading ? 
         (
-          <Group position={'center'}>
+          <Group position={'center'} className={groupClassName ?? ""}>
             <ActionIcon
               color={'green'}
               onClick={() =>
                 account ? onOpenBuyModal(buyOffer) : onOpenWalletModal()
               }
+              className={buttonClassName ?? ""}
             >
               <IconShoppingCart size={16} aria-label={'Buy'} />
             </ActionIcon>
