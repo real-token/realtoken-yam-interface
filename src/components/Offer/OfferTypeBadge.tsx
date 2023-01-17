@@ -27,10 +27,9 @@ interface OfferTypeBadgeProps{
 export const OfferTypeBadge = ({ offerType, textSize }: OfferTypeBadgeProps) => {
 
     const { getColor, getI18OfferTypeName } = useOfferType();
-
     const { classes } = useStyle({ offerTypeColor: getColor(offerType) ?? "blue" });
 
     return(
-        <>{ offerType ? <Flex className={classes.offerType} mb={10}>{getI18OfferTypeName(offerType)?.toUpperCase()}</Flex> : undefined }</>
+        <>{ offerType ? <Flex className={classes.offerType}>{getI18OfferTypeName(offerType)?.toUpperCase()}</Flex> : undefined }</>
     )
 }

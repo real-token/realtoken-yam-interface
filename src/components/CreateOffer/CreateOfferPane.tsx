@@ -61,7 +61,7 @@ export const CreateOfferPane: FC<CreateOfferPaneProps> = ({ isCreating, offer })
 
     const modals = useModals();
 
-    const openCreateOfferModal = () => {
+    const openChooseOfferModal = () => {
         modals.openContextModal('chooseOfferType',{innerProps: {}});
     }
 
@@ -80,7 +80,6 @@ export const CreateOfferPane: FC<CreateOfferPaneProps> = ({ isCreating, offer })
     });
 
     const { offerTokenSymbol, buyTokenSymbol } = useCreatedOffer(offer);
-
     const { t } = useTranslation('modals', { keyPrefix: 'sell' });
     
     return(
@@ -90,7 +89,7 @@ export const CreateOfferPane: FC<CreateOfferPaneProps> = ({ isCreating, offer })
                 <Flex 
                     className={clsx(classes.offerContainer, classes.createOffer)} 
                     gap={"sm"}
-                    onClick={() => openCreateOfferModal()}
+                    onClick={() => openChooseOfferModal()}
                     p={"sm"}
                 >
                     <IconPlus />

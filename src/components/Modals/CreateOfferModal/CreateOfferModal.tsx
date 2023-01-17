@@ -16,8 +16,6 @@ import { getContract } from 'src/utils';
 import { NumberInput } from '../../NumberInput';
 import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
 import { PropertiesToken } from 'src/types/PropertiesToken';
-import { useAllowedBuyTokens } from 'src/hooks/useAllowedBuyTokens';
-import { AllowedBuyToken } from 'src/types/allowedBuyTokens';
 import { cleanNumber } from 'src/utils/number';
 import { useWeb3React } from '@web3-react/core';
 import { ContextModalProps } from '@mantine/modals';
@@ -25,7 +23,8 @@ import { useAppDispatch, useAppSelector } from 'src/hooks/react-hooks';
 import { createOfferAddedDispatchType } from 'src/store/features/createOffers/createOffersSlice';
 import { CreatedOffer } from 'src/types/Offer/CreatedOffer';
 import { selectCreateOffers } from 'src/store/features/createOffers/createOffersSelector';
-import { OFFER_TYPE } from 'src/types/Offer';
+import { useCreateOfferTokens } from 'src/hooks/useCreateOfferTokens';
+import { OfferTypeBadge } from 'src/components/Offer/OfferTypeBadge';
 
 interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
   label: string;
@@ -34,8 +33,7 @@ interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
 }
 
 type CreateOfferModalProps = {
-  offerType?: OFFER_TYPE,
-  offer?: CreatedOffer
+  offer: CreatedOffer
 }
 
 type SellFormValues = {
@@ -51,7 +49,6 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   context,
   id,
   innerProps: {
-    offerType,
     offer
   },
 }) => {
@@ -79,40 +76,9 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   const [isSubmitting, setSubmitting] = useState<boolean>(false);
   const activeChain = useActiveChain();
 
-  const { propertiesToken } = usePropertiesToken(false);
-  const { allowedBuyTokens } = useAllowedBuyTokens();
-
   const dispatch = useAppDispatch();
 
-  const formatedPropetiesTokenForSelect: SelectItem[] = useMemo((): SelectItem[] => {
-    if(!propertiesToken) return [];
-    const formated: SelectItem[] = [];
-    propertiesToken.map((propertyTokenInfo: PropertiesToken) => formated.push({value: propertyTokenInfo.contractAddress, label: propertyTokenInfo.shortName}))
-    return formated;
-  },[propertiesToken])
-
-  const formatedAllowBuyTokenForSelect: SelectItem[] = useMemo((): SelectItem[] => {
-    if(!allowedBuyTokens) return [];
-    const formated: SelectItem[] = [];
-    allowedBuyTokens.map((allowedBuyToken: AllowedBuyToken) => formated.push({value: allowedBuyToken.contractAddress, label: allowedBuyToken.symbol}))
-    return formated;
-  },[allowedBuyTokens])
-
-  const allowedBuyTokensForSelect: SelectItem[] = useMemo((): SelectItem[] => {
-    if(!formatedAllowBuyTokenForSelect || !formatedPropetiesTokenForSelect) return [];
-    const concat = formatedAllowBuyTokenForSelect.concat(formatedPropetiesTokenForSelect);
-    return concat.filter(token => token.value !== values.offerTokenAddress);
-  },[formatedPropetiesTokenForSelect,formatedAllowBuyTokenForSelect,values])
-
-  const allowedSellTokensForSelect: SelectItem[] = useMemo((): SelectItem[] => {
-    if(!formatedAllowBuyTokenForSelect || !formatedPropetiesTokenForSelect) return [];
-    const concat = formatedAllowBuyTokenForSelect.concat(formatedPropetiesTokenForSelect);
-    return concat.filter(token => token.value !== values.buyerTokenAddress);
-  },[formatedPropetiesTokenForSelect,formatedAllowBuyTokenForSelect,values])
-
-  const realTokenYamUpgradeable = useContract(
-    ContractsID.realTokenYamUpgradeable
-  );
+  const realTokenYamUpgradeable = useContract(ContractsID.realTokenYamUpgradeable);
 
   const offers = useAppSelector(selectCreateOffers);
 
@@ -120,6 +86,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
     try{
 
       const createdOffer: CreatedOffer = {
+        offerType: offer.offerType,
         offerId: offers.length,
         offerTokenAddress: formValues.offerTokenAddress,
         buyerTokenAddress: formValues.buyerTokenAddress,
@@ -394,8 +361,10 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
     }
   }
 
-  const offerTokenSymbol = allowedSellTokensForSelect.find(value => value.value == values.offerTokenAddress)?.label;
-  const buyTokenSymbol =  allowedBuyTokensForSelect.find(value => value.value == values.buyerTokenAddress)?.label;
+  const { buyerTokens, offerTokens } = useCreateOfferTokens(offer.offerType, values.offerTokenAddress, values.buyerTokenAddress);
+
+  const offerTokenSymbol = offerTokens.find(value => value.value == values.offerTokenAddress)?.label;
+  const buyTokenSymbol =  buyerTokens.find(value => value.value == values.buyerTokenAddress)?.label;
   const total = (values.amount ?? 0) * (values.price ?? 0);
 
   const summary = () => {
@@ -411,7 +380,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   }
 
   const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
-    ({ uuid, label, value, ...others }: ItemProps, ref) => (
+    ({ label, value, ...others }: ItemProps, ref) => (
       <Flex ref={ref} {...others} key={label} gap={"sx"} direction={"column"}>
           <Text fz={"sm"} fw={700}>{label}</Text>
           <Text fz={"xs"} fs={"italic"}>{value}</Text>
@@ -420,8 +389,11 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   );
 
   return (
-    <Box sx={{ maxWidth: 400 }} mx={'auto'}>
-      <h3>{t('titleFormCreateOffer')}</h3>
+    <Flex direction={"column"} sx={{ maxWidth: 400 }} mx={'auto'} gap={"md"}>
+      <Flex gap={"sm"}>
+        <OfferTypeBadge offerType={offer.offerType} />
+        <h3 style={{ margin: 0 }}>{t('titleFormCreateOffer')}</h3>
+      </Flex>
       <form onSubmit={onSubmit(saveCreatedOffer)}>
         <Stack justify={'center'} align={'stretch'}>
           <Select
@@ -431,7 +403,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
             required={true}
             nothingFound={"No property found"}
             itemComponent={SelectItem}
-            data={allowedSellTokensForSelect}
+            data={offerTokens}
             {...getInputProps('offerTokenAddress')}
           />
           <Select
@@ -440,7 +412,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
             searchable={true}
             nothingFound={"No property found"}
             itemComponent={SelectItem}
-            data={allowedBuyTokensForSelect}
+            data={buyerTokens}
             required={true}
             {...getInputProps('buyerTokenAddress')}
           />
@@ -490,6 +462,6 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
           </Group>
         </Stack>
       </form>
-    </Box>
+    </Flex>
   );
 };

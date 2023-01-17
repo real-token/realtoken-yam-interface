@@ -99,7 +99,9 @@ export const ChooseOfferTypeModal: FC<ContextModalProps> = ({
   const openCreateOfferModal = () => {
     modals.closeModal(id)
     modals.openContextModal('createOffer',{innerProps: {
-      offerType
+      offer: {
+        offerType
+      }
     }});
   }
 
