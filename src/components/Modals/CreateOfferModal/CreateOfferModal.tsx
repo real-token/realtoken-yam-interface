@@ -1,5 +1,5 @@
 /* eslint-disable react/display-name */
-import { FC, forwardRef, useCallback, useMemo, useState } from 'react';
+import { FC, forwardRef, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Button, Checkbox, Flex, Group, Select, SelectItem, Stack, TextInput, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
@@ -25,6 +25,7 @@ import { CreatedOffer } from 'src/types/Offer/CreatedOffer';
 import { selectCreateOffers } from 'src/store/features/createOffers/createOffersSelector';
 import { useCreateOfferTokens } from 'src/hooks/useCreateOfferTokens';
 import { OfferTypeBadge } from 'src/components/Offer/OfferTypeBadge';
+import { OFFER_TYPE } from 'src/types/Offer';
 
 interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
   label: string;
@@ -56,7 +57,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   const { t } = useTranslation('modals', { keyPrefix: 'sell' });
   const { account } = useWeb3React();
 
-  const { getInputProps, onSubmit, values, isValid } =
+  const { getInputProps, onSubmit, values, isValid, setFieldValue } =
     useForm<SellFormValues>({
       // eslint-disable-next-line object-shorthand
       initialValues: {
@@ -361,7 +362,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
     }
   }
 
-  const { buyerTokens, offerTokens } = useCreateOfferTokens(offer.offerType, values.offerTokenAddress, values.buyerTokenAddress);
+  const { allowedTokens, properties, buyerTokens, offerTokens } = useCreateOfferTokens(offer.offerType, values.offerTokenAddress, values.buyerTokenAddress);
 
   const offerTokenSymbol = offerTokens.find(value => value.value == values.offerTokenAddress)?.label;
   const buyTokenSymbol =  buyerTokens.find(value => value.value == values.buyerTokenAddress)?.label;
@@ -388,6 +389,73 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
     )
   );
 
+  const getSelect = (offerTokenSelectData: SelectItem[], buyerTokenSelectData: SelectItem[]) => {
+    return(
+      <>
+        <Select
+          label={t('offerTokenAddress')}
+          placeholder={t('placeholderOfferSellTokenAddress')}
+          searchable={true}
+          required={true}
+          nothingFound={"No property found"}
+          itemComponent={SelectItem}
+          data={offerTokenSelectData}
+          {...getInputProps('offerTokenAddress')}
+        />
+        <Select
+          label={t('buyerTokenAddress')}
+          placeholder={t('placeholderOfferBuyTokenAddress')}
+          searchable={true}
+          nothingFound={"No property found"}
+          itemComponent={SelectItem}
+          data={buyerTokenSelectData}
+          required={true}
+          {...getInputProps('buyerTokenAddress')}
+        />
+      </>
+    )
+  }
+
+  // EXCHANGE
+  const GetExchange = () => {
+
+    const [exchangeType,setExchangeType] = useState<string|null>(null);
+
+    const realT = "RealT properties";
+    const others = "Others";
+    const data = [{ value: realT, label: realT },{ value: others, label: others }];
+
+    useEffect(() => { setExchangeType(data[0].value) },[]);
+
+    const setE = (value: string) => {
+      setFieldValue("offerTokenAddress","");
+      setFieldValue("buyerTokenAddress","");
+
+      setExchangeType(value);
+    }
+
+    return(
+      <>
+        <Select 
+          label={"Choose exchange token type"}
+          data={data}
+          value={exchangeType}
+          onChange={setE}
+        />
+        {getSelect(
+          exchangeType == realT ? 
+              properties.filter(property => property.value != values.buyerTokenAddress)
+            : 
+              allowedTokens.filter(allowedToken => allowedToken.value != values.buyerTokenAddress),
+          exchangeType == realT ? 
+              properties.filter(property => property.value != values.offerTokenAddress)
+            : 
+              allowedTokens.filter(allowedToken => allowedToken.value != values.offerTokenAddress)
+        )}
+      </>
+    )
+  }
+
   return (
     <Flex direction={"column"} sx={{ maxWidth: 400 }} mx={'auto'} gap={"md"}>
       <Flex gap={"sm"}>
@@ -396,70 +464,57 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
       </Flex>
       <form onSubmit={onSubmit(saveCreatedOffer)}>
         <Stack justify={'center'} align={'stretch'}>
-          <Select
-            label={t('offerTokenAddress')}
-            placeholder={t('placeholderOfferSellTokenAddress')}
-            searchable={true}
-            required={true}
-            nothingFound={"No property found"}
-            itemComponent={SelectItem}
-            data={offerTokens}
-            {...getInputProps('offerTokenAddress')}
-          />
-          <Select
-            label={t('buyerTokenAddress')}
-            placeholder={t('placeholderOfferBuyTokenAddress')}
-            searchable={true}
-            nothingFound={"No property found"}
-            itemComponent={SelectItem}
-            data={buyerTokens}
-            required={true}
-            {...getInputProps('buyerTokenAddress')}
-          />
-          <NumberInput
-            label={t('price')}
-            placeholder={t('placeholderPrice')}
-            required={true}
-            min={0.000001}
-            max={undefined}
-            step={undefined}
-            showMax={false}
-            sx={{ flexGrow: 1 }}
-            {...getInputProps('price')}
-          />
-          <NumberInput
-            label={t('amount')}
-            placeholder={t('placeholderAmount')}
-            required={true}
-            min={0.000001}
-            max={undefined}
-            step={undefined}
-            showMax={false}
-            sx={{ flexGrow: 1 }}
-            {...getInputProps('amount')}
-          />
-          
-          <Checkbox
-            mt={'md'}
-            label={t('checkboxLabelPrivateOffre')}
-            {...getInputProps('isPrivateOffer', { type: 'checkbox' })}
-          />
 
-          {privateOffer()}
+        { offer.offerType == OFFER_TYPE.EXCHANGE ? 
+            GetExchange() 
+          : 
+            getSelect(offerTokens,buyerTokens) 
+        }
 
-          <Group position={'left'} mt={'md'}>
-            <>
-              {summary()}
-              <Button
-                type={'submit'}
-                loading={isSubmitting}
-                aria-label={'submit'}
-                disabled={!isValid}
-              >
-                { offer ? t('buttonModifyCreateOffer') : t('buttonCreateOffer')}
-              </Button>
-            </>
-          </Group>
+        <NumberInput
+          label={t('price')}
+          placeholder={t('placeholderPrice')}
+          required={true}
+          min={0.000001}
+          max={undefined}
+          step={undefined}
+          showMax={false}
+          sx={{ flexGrow: 1 }}
+          {...getInputProps('price')}
+        />
+        <NumberInput
+          label={t('amount')}
+          placeholder={t('placeholderAmount')}
+          required={true}
+          min={0.000001}
+          max={undefined}
+          step={undefined}
+          showMax={false}
+          sx={{ flexGrow: 1 }}
+          {...getInputProps('amount')}
+        />
+        
+        <Checkbox
+          mt={'md'}
+          label={t('checkboxLabelPrivateOffre')}
+          {...getInputProps('isPrivateOffer', { type: 'checkbox' })}
+        />
+
+        {privateOffer()}
+
+        <Group position={'left'} mt={'md'}>
+          <>
+            {summary()}
+            <Button
+              type={'submit'}
+              loading={isSubmitting}
+              aria-label={'submit'}
+              disabled={!isValid}
+            >
+              { offer ? t('buttonModifyCreateOffer') : t('buttonCreateOffer')}
+            </Button>
+          </>
+        </Group>
         </Stack>
       </form>
     </Flex>

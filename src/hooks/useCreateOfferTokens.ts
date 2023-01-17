@@ -11,6 +11,8 @@ type UseCreateOfferTokens = (
     choosedOfferTokenAddress: string,
     choosedBuyerTokenAddress: string,
 ) => {
+    allowedTokens: SelectItem[],
+    properties: SelectItem[],
     offerTokens: SelectItem[];
     buyerTokens: SelectItem[];
 }
@@ -39,22 +41,22 @@ export const useCreateOfferTokens: UseCreateOfferTokens = (offerType, choosedOff
 
         if(offerType == OFFER_TYPE.SELL) return formatedAllowTokensForSelect;
         if(offerType == OFFER_TYPE.BUY) return formatedPropetiesTokenForSelect;
-        if(offerType == OFFER_TYPE.EXCHANGE) return formatedAllowTokensForSelect.concat(formatedPropetiesTokenForSelect).filter(token => token.value !== choosedOfferTokenAddress);
 
         return [];
-    },[formatedAllowTokensForSelect, formatedPropetiesTokenForSelect, offerType, choosedOfferTokenAddress])
+    },[formatedAllowTokensForSelect, formatedPropetiesTokenForSelect, offerType])
 
     const allowedOfferTokensForSelect: SelectItem[] = useMemo((): SelectItem[] => {
         if(!formatedAllowTokensForSelect || !formatedPropetiesTokenForSelect) return [];
 
         if(offerType == OFFER_TYPE.SELL) return formatedPropetiesTokenForSelect;
         if(offerType == OFFER_TYPE.BUY) return formatedAllowTokensForSelect;
-        if(offerType == OFFER_TYPE.EXCHANGE) return formatedAllowTokensForSelect.concat(formatedPropetiesTokenForSelect).filter(token => token.value !== choosedBuyerTokenAddress);
-
+        
         return [];
-    },[formatedAllowTokensForSelect, formatedPropetiesTokenForSelect, offerType, choosedBuyerTokenAddress])
+    },[formatedAllowTokensForSelect, formatedPropetiesTokenForSelect, offerType])
 
     return {
+        allowedTokens: formatedAllowTokensForSelect,
+        properties: formatedPropetiesTokenForSelect,
         offerTokens: allowedOfferTokensForSelect,
         buyerTokens: allowedBuyerTokensForSelect
     }
