@@ -122,6 +122,6 @@ export const useGraphSyncStatus = (): UseGraphSyncStatus => {
 
   return {
     isOk: isOk,
-    errorMessage: 'TheGraph synchronisation is late more than ~10 blocks.',
+    errorMessage: 'TheGraph syncrhonization is more than 10 blocks behind',
   };
 };
