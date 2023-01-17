@@ -46,7 +46,7 @@ export const getTheGraphUrlYAM = (chainId: number): string => {
   }
 };
 
-const getTheGraphUrlRealtoken = (chainId: number): string => {
+export const getTheGraphUrlRealtoken = (chainId: number): string => {
   switch (chainId) {
     case 1:
       return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/realtoken-eth';

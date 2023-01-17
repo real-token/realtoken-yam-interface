@@ -6,17 +6,46 @@ import { useWeb3React } from '@web3-react/core';
 import BigNumber from 'bignumber.js';
 
 import { CHAINS, ChainsID } from 'src/constants';
-import { getTheGraphUrlYAM } from 'src/utils/offers/fetchOffers';
+import { getTheGraphUrlRealtoken, getTheGraphUrlYAM } from 'src/utils/offers/fetchOffers';
 
 interface UseGraphSyncStatus {
   isOk: boolean;
   errorMessage: string;
 }
 
-const getBlockNumberFromTheGraph = (chainId: number) => new Promise<number>(async (resolve, reject) => {
+const getBlockNumberFromYamTheGraph = (chainId: number) => new Promise<number>(async (resolve, reject) => {
   try {
     const client = new ApolloClient({
       uri: getTheGraphUrlYAM(chainId ?? 100),
+      cache: new InMemoryCache(),
+    });
+
+    const { data } = await client.query({
+      query: gql`
+        query getStatus {
+          _meta {
+            block {
+              hash
+              number
+              timestamp
+            }
+          }
+        }
+      `,
+    });
+
+    const blockNumber = data._meta.block.number;
+    resolve(blockNumber);
+  } catch (err) {
+    console.log(err);
+    reject(err);
+  }
+});
+
+const getBlockNumberFromRealTokenTheGraph = (chainId: number) => new Promise<number>(async (resolve, reject) => {
+  try {
+    const client = new ApolloClient({
+      uri: getTheGraphUrlRealtoken(chainId ?? 100),
       cache: new InMemoryCache(),
     });
 
@@ -75,10 +104,13 @@ export const useGraphSyncStatus = (): UseGraphSyncStatus => {
 
   const getSync = async () => {
     if(!chainId) return;
-    Promise.all([getBlockNumberFromTheGraph(chainId), getBlockNumberFromRpc(chainId)]).then(
+    Promise.all([getBlockNumberFromYamTheGraph(chainId), getBlockNumberFromRealTokenTheGraph(chainId), getBlockNumberFromRpc(chainId)]).then(
       (values) => {
-        // console.log("GET SYNC")
-        if (values[0] - values[1] < 10) setIsOk(true);
+        const blockYam = values[0];
+        const blockRealtoken = values[1];
+        const blockRpc = values[2];
+        console.log("GET SYNC")
+        if (blockYam - blockRpc < 10 && blockRpc - blockRealtoken < 10) setIsOk(true);
         setInit(true);
       }
     );
@@ -90,6 +122,6 @@ export const useGraphSyncStatus = (): UseGraphSyncStatus => {
 
   return {
     isOk: isOk,
-    errorMessage: 'TheGraph synchronisation is late of ~10 blocks.',
+    errorMessage: 'TheGraph synchronisation is late more than ~10 blocks.',
   };
 };
