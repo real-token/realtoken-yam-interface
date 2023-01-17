@@ -64,55 +64,62 @@ const getBigDataGraphRealtoken = async (
   client: ApolloClient<NormalizedCacheObject>,
   realtokenAccount: string[]
 ) => {
-  const { address: realTokenYamUpgradeable } =
-    CHAINS[chainId as ChainsID].contracts.realTokenYamUpgradeable;
 
-  console.log('getBigDataGraphRealtoken', realtokenAccount.length);
+  try{
 
-  const accountRealtoken: string =
-    '"' + realtokenAccount.map((account: string) => account).join('","') + '"';
-  //console.log('DEBUG accountRealtoken', accountRealtoken);
+    const { address: realTokenYamUpgradeable } =
+      CHAINS[chainId as ChainsID].contracts.realTokenYamUpgradeable;
 
-  const { data } = await client.query({
-    query: gql`
-      query getAccountsRealtoken {
-        accountBalances(
-          first: 1000 
-          where: {amount_gt: "0",id_in: [${accountRealtoken}]}
-        ) {
-          id
-          amount
-          allowances(
-            where: {spender: "${realTokenYamUpgradeable}"}
+    console.log('getBigDataGraphRealtoken', realtokenAccount.length);
+
+    const accountRealtoken: string =
+      '"' + realtokenAccount.map((account: string) => account).join('","') + '"';
+    //console.log('DEBUG accountRealtoken', accountRealtoken);
+
+    const { data } = await client.query({
+      query: gql`
+        query getAccountsRealtoken {
+          accountBalances(
+            first: 1000 
+            where: {amount_gt: "0",id_in: [${accountRealtoken}]}
           ) {
-            allowance
             id
+            amount
+            allowances(
+              where: {spender: "${realTokenYamUpgradeable}"}
+            ) {
+              allowance
+              id
+            }
           }
         }
-      }
-    `,
-  });
-  //console.log('DEBUG getBigDataGraphRealtoken data', data);
+      `,
+    });
+    //console.log('DEBUG getBigDataGraphRealtoken data', data);
 
-  return data.accountBalances.map((accountBalance: DataRealtokenType) => {
-    const allowance: { id: string; allowance: string } | undefined =
-      accountBalance.allowances?.find(
-        (allowance: { id: string; allowance: string }) =>
-          accountBalance.id + '-' + realTokenYamUpgradeable === allowance.id
-      );
-    /*  console.log(
-      'DEBUG data.accountBalances.map allowance',
-      allowance,
-      data.allowances,
-      accountBalance.id + '-' + realTokenYamUpgradeable
-    ); */
+    return data.accountBalances.map((accountBalance: DataRealtokenType) => {
+      const allowance: { id: string; allowance: string } | undefined =
+        accountBalance.allowances?.find(
+          (allowance: { id: string; allowance: string }) =>
+            accountBalance.id + '-' + realTokenYamUpgradeable === allowance.id
+        );
+      /*  console.log(
+        'DEBUG data.accountBalances.map allowance',
+        allowance,
+        data.allowances,
+        accountBalance.id + '-' + realTokenYamUpgradeable
+      ); */
 
-    return {
-      id: accountBalance.id,
-      amount: accountBalance.amount,
-      allowance: allowance?.allowance ?? '0',
-    };
-  });
+      return {
+        id: accountBalance.id,
+        amount: accountBalance.amount,
+        allowance: allowance?.allowance ?? '0',
+      };
+    });
+
+  }catch(err){
+    console.log("Error when fetching realtToken account data", err)
+  }
 };
 
 export const fetchOfferTheGraph = (
