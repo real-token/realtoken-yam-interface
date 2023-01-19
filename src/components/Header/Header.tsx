@@ -1,12 +1,10 @@
 import { FC, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-
 import {
   Box,
   Button,
   Group,
   Image,
-  Header as MantineHeader,
   MediaQuery,
   Text,
   Title,
@@ -14,9 +12,7 @@ import {
 import { useModals } from '@mantine/modals';
 import { NextLink } from '@mantine/next';
 import { useWeb3React } from '@web3-react/core';
-
 import { Logo } from 'src/assets';
-
 import { Divider } from '../Divider';
 import { SettingsMenu } from '../SettingsMenu';
 import { WalletMenu } from '../WalletMenu';

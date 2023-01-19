@@ -18,9 +18,9 @@ const getRightAllowBuyTokens = (
     case 1:
       return ethereumAllowedTokens;
     case 5:
-      return gnosisAllowedTokens;
+      return goerliAllowedTokens ;
     case 100:
-      return goerliAllowedTokens;
+      return gnosisAllowedTokens;
     default:
       return [];
   }
@@ -28,7 +28,6 @@ const getRightAllowBuyTokens = (
 
 export const useAllowedTokens = (): useAllowedBuyTokensReturn => {
   const { chainId } = useWeb3React();
-
   return {
     allowedTokens: getRightAllowBuyTokens(chainId),
   };

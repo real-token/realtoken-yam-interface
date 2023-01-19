@@ -24,6 +24,7 @@ import { NumberInput } from '../../NumberInput';
 import { useWalletERC20Balance } from 'src/hooks/useWalletERC20Balance';
 import { cleanNumber } from 'src/utils/number';
 import { useWeb3React } from '@web3-react/core';
+import { calcRem } from 'src/utils/style';
 
 type BuyModalWithPermitProps = {
   offerId: string;
@@ -368,7 +369,7 @@ export const BuyModalWithPermit: FC<
   },[balance,price,offerAmount])
 
   return (
-    <form onSubmit={onSubmit(onHandleSubmit)}>
+    <form onSubmit={onSubmit(onHandleSubmit)} style={{ width: calcRem(500) }}>
       <Stack justify={'center'} align={'stretch'}>
 
       <Flex direction={"column"} gap={"sm"}>

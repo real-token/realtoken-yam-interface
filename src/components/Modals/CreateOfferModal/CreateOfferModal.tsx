@@ -1,14 +1,14 @@
 /* eslint-disable react/display-name */
 import { FC, forwardRef, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Button, Checkbox, Flex, Group, Select, SelectItem, Stack, TextInput, Text } from '@mantine/core';
+import { Button, Checkbox, Flex, Group, Select, SelectItem, Stack, TextInput, Text, NumberInput as MantineInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { showNotification, updateNotification } from '@mantine/notifications';
 import BigNumber from 'bignumber.js';
 import { CoinBridgeToken, Erc20, Erc20ABI, coinBridgeTokenABI } from 'src/abis';
 import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { ZERO_ADDRESS } from 'src/constants';
-import { useActiveChain } from 'src/hooks';
+import { useActiveChain, useTokenInfo } from 'src/hooks';
 import coinBridgeTokenPermitSignature from 'src/hooks/coinBridgeTokenPermitSignature';
 import erc20PermitSignature from 'src/hooks/erc20PermitSignature';
 import { useContract } from 'src/hooks/useContract';
@@ -26,6 +26,9 @@ import { selectCreateOffers } from 'src/store/features/createOffers/createOffers
 import { useCreateOfferTokens } from 'src/hooks/useCreateOfferTokens';
 import { OfferTypeBadge } from 'src/components/Offer/OfferTypeBadge';
 import { OFFER_TYPE } from 'src/types/Offer';
+import { useOraclePriceFeed } from 'src/hooks/useOraclePriceFeed';
+import { calcRem } from 'src/utils/style';
+import { IconArrowsDoubleNeSw, IconArrowsSort } from '@tabler/icons';
 
 interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
   label: string;
@@ -78,7 +81,6 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   const activeChain = useActiveChain();
 
   const dispatch = useAppDispatch();
-
   const realTokenYamUpgradeable = useContract(ContractsID.realTokenYamUpgradeable);
 
   const offers = useAppSelector(selectCreateOffers);
@@ -372,7 +374,8 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
     if(total && buyTokenSymbol && offerTokenSymbol){
       return (
         <Text size={"md"} mb={10}>
-            {` ${t("summaryText1")} ${values?.amount} "${offerTokenSymbol}" ${t("summaryText2")} ${cleanNumber(values.price ?? 0)} ${buyTokenSymbol} ${t("summaryText3")} ${total} ${buyTokenSymbol}`}
+            {/* {` ${t("summaryText1")} ${values?.amount} "${offerTokenSymbol}" ${t("summaryText2")} ${cleanNumber(values.price ?? 0)} ${buyTokenSymbol} ${t("summaryText3")} ${total} ${buyTokenSymbol}`} */}
+            {` Vous achetez jusqu'a ${values?.amount} "${buyTokenSymbol}" ${t("summaryText2")} ${cleanNumber(values.price ?? 0)} "${offerTokenSymbol}" ${t("summaryText3")} ${total} "${offerTokenSymbol}"`}
         </Text>
       )
     }else{
@@ -389,30 +392,65 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
     )
   );
 
+  // COMPONENTS
   const getSelect = (offerTokenSelectData: SelectItem[], buyerTokenSelectData: SelectItem[]) => {
+
+    const selects = [
+      <Select
+        key={"select-0"}
+        label={t('offerTokenAddress')}
+        placeholder={t('placeholderOfferSellTokenAddress')}
+        searchable={true}
+        required={true}
+        nothingFound={"No property found"}
+        itemComponent={SelectItem}
+        data={offerTokenSelectData}
+        {...getInputProps('offerTokenAddress')}
+      />,
+      <Select
+        key={"select-1"}
+        label={t('buyerTokenAddress')}
+        placeholder={t('placeholderOfferBuyTokenAddress')}
+        searchable={true}
+        nothingFound={"No property found"}
+        itemComponent={SelectItem}
+        data={buyerTokenSelectData}
+        required={true}
+        {...getInputProps('buyerTokenAddress')}
+      />
+    ]
+
     return(
       <>
-        <Select
-          label={t('offerTokenAddress')}
-          placeholder={t('placeholderOfferSellTokenAddress')}
-          searchable={true}
-          required={true}
-          nothingFound={"No property found"}
-          itemComponent={SelectItem}
-          data={offerTokenSelectData}
-          {...getInputProps('offerTokenAddress')}
-        />
-        <Select
-          label={t('buyerTokenAddress')}
-          placeholder={t('placeholderOfferBuyTokenAddress')}
-          searchable={true}
-          nothingFound={"No property found"}
-          itemComponent={SelectItem}
-          data={buyerTokenSelectData}
-          required={true}
-          {...getInputProps('buyerTokenAddress')}
-        />
+        { offer.offerType == OFFER_TYPE.BUY ?
+            <>
+              {selects[1]}
+              {selects[0]}
+            </>
+            :
+            <>
+            {selects[0]}
+            {selects[1]}
+          </>
+        }
       </>
+    )
+  }
+  const priceNumberInput = ({ label, width }:{ label?: string, width?: string }) => {
+    return(
+      <NumberInput
+        label={label ? label : t('price')}
+        placeholder={t('placeholderPrice')}
+        required={true}
+        disabled={false}
+        min={0.000001}
+        width={width ? width : "100%"}
+        max={undefined}
+        step={undefined}
+        showMax={false}
+        sx={{ flexGrow: 1 }}
+        {...getInputProps('price')}
+      />
     )
   }
 
@@ -442,22 +480,57 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
           value={exchangeType}
           onChange={setE}
         />
-        {getSelect(
-          exchangeType == realT ? 
-              properties.filter(property => property.value != values.buyerTokenAddress)
-            : 
-              allowedTokens.filter(allowedToken => allowedToken.value != values.buyerTokenAddress),
-          exchangeType == realT ? 
-              properties.filter(property => property.value != values.offerTokenAddress)
-            : 
-              allowedTokens.filter(allowedToken => allowedToken.value != values.offerTokenAddress)
-        )}
+        <Flex gap={"md"}>
+          {getSelect(
+            exchangeType == realT ? 
+                properties.filter(property => property.value != values.buyerTokenAddress)
+              : 
+                allowedTokens.filter(allowedToken => allowedToken.value != values.buyerTokenAddress),
+            exchangeType == realT ? 
+                properties.filter(property => property.value != values.offerTokenAddress)
+              : 
+                allowedTokens.filter(allowedToken => allowedToken.value != values.offerTokenAddress)
+          )}
+        </Flex>
       </>
     )
   }
 
+  // BUY
+  const GetBuyPriceNumberInputs = () => {
+
+    const buyerTokenSymbol = offerTokens.find(token => token.value == values.offerTokenAddress)?.label;
+    const { price } = useOraclePriceFeed(values.offerTokenAddress);
+
+    const [value,setValue] = useState<string|undefined>("0");
+
+    useEffect(() => {
+      if(!values.price || !price) return;
+      setValue(new BigNumber(1).dividedBy( new BigNumber(values.price).dividedBy(price)).toString());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[values,price])
+
+    return(
+      <Flex direction={"column"} gap={9}>
+        <Flex gap={10} align={"center"}>
+          {priceNumberInput({ label: "Prix d'achat en $", width: "100%" })}
+          <IconArrowsSort style={{ marginTop: "22px", rotate: "90deg" }} size={46}/>
+          <MantineInput
+            hideControls={true}
+            label={buyTokenSymbol ? `${t("price")} "${buyTokenSymbol}"` : `${t("price")}`}
+            disabled={true}
+            precision={6}
+            value={parseFloat(value ?? "0")}
+            style={{ width: "100%" }}
+          />
+        </Flex>
+        { buyerTokenSymbol && price ? <Text>{`With $${buyerTokenSymbol} = $${price?.toString()}`}</Text> : undefined }
+      </Flex>
+    )
+  }
+
   return (
-    <Flex direction={"column"} sx={{ maxWidth: 400 }} mx={'auto'} gap={"md"}>
+    <Flex direction={"column"} mx={'auto'} gap={"md"} style={{ width: calcRem(500) }}>
       <Flex gap={"sm"}>
         <OfferTypeBadge offerType={offer.offerType} />
         <h3 style={{ margin: 0 }}>{t('titleFormCreateOffer')}</h3>
@@ -471,17 +544,12 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
             getSelect(offerTokens,buyerTokens) 
         }
 
-        <NumberInput
-          label={t('price')}
-          placeholder={t('placeholderPrice')}
-          required={true}
-          min={0.000001}
-          max={undefined}
-          step={undefined}
-          showMax={false}
-          sx={{ flexGrow: 1 }}
-          {...getInputProps('price')}
-        />
+        { offer.offerType == OFFER_TYPE.BUY ?
+            GetBuyPriceNumberInputs()
+          :
+            priceNumberInput({})
+        }
+        
         <NumberInput
           label={t('amount')}
           placeholder={t('placeholderAmount')}

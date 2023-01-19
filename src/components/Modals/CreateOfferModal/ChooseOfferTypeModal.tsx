@@ -109,7 +109,7 @@ export const ChooseOfferTypeModal: FC<ContextModalProps> = ({
   const { t } = useTranslation("modals", { keyPrefix: "chooseOfferType" });
   
   return (
-    <Flex direction={"column"} gap={"xl"}>
+    <Flex direction={"column"} gap={"xl"} style={{ width: calcRem('400') }}>
       <Text>{t("title")}</Text>
       <Flex justify={"center"} mb={15}>
         <OfferTypePane offerType={OFFER_TYPE.BUY} selectedOfferType={offerType} setOfferType={setOfferType}/>
