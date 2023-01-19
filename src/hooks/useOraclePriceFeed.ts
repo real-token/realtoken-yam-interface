@@ -38,6 +38,8 @@ export const useOraclePriceFeed : UseOraclePriceFeed = (tokenAddress) => {
                 return;
             }
 
+            setPrice(undefined)
+
             const oracleContract = getContract<OraclePriceFeed>(
                 oracleContractAddress,
                 oraclePriceFeedABI,
