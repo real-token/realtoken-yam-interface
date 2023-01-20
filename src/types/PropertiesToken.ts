@@ -12,6 +12,11 @@ export type APIPropertiesToken = {
     imageLink: string[]
 }
 
+export type ShortProperty = {
+    contractAddress: string;
+    name: string;
+}
+
 export type PropertiesToken = {
     uuid: string
     shortName: string
