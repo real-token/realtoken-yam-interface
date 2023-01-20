@@ -627,7 +627,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         }
         
         <NumberInput
-          label={t('amount')}
+          label={offer.offerType == OFFER_TYPE.EXCHANGE ? t('exchangeAmount') : t('amount')}
           placeholder={t('placeholderAmount')}
           required={true}
           min={0.000001}

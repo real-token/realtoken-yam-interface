@@ -17,6 +17,7 @@
     "realtTokenType": "RealT token",
     "otherTokenType": "Others (USDC, XDAI, etc...)",
     "amount": "Quantity",
+    "exchangeAmount": "Quantity of selled tokens to exchange", 
     "cancel": "Cancel",
     "confirm": "Confirm",
     "labelPrivateBuyerAddress": "Buyer Address (only for private offers)",

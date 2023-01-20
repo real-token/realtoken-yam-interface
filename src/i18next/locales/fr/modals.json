@@ -18,6 +18,7 @@
     "priceInCurrency": "Prix d'achat en {{ currency }}",
     "withPrice": "Avec {{buyerTokenSymbol}} = {{price}}{{ currency }}",
     "amount": "Quantité",
+    "exchangeAmount": "Quantité de jeton en vente à échanger",
     "cancel": "Annuler",
     "confirm": "Confirmer",
     "labelPrivateBuyerAddress": "Adresse de l'acheteur (Uniquement pour les offres privées)",
