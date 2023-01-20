@@ -111,29 +111,41 @@ export const fetchOfferTheGraph = (
 
       //console.log('Debug Query usersDataYAM', usersDataYAM);
 
-      let dataYAM; //TODO: tmp supprimer la partie false quant déploiement ok sur Eth et Gonosis, remettre en const a la place de let try = new graph, catch = old graph
-      try {
-        console.log('TRY dataYAM');
-
-        ({ data: dataYAM } = await clientYAM.query({
+      //TODO: tmp supprimer la partie false quant déploiement ok sur Eth et Gnosis, remettre en const a la place de let try = new graph, catch = old graph
+      
+      // Pagination
+      const offers: OfferGraphQl[]  = [];
+      let skip = 0;
+      let stop = false;
+      while(!stop){
+        const { data } = await clientYAM.query({
           query: gql`
             query getOffers {
-              offers(first: 1000, where: { removedAtBlock: null }) {
+              offers(first: 1000, skip: ${skip}, where: { removedAtBlock: null }) {
                 ${getOfferQuery()}
               }
             }
           `,
-        }));
-      } catch (error) {
-        console.log('CATCH dataYAM');
+        });
+
+        if(data.offers && data.offers.length > 0){
+          skip+=1000;
+
+          console.log(data.offers)
+
+          offers.push(...data.offers);
+
+          // Avoid one request more
+          if(data.offers.length < 1000) stop = true;
+        }else{
+          stop = true;
+        }
       }
 
-      console.log('Query dataYAM', dataYAM.offers.length);
+      console.log('Query dataYAM', offers.length);
 
-      const accountRealtoken: string[] = usersDataYAM.accounts.map(
-        (account: { address: string; offers: [] }) =>
-          account.offers.map(
-            (offer: { id: string; offerToken: { address: string } }) =>
+      const accountRealtoken: string[] = usersDataYAM.accounts.map((account: { address: string; offers: [] }) =>
+          account.offers.map((offer: { id: string; offerToken: { address: string } }) =>
               account.address + '-' + offer.offerToken.address
           )
       );
@@ -154,8 +166,7 @@ export const fetchOfferTheGraph = (
         ); */
         if (batch.length <= 0) break;
 
-        const realtokenData: [DataRealtokenType] =
-          await getBigDataGraphRealtoken(chainId, clientRealtoken, batch);
+        const realtokenData: [DataRealtokenType] = await getBigDataGraphRealtoken(chainId, clientRealtoken, batch);
 
         //console.log('DEBUG for realtokenData', i, batchSize, realtokenData);
         dataRealtoken.push(...realtokenData);
@@ -164,7 +175,7 @@ export const fetchOfferTheGraph = (
       //console.log('Debug Query dataRealtoken', dataRealtoken);
 
       await Promise.all(
-        dataYAM.offers.map(async (offer: OfferGraphQl) => {
+        offers.map(async (offer: OfferGraphQl) => {
           const accountUserRealtoken: DataRealtokenType = dataRealtoken.find(
             (accountBalance: DataRealtokenType): boolean =>
               accountBalance.id ===
