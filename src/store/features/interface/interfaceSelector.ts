@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { Offer, OFFER_LOADING } from 'src/types/Offer';
+import { Offer, OFFER_LOADING } from 'src/types/offer/Offer';
 import { RootState } from 'src/store/store';
 import { selectAddress } from '../settings/settingsSelector';
 

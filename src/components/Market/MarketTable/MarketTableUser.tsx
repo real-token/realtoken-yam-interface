@@ -12,7 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { Offer } from 'src/types/Offer';
+import { Offer } from 'src/types/offer/Offer';
 import { Table } from '../../Table';
 import { DeleteActions } from '../DeleteActions';
 import { MarketSubRow } from '../MarketSubRow';

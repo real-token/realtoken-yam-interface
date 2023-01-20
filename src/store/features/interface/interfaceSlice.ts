@@ -3,7 +3,7 @@ import { createAction, createReducer } from '@reduxjs/toolkit';
 
 import { ContractsID, TypedContract } from 'src/constants';
 import { APIPropertiesToken, PropertiesToken } from 'src/types';
-import { OFFER_LOADING, Offer } from 'src/types/Offer';
+import { OFFER_LOADING, Offer } from 'src/types/offer/Offer';
 import { fetchOfferTheGraph } from 'src/utils/offers/fetchOffers';
 
 interface InterfaceInitialStateType {

@@ -6,7 +6,7 @@ import { useWeb3React } from '@web3-react/core';
 import BigNumber from 'bignumber.js';
 
 import { CHAINS, ChainsID } from 'src/constants';
-import { getTheGraphUrlRealtoken, getTheGraphUrlYAM } from 'src/utils/offers/fetchOffers';
+import { getTheGraphUrlRealtoken, getTheGraphUrlYAM } from 'src/utils/offers/getClientURL';
 
 interface UseGraphSyncStatus {
   isOk: boolean;
