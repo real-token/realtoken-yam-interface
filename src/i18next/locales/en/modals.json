@@ -9,6 +9,13 @@
     "buyerTokenName": "Buyer Token Name",
     "sellerAddress": "Seller Address",
     "price": "Price/token",
+    "priceInCurrency": "Buy price in {{ currency }}",
+    "withPrice": "With {{buyerTokenSymbol}} = {{price}}{{ currency }}",
+    "priceComputing": "Enter how many \"{{exchangeBuyerTokenSymbol}}\" token(s)you want to receive in exchange of 1 \"{{exchangeOfferTokenSymbol}}\" token.",
+    "priceComputingTitle": "Exchange rate computing",
+    "chooseExchangeTokenType": "Choose exchange token type",
+    "realtTokenType": "RealT token",
+    "otherTokenType": "Others (USDC, XDAI, etc...)",
     "amount": "Quantity",
     "cancel": "Cancel",
     "confirm": "Confirm",
@@ -83,8 +90,8 @@
   },
   "chooseOfferType": {
     "title": "Which type of offer do you want to create ?",
-    "buyTypeExplain": "Choose \"{{ offerType, String }}\" offer's type when you want to buy a RealT property token with other non Realt tokens (WXDAI, WETH, USDC etc...)",
-    "sellTypeExplain": "Choose \"{{ offerType, String }}\" offer's type when you want to sell a RealT property token against other non Realt tokens (WXDAI, WETH, USDC etc...)",
-    "exchangeTypeExplain": "Choose \"{{ offerType, String }}\" offer's type when you want to exchange a RealT property token against other tokens (WXDAI, WETH, USDC etc...) or against another RealT property token, or two non RealT token between them."
+    "buyTypeExplain": "Choose \"{{ offerType }}\" offer's type when you want to buy a RealT property token with other non Realt tokens (WXDAI, WETH, USDC etc...)",
+    "sellTypeExplain": "Choose \"{{ offerType }}\" offer's type when you want to sell a RealT property token against other non Realt tokens (WXDAI, WETH, USDC etc...)",
+    "exchangeTypeExplain": "Choose \"{{ offerType }}\" offer's type when you want to exchange a RealT property token against other tokens (WXDAI, WETH, USDC etc...) or against another RealT property token, or two non RealT token between them."
   }
 }

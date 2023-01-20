@@ -10,3 +10,5 @@ export const sortValueAtom = atom<OFFER_TYPE|undefined>(undefined)
 
 // INTERFACE 
 export const displayChoosedAtom = atomWithStorage<Displays>("displayChoosed",Displays.TABLE);
+export const shieldDisabledAtom = atomWithStorage<boolean>("shieldDisabled",false);
+export const shieldValueAtom = atomWithStorage<number>("shieldValue",0.05);

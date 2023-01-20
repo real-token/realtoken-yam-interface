@@ -9,13 +9,20 @@
     "buyerTokenAddress": "Jeton d'achat",
     "buyerTokenName": "Jeton d'achat",
     "sellerAddress": "Adresse du vendeur",
+    "priceComputing": "Indiquez combien de token \"{{exchangeBuyerTokenSymbol}}\" vous souhaitez recevoir en échange d'un 1 token \"{{exchangeOfferTokenSymbol}}\".",
+    "priceComputingTitle": "Calcul du ratio d'échange",
+    "chooseExchangeTokenType": "Choisissez le type de token à échanger",
+    "realtTokenType": "Jeton de propriété RealT",
+    "otherTokenType": "Autres (USDC, XDAI, etc...)",
     "price": "Prix/Jeton",
+    "priceInCurrency": "Prix d'achat en {{ currency }}",
+    "withPrice": "Avec {{buyerTokenSymbol}} = {{price}}{{ currency }}",
     "amount": "Quantité",
     "cancel": "Annuler",
     "confirm": "Confirmer",
     "labelPrivateBuyerAddress": "Adresse de l'acheteur (Uniquement pour les offres privées)",
-    "placeholderOfferSellTokenAddress": "Rechercher l'adresse du jeton à vendre",
-    "placeholderOfferBuyTokenAddress": "Renseigner l'adresse du jeton d'achat",
+    "placeholderOfferSellTokenAddress": "Renseigner le jeton à vendre",
+    "placeholderOfferBuyTokenAddress": "Renseigner le jeton d'achat",
     "placeholderOfferPrivatBuyerAddress": "Renseigner l'adresse de l'acheteur privé",
     "placeholderPrice": "Nb de jeton d'achat pour un jeton en vente",
     "placeholderAmount": "Quantité de jeton en vente",
@@ -83,8 +90,8 @@
   },
   "chooseOfferType": {
     "title": "Quel type d'offre voulez-vous créer ?",
-    "buyTypeExplain": "Choisissez le type d'offre \"{{ offerType, String }}\" si vous souhaitez acheter un token de propriété RealT avec un autre token non RealT (WXDAI, WETH, USDC etc...)",
-    "sellTypeExplain": "Choisissez le type d'offre \"{{ offerType, String }}\" si vous souhaitez vendre un token de propriété RealT contre un autre token non RealT (WXDAI, WETH, USDC etc...)",
-    "exchangeTypeExplain": "Choisissez le type d'offre \"{{ offerType, String }}\" si vous souhaitez échanger un token de propriété RealT contre un autre token non RealT (WXDAI, WETH, USDC etc...) ou un autre token de propriété RealT ou deux non RealT token entre eux."
+    "buyTypeExplain": "Choisissez le type d'offre \"{{ offerType }}\" si vous souhaitez acheter un token de propriété RealT avec un autre token non RealT (WXDAI, WETH, USDC etc...)",
+    "sellTypeExplain": "Choisissez le type d'offre \"{{ offerType }}\" si vous souhaitez vendre un token de propriété RealT contre un autre token non RealT (WXDAI, WETH, USDC etc...)",
+    "exchangeTypeExplain": "Choisissez le type d'offre \"{{ offerType }}\" si vous souhaitez échanger un token de propriété RealT contre un autre token non RealT (WXDAI, WETH, USDC etc...) ou un autre token de propriété RealT ou deux non RealT token entre eux."
   }
 }
