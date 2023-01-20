@@ -4,62 +4,16 @@ import {
   NormalizedCacheObject,
   gql,
 } from '@apollo/client';
-import { Web3Provider } from '@ethersproject/providers';
-
-import { strict } from 'assert';
 import BigNumber from 'bignumber.js';
-import { Contract, ethers } from 'ethers';
-import { id } from 'ethers/lib/utils';
-import { off } from 'process';
-import { stringify } from 'querystring';
-
-import { Erc20, Erc20ABI } from 'src/abis';
 import { CHAINS, ChainsID } from 'src/constants';
-import { PropertiesToken } from 'src/types';
-import { Account, AccountRealtoken } from 'src/types/Account';
-import { Offer } from 'src/types/Offer';
+import { Offer } from 'src/types/offer/Offer';
+import { Offer as OfferGraphQl } from '../../../.graphclient/index';
+import { parseOffer } from './parseOffer';
+import { getTheGraphUrlYAM, getTheGraphUrlRealtoken } from './getClientURL';
+import { getOfferQuery } from './getOfferQuery';
+import { DataRealtokenType } from 'src/types/offer/DataRealTokenType';
 
-import {
-  AccountBalance,
-  Offer as OfferGraphQl,
-} from '../../../.graphclient/index';
-import { getContract } from '../getContract';
-import { fetchWallet } from '../wallet/fetchWallet';
-
-type DataRealtokenType = {
-  amount: string;
-  id: string;
-  allowances?: [{ id: string; allowance: string }];
-  allowance?: string;
-};
-
-const getTheGraphUrlYAM = (chainId: number): string => {
-  switch (chainId) {
-    case 1:
-      return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph';
-    case 5:
-      return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-goerli';
-    case 100:
-      return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-gnosis';
-    default:
-      return '';
-  }
-};
-
-const getTheGraphUrlRealtoken = (chainId: number): string => {
-  switch (chainId) {
-    case 1:
-      return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/realtoken-eth';
-    case 5:
-      return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/realtoken-goerli';
-    case 100:
-      return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/realtoken-xdai';
-    default:
-      return '';
-  }
-};
-
-const getBigDataGraphRealtoken = async (
+export const getBigDataGraphRealtoken = async (
   chainId: number,
   client: ApolloClient<NormalizedCacheObject>,
   realtokenAccount: string[]
@@ -157,99 +111,41 @@ export const fetchOfferTheGraph = (
 
       //console.log('Debug Query usersDataYAM', usersDataYAM);
 
-      let dataYAM; //TODO: tmp supprimer la partie false quant déploiement ok sur Eth et Gonosis, remettre en const a la place de let try = new graph, catch = old graph
-      try {
-        console.log('TRY dataYAM');
-
-        ({ data: dataYAM } = await clientYAM.query({
+      //TODO: tmp supprimer la partie false quant déploiement ok sur Eth et Gnosis, remettre en const a la place de let try = new graph, catch = old graph
+      
+      // Pagination
+      const offers: OfferGraphQl[]  = [];
+      let skip = 0;
+      let stop = false;
+      while(!stop){
+        const { data } = await clientYAM.query({
           query: gql`
             query getOffers {
-              offers(first: 1000, where: { removedAtBlock: null }) {
-                id
-                seller {
-                  id
-                  address
-                }
-                removedAtBlock
-                availableAmount
-                allowance {
-                  allowance
-                }
-                balance {
-                  amount
-                }
-                offerToken {
-                  address
-                  name
-                  decimals
-                  symbol
-                  tokenType
-                }
-                price {
-                  price
-                  amount
-                }
-                buyerToken {
-                  name
-                  symbol
-                  address
-                  decimals
-                  tokenType
-                }
-                buyer {
-                  address
-                }
+              offers(first: 1000, skip: ${skip}, where: { removedAtBlock: null }) {
+                ${getOfferQuery()}
               }
             }
           `,
-        }));
-      } catch (error) {
-        console.log('CATCH dataYAM');
+        });
 
-        ({ data: dataYAM } = await clientYAM.query({
-          query: gql`
-            query getOffers {
-              offers(first: 1000, where: { removedAtBlock: null }) {
-                id
-                seller {
-                  id
-                  address
-                }
-                removedAtBlock
-                availableAmount
-                offerToken {
-                  address
-                  name
-                  decimals
-                  symbol
-                  tokenType
-                }
-                price {
-                  price
-                  amount
-                }
-                buyerToken {
-                  name
-                  symbol
-                  address
-                  decimals
-                  tokenType
-                }
-                buyer {
-                  address
-                }
-              }
-            }
-          `,
-        }));
+        if(data.offers && data.offers.length > 0){
+          skip+=1000;
+
+          console.log(data.offers)
+
+          offers.push(...data.offers);
+
+          // Avoid one request more
+          if(data.offers.length < 1000) stop = true;
+        }else{
+          stop = true;
+        }
       }
 
-      console.log('Query dataYAM', dataYAM.offers.length);
+      console.log('Query dataYAM', offers.length);
 
-      const accountRealtoken: string[] = usersDataYAM.accounts.map(
-        (account: { address: string; offers: [] }) =>
-          account.offers.map(
-            (offer: { id: string; offerToken: { address: string } }) =>
+      const accountRealtoken: string[] = usersDataYAM.accounts.map((account: { address: string; offers: [] }) =>
+          account.offers.map((offer: { id: string; offerToken: { address: string } }) =>
               account.address + '-' + offer.offerToken.address
           )
       );
@@ -270,8 +166,7 @@ export const fetchOfferTheGraph = (
         ); */
         if (batch.length <= 0) break;
 
-        const realtokenData: [DataRealtokenType] =
-          await getBigDataGraphRealtoken(chainId, clientRealtoken, batch);
+        const realtokenData: [DataRealtokenType] = await getBigDataGraphRealtoken(chainId, clientRealtoken, batch);
 
         //console.log('DEBUG for realtokenData', i, batchSize, realtokenData);
         dataRealtoken.push(...realtokenData);
@@ -280,7 +175,7 @@ export const fetchOfferTheGraph = (
       //console.log('Debug Query dataRealtoken', dataRealtoken);
 
       await Promise.all(
-        dataYAM.offers.map(async (offer: OfferGraphQl) => {
+        offers.map(async (offer: OfferGraphQl) => {
           const accountUserRealtoken: DataRealtokenType = dataRealtoken.find(
             (accountBalance: DataRealtokenType): boolean =>
               accountBalance.id ===
@@ -290,7 +185,6 @@ export const fetchOfferTheGraph = (
           const offerData: Offer = await parseOffer(
             offer,
             accountUserRealtoken,
-            chainId
           );
 
           /* const hasPropertyToken = propertiesToken.find(
@@ -313,91 +207,6 @@ export const fetchOfferTheGraph = (
       resolve(offersData);
     } catch (err) {
       console.log('Error while fetching offers from TheGraph', err);
-      reject(err);
-    }
-  });
-};
-
-const parseOffer = (
-  offer: OfferGraphQl,
-  accountUserRealtoken: DataRealtokenType,
-  chainId: number
-): Promise<Offer> => {
-  return new Promise<Offer>(async (resolve, reject) => {
-    try {
-      /*       console.log(
-        'DEBUG parseOffer accountUserRealtoken',
-        accountUserRealtoken
-      ); */
-
-      let balanceWallet = '0';
-      let allowance = '0';
-      let logLabel =
-        'Erreur Type token parseOffer or seller not data in graph realtoken';
-      if (BigNumber(offer.availableAmount).gt(0)) {
-        if (
-          offer.offerToken.tokenType === 1 &&
-          accountUserRealtoken != undefined
-        ) {
-          balanceWallet = accountUserRealtoken.amount ?? '0';
-
-          allowance = accountUserRealtoken.allowance ?? '0';
-
-          logLabel = 'parseOffer type 1 blance/allowance';
-
-          //if (account.balance) balanceWallet = account.balance.toString();
-          //if (account.allowance) allowance = account.allowance.toString();
-        } else if (
-          offer.offerToken.tokenType === 2 ||
-          offer.offerToken.tokenType === 3
-        ) {
-          balanceWallet = offer.balance?.amount ?? offer.availableAmount;
-          allowance = offer.allowance?.allowance ?? offer.availableAmount;
-
-          logLabel = 'parseOffer type 2/3 blance/allowance';
-        }
-
-        /*  console.log(logLabel, {
-          sellerAdress: offer.seller.address,
-          'offer ID': BigNumber(offer.id).toString(),
-          'Token name': offer.offerToken.name,
-          'Token type': offer.offerToken.tokenType,
-          BalanceWallet: balanceWallet,
-          Allowance: allowance,
-          'YAM autorisé': offer.availableAmount,
-        }); */
-      }
-
-      const o: Offer = {
-        offerId: BigNumber(offer.id).toString(),
-        offerTokenAddress: (offer.offerToken.address as string)?.toLowerCase(),
-        offerTokenName: offer.offerToken.name ?? '',
-        offerTokenDecimals: offer.offerToken.decimals?.toString() ?? '',
-        offerTokenType: offer.offerToken.tokenType ?? 0,
-        buyerTokenAddress: (offer.buyerToken.address as string)?.toLowerCase(),
-        buyerTokenName: offer.buyerToken.name ?? '',
-        buyerTokenDecimals: offer.buyerToken.decimals?.toString() ?? '',
-        buyerTokenType: offer.buyerToken.tokenType ?? 0,
-        sellerAddress: (offer.seller.address as string)?.toLowerCase(),
-        buyerAddress: (offer.buyer?.address as string)?.toLowerCase(),
-        price: offer.price.price.toString(),
-        amount:
-          BigNumber.minimum(
-            offer.availableAmount,
-            balanceWallet,
-            allowance
-          ).toString(10) ?? '0',
-        availableAmount: offer.availableAmount.toString(),
-        balanceWallet: balanceWallet ?? '0',
-        allowanceToken: allowance ?? '0',
-        hasPropertyToken: false,
-        removed: false,
-      };
-
-      // console.log(offer.availableAmount, balanceWallet, allowance)
-      resolve(o);
-    } catch (err) {
-      console.log('Error when fetching account from TheGraph', err);
       reject(err);
     }
   });

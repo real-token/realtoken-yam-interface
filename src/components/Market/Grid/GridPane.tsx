@@ -1,6 +1,6 @@
 import { createStyles, Flex, Text } from "@mantine/core"
 import { FC } from "react"
-import { Offer } from "src/types/Offer"
+import { Offer } from "src/types/offer/Offer"
 
 const useStyle = createStyles((theme, _params, getRef) => ({
     title: {

@@ -1,6 +1,6 @@
 import { Flex, Grid, Text } from "@mantine/core";
 import { FC } from "react";
-import { Offer } from "src/types/Offer";
+import { Offer } from "src/types/offer/Offer";
 import { GridPane } from "./GridPane";
 
 interface MarketGridProps{
