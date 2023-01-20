@@ -4,8 +4,10 @@ import { useEffect, useState } from "react"
 import { useSelector } from "react-redux";
 import { selectProperties, selectPropertiesIsLoading } from "src/store/features/interface/interfaceSelector";
 import { chainPropertiesChangedDispatchType, fetchProperties } from "src/store/features/interface/interfaceSlice";
-import { APIPropertiesToken, PropertiesToken } from "src/types/PropertiesToken";
+import { APIPropertiesToken, PropertiesToken, ShortProperty } from "src/types/PropertiesToken";
+import { getWhitelistedProperties } from "src/utils/properties";
 import { useAppDispatch } from "./react-hooks";
+import { useQuery } from "react-query";
 
 type usePropertiesTokenReturn = {
     propertiesToken: PropertiesToken[]
@@ -20,6 +22,8 @@ export const usePropertiesToken = (refreshOnMount: boolean): usePropertiesTokenR
     const properties = useSelector(selectProperties);
     const propertiesIsloading = useSelector(selectPropertiesIsLoading)
     const dispatch = useAppDispatch();
+
+    const { isLoading, data: whitelistedTokens } = useQuery(["whitelistedTokens", chainId], getWhitelistedProperties, { enabled: !!chainId });
 
     const refreshProperties = () => {
         dispatch(fetchProperties());
@@ -43,16 +47,17 @@ export const usePropertiesToken = (refreshOnMount: boolean): usePropertiesTokenR
     }
 
     const getPropertiesTokenList = async () => {
+        if(!chainId || !whitelistedTokens) return;
         try{
 
             setPropertiesToken([])
 
-            if(!chainId) setPropertiesToken([]);
+            let propertiesNonFiltered: PropertiesToken[] = [];
             
-            // BYPASS IF NETWORK IS GOERLI / TMP => WAIT FOR API TO BE UPDATED
+            // TODO: BYPASS IF NETWORK IS GOERLI / TMP => WAIT FOR API TO BE UPDATED
             if(chainId == 5){
 
-                const properties: PropertiesToken[] = [
+                const propertiesGoerli: PropertiesToken[] = [
                     {
                         uuid: "15777 Ardmore",
                         shortName: "15777 Ardmore",
@@ -154,14 +159,12 @@ export const usePropertiesToken = (refreshOnMount: boolean): usePropertiesTokenR
                     }
                 ]
 
-                setPropertiesToken(properties)
-
-                dispatch({ type: chainPropertiesChangedDispatchType, payload: properties });
+                propertiesNonFiltered = propertiesGoerli;
             }else{
                 properties.forEach((propertyToken: APIPropertiesToken) => {
                     const contractAddress = getContractAddressFromChainId(propertyToken);
                     if(contractAddress){
-                        setPropertiesToken((prev) => [...prev,{
+                        propertiesNonFiltered.push({
                             uuid: propertyToken.uuid,
                             shortName: propertyToken.shortName,
                             fullName: propertyToken.fullName,
@@ -169,20 +172,26 @@ export const usePropertiesToken = (refreshOnMount: boolean): usePropertiesTokenR
                             officialPrice: propertyToken.tokenPrice,
                             marketplaceLink: propertyToken.marketplaceLink,
                             imageLink: propertyToken.imageLink
-                        }])
+                        })
                     }
                     
                 });
-    
-                dispatch({ type: chainPropertiesChangedDispatchType, payload: propertiesToken });
             }
+
+
+            const onlyWLProperties = propertiesNonFiltered.filter(
+                (property) => !!whitelistedTokens.find((wlProperty) => wlProperty.contractAddress == property.contractAddress)
+            );
+
+            setPropertiesToken(onlyWLProperties)
+            dispatch({ type: chainPropertiesChangedDispatchType, payload: onlyWLProperties });
 
         }catch(err){
             console.log(err)
         }
     }
 
-    useEffect(() => { if(chainId && properties) getPropertiesTokenList() },[chainId,properties])
+    useEffect(() => { if(chainId && properties && !isLoading) getPropertiesTokenList() },[chainId,properties,isLoading])
 
     const getPropertyToken = (address: string): PropertiesToken | undefined => {
         return propertiesToken.find(propertyToken => propertyToken.contractAddress == address.toLowerCase())
