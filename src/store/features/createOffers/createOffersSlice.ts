@@ -1,11 +1,22 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
-import { CreatedOffer } from "src/types/Offer/CreatedOffer";
+import { CreatedOffer } from "src/types/offer/CreatedOffer";
+import { OFFER_TYPE } from "src/types/Offer/Offer";
 
 interface createOffersInitialStateType{
     offers: CreatedOffer[]
 }
 
 const createOffersInitialState: createOffersInitialStateType = {
+    // offers: [{
+    //   offerType: OFFER_TYPE.BUY,
+    //   offerId:0,
+    //   offerTokenAddress:"0xddafbb505ad214d7b80b1f830fccc89b60fb7a83",
+    //   buyerTokenAddress:"0xfe17c3c0b6f38cf3bd8ba872bee7a18ab16b43fb",
+    //   price:1,
+    //   amount:2,
+    //   buyerAddress:"0x0000000000000000000000000000000000000000",
+    //   isPrivateOffer:false,
+    // }]
     offers: []
 }
 

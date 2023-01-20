@@ -20,7 +20,7 @@ import { useWeb3React } from '@web3-react/core';
 import { ContextModalProps } from '@mantine/modals';
 import { useAppDispatch, useAppSelector } from 'src/hooks/react-hooks';
 import { createOfferAddedDispatchType } from 'src/store/features/createOffers/createOffersSlice';
-import { CreatedOffer } from 'src/types/Offer/CreatedOffer';
+import { CreatedOffer } from 'src/types/offer/CreatedOffer';
 import { selectCreateOffers } from 'src/store/features/createOffers/createOffersSelector';
 import { useCreateOfferTokens } from 'src/hooks/useCreateOfferTokens';
 import { OfferTypeBadge } from 'src/components/Offer/OfferTypeBadge';
@@ -58,7 +58,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
 }) => {
   
   const { t } = useTranslation('modals', { keyPrefix: 'sell' });
-  const { account } = useWeb3React();
+  const { account, provider } = useWeb3React();
 
   const { getInputProps, onSubmit, values, isValid, setFieldValue } =
     useForm<SellFormValues>({
@@ -91,8 +91,74 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   const offers = useAppSelector(selectCreateOffers);
   const [exchangeType,setExchangeType] = useState<string|null>(null);
 
-  const saveCreatedOffer = (formValues: SellFormValues) => {
+  const approve = (formValues: SellFormValues): Promise<void> => {
+
+    return new Promise<void>(async (resolve,reject) => {
+      if(!provider || !realTokenYamUpgradeable || !account || !formValues.amount) return;
+      try{
+        setSubmitting(true);
+        const offerToken = getContract<CoinBridgeToken>(
+          formValues.offerTokenAddress,
+          coinBridgeTokenABI,
+          provider,
+          account
+        );
+
+        const offerTokenDecimals = await offerToken?.decimals();
+
+        if (!offerToken) {
+          console.log('offerToken not found');
+          return;
+        }
+
+        const amountInWei = new BigNumber(formValues.amount.toString()).shiftedBy(Number(offerTokenDecimals));
+        const oldAllowance = await offerToken.allowance(account,realTokenYamUpgradeable.address);
+        const amountInWeiToPermit = amountInWei.plus(new BigNumber(oldAllowance.toString()));
+
+        // TokenType = 3: ERC20 Without Permit, do Approve/CreateOffer
+        const approveTx = await offerToken.approve(
+          realTokenYamUpgradeable.address,
+          amountInWeiToPermit.toString()
+        );
+
+        const notificationApprove = {
+          key: approveTx.hash,
+          href: `${activeChain?.blockExplorerUrl}tx/${approveTx.hash}`,
+          hash: approveTx.hash,
+        };
+
+        showNotification(
+          NOTIFICATIONS[NotificationsID.approveOfferLoading](
+            notificationApprove
+          )
+        );
+
+        approveTx
+          .wait()
+          .then(({ status }) =>
+            updateNotification(
+              NOTIFICATIONS[
+                status === 1
+                  ? NotificationsID.approveOfferSuccess
+                  : NotificationsID.approveOfferError
+              ](notificationApprove)
+            )
+          );
+
+        await approveTx.wait(1);
+
+        resolve();
+
+      }catch(err){
+        reject(err)
+      }
+    });
+  }
+
+  const approveAndsaveCreatedOffer = async (formValues: SellFormValues) => {
     try{
+
+      await approve(formValues);
 
       const createdOffer: CreatedOffer = {
         offerType: offer.offerType,
@@ -609,7 +675,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         </Flex>
         <Shield />        
       </Flex>
-      <form onSubmit={onSubmit(saveCreatedOffer)}>
+      <form onSubmit={onSubmit(approveAndsaveCreatedOffer)}>
         <Stack justify={'center'} align={'stretch'}>
 
         { offer.offerType == OFFER_TYPE.EXCHANGE ? 
@@ -649,13 +715,14 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         <Group position={'left'} mt={'md'}>
           <>
             {summary()}
+             {/* //TODO: add translate */}
             <Button
               type={'submit'}
               loading={isSubmitting}
               aria-label={'submit'}
               disabled={!isValid}
             >
-              { offer ? t('buttonModifyCreateOffer') : t('buttonCreateOffer')}
+              {"Approve offer"}
             </Button>
           </>
         </Group>

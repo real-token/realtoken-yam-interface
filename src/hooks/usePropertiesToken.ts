@@ -52,7 +52,7 @@ export const usePropertiesToken = (refreshOnMount: boolean): usePropertiesTokenR
 
             setPropertiesToken([])
 
-            let propertiesNonFiltered: PropertiesToken[] = [];
+            const propertiesNonFiltered: PropertiesToken[] = [];
             
             // TODO: BYPASS IF NETWORK IS GOERLI / TMP => WAIT FOR API TO BE UPDATED
             if(chainId == 5){
@@ -159,7 +159,7 @@ export const usePropertiesToken = (refreshOnMount: boolean): usePropertiesTokenR
                     }
                 ]
 
-                propertiesNonFiltered = propertiesGoerli;
+                propertiesNonFiltered.push(...propertiesGoerli);
             }else{
                 properties.forEach((propertyToken: APIPropertiesToken) => {
                     const contractAddress = getContractAddressFromChainId(propertyToken);
@@ -178,9 +178,8 @@ export const usePropertiesToken = (refreshOnMount: boolean): usePropertiesTokenR
                 });
             }
 
-
             const onlyWLProperties = propertiesNonFiltered.filter(
-                (property) => !!whitelistedTokens.find((wlProperty) => wlProperty.contractAddress == property.contractAddress)
+                (property) => !!whitelistedTokens.find((wlProperty) => wlProperty.contractAddress.toLowerCase() == property.contractAddress.toLowerCase())
             );
 
             setPropertiesToken(onlyWLProperties)

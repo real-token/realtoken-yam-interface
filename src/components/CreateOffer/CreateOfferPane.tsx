@@ -8,6 +8,7 @@ import { useCreatedOffer } from "src/hooks/useCreatedOffer"
 import { createOfferRemovedDispatchType } from "src/store/features/createOffers/createOffersSlice"
 import { CreatedOffer } from "src/types/Offer/CreatedOffer"
 import { hexToRgb } from "src/utils/color"
+import { OfferTypeBadge } from "../Offer/OfferTypeBadge"
 
 const useStyles = createStyles((theme) => ({
     offerContainer: {
@@ -121,7 +122,8 @@ export const CreateOfferPane: FC<CreateOfferPaneProps> = ({ isCreating, offer })
                             </div> 
                         ): undefined 
                     }
-                    <Flex direction={"column"} p={"sm"}>
+                    <Flex direction={"column"} p={"sm"} align={"start"}>
+                        <OfferTypeBadge offerType={offer.offerType}/>
                         <Text fw={700}>{offerTokenSymbol ? offerTokenSymbol : <Skeleton height={35} width={"100%"}/>}</Text>
                         <Text fs={"italic"} fw={500} color={"gray"}>{buyTokenSymbol ? buyTokenSymbol : <Skeleton height={35} width={"100%"}/>}</Text>
                     </Flex>

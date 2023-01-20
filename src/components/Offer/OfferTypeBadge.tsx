@@ -1,5 +1,4 @@
-import { createStyles, Flex } from "@mantine/core"
-import { useTranslation } from "react-i18next";
+import { createStyles, Flex, Sx } from "@mantine/core"
 import { useOfferType } from "src/hooks/useOfferType";
 import { OFFER_TYPE } from "src/types/Offer";
 
@@ -23,13 +22,14 @@ const useStyle = createStyles((theme, { offerTypeColor } : StyleProps) => ({
 interface OfferTypeBadgeProps{
     offerType: OFFER_TYPE;
     textSize?: number;
+    sx?: Sx
 }
-export const OfferTypeBadge = ({ offerType, textSize }: OfferTypeBadgeProps) => {
+export const OfferTypeBadge = ({ offerType, sx }: OfferTypeBadgeProps) => {
 
     const { getColor, getI18OfferTypeName } = useOfferType();
     const { classes } = useStyle({ offerTypeColor: getColor(offerType) ?? "blue" });
 
     return(
-        <>{ offerType ? <Flex className={classes.offerType}>{getI18OfferTypeName(offerType)?.toUpperCase()}</Flex> : undefined }</>
+        <>{ offerType ? <Flex className={classes.offerType} sx={sx}>{getI18OfferTypeName(offerType)?.toUpperCase()}</Flex> : undefined }</>
     )
 }
