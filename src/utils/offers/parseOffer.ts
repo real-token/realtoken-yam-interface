@@ -1,8 +1,13 @@
 import BigNumber from 'bignumber.js';
-import { DataRealtokenType } from 'src/types/Offer/DataRealTokenType';
-import { Offer, OFFER_TYPE } from 'src/types/Offer/Offer';
+import { DataRealtokenType } from 'src/types/offer/DataRealTokenType';
+import { Offer } from 'src/types/offer/Offer';
+import { OFFER_TYPE } from 'src/types/offer/OfferType';
 import { Offer as OfferGraphQl } from '../../../.graphclient/index';
 
+// TOKEN TYPE
+// 1 = RealToken
+//2 = avec permit
+//3 = sans permit
 export const getOfferType = (offerTokenType: number, buyerTokenType: number): OFFER_TYPE => {
 
   if(offerTokenType == 1 && (buyerTokenType == 2 || buyerTokenType == 3)) return OFFER_TYPE.SELL

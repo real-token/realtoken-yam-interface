@@ -1,6 +1,6 @@
 import { createStyles, Flex, Sx } from "@mantine/core"
 import { useOfferType } from "src/hooks/useOfferType";
-import { OFFER_TYPE } from "src/types/Offer";
+import { OFFER_TYPE } from "src/types/offer";
 
 interface StyleProps{
     offerTypeColor: string

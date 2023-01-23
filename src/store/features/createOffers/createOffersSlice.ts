@@ -1,6 +1,5 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
 import { CreatedOffer } from "src/types/offer/CreatedOffer";
-import { OFFER_TYPE } from "src/types/Offer/Offer";
 
 interface createOffersInitialStateType{
     offers: CreatedOffer[]

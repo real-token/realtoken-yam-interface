@@ -25,7 +25,7 @@ import erc20PermitSignature from 'src/hooks/erc20PermitSignature';
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 import { useAppDispatch, useAppSelector } from 'src/hooks/react-hooks';
 import { selectPublicOffers } from 'src/store/features/interface/interfaceSelector';
-import { Offer } from 'src/types/Offer/Offer';
+import { Offer } from 'src/types/offer/Offer';
 import { getContract } from 'src/utils';
 import { cleanNumber } from 'src/utils/number';
 

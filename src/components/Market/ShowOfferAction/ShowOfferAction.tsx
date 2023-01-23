@@ -3,7 +3,7 @@ import { IconEye } from "@tabler/icons";
 import { useRouter } from "next/router";
 import { FC } from "react";
 import { useSelector } from "react-redux";
-import { Offer } from "src/types/Offer/Offer";
+import { Offer } from "src/types/offer/Offer";
 import { selectOffersIsLoading } from "src/store/features/interface/interfaceSelector";
 interface ShowOfferActionProps{
     offer: Offer

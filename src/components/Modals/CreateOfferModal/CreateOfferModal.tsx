@@ -21,7 +21,7 @@ import { CreatedOffer } from 'src/types/offer/CreatedOffer';
 import { selectCreateOffers } from 'src/store/features/createOffers/createOffersSelector';
 import { useCreateOfferTokens } from 'src/hooks/useCreateOfferTokens';
 import { OfferTypeBadge } from 'src/components/Offer/OfferTypeBadge';
-import { OFFER_TYPE } from 'src/types/Offer';
+import { OFFER_TYPE } from 'src/types/offer';
 import { useOraclePriceFeed } from 'src/hooks/useOraclePriceFeed';
 import { calcRem } from 'src/utils/style';
 import { IconArrowRight, IconArrowsSort } from '@tabler/icons';
@@ -715,7 +715,11 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
           <>
             {summary()}
              {/* //TODO: add translate */}
-             { values.offerTokenAddress && bigNumberbalance && bigNumberbalance.eq(0) ? <Text color={"red"} fz={"sm"}>{t("zeroBalanceError", { tokenSymbol: offerTokenSymbol })}</Text> : undefined }
+             {  values.offerTokenAddress && bigNumberbalance && bigNumberbalance.eq(0) ? 
+                  <Text color={"red"} fz={"sm"}>{t("zeroBalanceError", { tokenSymbol: offerTokenSymbol })}</Text> 
+                : 
+                  undefined 
+              }
             <Button
               type={'submit'}
               aria-label={'submit'}

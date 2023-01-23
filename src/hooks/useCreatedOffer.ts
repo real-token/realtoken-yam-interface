@@ -3,7 +3,7 @@ import { Contract } from "ethers";
 import { Dispatch, useEffect, useState } from "react"
 import { Erc20ABI } from "src/abis";
 import { PropertiesToken } from "src/types";
-import { CreatedOffer } from "src/types/Offer/CreatedOffer";
+import { CreatedOffer } from "src/types/offer/CreatedOffer";
 import { getContract } from "src/utils";
 import { usePropertiesToken } from "./usePropertiesToken";
 

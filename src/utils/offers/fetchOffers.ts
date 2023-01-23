@@ -6,12 +6,12 @@ import {
 } from '@apollo/client';
 import BigNumber from 'bignumber.js';
 import { CHAINS, ChainsID } from 'src/constants';
-import { Offer } from 'src/types/Offer/Offer';
+import { Offer } from 'src/types/offer/Offer';
 import { Offer as OfferGraphQl } from '../../../.graphclient/index';
 import { parseOffer } from './parseOffer';
 import { getTheGraphUrlYAM, getTheGraphUrlRealtoken } from './getClientURL';
 import { getOfferQuery } from './getOfferQuery';
-import { DataRealtokenType } from 'src/types/Offer/DataRealTokenType';
+import { DataRealtokenType } from 'src/types/offer/DataRealTokenType';
 
 export const getBigDataGraphRealtoken = async (
   chainId: number,

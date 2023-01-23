@@ -2,7 +2,7 @@ import { Button, Flex } from "@mantine/core"
 import { useAtom } from "jotai"
 import { useTranslation } from "react-i18next";
 import { sortValueAtom } from "src/states";
-import { OFFER_TYPE } from "src/types/Offer";
+import { OFFER_TYPE } from "src/types/offer";
 
 export const MarketSort = () => {
 

@@ -1,8 +1,4 @@
-export enum OFFER_TYPE{
-  BUY = "BUY",
-  SELL = "SELL",
-  EXCHANGE = "EXCHANGE"
-}
+import { OFFER_TYPE } from "./OfferType";
 
 export type Offer = {
   offerId: string;

@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next"
 import { useAppDispatch } from "src/hooks/react-hooks"
 import { useCreatedOffer } from "src/hooks/useCreatedOffer"
 import { createOfferRemovedDispatchType } from "src/store/features/createOffers/createOffersSlice"
-import { CreatedOffer } from "src/types/Offer/CreatedOffer"
+import { CreatedOffer } from "src/types/offer/CreatedOffer"
 import { hexToRgb } from "src/utils/color"
 import { OfferTypeBadge } from "../Offer/OfferTypeBadge"
 

@@ -2,7 +2,7 @@ import { SelectItem } from "@mantine/core";
 import { useMemo } from "react"
 import { PropertiesToken } from "src/types";
 import { AllowedToken } from "src/types/allowedTokens";
-import { OFFER_TYPE } from "src/types/Offer"
+import { OFFER_TYPE } from "src/types/offer"
 import { useAllowedTokens } from "./useAllowedTokens";
 import { usePropertiesToken } from "./usePropertiesToken";
 

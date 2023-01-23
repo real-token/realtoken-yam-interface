@@ -15,7 +15,7 @@ const TransfersPage = () => {
       p={"xl"}
       style={{ flexGrow: 1 }}
     >
-      <Tabs color={"brand"} variant={"pills"} defaultValue={'addOffer'}>
+      <Tabs color={"brand"} variant={"pills"} defaultValue={'myOffers'}>
         <Tabs.List>
           <Tabs.Tab value={'myOffers'} icon={<IconList size={18} />}>
             {menu.t('myOffers')}

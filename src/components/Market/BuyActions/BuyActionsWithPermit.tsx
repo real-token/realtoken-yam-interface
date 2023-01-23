@@ -6,7 +6,7 @@ import { useModals } from '@mantine/modals';
 import { IconShoppingCart } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
 
-import { Offer } from 'src/types/Offer/Offer';
+import { Offer } from 'src/types/offer/Offer';
 import { useSelector } from 'react-redux';
 import { selectOffersIsLoading } from 'src/store/features/interface/interfaceSelector';
 
@@ -35,14 +35,7 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
         title: <Title order={3}>{t('buy.title')}</Title>,
         size: "lg",
         innerProps: {
-          offerId: offer.offerId,
-          price: offer.price,
-          offerAmount: offer.amount,
-          offerTokenAddress: offer.offerTokenAddress,
-          offerTokenDecimals: offer.offerTokenDecimals,
-          buyerTokenAddress: offer.buyerTokenAddress,
-          buyerTokenDecimals: offer.buyerTokenDecimals,
-          sellerAddress: offer.sellerAddress,
+          offer: offer,
           triggerTableRefresh: triggerRefresh,
         },
       });

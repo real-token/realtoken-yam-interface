@@ -1,4 +1,4 @@
-import { Offer } from "src/types/Offer";
+import { Offer } from "src/types/offer/Offer";
 import { DataRealtokenType } from "src/types/offer/DataRealTokenType";
 import { PropertiesToken } from "src/types/PropertiesToken";
 import { getBigDataGraphRealtoken } from "./fetchOffers";

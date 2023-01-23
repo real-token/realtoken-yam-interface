@@ -14,7 +14,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
-import { Offer } from 'src/types/Offer/Offer';
+import { Offer } from 'src/types/offer/Offer';
 import { Table } from '../../Table';
 import { BuyActionsWithPermit } from '../BuyActions';
 import { MarketSubRow } from '../MarketSubRow';

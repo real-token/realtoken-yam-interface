@@ -20,7 +20,7 @@ interface UseWalletERC20Balance{
 }
 
 export const useWalletERC20Balance = (
-    tokenAddress: string,
+    tokenAddress: string|undefined,
 ) : UseWalletERC20Balance => {
 
     const [bigNumberbalance,setBigNumberbalance] = useState<BigNumber|undefined>(undefined);
@@ -29,7 +29,7 @@ export const useWalletERC20Balance = (
     const { account, provider } = useWeb3React();
 
     const contract = getContract<Erc20>(
-        tokenAddress,
+        tokenAddress ?? "",
         Erc20ABI,
         provider as Web3Provider,
         account,

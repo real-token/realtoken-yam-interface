@@ -5,7 +5,7 @@ import { IconInfoCircle } from '@tabler/icons';
 import { Dispatch, FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOfferType } from 'src/hooks/useOfferType';
-import { OFFER_TYPE } from 'src/types/Offer';
+import { OFFER_TYPE } from 'src/types/offer';
 import { calcRem } from 'src/utils/style';
 
 interface OfferTypePaneStyleProps{

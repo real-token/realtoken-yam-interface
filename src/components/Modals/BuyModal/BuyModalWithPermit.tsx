@@ -25,16 +25,11 @@ import { useWalletERC20Balance } from 'src/hooks/useWalletERC20Balance';
 import { cleanNumber } from 'src/utils/number';
 import { useWeb3React } from '@web3-react/core';
 import { calcRem } from 'src/utils/style';
+import { useERC20TokenInfo } from 'src/hooks/useERC20TokenInfo';
+import { Offer, OFFER_TYPE } from 'src/types/offer';
 
 type BuyModalWithPermitProps = {
-  offerId: string;
-  price: number;
-  offerAmount: number;
-  offerTokenAddress: string;
-  offerTokenDecimals: number;
-  buyerTokenAddress: string;
-  buyerTokenDecimals: number;
-  sellerAddress: string;
+  offer: Offer,
   triggerTableRefresh: Dispatch<SetStateAction<boolean>>;
 };
 
@@ -46,7 +41,6 @@ type BuyWithPermitFormValues = {
   offerTokenDecimals: number;
   buyerTokenAddress: string;
   buyerTokenDecimals: number;
-  
 };
 
 export const BuyModalWithPermit: FC<
@@ -55,52 +49,48 @@ export const BuyModalWithPermit: FC<
   context,
   id,
   innerProps: {
-    offerId,
-    price,
-    offerAmount,
-    offerTokenAddress,
-    offerTokenDecimals,
-    buyerTokenAddress,
-    buyerTokenDecimals,
+    offer,
     triggerTableRefresh,
-    sellerAddress
   },
 }) => {
+
   const { account, provider } = useWeb3React();
   const { getInputProps, onSubmit, reset, setFieldValue, values } =
     useForm<BuyWithPermitFormValues>({
       // eslint-disable-next-line object-shorthand
       initialValues: {
-        offerId: offerId,
-        price: price,
+        offerId: offer.offerId,
+        price: parseFloat(offer.price),
         amount: 0,
-        offerTokenAddress: offerTokenAddress,
-        offerTokenDecimals: offerTokenDecimals,
-        buyerTokenAddress: buyerTokenAddress,
-        buyerTokenDecimals: buyerTokenDecimals
+        offerTokenAddress: offer.offerTokenAddress,
+        offerTokenDecimals: parseFloat(offer.offerTokenDecimals),
+        buyerTokenAddress: offer.buyerTokenAddress,
+        buyerTokenDecimals: parseFloat(offer.buyerTokenDecimals)
       },
     });
 
     const [isSubmitting, setSubmitting] = useState<boolean>(false);
     const activeChain = useActiveChain();
     
-    const [offerTokenName,setOfferTokenName] = useState<string|undefined>("");
-    const [offerTokenSymbol,setOfferTokenSymbol] = useState<string|undefined>("");
     const [offerTokenSellerBalance,setOfferTokenSellerBalance] = useState<string|undefined>("");
-
-    const [buyTokenSymbol,setBuyTokenSymbol] = useState<string|undefined>("");
+    const { name:offerTokenName, symbol:offerTokenSymbol  } = useERC20TokenInfo(
+      offer.type == OFFER_TYPE.BUY ? offer.buyerTokenAddress : offer.offerTokenAddress
+    );
+    const { symbol:buyTokenSymbol, address:buyerTokenAddress } = useERC20TokenInfo(
+      offer.type == OFFER_TYPE.BUY ? offer.offerTokenAddress : offer.buyerTokenAddress
+    );
     
     const realTokenYamUpgradeable = useContract(
       ContractsID.realTokenYamUpgradeable
       );
     const buyerToken = getContract<CoinBridgeToken>(
-        buyerTokenAddress,
+        offer.buyerTokenAddress,
         coinBridgeTokenABI,
         provider as Web3Provider,
         account
       );
     const offerToken = getContract<Erc20>(
-          offerTokenAddress,
+          offer.offerTokenAddress,
           Erc20ABI,
           provider as Web3Provider,
           account
@@ -111,16 +101,10 @@ export const BuyModalWithPermit: FC<
   const getOfferTokenInfos = async () => {
     if(!offerToken) return;
     try{
-
       // console.log("offerToken: ", offerToken)
       // console.log("sellerAddress: ", sellerAddress)
-      const tokenName = await offerToken.name();
-      const tokenSymbol = await offerToken.symbol();
-      const balanceSeller = await offerToken.balanceOf(sellerAddress)
+      const balanceSeller = await offerToken.balanceOf(offer.sellerAddress)
       setOfferTokenSellerBalance((balanceSeller ?? BigNumber(0)).toString())
-      setOfferTokenName(tokenName);
-      setOfferTokenSymbol(tokenSymbol)
-
     }catch(err){
       console.log(err)
     }
@@ -129,21 +113,6 @@ export const BuyModalWithPermit: FC<
     if(offerToken) getOfferTokenInfos();    
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[offerToken])
-
-  const getBuyTokenInfos = async () => {
-
-    try{
-      const tokenSymbol = await buyerToken?.symbol();
-      setBuyTokenSymbol(tokenSymbol);
-    }catch(err){
-      console.log(err)
-    }
-
-  }
-  useEffect(() => {
-    if(buyerToken) getBuyTokenInfos();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[buyerToken])
 
   const { t } = useTranslation('modals', { keyPrefix: 'buy' });
 
@@ -173,15 +142,15 @@ export const BuyModalWithPermit: FC<
 
         const amountInWei = new BigNumber(
           formValues.amount.toString()
-        ).shiftedBy(Number(offerTokenDecimals));
+        ).shiftedBy(Number(offer.offerTokenDecimals));
 
         const priceInWei = new BigNumber(formValues.price.toString()).shiftedBy(
-          Number(buyerTokenDecimals)
+          Number(offer.buyerTokenDecimals)
         );
 
         const buyerTokenAmount = amountInWei
           .multipliedBy(priceInWei)
-          .shiftedBy(-offerTokenDecimals);
+          .shiftedBy(-offer.offerTokenDecimals);
         const transactionDeadline = Math.floor(Date.now() / 1000) + 3600; // permit valable during 1h
 
         const buyerTokenType = await realTokenYamUpgradeable.getTokenType(
@@ -344,29 +313,18 @@ export const BuyModalWithPermit: FC<
         onClose();
       }
     },
-    [
-      account,
-      provider,
-      realTokenYamUpgradeable,
-      buyerToken,
-      offerTokenDecimals,
-      buyerTokenDecimals,
-      values,
-      activeChain?.blockExplorerUrl,
-      triggerTableRefresh,
-      onClose,
-    ]
+    [account, provider, realTokenYamUpgradeable, buyerToken, offer, activeChain?.blockExplorerUrl, triggerTableRefresh, onClose]
   );
 
   const total = values?.amount * values?.price;
 
   const maxTokenBuy: number|undefined = useMemo(() => {
-    if(bigNumberbalance == undefined || !price) return undefined;
+    if(bigNumberbalance == undefined || !offer.price) return undefined;
 
-    const max = bigNumberbalance.eq(0) ? new BigNumber(0) : bigNumberbalance.dividedBy(price);
+    const max = bigNumberbalance.eq(0) ? new BigNumber(0) : bigNumberbalance.dividedBy(offer.price);
 
-    return max.isGreaterThanOrEqualTo(BigNumber(offerAmount)) ? offerAmount : max.toNumber();
-  },[bigNumberbalance,price,offerAmount])
+    return max.isGreaterThanOrEqualTo(BigNumber(offer.amount)) ? new BigNumber(offer.amount).toNumber() : max.toNumber();
+  },[bigNumberbalance,offer])
 
   return (
     <form onSubmit={onSubmit(onHandleSubmit)} style={{ width: calcRem(500) }}>
@@ -377,7 +335,7 @@ export const BuyModalWithPermit: FC<
         <Flex direction={"column"} gap={8}>
             <Flex direction={"column"}>
               <Text fw={700}>{t("offerId")}</Text>
-              <Text>{offerId}</Text>
+              <Text>{offer.offerId}</Text>
             </Flex>
             <Flex direction={"column"}>
               <Text fw={700}>{t("offerTokenName")}</Text>
@@ -385,15 +343,15 @@ export const BuyModalWithPermit: FC<
             </Flex>
             <Flex direction={"column"}>
               <Text fw={700}>{t("sellerAddress")}</Text>
-              <Text>{sellerAddress}</Text>
+              <Text>{offer.sellerAddress}</Text>
             </Flex>
             <Flex direction={"column"} >
               <Text fw={700}>{t("amount")}</Text>
-              <Text>{BigNumber.minimum(offerAmount,offerTokenSellerBalance!).toString()}</Text>
+              <Text>{BigNumber.minimum(offer.amount,offerTokenSellerBalance!).toString()}</Text>
             </Flex>
             <Flex direction={"column"}>
                 <Text fw={700}>{t("price")}</Text>
-                <Text>{`${price} ${buyTokenSymbol}`}</Text>
+                <Text>{`${offer.price} ${buyTokenSymbol}`}</Text>
               </Flex>
         </Flex>
       </Flex>
@@ -401,8 +359,8 @@ export const BuyModalWithPermit: FC<
       <Divider />
 
       <WalletERC20Balance 
-        tokenAddress={buyerTokenAddress}
-        tokenDecimals={buyerTokenDecimals}
+        tokenAddress={offer.buyerTokenAddress}
+        tokenDecimals={offer.buyerTokenDecimals}
       />
 
       <Flex direction={"column"} gap={"sm"} >

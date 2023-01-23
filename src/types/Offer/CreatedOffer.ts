@@ -1,4 +1,4 @@
-import { OFFER_TYPE } from "./Offer";
+import { OFFER_TYPE } from "./OfferType";
 
 export interface CreatedOffer{
     offerType: OFFER_TYPE;

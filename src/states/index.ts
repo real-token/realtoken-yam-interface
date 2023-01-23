@@ -1,7 +1,7 @@
 import { atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { Displays } from "src/types/Displays";
-import { OFFER_TYPE } from "src/types/Offer";
+import { OFFER_TYPE } from "src/types/offer/OfferType";
 
 // MARKET
 export const isRefreshedAutoAtom = atomWithStorage<boolean>("isRefreshedAuto",false);
