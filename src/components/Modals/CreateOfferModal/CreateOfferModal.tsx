@@ -543,10 +543,10 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         showMax={false}
         sx={{ flexGrow: 1 }}
         {...getInputProps('price')}
-        error={shieldError && priceDifference ? `Price difference is ${(priceDifference*100).toFixed(2)}% but limit fixed by shield is +/-${maxPriceDifference*100}%.` : undefined}
+        error={shieldError && priceDifference ? t("shieldError", { priceDifference: (priceDifference*100).toFixed(2), maxPriceDifference: maxPriceDifference*100 }) : undefined}
       />
       <Text fz={"sm"} fs={"italic"}>
-        { officialPrice && officialSellCurrency ? `F.Y.I: official property price is ${officialPrice} $${officialSellCurrency}. But you are free to choose the price.` : undefined }
+        { officialPrice && officialSellCurrency ? t("officialPriceInfos", { officialPrice, officialSellCurrency }) : undefined }
       </Text>
       </>
     )

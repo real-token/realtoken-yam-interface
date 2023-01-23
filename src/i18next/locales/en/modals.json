@@ -35,7 +35,9 @@
     "summaryText1": "You will sell",
     "summaryText2": "with a unit price of",
     "summaryText3": "and for a total of",
-    "zeroBalanceError": "You cannot create this offer because you don't have \"{{tokenSymbol}}\" token"
+    "zeroBalanceError": "You cannot create this offer because you don't have \"{{tokenSymbol}}\" token",
+    "shieldError": "Price difference is {{priceDifference}}% but limit fixed by shield is +/-{{maxPriceDifference}}%. (\"shield\" setting on top right corner, for more informations)",
+    "officialPriceInfos": "The official property has been selled for {{officialPrice}} ${{officialSellCurrency}}. But you are free to choose the price."
   },
   "buy": {
     "title": "Buy Offer",

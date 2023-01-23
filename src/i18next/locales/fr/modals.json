@@ -35,8 +35,9 @@
     "summaryText1": "Vous vendez",
     "summaryText2": "avec un prix unitaire de",
     "summaryText3": "et pour un total de",
-    "zeroBalanceError": "Vous ne pouvez pas créer cette offre car vous ne possédez aucun token \"{{tokenSymbol}}\"."
-
+    "zeroBalanceError": "Vous ne pouvez pas créer cette offre car vous ne possédez aucun token \"{{tokenSymbol}}\".",
+    "shieldError": "La différence de prix est de {{priceDifference}}% alors que la limite fixé par le bouclier de protection est de +/-{{maxPriceDifference}}%. Le\"bouclier de protection\" est paramétrable dans le coin en haut à droite.",
+    "officialPriceInfos": "Le prix de vente officiel est de {{officialPrice}} ${{officialSellCurrency}}. Mais vous êtes libre de le choisir."
   },
   "buy": {
     "title": "Acheter",
