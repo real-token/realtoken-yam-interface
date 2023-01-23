@@ -23,10 +23,12 @@ const createOffersInitialState: createOffersInitialStateType = {
 // DISPATCH TYPE
 export const createOfferAddedDispatchType = "createOffer/createOfferAdded";
 export const createOfferRemovedDispatchType = "createOffer/createOfferRemoved";
+export const createOfferResetDispatchType = "createOffer/createOfferReset";
 
 // ACTIONS
 export const createOfferAdded = createAction<CreatedOffer>(createOfferAddedDispatchType);
 export const createOfferRemoved = createAction<number>(createOfferRemovedDispatchType);
+export const createOfferReset = createAction<void>(createOfferResetDispatchType);
 
 export const createOffersReducers = createReducer(
     createOffersInitialState,
@@ -34,8 +36,11 @@ export const createOffersReducers = createReducer(
       builder.addCase(createOfferAdded, (state,action) => {
         state.offers.push(action.payload);
       })
-      builder.addCase(createOfferRemoved, (state,action) => {
+      .addCase(createOfferRemoved, (state,action) => {
         state.offers.splice(state.offers.findIndex((offer) => offer.offerId === action.payload), 1);
+      })
+      .addCase(createOfferReset, (state,) => {
+        state.offers = [];
       })
     }
   );
