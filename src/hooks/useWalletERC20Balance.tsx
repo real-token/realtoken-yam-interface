@@ -5,47 +5,79 @@ import { FC, useEffect, useState } from "react";
 import { Erc20, Erc20ABI } from "src/abis";
 import { getContract } from "src/utils";
 import { WalletERC20Balance } from "src/components/WalletBalance/WalletERC20Balance";
+import { useQuery } from "react-query";
 
-interface useWalletERC20Balance{
+interface TokenInfos{
+    balance: BigNumber;
+    symbol: string;
+    decimals: string;
+}
+
+interface UseWalletERC20Balance{
     bigNumberbalance: BigNumber|undefined
-    balance: number|undefined
+    balance: string|undefined
     WalletERC20Balance: any
 }
 
 export const useWalletERC20Balance = (
     tokenAddress: string,
-    tokenDecimals: number
-) : useWalletERC20Balance => {
+) : UseWalletERC20Balance => {
 
     const [bigNumberbalance,setBigNumberbalance] = useState<BigNumber|undefined>(undefined);
-    const [balance,setBalance] = useState<number|undefined>(undefined);
+    const [balance,setBalance] = useState<string|undefined>(undefined);
     const [tokenSymbol,setTokenSymbol] = useState<string|undefined>("");
     const { account, provider } = useWeb3React();
-    
-    const tokenERC20 = getContract<Erc20>(
+
+    const contract = getContract<Erc20>(
         tokenAddress,
         Erc20ABI,
         provider as Web3Provider,
         account,
     )
 
-    const getTokenInfos = async () => {
+    const getTokenInfos = async (): Promise<TokenInfos> => {
+        return new Promise<TokenInfos>(async (resolove,reject) => {
+            try{
 
-        if(!account || !tokenERC20) return;
-
-        const balance = new BigNumber((await tokenERC20.balanceOf(account)).toString());
-
-        setBigNumberbalance(balance);
-        setBalance(balance ? parseFloat(balance.shiftedBy(-tokenDecimals).toFixed(10).toString()) : undefined)
-
-        const tokenSymbol = await tokenERC20?.symbol();
-        setTokenSymbol(tokenSymbol);
+                if(!contract || !account) return;
+    
+                const balance = new BigNumber((await contract.balanceOf(account)).toString());
+                const decimals = new BigNumber((await contract.decimals()).toString());
+                const tokenSymbol = await contract?.symbol();
+    
+                resolove({
+                    balance: balance,
+                    symbol: tokenSymbol ?? "",
+                    decimals: decimals.toString() ?? ""
+                })
+                
+            }catch(err){
+                console.log("Failed to get propertieqs from YAM TheGraph: ", err);
+                reject(err);
+            }
+        })
     }
 
+    const { data, refetch } = useQuery(["userOfferTokenBalance"], getTokenInfos, { enabled: (!!provider && !!tokenAddress && !!account)}
+    );
+
     useEffect(() => {
-        if(tokenERC20 && !bigNumberbalance) getTokenInfos();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[tokenERC20])
+        if(tokenAddress){
+            setBigNumberbalance(undefined);
+            setTokenSymbol(undefined);
+            setBalance(undefined);
+
+            refetch();
+        }
+    },[tokenAddress])
+
+    useEffect(() => {
+        if(data){
+            setBigNumberbalance(data.balance);
+            setTokenSymbol(tokenSymbol);
+            setBalance(data.balance.shiftedBy(-data.decimals).toFixed(10).toString());
+        }
+    },[data])
 
     const Component: FC = (): React.ReactElement => <WalletERC20Balance balance={balance} symbol={tokenSymbol}/>
 

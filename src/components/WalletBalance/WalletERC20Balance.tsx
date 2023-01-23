@@ -39,7 +39,7 @@ const useStyles = createStyles((theme, _params, getRef) => ({
   }));
 
 type WalletERC20BalanceProps = {
-    balance: number|undefined
+    balance: string|undefined
     symbol: string|undefined
 }
 
