@@ -25,7 +25,7 @@ export const useWalletERC20Balance = (
 
     const [bigNumberbalance,setBigNumberbalance] = useState<BigNumber|undefined>(undefined);
     const [balance,setBalance] = useState<string|undefined>(undefined);
-    const [tokenSymbol,setTokenSymbol] = useState<string|undefined>("");
+    const [tokenSymbol,setTokenSymbol] = useState<string|undefined>(undefined);
     const { account, provider } = useWeb3React();
 
     const contract = getContract<Erc20>(
@@ -74,7 +74,7 @@ export const useWalletERC20Balance = (
     useEffect(() => {
         if(data){
             setBigNumberbalance(data.balance);
-            setTokenSymbol(tokenSymbol);
+            setTokenSymbol(data.symbol);
             setBalance(data.balance.shiftedBy(-data.decimals).toFixed(10).toString());
         }
     },[data])
