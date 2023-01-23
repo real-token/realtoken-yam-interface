@@ -1,7 +1,7 @@
 /* eslint-disable react/display-name */
 import { FC, forwardRef, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Checkbox, Flex, Group, Select, SelectItem, Stack, TextInput, Text, NumberInput as MantineInput, Skeleton } from '@mantine/core';
+import { Button, Checkbox, Flex, Group, Select, SelectItem, Stack, TextInput, Text, NumberInput as MantineInput, Skeleton, Tooltip } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { showNotification, updateNotification } from '@mantine/notifications';
 import BigNumber from 'bignumber.js';
@@ -27,6 +27,8 @@ import { calcRem } from 'src/utils/style';
 import { IconArrowRight, IconArrowsSort } from '@tabler/icons';
 import { Shield } from 'src/components/Shield/Shield';
 import { useWalletERC20Balance } from 'src/hooks/useWalletERC20Balance';
+import { useShield } from 'src/hooks/useShield';
+import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
 
 interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
   label: string;
@@ -425,6 +427,12 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   const buyTokenSymbol =  buyerTokens.find(value => value.value == values.buyerTokenAddress)?.label;
   const total = (values.amount ?? 0) * (values.price ?? 0);
 
+  const { getPropertyToken } = usePropertiesToken(false);
+  const officialPrice = getPropertyToken ? getPropertyToken(values.offerTokenAddress)?.officialPrice : undefined;
+  const officialSellCurrency = getPropertyToken ? getPropertyToken(values.offerTokenAddress)?.currency : undefined;
+
+  const { isError: shieldError, maxPriceDifference, priceDifference } = useShield(values.price,officialPrice);
+
   const { bigNumberbalance } = useWalletERC20Balance(values.offerTokenAddress);
 
   const approveAndsaveCreatedOffer = async (formValues: SellFormValues) => {
@@ -520,8 +528,9 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
       </>
     )
   }
-  const priceNumberInput = ({ label, width }:{ label?: string, width?: string }) => {
+  const PriceNumberInput = ({ label, width }:{ label?: string, width?: string }) => {
     return(
+      <>
       <NumberInput
         label={label ? label : t('price')}
         placeholder={t('placeholderPrice')}
@@ -534,7 +543,12 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         showMax={false}
         sx={{ flexGrow: 1 }}
         {...getInputProps('price')}
+        error={shieldError && priceDifference ? `Price difference is ${(priceDifference*100).toFixed(2)}% but limit fixed by shield is +/-${maxPriceDifference*100}%.` : undefined}
       />
+      <Text fz={"sm"} fs={"italic"}>
+        { officialPrice && officialSellCurrency ? `F.Y.I: official property price is ${officialPrice} $${officialSellCurrency}. But you are free to choose the price.` : undefined }
+      </Text>
+      </>
     )
   }
 
@@ -649,7 +663,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
     return(
       <Flex direction={"column"} gap={9}>
         <Flex gap={10} align={"center"}>
-          {priceNumberInput({ label: t("priceInCurrency", { currency: "$" }), width: "100%" })}
+          {PriceNumberInput({ label: t("priceInCurrency", { currency: "$" }), width: "100%" })}
           <IconArrowsSort style={{ marginTop: "22px", rotate: "90deg" }} size={46}/>
           <MantineInput
             hideControls={true}
@@ -688,7 +702,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
           : offer.offerType == OFFER_TYPE.EXCHANGE ?
             GetExchangePriceNumberInputs()
           :
-            priceNumberInput({})
+            PriceNumberInput({})
         }
         
         <NumberInput
@@ -714,17 +728,16 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         <Group position={'left'} mt={'md'}>
           <>
             {summary()}
-             {/* //TODO: add translate */}
-             {  values.offerTokenAddress && bigNumberbalance && bigNumberbalance.eq(0) ? 
-                  <Text color={"red"} fz={"sm"}>{t("zeroBalanceError", { tokenSymbol: offerTokenSymbol })}</Text> 
-                : 
-                  undefined 
-              }
+            {  values.offerTokenAddress && bigNumberbalance && bigNumberbalance.eq(0) ? 
+                <Text color={"red"} fz={"sm"}>{t("zeroBalanceError", { tokenSymbol: offerTokenSymbol })}</Text> 
+              : 
+                undefined 
+            }
             <Button
               type={'submit'}
               aria-label={'submit'}
-              loading={bigNumberbalance == undefined || isSubmitting}
-              disabled={!isValid || bigNumberbalance?.eq(0)}
+              loading={(bigNumberbalance && bigNumberbalance == undefined) || isSubmitting}
+              disabled={!isValid || bigNumberbalance?.eq(0) || shieldError}
             >
               {"Approve offer"}
             </Button>
