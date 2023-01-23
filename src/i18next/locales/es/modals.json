@@ -34,7 +34,8 @@
     "invalidPrivateOfferAddress": "Unable to create an offer for your address",
     "summaryText1": "You will sell",
     "summaryText2": "with a unit price of",
-    "summaryText3": "and for a total of"
+    "summaryText3": "and for a total of",
+    "zeroBalanceError": "You cannot create this offer because you don't have \"{{tokenSymbol}}\" token"
   },
   "buy": {
     "title": "Buy Offer",

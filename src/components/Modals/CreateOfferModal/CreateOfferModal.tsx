@@ -1,20 +1,17 @@
 /* eslint-disable react/display-name */
-import { FC, forwardRef, useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, forwardRef, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Checkbox, Flex, Group, Select, SelectItem, Stack, TextInput, Text, NumberInput as MantineInput, Skeleton } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { showNotification, updateNotification } from '@mantine/notifications';
 import BigNumber from 'bignumber.js';
-import { CoinBridgeToken, Erc20, Erc20ABI, coinBridgeTokenABI } from 'src/abis';
+import { CoinBridgeToken, coinBridgeTokenABI } from 'src/abis';
 import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { ZERO_ADDRESS } from 'src/constants';
-import { useActiveChain, useTokenInfo } from 'src/hooks';
-import coinBridgeTokenPermitSignature from 'src/hooks/coinBridgeTokenPermitSignature';
-import erc20PermitSignature from 'src/hooks/erc20PermitSignature';
+import { useActiveChain } from 'src/hooks';
 import { useContract } from 'src/hooks/useContract';
 import { getContract } from 'src/utils';
 import { NumberInput } from '../../NumberInput';
-import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
 import { cleanNumber } from 'src/utils/number';
 import { useWeb3React } from '@web3-react/core';
 import { ContextModalProps } from '@mantine/modals';
@@ -29,6 +26,7 @@ import { useOraclePriceFeed } from 'src/hooks/useOraclePriceFeed';
 import { calcRem } from 'src/utils/style';
 import { IconArrowRight, IconArrowsSort } from '@tabler/icons';
 import { Shield } from 'src/components/Shield/Shield';
+import { useWalletERC20Balance } from 'src/hooks/useWalletERC20Balance';
 
 interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
   label: string;
@@ -92,7 +90,6 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   const [exchangeType,setExchangeType] = useState<string|null>(null);
 
   const approve = (formValues: SellFormValues): Promise<void> => {
-
     return new Promise<void>(async (resolve,reject) => {
       if(!provider || !realTokenYamUpgradeable || !account || !formValues.amount) return;
       try{
@@ -153,31 +150,6 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         reject(err)
       }
     });
-  }
-
-  const approveAndsaveCreatedOffer = async (formValues: SellFormValues) => {
-    try{
-
-      await approve(formValues);
-
-      const createdOffer: CreatedOffer = {
-        offerType: offer.offerType,
-        offerId: offers.length,
-        offerTokenAddress: formValues.offerTokenAddress,
-        buyerTokenAddress: formValues.buyerTokenAddress,
-        price: formValues.price ?? 0,
-        amount: formValues.amount,
-        buyerAddress: formValues.buyerAddress,
-        isPrivateOffer: formValues.isPrivateOffer
-      }
-
-      dispatch({ type: createOfferAddedDispatchType, payload: createdOffer });
-
-      context.closeModal(id)
-
-    }catch(err){
-      console.log(err)
-    }
   }
 
   // const onHandleSubmit = useCallback(
@@ -453,6 +425,33 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   const buyTokenSymbol =  buyerTokens.find(value => value.value == values.buyerTokenAddress)?.label;
   const total = (values.amount ?? 0) * (values.price ?? 0);
 
+  const { bigNumberbalance } = useWalletERC20Balance(values.offerTokenAddress);
+
+  const approveAndsaveCreatedOffer = async (formValues: SellFormValues) => {
+    try{
+
+      await approve(formValues);
+
+      const createdOffer: CreatedOffer = {
+        offerType: offer.offerType,
+        offerId: offers.length,
+        offerTokenAddress: formValues.offerTokenAddress,
+        buyerTokenAddress: formValues.buyerTokenAddress,
+        price: formValues.price ?? 0,
+        amount: formValues.amount,
+        buyerAddress: formValues.buyerAddress,
+        isPrivateOffer: formValues.isPrivateOffer
+      }
+
+      dispatch({ type: createOfferAddedDispatchType, payload: createdOffer });
+
+      context.closeModal(id)
+
+    }catch(err){
+      console.log(err)
+    }
+  }
+
   const summary = () => {
     if(total && buyTokenSymbol && offerTokenSymbol){
       return (
@@ -716,11 +715,12 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
           <>
             {summary()}
              {/* //TODO: add translate */}
+             { values.offerTokenAddress && bigNumberbalance && bigNumberbalance.eq(0) ? <Text color={"red"} fz={"sm"}>{t("zeroBalanceError", { tokenSymbol: offerTokenSymbol })}</Text> : undefined }
             <Button
               type={'submit'}
-              loading={isSubmitting}
               aria-label={'submit'}
-              disabled={!isValid}
+              loading={bigNumberbalance == undefined || isSubmitting}
+              disabled={!isValid || bigNumberbalance?.eq(0)}
             >
               {"Approve offer"}
             </Button>
