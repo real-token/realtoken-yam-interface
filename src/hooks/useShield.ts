@@ -27,6 +27,7 @@ export const useShield: UseShield = (price, officialPrice) => {
             setIsError(false);
             return;
         }
+        if(shieldDisabled) setIsError(false)
         if(priceDelta && !shieldDisabled) setIsError(Math.abs(priceDelta) > shieldValue)
     },[priceDelta, shieldDisabled, shieldValue])
 
