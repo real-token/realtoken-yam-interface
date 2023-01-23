@@ -193,7 +193,7 @@ export const usePropertiesToken = (refreshOnMount: boolean): usePropertiesTokenR
     useEffect(() => { if(chainId && properties && !isLoading) getPropertiesTokenList() },[chainId,properties,isLoading])
 
     const getPropertyToken = (address: string): PropertiesToken | undefined => {
-        return propertiesToken.find(propertyToken => propertyToken.contractAddress == address.toLowerCase())
+        return propertiesToken.find(propertyToken => propertyToken.contractAddress.toLocaleLowerCase() == address.toLowerCase())
     }
 
     return{
