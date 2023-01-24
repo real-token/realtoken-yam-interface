@@ -9,7 +9,7 @@ import { usePropertiesToken } from "src/hooks/usePropertiesToken";
 import { PropertiesToken } from "src/types";
 import { useModals } from '@mantine/modals';
 import { useWeb3React } from "@web3-react/core";
-import { Offer } from "src/types/offer/Offer";
+import { Offer } from "src/types/offer";
 import { useRefreshOffers } from "src/hooks/offers/useRefreshOffers";
 import BigNumber from "bignumber.js";
 import { PropertyImage } from "src/components/Offer/Image/PropertyImage";
