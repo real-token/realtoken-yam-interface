@@ -1,8 +1,10 @@
-import { useAtom, useAtomValue } from "jotai";
+import { useAtomValue } from "jotai";
 import { useEffect, useMemo, useState } from "react";
 import { shieldDisabledAtom, shieldValueAtom } from "src/states";
+import { OFFER_TYPE } from "src/types/offer";
 
 type UseShield = (
+    offerType: OFFER_TYPE,
     price: number|undefined,
     officialPrice: number|undefined,
 ) => {
@@ -11,7 +13,7 @@ type UseShield = (
     maxPriceDifference: number;
 }
 
-export const useShield: UseShield = (price, officialPrice) => {
+export const useShield: UseShield = (offerType, price, officialPrice) => {
 
     const shieldDisabled = useAtomValue(shieldDisabledAtom);
     const shieldValue = useAtomValue(shieldValueAtom);
@@ -23,13 +25,12 @@ export const useShield: UseShield = (price, officialPrice) => {
     },[price,officialPrice])
 
     useEffect(() => {
-        if(!priceDelta){
+        if(shieldDisabled || offerType == OFFER_TYPE.EXCHANGE || !priceDelta ){
             setIsError(false);
             return;
         }
-        if(shieldDisabled) setIsError(false)
         if(priceDelta && !shieldDisabled) setIsError(Math.abs(priceDelta) > shieldValue)
-    },[priceDelta, shieldDisabled, shieldValue])
+    },[priceDelta, shieldDisabled, shieldValue,offerType])
 
     return{
         isError: isError,

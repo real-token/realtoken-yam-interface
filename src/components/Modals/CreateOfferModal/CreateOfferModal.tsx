@@ -414,25 +414,25 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   const { allowedTokens, properties, buyerTokens, offerTokens } 
     = useCreateOfferTokens(offer.offerType, values.offerTokenAddress, values.buyerTokenAddress);
 
+  // NEEDED because when offer type is exchange, user cannot exchange token from different type and cannot exchange two same token
   const exchangeOfferTokens = exchangeType == realT ? 
       properties.filter(property => property.value != values.buyerTokenAddress)
     : 
       allowedTokens.filter(allowedToken => allowedToken.value != values.buyerTokenAddress);
-
   const exchangeBuyerToken = exchangeType == realT ? 
       properties.filter(property => property.value != values.offerTokenAddress)
     : 
       allowedTokens.filter(allowedToken => allowedToken.value != values.offerTokenAddress)
 
-  const offerTokenSymbol = offerTokens.find(value => value.value == values.offerTokenAddress)?.label;
-  const buyTokenSymbol =  buyerTokens.find(value => value.value == values.buyerTokenAddress)?.label;
+  const offerTokenSymbol = offerTokens.find(value => value.value == values.offerTokenAddress)?.label ?? exchangeOfferTokens.find(value => value.value == values.offerTokenAddress)?.label;
+  const buyTokenSymbol =  buyerTokens.find(value => value.value == values.buyerTokenAddress)?.label ?? exchangeBuyerToken.find(value => value.value == values.buyerTokenAddress)?.label;
   const total = (values.amount ?? 0) * (values.price ?? 0);
 
   const { getPropertyToken } = usePropertiesToken(false);
   const officialPrice = getPropertyToken ? getPropertyToken(values.offerTokenAddress)?.officialPrice : undefined;
   const officialSellCurrency = getPropertyToken ? getPropertyToken(values.offerTokenAddress)?.currency : undefined;
 
-  const { isError: shieldError, maxPriceDifference, priceDifference } = useShield(values.price,officialPrice);
+  const { isError: shieldError, maxPriceDifference, priceDifference } = useShield(offer.offerType,values.price,officialPrice);
 
   const { bigNumberbalance, balance } = useWalletERC20Balance(values.offerTokenAddress);
 
@@ -462,6 +462,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   }
 
   const summary = () => {
+    console.log(total, buyTokenSymbol, offerTokenSymbol)
     if(total && buyTokenSymbol && offerTokenSymbol){
 
       if(offer.offerType == OFFER_TYPE.BUY){
@@ -716,6 +717,8 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
       </Flex>
     )
   }
+
+  console.log(!isValid, bigNumberbalance?.eq(0), shieldError)
 
   return (
     <Flex direction={"column"} mx={'auto'} gap={"md"} style={{ width: calcRem(500) }}>
