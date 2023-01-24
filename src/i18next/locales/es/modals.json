@@ -35,7 +35,7 @@
     "zeroBalanceError": "You cannot create this offer because you don't have \"{{tokenSymbol}}\" token",
     "shieldError": "Price difference is {{priceDifference}}% but limit fixed by shield is +/-{{maxPriceDifference}}%. (\"shield\" setting on top right corner, for more informations)",
     "officialPriceInfos": "The official property has been selled for {{officialPrice}} ${{officialSellCurrency}}. But you are free to choose the price.",
-    "txSellSummary": "You wish to sell up to {{amount}} \"{{buyTokenSymbol}}\" with a unit price of {{price}} \"{{offerTokenSymbol}}\" and for a total of {{total}} \"{{offerTokenSymbol}}\".",
+    "txSellSummary": "You wish to sell up to {{amount}} \"{{offerTokenSymbol}}\" with a unit price of {{price}} \"{{buyTokenSymbol}}\" and for a total of {{total}} \"{{buyTokenSymbol}}\".",
     "txBuySummary": "You wish to buy up to {{amount}} \"{{buyTokenSymbol}}\" with a unit price of {{price}} \"{{offerTokenSymbol}}\" and for a total of {{total}} \"{{offerTokenSymbol}}\".",
     "txExchangeSummary": "You wish to exchange up to {{amount}} \"{{buyTokenSymbol}}\" with a unit price of {{price}} \"{{offerTokenSymbol}}\" and for a total of {{total}} \"{{offerTokenSymbol}}\".",
     "summaryText1": "You will sell",

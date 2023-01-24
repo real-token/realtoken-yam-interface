@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useSelector } from "react-redux";
 import { selectProperties, selectPropertiesIsLoading } from "src/store/features/interface/interfaceSelector";
 import { chainPropertiesChangedDispatchType, fetchProperties } from "src/store/features/interface/interfaceSlice";
-import { APIPropertiesToken, PropertiesToken, ShortProperty } from "src/types/PropertiesToken";
+import { APIPropertiesToken, PropertiesToken } from "src/types/PropertiesToken";
 import { getWhitelistedProperties } from "src/utils/properties";
 import { useAppDispatch } from "./react-hooks";
 import { useQuery } from "react-query";

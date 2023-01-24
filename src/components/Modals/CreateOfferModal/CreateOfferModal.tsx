@@ -464,6 +464,8 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   const summary = () => {
     if(total && buyTokenSymbol && offerTokenSymbol){
 
+      console.log(offer.offerType)
+
       if(offer.offerType == OFFER_TYPE.BUY){
         return (
           <Text size={"md"} mb={10}>
