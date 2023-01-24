@@ -183,7 +183,8 @@ export const usePropertiesToken = (refreshOnMount: boolean): usePropertiesTokenR
                             officialPrice: propertyToken.tokenPrice,
                             currency: propertyToken.currency,
                             marketplaceLink: propertyToken.marketplaceLink,
-                            imageLink: propertyToken.imageLink
+                            imageLink: propertyToken.imageLink,
+                            netRentYearPerToken: propertyToken.netRentYearPerToken
                         })
                     }
                     

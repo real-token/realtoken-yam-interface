@@ -1,5 +1,5 @@
-import { Flex, Text, createStyles, Skeleton, ActionIcon, Title, Divider } from "@mantine/core";
-import { IconShoppingCart } from "@tabler/icons";
+import { Flex, Text, createStyles, Skeleton, ActionIcon, Title, Divider, useMantineTheme } from "@mantine/core";
+import { IconExternalLink, IconShoppingCart } from "@tabler/icons";
 import { useRouter } from "next/router"
 import { FC, useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next";
@@ -12,8 +12,23 @@ import { useWeb3React } from "@web3-react/core";
 import { Offer } from "src/types/offer/Offer";
 import { useRefreshOffers } from "src/hooks/offers/useRefreshOffers";
 import BigNumber from "bignumber.js";
+import { PropertyImage } from "src/components/Offer/Image/PropertyImage";
+import { openInNewTab } from "src/utils/window";
 
 const useStyle = createStyles((theme) => ({
+    container: {
+        alignItems: "start",
+        width: "50%"
+    },
+    propertyInfosContainer: {
+        display: "flex",
+        borderStyle: "solid",
+        borderWidth: "3px",
+        borderColor: theme.colors.brand,
+        borderRadius: theme.radius.md,
+        padding: theme.radius.lg,
+        gap: theme.spacing.md
+    },
     offerId: {
         display: "flex",
         alignItems: "center",
@@ -26,29 +41,37 @@ const useStyle = createStyles((theme) => ({
         fontWeight: 700,
         fontSize: theme.fontSizes.xl
     },
-    offerHeader: {
-        display: "flex",
-        gap: theme.spacing.xs,
-        flexDirection: "row",
-        flexShrink: 0,
-        alignItems: "center"
-    },
     buyButton: {
         width: "125px",
         height: "50px"
+    },
+    propertyNameContainer: {
+        display: "flex",
+        justifyContent: "start",
+        marginBottom: theme.spacing.sm
+    },
+    propertyName: {
+        borderBottomStyle: "solid",
+        borderBottomWidth: "2px",
+        borderBottomColor: "transparent",
+        '&:hover': {
+            borderBottomColor: theme.colors.brand,
+            cursor: "pointer"
+        },
     }
 }));
 
 const ShowOfferPage: FC = () => {
 
-    const { classes } = useStyle()
+    const { classes } = useStyle();
+    const { colors } = useMantineTheme();
 
     const router = useRouter();
     const { id } = router.query;
 
     const offerId: number = parseInt(id as string);
 
-    const { account, provider } = useWeb3React();
+    const { account } = useWeb3React();
     const { offer, isLoading } = useOffer(offerId);
     const { getPropertyToken, propertiesIsloading } = usePropertiesToken(false);
 
@@ -66,7 +89,7 @@ const ShowOfferPage: FC = () => {
     },[getPropertyToken, offer, propertiesIsloading])
 
     // console.log(offer)
-    // console.log(propertyToken)
+    console.log(propertyToken)
 
     const onOpenWalletModal = useCallback(() => {
         modals.openContextModal('wallet', {
@@ -103,82 +126,91 @@ const ShowOfferPage: FC = () => {
         <Flex direction={"column"} mt={"xl"}>
         { 
             isLoading || offer !== undefined ? (
-                <Flex direction={"column"} gap={"md"}>
-                    <Flex gap={"md"} align={"start"} justify={"start"}>
-                        {/* <PropertyImage property={propertyToken}/> */}
-                        <Flex direction={"column"} gap={"xl"}>
-                            <div className={classes.offerHeader}>
-                                <div className={classes.offerId}>
-                                    {offerId}
+                <Flex gap={"md"}>
+                    <Flex className={classes.container} direction={"column"} gap={"md"}>
+                        <div className={classes.offerId}>
+                            {offerId}
+                        </div>
+                        <Flex direction={"column"} gap={"md"}>
+                            <OfferText
+                                title={t("offerTokenName")}
+                                value={offer?.offerTokenName}
+                            />
+                            <OfferText
+                                title={t("buyerTokenName")}
+                                value={offer?.buyerTokenName}
+                            />
+                            <OfferText
+                                title={t("sellerAddress")}
+                                value={offer?.sellerAddress}
+                            />
+                            <OfferText
+                                title={t("amount")}
+                                value={offer?.amount}
+                            />
+                            <Flex direction={"column"} gap={3}>
+                                <Text fw={700}>{"Price"}</Text>
+                                {   offer?.offerTokenName &&  offer.buyerTokenName && offer?.price ? 
+                                        <Text>{`1 "${offer?.offerTokenName}" = ${offer?.price} "${offer.buyerTokenName}"`}</Text>
+                                    : 
+                                        <Skeleton height={25} width={400}/> 
+                                }
+                                {   offer?.offerTokenName &&  offer.buyerTokenName && offer?.price ? 
+                                        <Text>{`1 "${offer.buyerTokenName}" = ${new BigNumber(1).dividedBy(offer?.price).toFixed(5)} ${offer?.offerTokenName}`}</Text>
+                                    : 
+                                        <Skeleton height={25} width={400}/> 
+                                }
+                            </Flex>
+                        </Flex>
+                        <Divider />
+                        <ActionIcon
+                            color={'green'}
+                            disabled={isAccountOffer}
+                            className={classes.buyButton}
+                            onClick={() => account && offer ? onOpenBuyModal(offer) : onOpenWalletModal() }
+                        >
+                            { isAccountOffer ? 
+                                <Text fz={"sm"} align={"center"} p={6}>{"Cannot buy your own offer"}</Text> 
+                                : 
+                                <IconShoppingCart size={24} aria-label={'Buy'} /> 
+                            }
+                        </ActionIcon>
+                    </Flex>
+                    <Flex className={classes.container}>
+                        <Flex className={classes.propertyInfosContainer}>
+                            <PropertyImage property={propertyToken}/>
+                            <Flex direction={"column"}>
+                                <div className={classes.propertyNameContainer}>
+                                {   propertyToken ?
+                                        <Flex className={classes.propertyName} gap={5} align={"center"} onClick={() => openInNewTab(propertyToken.marketplaceLink)}>
+                                            <Text color={"brand"} fw={700} fz={"xl"}>{propertyToken.shortName}</Text>
+                                            <IconExternalLink size={20} color={colors.brand[9]}/>
+                                        </Flex>
+                                    : 
+                                        <Skeleton height={25} width={200}/> 
+                                }
                                 </div>
-                                {/* <Text fz={32}>{"-"}</Text> */}
-                                {/* { offer?.offerTokenName && offer?.buyerTokenName ?
-                                    <>
-                                        <Text color={"brand"} fw={700} fz={"xl"}>
-                                            {offer?.offerTokenName}
-                                        </Text>
-                                        <IconArrowRight/>
-                                        <Text color={"brand"} fw={700} fz={"xl"}>
-                                            {offer?.buyerTokenName}
-                                        </Text>
-                                    </>
-                                    :
-                                    <Skeleton width={500} height={35}  />
-                                } */}
-                            </div>
-                            {/* <Flex align={"start"}>
-                                <OfferPropertyCard
-                                    title={"Amount"}
-                                    value={offer?.amount}
-                                    logo={<IconScale color={"brand"}/>}
-                                />
-                            </Flex> */}
+                                <Flex direction={"column"} gap={"sm"}>
+                                    {/* TODO: add translation */}
+                                    <OfferText 
+                                        title="Price"
+                                        value={propertyToken?.officialPrice ? `${propertyToken?.officialPrice} $USDC` : undefined}
+                                        width={200}
+                                    />
+                                    <OfferText 
+                                        title="Yearly yield(%)"
+                                        value={ 
+                                            propertyToken && propertyToken.officialPrice && propertyToken?.netRentYearPerToken ? 
+                                                `${(propertyToken?.officialPrice/propertyToken?.netRentYearPerToken).toFixed(4)}% (${propertyToken?.netRentYearPerToken.toFixed(4)}$)` 
+                                            : 
+                                                undefined
+                                        }
+                                        width={200}
+                                    />
+                                </Flex>
+                            </Flex>
                         </Flex>
                     </Flex>
-                    <Flex direction={"column"} gap={"md"}>
-                        <OfferText
-                            title={t("offerTokenName")}
-                            value={offer?.offerTokenName}
-                        />
-                        <OfferText
-                            title={t("buyerTokenName")}
-                            value={offer?.buyerTokenName}
-                        />
-                        <OfferText
-                            title={t("sellerAddress")}
-                            value={offer?.sellerAddress}
-                        />
-                        <OfferText
-                            title={t("amount")}
-                            value={offer?.amount}
-                        />
-                        <Flex direction={"column"} gap={3}>
-                            <Text fw={700}>{"Price"}</Text>
-                            {   offer?.offerTokenName &&  offer.buyerTokenName && offer?.price ? 
-                                    <Text>{`1 "${offer?.offerTokenName}" = ${offer?.price} "${offer.buyerTokenName}"`}</Text>
-                                : 
-                                    <Skeleton height={25} width={400}/> 
-                            }
-                            {   offer?.offerTokenName &&  offer.buyerTokenName && offer?.price ? 
-                                    <Text>{`1 "${offer.buyerTokenName}" = ${new BigNumber(1).dividedBy(offer?.price).toFixed(5)} ${offer?.offerTokenName}`}</Text>
-                                : 
-                                    <Skeleton height={25} width={400}/> 
-                            }
-                        </Flex>
-                    </Flex>
-                    <Divider />
-                    <ActionIcon
-                        color={'green'}
-                        disabled={isAccountOffer}
-                        className={classes.buyButton}
-                        onClick={() => account && offer ? onOpenBuyModal(offer) : onOpenWalletModal() }
-                    >
-                        { isAccountOffer ? 
-                            <Text fz={"sm"} align={"center"} p={6}>{"Cannot buy your own offer"}</Text> 
-                            : 
-                            <IconShoppingCart size={24} aria-label={'Buy'} /> 
-                        }
-                    </ActionIcon>
                 </Flex>
             )
             :

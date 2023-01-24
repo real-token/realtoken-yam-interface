@@ -6,6 +6,8 @@ interface PropertyImageProps{
     property: PropertiesToken | undefined
 }
 
+const imageSize = 200;
+
 export const PropertyImage: FC<PropertyImageProps> = ({ property }) => {
     return(
         <>
@@ -13,8 +15,8 @@ export const PropertyImage: FC<PropertyImageProps> = ({ property }) => {
             property ? 
                 <Image 
                     radius={"md"}
-                    height={250}
-                    width={250}
+                    height={imageSize}
+                    width={imageSize}
                     src={property ? property.imageLink[0] : ""}
                     alt={property ? property.fullName : ""}
                     fit={"cover"}

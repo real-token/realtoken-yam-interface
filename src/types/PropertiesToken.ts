@@ -1,3 +1,4 @@
+// COMMING FROM COMMUNITY API
 export type APIPropertiesToken = {
     fullName: string
     shortName: string
@@ -10,6 +11,7 @@ export type APIPropertiesToken = {
     gnosisContract: string
     marketplaceLink: string
     imageLink: string[]
+    netRentYearPerToken: number
 }
 
 export type ShortProperty = {
@@ -17,13 +19,15 @@ export type ShortProperty = {
     name: string;
 }
 
+// USED IN APP
 export type PropertiesToken = {
-    uuid: string;
-    shortName: string;
-    fullName: string;
-    contractAddress: string;
-    officialPrice?: number;
-    currency: string;
-    marketplaceLink: string;
-    imageLink: string[];
+    uuid: string
+    shortName: string
+    fullName: string
+    contractAddress: string
+    officialPrice?: number,
+    currency: string,
+    marketplaceLink: string
+    imageLink: string[]
+    netRentYearPerToken?: number
 }
