@@ -151,179 +151,72 @@ export const SellActions = () => {
 
         const transactionDeadline = Math.floor(Date.now() / 1000) + 3600; // permit valable during 1h
 
-        const offerTokenType = await realTokenYamUpgradeable.getTokenType(
-          formValues.offerTokenAddress
+        
+        // TokenType = 3: ERC20 Without Permit, do Approve/CreateOffer
+        const approveTx = await offerToken.approve(
+          realTokenYamUpgradeable.address,
+          amountInWeiToPermit.toString()
         );
 
-        if (offerTokenType === 1) {
-          // TokenType = 1: RealToken
-          const { r, s, v }: any = await coinBridgeTokenPermitSignature(
-            account,
-            realTokenYamUpgradeable.address,
-            amountInWeiToPermit.toString(),
-            transactionDeadline,
-            offerToken,
-            provider
-          );
+        const notificationApprove = {
+          key: approveTx.hash,
+          href: `${activeChain?.blockExplorerUrl}tx/${approveTx.hash}`,
+          hash: approveTx.hash,
+        };
 
-          const createOfferWithPermitTx =
-            await realTokenYamUpgradeable.createOfferWithPermit(
-              formValues.offerTokenAddress,
-              formValues.buyerTokenAddress,
-              formValues.isPrivateOffer === false
-                ? ZERO_ADDRESS
-                : formValues.buyerAddress,
-              priceInWei.toString(),
-              amountInWei.toString(),
-              amountInWeiToPermit.toString(10),
-              transactionDeadline.toString(),
-              v,
-              r,
-              s
-            );
-          const notificationPayload = {
-            key: createOfferWithPermitTx.hash,
-            href: `${activeChain?.blockExplorerUrl}tx/${createOfferWithPermitTx.hash}`,
-            hash: createOfferWithPermitTx.hash,
-          };
+        showNotification(
+          NOTIFICATIONS[NotificationsID.approveOfferLoading](
+            notificationApprove
+          )
+        );
 
-          showNotification(
-            NOTIFICATIONS[NotificationsID.createOfferLoading](
-              notificationPayload
-            )
-          );
-          
-
-          createOfferWithPermitTx
-            .wait()
-            .then(({ status }) =>
-              updateNotification(
-                NOTIFICATIONS[
-                  status === 1
-                    ? NotificationsID.createOfferSuccess
-                    : NotificationsID.createOfferError
-                ](notificationPayload)
-              )
-            );
-        } else if (offerTokenType === 2) {
-          // TokenType = 2: ERC20 With Permit
-          const { r, s, v }: any = await erc20PermitSignature(
-            account,
-            realTokenYamUpgradeable.address,
-            amountInWeiToPermit.toString(),
-            transactionDeadline,
-            offerToken,
-            provider
-          );
-
-          const createOfferWithPermitTx =
-            await realTokenYamUpgradeable.createOfferWithPermit(
-              formValues.offerTokenAddress,
-              formValues.buyerTokenAddress,
-              formValues.isPrivateOffer === false
-                ? ZERO_ADDRESS
-                : formValues.buyerAddress,
-              priceInWei.toString(),
-              amountInWei.toString(),
-              amountInWeiToPermit.toString(10),
-              transactionDeadline.toString(),
-              v,
-              r,
-              s
-            );
-          const notificationPayload = {
-            key: createOfferWithPermitTx.hash,
-            href: `${activeChain?.blockExplorerUrl}tx/${createOfferWithPermitTx.hash}`,
-            hash: createOfferWithPermitTx.hash,
-          };
-
-          showNotification(
-            NOTIFICATIONS[NotificationsID.createOfferLoading](
-              notificationPayload
+        approveTx
+          .wait()
+          .then(({ status }) =>
+            updateNotification(
+              NOTIFICATIONS[
+                status === 1
+                  ? NotificationsID.approveOfferSuccess
+                  : NotificationsID.approveOfferError
+              ](notificationApprove)
             )
           );
 
-          createOfferWithPermitTx
-            .wait()
-            .then(({ status }) =>
-              updateNotification(
-                NOTIFICATIONS[
-                  status === 1
-                    ? NotificationsID.createOfferSuccess
-                    : NotificationsID.createOfferError
-                ](notificationPayload)
-              )
-            );
-        } else if (offerTokenType === 3) {
-          // TokenType = 3: ERC20 Without Permit, do Approve/CreateOffer
-          const approveTx = await offerToken.approve(
-            realTokenYamUpgradeable.address,
-            amountInWeiToPermit.toString()
-          );
+        await approveTx.wait(1);
 
-          const notificationApprove = {
-            key: approveTx.hash,
-            href: `${activeChain?.blockExplorerUrl}tx/${approveTx.hash}`,
-            hash: approveTx.hash,
-          };
+        const createOfferTx = await realTokenYamUpgradeable.createOffer(
+          formValues.offerTokenAddress,
+          formValues.buyerTokenAddress,
+          formValues.isPrivateOffer === false
+            ? ZERO_ADDRESS
+            : formValues.buyerAddress,
+          priceInWei.toString(),
+          amountInWei.toString()
+        );
 
-          showNotification(
-            NOTIFICATIONS[NotificationsID.approveOfferLoading](
-              notificationApprove
+        const notificationCreateOffer = {
+          key: createOfferTx.hash,
+          href: `${activeChain?.blockExplorerUrl}tx/${createOfferTx.hash}`,
+          hash: createOfferTx.hash,
+        };
+
+        showNotification(
+          NOTIFICATIONS[NotificationsID.createOfferLoading](
+            notificationCreateOffer
+          )
+        );
+
+        createOfferTx
+          .wait()
+          .then(({ status }) =>
+            updateNotification(
+              NOTIFICATIONS[
+                status === 1
+                  ? NotificationsID.createOfferSuccess
+                  : NotificationsID.createOfferError
+              ](notificationCreateOffer)
             )
           );
-
-          approveTx
-            .wait()
-            .then(({ status }) =>
-              updateNotification(
-                NOTIFICATIONS[
-                  status === 1
-                    ? NotificationsID.approveOfferSuccess
-                    : NotificationsID.approveOfferError
-                ](notificationApprove)
-              )
-            );
-
-          await approveTx.wait(1);
-
-          const createOfferTx = await realTokenYamUpgradeable.createOffer(
-            formValues.offerTokenAddress,
-            formValues.buyerTokenAddress,
-            formValues.isPrivateOffer === false
-              ? ZERO_ADDRESS
-              : formValues.buyerAddress,
-            priceInWei.toString(),
-            amountInWei.toString()
-          );
-
-          const notificationCreateOffer = {
-            key: createOfferTx.hash,
-            href: `${activeChain?.blockExplorerUrl}tx/${createOfferTx.hash}`,
-            hash: createOfferTx.hash,
-          };
-
-          showNotification(
-            NOTIFICATIONS[NotificationsID.createOfferLoading](
-              notificationCreateOffer
-            )
-          );
-
-          createOfferTx
-            .wait()
-            .then(({ status }) =>
-              updateNotification(
-                NOTIFICATIONS[
-                  status === 1
-                    ? NotificationsID.createOfferSuccess
-                    : NotificationsID.createOfferError
-                ](notificationCreateOffer)
-              )
-            );
-        } else {
-          console.log('Token is not whitelisted');
-          showNotification(NOTIFICATIONS[NotificationsID.createOfferInvalid]());
-        }
       } catch (error) {
         console.log('ERROR WHEN SELLING WITH PERMIT', error);
         showNotification(NOTIFICATIONS[NotificationsID.createOfferInvalid]());
