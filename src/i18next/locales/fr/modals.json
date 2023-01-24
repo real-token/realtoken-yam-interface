@@ -32,12 +32,12 @@
     "buttonCreateOfferWithNumber": "Ajouter {{ nbr, Number }} offre(s)",
     "checkboxLabelPrivateOffre": "Je veux créer une offre privée",
     "invalidPrivateOfferAddress": "Impossible de créer une offre à destination de votre address",
-    "summaryText1": "Vous vendez",
-    "summaryText2": "avec un prix unitaire de",
-    "summaryText3": "et pour un total de",
     "zeroBalanceError": "Vous ne pouvez pas créer cette offre car vous ne possédez aucun token \"{{tokenSymbol}}\".",
     "shieldError": "La différence de prix est de {{priceDifference}}% alors que la limite fixé par le bouclier de protection est de +/-{{maxPriceDifference}}%. Le\"bouclier de protection\" est paramétrable dans le coin en haut à droite.",
-    "officialPriceInfos": "Le prix de vente officiel est de {{officialPrice}} ${{officialSellCurrency}}. Mais vous êtes libre de le choisir."
+    "officialPriceInfos": "Le prix de vente officiel est de {{officialPrice}} ${{officialSellCurrency}}. Mais vous êtes libre de le choisir.",
+    "txSellSummary": "Vous souhaitez vendre jusqu'a {{amount}} \"{{buyTokenSymbol}}\" avec un prix unitaire de {{price}} \"{{offerTokenSymbol}}\" et pour un total de {{total}} \"{{offerTokenSymbol}}\".",
+    "txBuySummary": "Vous souhaitez acheter jusqu'a {{amount}} \"{{buyTokenSymbol}}\" avec un prix unitaire de {{price}} \"{{offerTokenSymbol}}\" et pour un total de {{total}} \"{{offerTokenSymbol}}\".",
+    "txExchangeSummary": "Vous souhaitez échanger jusqu'a {{amount}} \"{{buyTokenSymbol}}\" avec un prix unitaire de {{price}} \"{{offerTokenSymbol}}\" et pour un total de {{total}} \"{{offerTokenSymbol}}\"."
   },
   "buy": {
     "title": "Acheter",

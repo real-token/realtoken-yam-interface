@@ -1,7 +1,7 @@
 /* eslint-disable react/display-name */
 import { FC, forwardRef, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Checkbox, Flex, Group, Select, SelectItem, Stack, TextInput, Text, NumberInput as MantineInput, Skeleton, Tooltip } from '@mantine/core';
+import { Button, Checkbox, Flex, Group, Select, SelectItem, Stack, TextInput, Text, NumberInput as MantineInput, Skeleton, Tooltip, Divider } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { showNotification, updateNotification } from '@mantine/notifications';
 import BigNumber from 'bignumber.js';
@@ -29,6 +29,7 @@ import { Shield } from 'src/components/Shield/Shield';
 import { useWalletERC20Balance } from 'src/hooks/useWalletERC20Balance';
 import { useShield } from 'src/hooks/useShield';
 import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
+import { WalletERC20Balance } from 'src/components/WalletBalance/WalletERC20Balance';
 
 interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
   label: string;
@@ -433,7 +434,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
 
   const { isError: shieldError, maxPriceDifference, priceDifference } = useShield(values.price,officialPrice);
 
-  const { bigNumberbalance } = useWalletERC20Balance(values.offerTokenAddress);
+  const { bigNumberbalance, balance } = useWalletERC20Balance(values.offerTokenAddress);
 
   const approveAndsaveCreatedOffer = async (formValues: SellFormValues) => {
     try{
@@ -462,12 +463,49 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
 
   const summary = () => {
     if(total && buyTokenSymbol && offerTokenSymbol){
-      return (
-        <Text size={"md"} mb={10}>
-            {/* {` ${t("summaryText1")} ${values?.amount} "${offerTokenSymbol}" ${t("summaryText2")} ${cleanNumber(values.price ?? 0)} ${buyTokenSymbol} ${t("summaryText3")} ${total} ${buyTokenSymbol}`} */}
-            {` Vous achetez jusqu'a ${values?.amount} "${buyTokenSymbol}" ${t("summaryText2")} ${cleanNumber(values.price ?? 0)} "${offerTokenSymbol}" ${t("summaryText3")} ${total} "${offerTokenSymbol}"`}
-        </Text>
-      )
+
+      if(offer.offerType == OFFER_TYPE.BUY){
+        return (
+          <Text size={"md"} mb={10}>
+              {t("txBuySummary", {
+                amount: values?.amount,
+                buyTokenSymbol: buyTokenSymbol,
+                price: cleanNumber(values.price ?? 0),
+                offerTokenSymbol: offerTokenSymbol,
+                total: total.toFixed(6)
+              })}
+          </Text>
+        )
+      }
+
+      if(offer.offerType == OFFER_TYPE.SELL){
+        return (
+          <Text size={"md"} mb={10}>
+              {t("txSellSummary", {
+                amount: values?.amount,
+                buyTokenSymbol: buyTokenSymbol,
+                price: cleanNumber(values.price ?? 0),
+                offerTokenSymbol: offerTokenSymbol,
+                total: total.toFixed(6)
+              })}
+          </Text>
+        )
+      }
+
+      if(offer.offerType == OFFER_TYPE.EXCHANGE){
+        return (
+          <Text size={"md"} mb={10}>
+              {t("txExchangeSummary", {
+                amount: values?.amount,
+                buyTokenSymbol: buyTokenSymbol,
+                price: cleanNumber(values.price ?? 0),
+                offerTokenSymbol: offerTokenSymbol,
+                total: total.toFixed(6)
+              })}
+          </Text>
+        )
+      }
+      
     }else{
       return undefined;
     }
@@ -705,14 +743,17 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
             PriceNumberInput({})
         }
         
+        <Divider />
+        <WalletERC20Balance balance={balance} symbol={offerTokenSymbol}/>
+
         <NumberInput
           label={offer.offerType == OFFER_TYPE.EXCHANGE ? t('exchangeAmount') : t('amount')}
           placeholder={t('placeholderAmount')}
           required={true}
           min={0.000001}
-          max={undefined}
-          step={undefined}
-          showMax={false}
+          max={parseFloat(balance ?? "0")}
+          setFieldValue={setFieldValue}
+          showMax={bigNumberbalance !== undefined}
           sx={{ flexGrow: 1 }}
           {...getInputProps('amount')}
         />
