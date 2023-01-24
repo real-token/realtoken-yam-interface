@@ -10,7 +10,9 @@
   },
   "general": {
     "loading": "Chargement...",
-    "comingSoon": "Bientôt disponible..."
+    "comingSoon": "Bientôt disponible...",
+    "noConnectedWallet": "S'il-vous-plaît connecter un portefeuille pour continuer",
+    "nextButton": "Suivant"
   },
   "select": {
     "noOption": "Aucune option"

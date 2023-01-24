@@ -10,7 +10,9 @@
   },
   "general": {
     "loading": "loading...",
-    "comingSoon": "Coming soon..."
+    "comingSoon": "Coming soon...",
+    "noConnectedWallet": "Please connect a wallet to load the application",
+    "nextButton": "Next"
   },
   "select": {
     "noOption": "No options"

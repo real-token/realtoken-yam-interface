@@ -21,6 +21,7 @@ import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 import { selectAddressOffers } from 'src/store/features/interface/interfaceSelector';
 import { useSelector } from 'react-redux';
 import { ZERO_ADDRESS } from 'src/constants';
+import { OfferTypeBadge } from 'src/components/Offer/OfferTypeBadge';
 
 export const MarketTableUser: FC = () => {
 
@@ -49,6 +50,15 @@ export const MarketTableUser: FC = () => {
         ),
         meta: { colSpan: 13 },
         columns: [
+          {
+            id: "offerType",
+            accessorKey: 'type',
+            header: "Type",
+            cell: ({ getValue }) => {
+              return(<OfferTypeBadge offerType={getValue()} textSize={10}/>)
+            },
+            enableSorting: false,
+          },
           {
             id: 'offerId',
             accessorKey: 'offerId',

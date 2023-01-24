@@ -19,14 +19,15 @@ type NumberInputProps = {
   showMin?: boolean | undefined;
   controlsProps?: ButtonProps;
   groupMarginBottom?: MantineNumberSize;
-  setFieldValue?: SetFieldValue<any>
+  setFieldValue?: SetFieldValue<any>;
+  width?: string;
 } & MantineNumberInputProps;
 
 export const NumberInput: FRC<NumberInputProps, HTMLInputElement> = forwardRef(
-  ({ disabled, showMin, showMax, controlsProps, groupMarginBottom, setFieldValue, ...props }, ref) => {
+  ({ disabled, showMin, showMax, controlsProps, groupMarginBottom, setFieldValue, width, ...props }, ref) => {
     const handlers = useRef<NumberInputHandlers>();
     return (
-      <Flex gap={5} align={'flex-end'} mb={groupMarginBottom ?? 0}>
+      <Flex gap={5} align={'flex-end'} mb={groupMarginBottom ?? 0} style={{ width: width ? width : "auto" }}>
         <MantineInput
           hideControls={true}
           handlersRef={handlers}

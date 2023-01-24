@@ -1,5 +1,4 @@
 import { FC, ReactNode, useState } from 'react';
-
 import {
   ColorScheme,
   ColorSchemeProvider,
@@ -8,9 +7,7 @@ import {
 import { useHotkeys } from '@mantine/hooks';
 import { ModalsProvider } from '@mantine/modals';
 import { NotificationsProvider } from '@mantine/notifications';
-
 import { setCookies } from 'cookies-next';
-
 import { modals } from 'src/components';
 import { modalStyles, theme } from 'src/theme';
 
@@ -23,8 +20,7 @@ export const MantineProviders: FC<MantineProvidersProps> = ({
   children,
   initialColorScheme,
 }) => {
-  const [colorScheme, setColorScheme] =
-    useState<ColorScheme>(initialColorScheme);
+  const [colorScheme, setColorScheme] = useState<ColorScheme>(initialColorScheme);
 
   const toggleColorScheme = (
     nextColorScheme: ColorScheme = colorScheme === 'dark' ? 'light' : 'dark'

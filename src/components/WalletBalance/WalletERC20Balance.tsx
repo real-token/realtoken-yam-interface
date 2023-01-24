@@ -1,5 +1,5 @@
 import { Web3Provider } from "@ethersproject/providers";
-import { createStyles, Flex, Text } from "@mantine/core"
+import { createStyles, Flex, Skeleton, Text } from "@mantine/core"
 import { IconWallet } from "@tabler/icons"
 import { useWeb3React } from "@web3-react/core";
 import React from "react";
@@ -39,7 +39,7 @@ const useStyles = createStyles((theme, _params, getRef) => ({
   }));
 
 type WalletERC20BalanceProps = {
-    balance: number|undefined
+    balance: string|undefined
     symbol: string|undefined
 }
 
@@ -54,7 +54,7 @@ export const WalletERC20Balance: FC<WalletERC20BalanceProps> = ({ balance, symbo
           <div className={classes.container}>
               <div className={classes.wallet}><IconWallet color={"white"} size={24}/></div>
               <div className={classes.balanceContainer}>
-                <Text fw={700} mr={5}>{`${symbol}`}</Text>
+                <Text fw={700} mr={5}>{ symbol ? `${symbol}` : <Skeleton width={200} height={10}/>}</Text>
                 <Text className={classes.balance}>{balance}</Text>
               </div>
           </div>

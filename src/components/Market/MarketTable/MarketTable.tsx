@@ -14,18 +14,21 @@ import {
   getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
+  ColumnFiltersState,
 } from '@tanstack/react-table';
 import { Offer } from 'src/types/offer/Offer';
 import { Table } from '../../Table';
 import { BuyActionsWithPermit } from '../BuyActions';
 import { MarketSubRow } from '../MarketSubRow';
-import { useAtom } from 'jotai';
-import { nameFilterValueAtom } from 'src/states';
+import { useAtom, useAtomValue } from 'jotai';
+import { nameFilterValueAtom, sortValueAtom } from 'src/states';
 import React from 'react';
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 import { useAppSelector } from 'src/hooks/react-hooks';
 import { selectPublicOffers } from 'src/store/features/interface/interfaceSelector';
 import { BigNumber } from 'bignumber.js';
+import { ShowOfferAction } from '../ShowOfferAction/ShowOfferAction';
+import { OfferTypeBadge } from 'src/components/Offer/OfferTypeBadge';
 
 export const MarketTable: FC = () => {
 
@@ -45,6 +48,20 @@ export const MarketTable: FC = () => {
   const { t } = useTranslation('buy', { keyPrefix: 'table' });
   const reverse = (value: number) => 1/value
 
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const sortOfferType = useAtomValue(sortValueAtom);
+
+  useEffect(() => {
+    if(sortOfferType){
+      setColumnFilters((prev) => [...prev, {
+        id: "offerType",
+        value: sortOfferType
+      }])
+    }else{
+      setColumnFilters([])
+    }
+  },[sortOfferType])
+
   const columns = useMemo<ColumnDef<Offer>[]>(
     () => [
       {
@@ -54,8 +71,17 @@ export const MarketTable: FC = () => {
             {t('title')}
           </Title>
         ),
-        meta: { colSpan: 15 },
+        meta: { colSpan: 16 },
         columns: [
+          {
+            id: "offerType",
+            accessorKey: 'type',
+            header: "Type",
+            cell: ({ getValue }) => {
+              return(<OfferTypeBadge offerType={getValue()} textSize={10}/>)
+            },
+            enableSorting: false,
+          },
           {
             id: 'offerId',
             accessorKey: 'offerId',
@@ -202,8 +228,7 @@ export const MarketTable: FC = () => {
                   buyOffer={row.original}
                   triggerRefresh={refreshOffers}
                 />
-                {/* //TODO: ADD SHOW OFFER BUTTON  */}
-                {/* <ShowOfferAction offer={row.original}/> */}
+                <ShowOfferAction offer={row.original}/>
               </Flex>
             ),
             meta: { colSpan: 1 },
@@ -228,10 +253,24 @@ export const MarketTable: FC = () => {
   const table = useReactTable({
     data: offers,
     columns: columns,
-    state: { sorting: sorting, pagination: pagination, expanded: expanded, globalFilter: nameFilterValue },
-    globalFilterFn: 'includesString',
+    state: { 
+      sorting: sorting, 
+      pagination: pagination, 
+      expanded: expanded, 
+      globalFilter: nameFilterValue, 
+      columnFilters: columnFilters 
+    },
+    //Trick to convert every value to string. Needed for comparison
+    globalFilterFn: (row, columnId, filterValue) => {
+      const safeValue: string = (() => {
+        const value = row.getValue(columnId);
+        return typeof value === 'number' ? String(value) : value as string;
+      })();
+      return safeValue.toLowerCase().includes(filterValue.toLowerCase());
+    },
     onSortingChange: setSorting,
     onGlobalFilterChange: setNamefilterValue,
+    onColumnFiltersChange: setColumnFilters,
     onPaginationChange: setPagination,
     onExpandedChange: setExpanded,
     getCoreRowModel: getCoreRowModel(),
