@@ -37,7 +37,10 @@
     "officialPriceInfos": "The official property has been selled for {{officialPrice}} ${{officialSellCurrency}}. But you are free to choose the price.",
     "txSellSummary": "You wish to sell up to {{amount}} \"{{buyTokenSymbol}}\" with a unit price of {{price}} \"{{offerTokenSymbol}}\" and for a total of {{total}} \"{{offerTokenSymbol}}\".",
     "txBuySummary": "You wish to buy up to {{amount}} \"{{buyTokenSymbol}}\" with a unit price of {{price}} \"{{offerTokenSymbol}}\" and for a total of {{total}} \"{{offerTokenSymbol}}\".",
-    "txExchangeSummary": "You wish to exchange up to {{amount}} \"{{buyTokenSymbol}}\" with a unit price of {{price}} \"{{offerTokenSymbol}}\" and for a total of {{total}} \"{{offerTokenSymbol}}\"."
+    "txExchangeSummary": "You wish to exchange up to {{amount}} \"{{buyTokenSymbol}}\" with a unit price of {{price}} \"{{offerTokenSymbol}}\" and for a total of {{total}} \"{{offerTokenSymbol}}\".",
+    "summaryText1": "You will sell",
+    "summaryText2": "with a unit price of",
+    "summaryText3": "and for a total of"
   },
   "buy": {
     "title": "Buy Offer",

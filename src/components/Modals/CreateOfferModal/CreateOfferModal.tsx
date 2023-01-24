@@ -462,7 +462,6 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   }
 
   const summary = () => {
-    console.log(total, buyTokenSymbol, offerTokenSymbol)
     if(total && buyTokenSymbol && offerTokenSymbol){
 
       if(offer.offerType == OFFER_TYPE.BUY){
@@ -717,8 +716,6 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
       </Flex>
     )
   }
-
-  console.log(!isValid, bigNumberbalance?.eq(0), shieldError)
 
   return (
     <Flex direction={"column"} mx={'auto'} gap={"md"} style={{ width: calcRem(500) }}>

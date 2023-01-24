@@ -37,7 +37,10 @@
     "officialPriceInfos": "Le prix de vente officiel est de {{officialPrice}} ${{officialSellCurrency}}. Mais vous êtes libre de le choisir.",
     "txSellSummary": "Vous souhaitez vendre jusqu'a {{amount}} \"{{buyTokenSymbol}}\" avec un prix unitaire de {{price}} \"{{offerTokenSymbol}}\" et pour un total de {{total}} \"{{offerTokenSymbol}}\".",
     "txBuySummary": "Vous souhaitez acheter jusqu'a {{amount}} \"{{buyTokenSymbol}}\" avec un prix unitaire de {{price}} \"{{offerTokenSymbol}}\" et pour un total de {{total}} \"{{offerTokenSymbol}}\".",
-    "txExchangeSummary": "Vous souhaitez échanger jusqu'a {{amount}} \"{{buyTokenSymbol}}\" avec un prix unitaire de {{price}} \"{{offerTokenSymbol}}\" et pour un total de {{total}} \"{{offerTokenSymbol}}\"."
+    "txExchangeSummary": "Vous souhaitez échanger jusqu'a {{amount}} \"{{buyTokenSymbol}}\" avec un prix unitaire de {{price}} \"{{offerTokenSymbol}}\" et pour un total de {{total}} \"{{offerTokenSymbol}}\".",
+    "summaryText1": "Vous vendez",
+    "summaryText2": "avec un prix unitaire de",
+    "summaryText3": "et pour un total de"
   },
   "buy": {
     "title": "Acheter",
