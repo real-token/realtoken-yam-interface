@@ -100,20 +100,25 @@ export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
 
         transaction
           .wait()
-          .then(({ status }) =>
+          .then(({ status }) => {
             updateNotification(
               NOTIFICATIONS[
                 status === 1
                   ? NotificationsID.deleteOfferSuccess
                   : NotificationsID.deleteOfferError
               ](notificationPayload)
-            )
+            );
+
+            if(status){
+              setSubmitting(false);
+              triggerTableRefresh(true);
+            }
+          }
+            
           );
       } catch (e) {
         console.error('Error in DeleteModal', e);
-      } finally {
-        setSubmitting(false);
-        triggerTableRefresh(true);
+      }finally{
         onClose();
       }
     },

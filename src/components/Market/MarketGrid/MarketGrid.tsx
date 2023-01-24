@@ -3,7 +3,7 @@ import { range, useDisclosure } from "@mantine/hooks";
 import { IconAdjustmentsHorizontal } from "@tabler/icons";
 import { FC, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Offer } from "src/types/Offer";
+import { Offer } from "src/types/offer";
 import { GridPane } from "./GridPane";
 import { styles } from '../../Table/TableCaption/TableCaption.styles';
 

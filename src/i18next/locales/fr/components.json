@@ -1,5 +1,11 @@
 {
   "walletBalance": {
     "title": "Solde du portefeuille"
+  },
+  "shield": {
+    "shieldExplanations": "Le bouclier de sécurité est une fonctionnalité",
+    "shieldTitle": "Bouclier de sécurité",
+    "shieldActivate": "Activé",
+    "shieldRate": "Différence de prix"
   }
 }

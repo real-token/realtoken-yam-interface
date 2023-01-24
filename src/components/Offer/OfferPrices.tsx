@@ -1,7 +1,7 @@
 import { createStyles, Flex, Text } from "@mantine/core";
 import { IconArrowRight, IconMoneybag } from "@tabler/icons";
 import { FC } from "react";
-import { Offer } from "src/types/Offer";
+import { Offer } from "src/types/offer";
 
 const useStyle = createStyles((theme) => ({
     container: {

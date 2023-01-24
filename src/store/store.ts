@@ -1,10 +1,12 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import { createOffersReducers } from './features/createOffers/createOffersSlice';
 import { interfaceReducers } from './features/interface/interfaceSlice';
 import { settingsReducers } from './features/settings/settingsSlice';
 
 const rootReducer = combineReducers({
     interface: interfaceReducers,
-    settings: settingsReducers
+    settings: settingsReducers,
+    createOffers: createOffersReducers
 })
 
 const store = configureStore({

@@ -2,6 +2,11 @@ import { MantineTheme, MantineThemeOverride, ModalProps } from '@mantine/core';
 
 export const modalStyles: ModalProps['styles'] = {
   header: { justifyContent: 'center' },
+  modal: {
+    // margin: '100px auto',
+    width: "auto",
+    maxWidth: "700px"
+  }
 };
 
 export const theme: MantineThemeOverride = {

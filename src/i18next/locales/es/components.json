@@ -1,5 +1,11 @@
 {
     "walletBalance": {
         "title": "Wallet balance"
+    },
+    "shield": {
+        "shieldExplanations": "Security shield is a fonctionnality",
+        "shieldTitle": "Security shield",
+        "shieldActivate": "Activate",
+        "shieldRate": "Price difference"
     }
 }

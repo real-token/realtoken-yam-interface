@@ -4,7 +4,8 @@ import { useTranslation } from "react-i18next";
 import { OfferTypeBadge } from "src/components/Offer/OfferTypeBadge";
 import { useRefreshOffers } from "src/hooks/offers/useRefreshOffers";
 import { usePropertiesToken } from "src/hooks/usePropertiesToken";
-import { Offer, OFFER_TYPE } from "src/types/Offer"
+import { OFFER_TYPE } from "src/types/offer";
+import { Offer } from "src/types/offer/Offer"
 import { BuyActionsWithPermit } from "../BuyActions";
 import { ShowOfferAction } from "../ShowOfferAction/ShowOfferAction";
 

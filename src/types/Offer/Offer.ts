@@ -1,17 +1,4 @@
-import BigNumber from 'bignumber.js';
-
-export enum OFFER_TYPE{
-  BUY = "BUY",
-  SELL = "SELL",
-  EXCHANGE = "EXCHANGE"
-}
-
-export type CreatedOffer = {
-  offerToken: string;
-  buyerToken: string;
-  price: BigNumber;
-  offerId: BigNumber;
-};
+import { OFFER_TYPE } from "./OfferType";
 
 export type Offer = {
   offerId: string;

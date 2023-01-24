@@ -1,2 +1,2 @@
-export * from './SellActions';
+export * from '../Modals/CreateOfferModal';
 export * from './MarketTable';

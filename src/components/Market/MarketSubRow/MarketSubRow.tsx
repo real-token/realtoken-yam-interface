@@ -10,7 +10,7 @@ import {
 } from '@tanstack/react-table';
 
 import { useTokenInfo } from 'src/hooks';
-import { Offer } from 'src/types/Offer';
+import { Offer } from 'src/types/offer/Offer';
 
 import { Table, TableSubRowProps } from '../../Table';
 

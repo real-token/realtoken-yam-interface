@@ -1,7 +1,7 @@
 import { Flex, Text, createStyles, Skeleton, ActionIcon, Title, Divider } from "@mantine/core";
-import { IconArrowRight, IconShoppingCart } from "@tabler/icons";
+import { IconShoppingCart } from "@tabler/icons";
 import { useRouter } from "next/router"
-import { FC, useCallback, useEffect, useMemo, useState } from "react"
+import { FC, useCallback, useMemo } from "react"
 import { useTranslation } from "react-i18next";
 import { OfferText } from "src/components/Offer/OfferText";
 import { useOffer } from "src/hooks/offers/useOffer";
@@ -9,7 +9,7 @@ import { usePropertiesToken } from "src/hooks/usePropertiesToken";
 import { PropertiesToken } from "src/types";
 import { useModals } from '@mantine/modals';
 import { useWeb3React } from "@web3-react/core";
-import { Offer } from "src/types/Offer";
+import { Offer } from "src/types/offer/Offer";
 import { useRefreshOffers } from "src/hooks/offers/useRefreshOffers";
 import BigNumber from "bignumber.js";
 

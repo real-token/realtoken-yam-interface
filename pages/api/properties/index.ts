@@ -4,14 +4,12 @@ import { APIPropertiesToken } from "src/types";
 const handler: NextApiHandler = async (req: NextApiRequest,res: NextApiResponse) => {
     try{
 
-        const response = await fetch("https://api.realt.community/v1/token",
-            {
-                method: "GET",
-                headers: {
-                    "X-AUTH-REALT-TOKEN": process.env.COMMUNITY_API_KEY ?? ""
-                }
+        const response = await fetch("https://api.realt.community/v1/token",{
+            method: "GET",
+            headers: {
+                "X-AUTH-REALT-TOKEN": process.env.COMMUNITY_API_KEY ?? ""
             }
-        );
+        });
   
         if(response.ok){
             const responseJson: APIPropertiesToken[] = await response.json();
