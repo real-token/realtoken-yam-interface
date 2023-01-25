@@ -37,12 +37,19 @@ export const AddWLAction = () => {
 
     const [wlTokens,setWlTokens] = useAtom(wlTokensAtom);
 
-    const whitelistToken = async (formValues: AddWLForm) => {
+    const whitelistToken = async () => {
         try{
-
             if(!realTokenYamUpgradeable) return;
+
+            const addresses: string[] = [];
+            const types: string[] = [];
+
+            wlTokens.forEach(wlToken => {
+                addresses.push(wlToken.address);
+                types.push(wlToken.type);
+            })
             
-            const tx = await realTokenYamUpgradeable.toggleWhitelistWithType([formValues.address],[formValues.type]);
+            const tx = await realTokenYamUpgradeable.toggleWhitelistWithType(addresses,types);
 
             const notificationPayload = {
                 key: tx.hash,
@@ -90,7 +97,7 @@ export const AddWLAction = () => {
                     { wlTokens.map((wlToken,index) => <AddWL key={`wl-${index}`} index={index}/>)}
                     <Flex justify={"center"} className={classes.addButton} onClick={() => setWlTokens((prev) => [...prev,DEFAULT_WL_TOKEN])}><IconPlus /></Flex>
                 </Flex>
-                <Button type={"submit"} disabled={wlTokens.length == 0 || (wlTokens.length > 0 && wlTokens[0].address == "")}>
+                <Button type={"submit"} onClick={() => whitelistToken()} disabled={wlTokens.length == 0 || (wlTokens.length > 0 && wlTokens[0].address == "")}>
                     {"Whitelist token(s)"}
                 </Button>
             </Flex>
