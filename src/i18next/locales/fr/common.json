@@ -2,7 +2,8 @@
   "header": {
     "title": "YAM",
     "titleCat1": "Offres à découvrir",
-    "titleCat2": "Vos Offres"
+    "titleCat2": "Vos Offres",
+    "titleAdmin": "Admininistrateur"
   },
   "footer": {
     "copyright": "© {{year}} RealT. Tous droits réservés.",
@@ -12,7 +13,8 @@
     "loading": "Chargement...",
     "comingSoon": "Bientôt disponible...",
     "noConnectedWallet": "S'il-vous-plaît connecter un portefeuille pour continuer",
-    "nextButton": "Suivant"
+    "nextButton": "Suivant",
+    "noAdminError": "Vous n'êtes pas un admininistrateur"
   },
   "select": {
     "noOption": "Aucune option"

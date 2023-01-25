@@ -18,6 +18,7 @@ import { SettingsMenu } from '../SettingsMenu';
 import { WalletMenu } from '../WalletMenu';
 import { styles } from './Header.styles';
 import { useRouter } from 'next/router';
+import { useAdmin } from 'src/hooks/useAdmin';
 
 const LogoWithName: FC = () => {
   const { t } = useTranslation('common', { keyPrefix: 'header' });
@@ -66,6 +67,9 @@ export const Header: FC = () => {
   const { t } = useTranslation('common', { keyPrefix: 'header' });
   const router = useRouter()
   const colorSelected = '#cfaa70';
+
+  const { isAdmin } = useAdmin();
+
   return (
     <div>
       <Box sx={styles.container}>
@@ -89,6 +93,19 @@ export const Header: FC = () => {
           >
             {t('titleCat2')}
           </Text>
+          { isAdmin ? 
+              <Text
+              size={'xl'}
+              weight={700}
+              component={NextLink}
+              href={'/admin'}
+              color={router.pathname === '/admin' ? colorSelected : ''}
+            >
+              {t('titleAdmin')}
+            </Text>
+              :
+              undefined
+          }
           <HeaderButtons />
         </Group>
       </Box>

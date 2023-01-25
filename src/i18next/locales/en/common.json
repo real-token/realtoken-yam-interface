@@ -2,7 +2,8 @@
   "header": {
     "title": "YAM",
     "titleCat1": "Explore",
-    "titleCat2": "Your Offers"
+    "titleCat2": "Your Offers",
+    "titleAdmin": "Admin"
   },
   "footer": {
     "copyright": "© {{year}} RealT. All rights reserved.",
@@ -12,7 +13,8 @@
     "loading": "loading...",
     "comingSoon": "Coming soon...",
     "noConnectedWallet": "Please connect a wallet to load the application",
-    "nextButton": "Next"
+    "nextButton": "Next",
+    "noAdminError": "You are not an admin."
   },
   "select": {
     "noOption": "No options"
