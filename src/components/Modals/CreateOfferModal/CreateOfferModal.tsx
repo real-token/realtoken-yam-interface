@@ -758,9 +758,9 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
           placeholder={t('placeholderAmount')}
           required={true}
           min={0.000001}
-          max={parseFloat(balance ?? "0")}
+          max={balance && new BigNumber(balance).isGreaterThan(0) ? parseFloat(balance ?? "0") : undefined}
           setFieldValue={setFieldValue}
-          showMax={bigNumberbalance !== undefined}
+          showMax={bigNumberbalance && bigNumberbalance.isGreaterThan(0)}
           sx={{ flexGrow: 1 }}
           {...getInputProps('amount')}
         />
@@ -776,16 +776,11 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         <Group position={'left'} mt={'md'}>
           <>
             {summary()}
-            {  values.offerTokenAddress && bigNumberbalance && bigNumberbalance.eq(0) ? 
-                <Text color={"red"} fz={"sm"}>{t("zeroBalanceError", { tokenSymbol: offerTokenSymbol })}</Text> 
-              : 
-                undefined 
-            }
             <Button
               type={'submit'}
               aria-label={'submit'}
               loading={(bigNumberbalance && bigNumberbalance == undefined) || isSubmitting}
-              disabled={!isValid || bigNumberbalance?.eq(0) || shieldError}
+              disabled={!isValid || shieldError}
             >
               {"Approve offer"}
             </Button>
