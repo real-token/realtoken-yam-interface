@@ -720,7 +720,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
             value={parseFloat(value ?? "0")}
             style={{ width: "100%" }}
           />
-          { buyerTokenSymbol && price ? <Text>{t("withPrice", { buyerTokenSymbol: buyerTokenSymbol, price: price.toString(), currency: "$" })}</Text> : undefined }
+          { buyerTokenSymbol && price ? <Text fz={"sm"} fs={"italic"}>{t("withPrice", { buyerTokenSymbol: buyerTokenSymbol, price: price.toString(), currency: "$" })}</Text> : undefined }
         </Flex>
       </Flex>
     )
