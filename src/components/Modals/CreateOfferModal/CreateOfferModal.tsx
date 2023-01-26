@@ -585,9 +585,13 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         {...getInputProps('price')}
         error={shieldError && priceDifference ? t("shieldError", { priceDifference: (priceDifference*100).toFixed(2), maxPriceDifference: maxPriceDifference*100 }) : undefined}
       />
-      <Text fz={"sm"} fs={"italic"}>
-        { officialPrice && officialSellCurrency ? t("officialPriceInfos", { officialPrice, officialSellCurrency }) : undefined }
-      </Text>
+      { officialPrice && officialSellCurrency ?
+        <Text fz={"sm"} fs={"italic"}>
+          {t("officialPriceInfos", { officialPrice, officialSellCurrency })}
+        </Text>
+        :
+        undefined
+      }
       </>
     )
   }
@@ -695,19 +699,19 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
     const [value,setValue] = useState<string|undefined>("0");
 
     useEffect(() => {
-      if(!values.price || !price) return;
-      setValue(new BigNumber(1).dividedBy(new BigNumber(values.price).dividedBy(price)).toString());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[values,price])
+      if(price && values.price){
+        setValue(new BigNumber(values.price).dividedBy(price).toString())
+      }
+    },[price,values])
 
     return(
       <Flex direction={"column"} gap={9}>
         <Flex gap={10} align={"center"}>
           {PriceNumberInput({ label: t("priceInCurrency", { currency: "$" }), width: "100%" })}
-          <IconArrowsSort style={{ marginTop: "22px", rotate: "90deg" }} size={46}/>
+          <IconArrowRight style={{ marginTop: "22px" }} size={46}/>
           <MantineInput
             hideControls={true}
-            label={buyTokenSymbol ? `${t("price")} "${buyTokenSymbol}"` : `${t("price")}`}
+            label={`Prix d'achat en ${buyerTokenSymbol}`}
             disabled={true}
             precision={6}
             value={parseFloat(value ?? "0")}
