@@ -52,23 +52,27 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
 
   const isAccountOffer: boolean = useMemo(() => {
     if(!buyOffer || !account) return false;
-    return buyOffer.sellerAddress == account || (isAccountOffer && buyOffer.buyerAddress == account)
+    return buyOffer.sellerAddress == account.toLowerCase()
   },[buyOffer, account])
 
   return (
     <>
-      { !isAccountOffer && !offersIsLoading ? 
+      { !offersIsLoading ? 
         (
           <Group position={'center'} className={groupClassName ?? ""}>
-            <ActionIcon
-              color={'green'}
-              onClick={() =>
-                account ? onOpenBuyModal(buyOffer) : onOpenWalletModal()
-              }
-              className={buttonClassName ?? ""}
-            >
-              <IconShoppingCart size={16} aria-label={'Buy'} />
-            </ActionIcon>
+            { !isAccountOffer ?
+              <ActionIcon
+                color={'green'}
+                onClick={() =>
+                  account ? onOpenBuyModal(buyOffer) : onOpenWalletModal()
+                }
+                className={buttonClassName ?? ""}
+              >
+                <IconShoppingCart size={16} aria-label={'Buy'} />
+              </ActionIcon>
+              :
+              <ActionIcon disabled={true} variant={"transparent"}/>
+            }
           </Group> 
         ): undefined }
     </>

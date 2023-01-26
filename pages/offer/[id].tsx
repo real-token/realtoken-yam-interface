@@ -100,7 +100,7 @@ const ShowOfferPage: FC = () => {
     
       const isAccountOffer: boolean = useMemo(() => {
         if(!offer || !account) return false;
-        return offer.sellerAddress == account || (isAccountOffer && offer.buyerAddress == account)
+        return offer.sellerAddress == account.toLowerCase()
       },[offer, account])
 
     const onOpenBuyModal = useCallback(
