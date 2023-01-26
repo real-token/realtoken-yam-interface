@@ -714,7 +714,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         <Flex direction={"column"} gap={"sm"} style={{ width: "100%" }}>
           <MantineInput
             hideControls={true}
-            label={ offer.offerType == OFFER_TYPE.BUY ? `Prix d'achat ${buyerTokenSymbol ? `en ${buyerTokenSymbol}` : ""}` : `Prix de vente en $`}
+            label={offer.offerType == OFFER_TYPE.BUY ? t("convertBuyPrice", { buyerTokenSymbol: buyerTokenSymbol, prep: t("in") }) : t("sellPriceInDollar")}
             disabled={true}
             precision={6}
             value={parseFloat(value ?? "0")}
