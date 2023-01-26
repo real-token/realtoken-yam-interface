@@ -109,14 +109,7 @@ const ShowOfferPage: FC = () => {
             title: <Title order={3}>{t2('buy.title')}</Title>,
             size: "lg",
             innerProps: {
-              offerId: offer.offerId,
-              price: offer.price,
-              offerAmount: offer.amount,
-              offerTokenAddress: offer.offerTokenAddress,
-              offerTokenDecimals: offer.offerTokenDecimals,
-              buyerTokenAddress: offer.buyerTokenAddress,
-              buyerTokenDecimals: offer.buyerTokenDecimals,
-              sellerAddress: offer.sellerAddress,
+              offer: offer,
               triggerTableRefresh: refreshOffers,
             },
         });
