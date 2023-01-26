@@ -568,31 +568,31 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
       </>
     )
   }
-  const PriceNumberInput = ({ label, width }:{ label?: string, width?: string }) => {
+  const PriceNumberInput = ({ label, width }:{ label: string, width: string }) => {
     return(
-      <>
-      <NumberInput
-        label={label ? label : t('price')}
-        placeholder={t('placeholderPrice')}
-        required={true}
-        disabled={false}
-        min={0.000001}
-        width={width ? width : "100%"}
-        max={undefined}
-        step={undefined}
-        showMax={false}
-        sx={{ flexGrow: 1 }}
-        {...getInputProps('price')}
-        error={shieldError && priceDifference ? t("shieldError", { priceDifference: (priceDifference*100).toFixed(2), maxPriceDifference: maxPriceDifference*100 }) : undefined}
-      />
-      { officialPrice && officialSellCurrency ?
-        <Text fz={"sm"} fs={"italic"}>
-          {t("officialPriceInfos", { officialPrice, officialSellCurrency })}
-        </Text>
-        :
-        undefined
-      }
-      </>
+      <Flex direction={"column"} gap={"sm"} style={{ width: width ? width : "100%" }}>
+        <NumberInput
+          label={label}
+          placeholder={t('placeholderPrice')}
+          required={true}
+          disabled={false}
+          min={0.000001}
+          width={width ? width : "100%"}
+          max={undefined}
+          step={undefined}
+          showMax={false}
+          sx={{ flexGrow: 1 }}
+          {...getInputProps('price')}
+          error={shieldError && priceDifference ? t("shieldError", { priceDifference: (priceDifference*100).toFixed(2), maxPriceDifference: maxPriceDifference*100 }) : undefined}
+        />
+        { officialPrice && officialSellCurrency ?
+          <Text fz={"sm"} fs={"italic"}>
+            {t("officialPriceInfos", { officialPrice, officialSellCurrency })}
+          </Text>
+          :
+          undefined
+        }
+      </Flex>
     )
   }
 
@@ -690,11 +690,11 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
     )
   }
 
-  // BUY
-  const GetBuyPriceNumberInputs = () => {
+  // BUY and SELL
+  const GetPriceNumberInputs = () => {
 
     const buyerTokenSymbol = offerTokens.find(token => token.value == values.offerTokenAddress)?.label;
-    const { price } = useOraclePriceFeed(values.offerTokenAddress);
+    const { price } = useOraclePriceFeed(offer.offerType == OFFER_TYPE.BUY ? values.offerTokenAddress : values.buyerTokenAddress);
 
     const [value,setValue] = useState<string|undefined>("0");
 
@@ -705,20 +705,23 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
     },[price,values])
 
     return(
-      <Flex direction={"column"} gap={9}>
-        <Flex gap={10} align={"center"}>
-          {PriceNumberInput({ label: t("priceInCurrency", { currency: "$" }), width: "100%" })}
-          <IconArrowRight style={{ marginTop: "22px" }} size={46}/>
+      <Flex gap={10} align={"start"}>
+        {PriceNumberInput({ 
+          label: offer.offerType == OFFER_TYPE.BUY ? t("priceInCurrency", { currency: "$" }) : t('price'), 
+          width: "100%" 
+        })}
+        <IconArrowRight style={{ marginTop: "22px" }} size={46}/>
+        <Flex direction={"column"} gap={"sm"} style={{ width: "100%" }}>
           <MantineInput
             hideControls={true}
-            label={`Prix d'achat en ${buyerTokenSymbol}`}
+            label={ offer.offerType == OFFER_TYPE.BUY ? `Prix d'achat ${buyerTokenSymbol ? `en ${buyerTokenSymbol}` : ""}` : `Prix de vente en $`}
             disabled={true}
             precision={6}
             value={parseFloat(value ?? "0")}
             style={{ width: "100%" }}
           />
+          { buyerTokenSymbol && price ? <Text>{t("withPrice", { buyerTokenSymbol: buyerTokenSymbol, price: price.toString(), currency: "$" })}</Text> : undefined }
         </Flex>
-        { buyerTokenSymbol && price ? <Text>{t("withPrice", { buyerTokenSymbol: buyerTokenSymbol, price: price.toString(), currency: "$" })}</Text> : undefined }
       </Flex>
     )
   }
@@ -741,12 +744,10 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
             getSelect(offerTokens,buyerTokens) 
         }
 
-        { offer.offerType == OFFER_TYPE.BUY ?
-            GetBuyPriceNumberInputs()
-          : offer.offerType == OFFER_TYPE.EXCHANGE ?
+        { offer.offerType == OFFER_TYPE.EXCHANGE ?
             GetExchangePriceNumberInputs()
           :
-            PriceNumberInput({})
+            GetPriceNumberInputs()
         }
         
         <Divider />
