@@ -3,11 +3,9 @@ import { gql } from "@apollo/client";
 import { ShortProperty } from "src/types";
 import { getYamClient } from "./offers/getClientURL";
 
-export const getWhitelistedProperties = async ({ queryKey }: { queryKey: any }): Promise<ShortProperty[]> => {
+export const getWhitelistedProperties = async (chainId: number): Promise<ShortProperty[]> => {
     return new Promise<ShortProperty[]>(async (resolove,reject) => {
         try{
-
-            const [_,chainId] = queryKey;
 
             const client = getYamClient(chainId);
             const { data } = await client.query({ query: gql`

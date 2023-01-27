@@ -19,7 +19,7 @@ type UseCreateOfferTokens = (
 
 export const useCreateOfferTokens: UseCreateOfferTokens = (offerType, choosedOfferTokenAddress, choosedBuyerTokenAddress) => {
 
-    const { propertiesToken } = usePropertiesToken(false);
+    const { propertiesToken } = usePropertiesToken();
     const { allowedTokens } = useAllowedTokens();
 
     const formatedPropetiesTokenForSelect: SelectItem[] = useMemo((): SelectItem[] => {

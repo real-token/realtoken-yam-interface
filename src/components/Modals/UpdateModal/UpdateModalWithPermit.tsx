@@ -22,8 +22,7 @@ import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { useActiveChain, useContract } from 'src/hooks';
 import coinBridgeTokenPermitSignature from 'src/hooks/coinBridgeTokenPermitSignature';
 import erc20PermitSignature from 'src/hooks/erc20PermitSignature';
-import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
-import { useAppDispatch, useAppSelector } from 'src/hooks/react-hooks';
+import { useAppSelector } from 'src/hooks/react-hooks';
 import { selectPublicOffers } from 'src/store/features/interface/interfaceSelector';
 import { Offer } from 'src/types/offer/Offer';
 import { getContract } from 'src/utils';
@@ -32,13 +31,7 @@ import { cleanNumber } from 'src/utils/number';
 import { NumberInput } from '../../NumberInput';
 
 type UpdateModalProps = {
-  offerId: string;
-  price: number;
-  amount: number;
-  offerTokenAddress: string;
-  offerTokenDecimals: number;
-  buyerTokenAddress: string;
-  buyerTokenDecimals: number;
+  offer: Offer;
   triggerTableRefresh: Dispatch<SetStateAction<boolean>>;
 };
 
@@ -56,13 +49,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
   context,
   id,
   innerProps: {
-    offerId,
-    price,
-    amount,
-    offerTokenAddress,
-    offerTokenDecimals,
-    buyerTokenAddress,
-    buyerTokenDecimals,
+    offer,
     triggerTableRefresh,
   },
 }) => {
@@ -71,15 +58,17 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
     useForm<UpdateFormValues>({
       // eslint-disable-next-line object-shorthand
       initialValues: {
-        offerId: offerId,
-        price: price,
-        amount: amount,
-        offerTokenAddress: offerTokenAddress,
-        offerTokenDecimals: offerTokenDecimals,
-        buyerTokenAddress: buyerTokenAddress,
-        buyerTokenDecimals: buyerTokenDecimals,
+        offerId: offer.offerId,
+        price: parseFloat(offer.price),
+        amount: parseFloat(offer.amount),
+        offerTokenAddress: offer.offerTokenAddress,
+        offerTokenDecimals: parseFloat(offer.offerTokenDecimals),
+        buyerTokenAddress: offer.buyerTokenAddress,
+        buyerTokenDecimals: parseFloat(offer.buyerTokenDecimals),
       },
     });
+
+    console.log(values)
 
   const [isSubmitting, setSubmitting] = useState<boolean>(false);
   const [amountMax, setAmountMax] = useState<number>();
@@ -88,9 +77,6 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
   const realTokenYamUpgradeable = useContract(
     ContractsID.realTokenYamUpgradeable
   );
-
-  const offers = useAppSelector(selectPublicOffers);
-  const offer = offers.find((offer: Offer) => offer.offerId === values.offerId);
 
   const { t } = useTranslation('modals', { keyPrefix: 'update' });
   const { t: t1 } = useTranslation('modals', { keyPrefix: 'sell' });
@@ -125,7 +111,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
         }
 
         const offerToken = getContract<CoinBridgeToken>(
-          offerTokenAddress,
+          offer.offerTokenAddress,
           coinBridgeTokenABI,
           provider,
           account
@@ -141,7 +127,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
         );
 
         const [, , , , , amount] =
-          await realTokenYamUpgradeable.getInitialOffer(offerId);
+          await realTokenYamUpgradeable.getInitialOffer(offer.offerId);
 
         const oldAmountInWei = BigNumber(amount._hex);
         offerToken.decimals();
@@ -184,12 +170,12 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           //TODO faire une getsion d'erreur ICI
           const updateOfferWithPermitTx =
             await realTokenYamUpgradeable.updateOfferWithPermit(
-              offerId,
-              BigNumber(price)
-                .multipliedBy(10 ** buyerTokenDecimals)
+              offer.offerId,
+              BigNumber(formValues.price.toString())
+                .multipliedBy(10 ** parseFloat(offer.buyerTokenDecimals))
                 .toString(10),
               BigNumber(formValues.amount)
-                .multipliedBy(10 ** offerTokenDecimals)
+                .multipliedBy(10 ** parseFloat(offer.offerTokenDecimals))
                 .toString(10),
               amountInWeiToPermit.toString(10),
               transactionDeadline.toString(),
@@ -236,10 +222,10 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
             await realTokenYamUpgradeable.updateOfferWithPermit(
               formValues.offerId,
               new BigNumber(formValues.price.toString())
-                .shiftedBy(10 ** buyerTokenDecimals)
+                .shiftedBy(10 ** parseFloat(offer.buyerTokenDecimals))
                 .toString(10),
               new BigNumber(formValues.amount.toString())
-                .shiftedBy(10 ** offerTokenDecimals)
+                .shiftedBy(10 ** parseFloat(offer.offerTokenDecimals))
                 .toString(10),
               amountInWeiToPermit.toString(10),
               transactionDeadline.toString(),
@@ -307,10 +293,10 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           const updateOfferTx = await realTokenYamUpgradeable.updateOffer(
             formValues.offerId,
             new BigNumber(formValues.price.toString())
-              .shiftedBy(10 ** buyerTokenDecimals)
+              .shiftedBy(10 ** parseFloat(offer.buyerTokenDecimals))
               .toString(10),
             new BigNumber(formValues.amount.toString())
-              .shiftedBy(10 ** offerTokenDecimals)
+              .shiftedBy(10 ** parseFloat(offer.offerTokenDecimals))
               .toString(10)
           );
 
@@ -346,20 +332,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
         onClose();
       }
     },
-    [
-      account,
-      provider,
-      realTokenYamUpgradeable,
-      offerTokenAddress,
-      offerTokenDecimals,
-      offerId,
-      buyerTokenDecimals,
-      activeChain?.blockExplorerUrl,
-      values,
-      triggerTableRefresh,
-      onClose,
-      offer,
-    ]
+    [account, provider, realTokenYamUpgradeable, offer.offerTokenAddress, offer.offerId, offer.price, offer.buyerTokenDecimals, offer.offerTokenDecimals, activeChain?.blockExplorerUrl, triggerTableRefresh, onClose]
   );
 
   const [offerTokenSymbol, setOfferTokenSymbol] = useState<string | undefined>(
@@ -368,13 +341,13 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
   const [buyTokenSymbol, setBuyTokenSymbol] = useState<string | undefined>('');
 
   const buyerToken = getContract<CoinBridgeToken>(
-    buyerTokenAddress,
+    offer.buyerTokenAddress,
     coinBridgeTokenABI,
     provider as Web3Provider,
     account
   );
   const offerToken = getContract<Erc20>(
-    offerTokenAddress,
+    offer.offerTokenAddress,
     Erc20ABI,
     provider as Web3Provider,
     account
@@ -416,15 +389,15 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           <Flex direction={'column'} gap={8}>
             <Flex direction={'column'}>
               <Text fw={700}>{t('offerId')}</Text>
-              <Text>{offerId ? offerId : 'Offer not found'}</Text>
+              <Text>{offer.offerId ? offer.offerId : 'Offer not found'}</Text>
             </Flex>
             <Flex direction={'column'}>
               <Text fw={700}>{t('price')}</Text>
-              <Text>{price}</Text>
+              <Text>{offer.price}</Text>
             </Flex>
             <Flex direction={'column'}>
               <Text fw={700}>{t('amount')}</Text>
-              <Text>{amount}</Text>
+              <Text>{offer.amount}</Text>
             </Flex>
           </Flex>
         </Flex>

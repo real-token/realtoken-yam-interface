@@ -30,4 +30,5 @@ export type PropertiesToken = {
     marketplaceLink: string
     imageLink: string[]
     netRentYearPerToken?: number
+    annualYield?: number
 }

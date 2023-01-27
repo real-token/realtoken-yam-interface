@@ -139,7 +139,6 @@ export const TableCaption = <T,>({
               onChange={(event) => setIsAutoRefresh(Boolean(event.currentTarget.checked))}
             />
           </Grid>
-          
         </Menu.Dropdown>
       </Menu>
     </Group>

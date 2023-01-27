@@ -161,7 +161,6 @@ export const MarketTablePrivate: FC = () => {
             cell: ({ row }) => (
               <BuyActionsWithPermit
                 buyOffer={row.original}
-                triggerRefresh={refreshOffers}
               />
             ),
             meta: { colSpan: 1 },

@@ -2,6 +2,7 @@ import BigNumber from 'bignumber.js';
 import { Offer, OFFER_LOADING } from 'src/types/offer/Offer';
 import { RootState } from 'src/store/store';
 import { selectAddress } from '../settings/settingsSelector';
+import { OFFER_TYPE } from 'src/types/offer';
 
 export const selectOffersIsLoading = (state: RootState) =>
   state.interface.offers.isLoading;
@@ -9,8 +10,6 @@ export const selectProperties = (state: RootState) =>
   state.interface.properties.properties;
 export const selectPropertiesIsLoading = (state: RootState) =>
   state.interface.properties.isloading;
-export const selectChainProperties = (state: RootState) =>
-  state.interface.chainProperties;
 
 export const selectOffers = (state: RootState): Offer[] =>
   state.interface.offers.offers;
@@ -36,8 +35,28 @@ export const selectPublicOffers = (state: RootState) => {
       BigNumber(offer.amount).isPositive() &&
       !BigNumber(offer.amount).isZero()
   );
-  return offers;
 };
+export const selectSellPublicOffers = (state: RootState) => {
+  const offers = selectPublicOffers(state);
+  const offersIsLoading = selectOffersIsLoading(state);
+  if (!offers || offersIsLoading) return OFFER_LOADING;
+
+  return offers.filter((offer: Offer) => offer.type == OFFER_TYPE.SELL);
+}
+export const selectBuyPublicOffers = (state: RootState) => {
+  const offers = selectPublicOffers(state);
+  const offersIsLoading = selectOffersIsLoading(state);
+  if (!offers || offersIsLoading) return OFFER_LOADING;
+
+  return offers.filter((offer: Offer) => offer.type == OFFER_TYPE.BUY);
+}
+export const selectExchangePublicOffers = (state: RootState) => {
+  const offers = selectPublicOffers(state);
+  const offersIsLoading = selectOffersIsLoading(state);
+  if (!offers || offersIsLoading) return OFFER_LOADING;
+
+  return offers.filter((offer: Offer) => offer.type == OFFER_TYPE.EXCHANGE);
+}
 
 export const selectPrivateOffers = (state: RootState) => {
   const address = selectAddress(state);
