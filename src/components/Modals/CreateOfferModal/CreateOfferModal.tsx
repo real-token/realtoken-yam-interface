@@ -77,6 +77,8 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
       },
     });
 
+    console.log(values)
+
     // TODO: add translate
     const realT = t("realtTokenType");
     const others = t("otherTokenType");
@@ -522,6 +524,8 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
     )
   );
 
+  const [priceInDollar,setPriceInDollar] = useState<number|undefined>(undefined);
+
   // COMPONENTS
   const getSelect = (offerTokenSelectData: SelectItem[], buyerTokenSelectData: SelectItem[]) => {
 
@@ -574,6 +578,8 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         <NumberInput
           label={label}
           placeholder={t('placeholderPrice')}
+          value={priceInDollar}
+          onChange={setPriceInDollar}
           required={true}
           disabled={false}
           min={0.000001}
@@ -582,7 +588,6 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
           step={undefined}
           showMax={false}
           sx={{ flexGrow: 1 }}
-          {...getInputProps('price')}
           error={shieldError && priceDifference ? t("shieldError", { priceDifference: (priceDifference*100).toFixed(2), maxPriceDifference: maxPriceDifference*100 }) : undefined}
         />
         { officialPrice && officialSellCurrency ?
@@ -693,34 +698,36 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   // BUY and SELL
   const GetPriceNumberInputs = () => {
 
-    const buyerTokenSymbol = offerTokens.find(token => token.value == values.offerTokenAddress)?.label;
+    const tokenSymbol = offer.offerType == OFFER_TYPE.BUY ?
+      offerTokens.find(token => token.value == values.offerTokenAddress)?.label
+      :
+      buyerTokens.find(token => token.value == values.buyerTokenAddress)?.label
+      ;
     const { price } = useOraclePriceFeed(offer.offerType == OFFER_TYPE.BUY ? values.offerTokenAddress : values.buyerTokenAddress);
 
-    const [value,setValue] = useState<string|undefined>("0");
-
     useEffect(() => {
-      if(price && values.price){
-        setValue(new BigNumber(values.price).dividedBy(price).toString())
+      if(price && priceInDollar){
+        setFieldValue("price",parseFloat(new BigNumber(priceInDollar).dividedBy(price).toString().toString()))
       }
-    },[price,values])
+    },[price,priceInDollar])
 
     return(
       <Flex gap={10} align={"start"}>
         {PriceNumberInput({ 
-          label: offer.offerType == OFFER_TYPE.BUY ? t("priceInCurrency", { currency: "$" }) : t('price'), 
+          label: t("priceInCurrency", { currency: "$" }), 
           width: "100%" 
         })}
         <IconArrowRight style={{ marginTop: "22px" }} size={46}/>
         <Flex direction={"column"} gap={"sm"} style={{ width: "100%" }}>
           <MantineInput
             hideControls={true}
-            label={offer.offerType == OFFER_TYPE.BUY ? t("convertBuyPrice", { buyerTokenSymbol: buyerTokenSymbol, prep: t("in") }) : t("sellPriceInDollar")}
+            label={t("convertBuyPrice", { buyerTokenSymbol: tokenSymbol, prep: t("in") })}
             disabled={true}
             precision={6}
-            value={parseFloat(value ?? "0")}
+            {...getInputProps("price")}
             style={{ width: "100%" }}
           />
-          { buyerTokenSymbol && price ? <Text fz={"sm"} fs={"italic"}>{t("withPrice", { buyerTokenSymbol: buyerTokenSymbol, price: price.toString(), currency: "$" })}</Text> : undefined }
+          { tokenSymbol && price ? <Text fz={"sm"} fs={"italic"}>{t("withPrice", { buyerTokenSymbol: tokenSymbol, price: price.toString(), currency: "$" })}</Text> : undefined }
         </Flex>
       </Flex>
     )
