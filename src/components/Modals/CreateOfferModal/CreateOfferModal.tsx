@@ -77,8 +77,6 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
       },
     });
 
-    console.log(values)
-
     // TODO: add translate
     const realT = t("realtTokenType");
     const others = t("otherTokenType");
