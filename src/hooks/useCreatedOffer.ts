@@ -16,7 +16,7 @@ type UseCreatedOffer = (
 
 export const useCreatedOffer: UseCreatedOffer = (createdOffer) => {
 
-    const { propertiesToken } = usePropertiesToken(false);
+    const { propertiesToken } = usePropertiesToken();
     const { account, provider } = useWeb3React();
 
     const [offerTokenSymbol,setOfferTokenSymbol] = useState<string|undefined>(undefined);

@@ -73,7 +73,7 @@ const ShowOfferPage: FC = () => {
 
     const { account } = useWeb3React();
     const { offer, isLoading } = useOffer(offerId);
-    const { getPropertyToken, propertiesIsloading } = usePropertiesToken(false);
+    const { getPropertyToken, propertiesIsloading } = usePropertiesToken();
 
     const { refreshOffers } = useRefreshOffers(false);
 

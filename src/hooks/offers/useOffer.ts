@@ -14,7 +14,7 @@ export const useOffer: UseOfferProps = (offerId: number) => {
     const [offer,setOffer] = useState<Offer>(DEFAULT_OFFER);
     const [isLoading,setIsLoading] = useState<boolean>(true);
 
-    const { propertiesToken, propertiesIsloading } = usePropertiesToken(false);
+    const { propertiesToken, propertiesIsloading } = usePropertiesToken();
 
     const fetch = useCallback(async (chainId: number, offerId: number) => {
         fetchOffer(chainId,offerId, propertiesToken)

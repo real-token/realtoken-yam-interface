@@ -19,9 +19,9 @@ export const useRefreshOffers: UseRefreshOffers = (refreshOnMount) => {
   const { account, provider, chainId } = useWeb3React();
   const dispatch = useAppDispatch();
   const offersIsLoading = useSelector(selectOffersIsLoading);
-  const [initialized,setInitilized] = useState<boolean>(false);
+  const [initialized,setInitialized] = useState<boolean>(false);
   
-  const { propertiesToken, propertiesIsloading } = usePropertiesToken(false);
+  const { propertiesToken, propertiesIsloading } = usePropertiesToken();
 
   const realTokenYamUpgradeable = useContract(ContractsID.realTokenYamUpgradeable);
 
@@ -38,7 +38,7 @@ export const useRefreshOffers: UseRefreshOffers = (refreshOnMount) => {
 useEffect(() => {
     if(realTokenYamUpgradeable && provider && account && refreshOnMount && !initialized && !propertiesIsloading && propertiesToken.length > 0){
         refreshOffers();
-        setInitilized(true);
+        setInitialized(true);
     }
 },[realTokenYamUpgradeable, provider, account, refreshOnMount, initialized, propertiesIsloading, propertiesToken, refreshOffers])
 
