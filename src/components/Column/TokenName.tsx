@@ -1,5 +1,4 @@
-import { Flex } from "@mantine/core";
-import Skeleton from "react-loading-skeleton";
+import { Flex, Skeleton } from "@mantine/core";
 import { usePropertyToken } from "src/hooks/usePropertyToken";
 import { Offer, OFFER_TYPE } from "src/types/offer"
 

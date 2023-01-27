@@ -21,16 +21,9 @@ export const OfferYield = ({ offer } : OfferYieldProps) => {
 
     const offerAjustedYield: BigNumber|undefined = useMemo(() => {
         if(!propertyToken || !propertyToken.netRentYearPerToken || !tokenPriceInDollar) return undefined;
-
         const offerAdjusted = new BigNumber(propertyToken.netRentYearPerToken).dividedBy(tokenPriceInDollar);
-        console.log("offerAdjusted: ", offerAdjusted.toString())
         return offerAdjusted;
     },[propertyToken, tokenPriceInDollar])
-
-    if(offer.offerId == "366"){
-        console.log(offer)
-        console.log(offerAjustedYield)
-    }
 
     return(
         <Flex>
