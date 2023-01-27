@@ -2,7 +2,6 @@ import { createStyles, Flex, Skeleton, Text } from "@mantine/core"
 import { FC, useMemo } from "react"
 import { useTranslation } from "react-i18next";
 import { OfferTypeBadge } from "src/components/Offer/OfferTypeBadge";
-import { useRefreshOffers } from "src/hooks/offers/useRefreshOffers";
 import { usePropertiesToken } from "src/hooks/usePropertiesToken";
 import { OFFER_TYPE } from "src/types/offer";
 import { Offer } from "src/types/offer/Offer"
