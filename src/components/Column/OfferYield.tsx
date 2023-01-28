@@ -4,13 +4,14 @@ import { useMemo } from "react";
 import { useOraclePriceFeed } from "src/hooks/useOraclePriceFeed";
 import { usePropertyToken } from "src/hooks/usePropertyToken";
 import { Offer, OFFER_TYPE } from "src/types/offer";
+import { getPropertyTokenAddress } from "src/utils/properties";
 
 interface OfferYieldProps{
     offer: Offer
 }
 export const OfferYield = ({ offer } : OfferYieldProps) => {
 
-    const { propertyToken } = usePropertyToken(offer.type == OFFER_TYPE.BUY ? offer.buyerTokenAddress : offer.offerTokenAddress);
+    const { propertyToken } = usePropertyToken(getPropertyTokenAddress(offer));
     const { price } = useOraclePriceFeed(offer.type == OFFER_TYPE.BUY ? offer.offerTokenAddress: offer.buyerTokenAddress);
 
     const tokenPriceInDollar: BigNumber|undefined = useMemo(() => {

@@ -3,6 +3,7 @@ import { IconChevronDown, IconChevronUp } from "@tabler/icons"
 import { ColumnDef } from "@tanstack/react-table"
 import BigNumber from "bignumber.js"
 import { TFunction } from "react-i18next"
+import { OfferPrice } from "src/components/Column/OfferPrice"
 import { OfferYield } from "src/components/Column/OfferYield"
 import { OffialPrice } from "src/components/Column/OfficialPrice"
 import { OriginalYield } from "src/components/Column/OriginalYield"
@@ -158,7 +159,7 @@ export const priceColumn: ColumnFn<number> = (t,span) => {
                 overflow: 'hidden',
                 }}
             >
-                {row.original.type == OFFER_TYPE.SELL ? getValue() : (1/getValue()).toFixed(6)}
+                <OfferPrice offer={row.original}/>
             </Text>
         ),
         enableSorting: true,

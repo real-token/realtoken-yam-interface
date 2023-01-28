@@ -47,7 +47,8 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
                 officialPrice: 48.37,
                 currency: "USDC",
                 imageLink: [],
-                marketplaceLink: ""
+                marketplaceLink: "",
+                netRentYearPerToken: 4.8929230769231,
             },
             {
                 uuid: "14319 Rosemary",
@@ -57,7 +58,8 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
                 officialPrice: 49.69,
                 currency: "USDC",
                 imageLink: [],
-                marketplaceLink: ""
+                marketplaceLink: "",
+                netRentYearPerToken: 5.28,
             },
             {
                 uuid: "14078 Carlisle",
@@ -67,7 +69,8 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
                 officialPrice: 54.25,
                 currency: "USDC",
                 imageLink: [],
-                marketplaceLink: ""
+                marketplaceLink: "",
+                netRentYearPerToken: 5.6167,
             },
             {
                 uuid: "13895 Saratoga",
@@ -77,7 +80,8 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
                 officialPrice: 58.5,
                 currency: "USDC",
                 imageLink: [],
-                marketplaceLink: ""
+                marketplaceLink: "",
+                netRentYearPerToken: 6.0808333333333,
             },
             {
                 uuid: "4380 Beaconsfield",
@@ -87,7 +91,8 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
                 officialPrice: 53.88,
                 currency: "USDC",
                 imageLink: [],
-                marketplaceLink: ""
+                marketplaceLink: "",
+                netRentYearPerToken: 5.7141666666667,
             },
             {
                 uuid: "17813 Bradford",
@@ -97,7 +102,8 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
                 officialPrice: 51.33,
                 currency: "USDC",
                 imageLink: [],
-                marketplaceLink: ""
+                marketplaceLink: "",
+                netRentYearPerToken: 5.5625,
             },
             {
                 uuid: "15796 Hartwell",
@@ -107,7 +113,8 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
                 officialPrice: 53.04,
                 currency: "USDC",
                 imageLink: [],
-                marketplaceLink: ""
+                marketplaceLink: "",
+                netRentYearPerToken: 5.6866666666667,
             },
             {
                 uuid: "9717 Everts",
@@ -117,7 +124,8 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
                 officialPrice: 50.5,
                 currency: "USDC",
                 imageLink: [],
-                marketplaceLink: ""
+                marketplaceLink: "",
+                netRentYearPerToken: 5.2358333333333,
             },
             {
                 uuid: "19201 Westphalia",
@@ -127,7 +135,8 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
                 officialPrice: 52.17,
                 currency: "USDC",
                 imageLink: [],
-                marketplaceLink: ""
+                marketplaceLink: "",
+                netRentYearPerToken: 5.4633333333333,
             },
             {
                 uuid: "19163 Mitchell",
@@ -137,7 +146,8 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
                 officialPrice: 56.33,
                 currency: "USDC",
                 imageLink: [],
-                marketplaceLink: ""
+                marketplaceLink: "",
+                netRentYearPerToken: 5.7441666666667,
             },
             {
                 uuid: "4061 Grand",
@@ -147,9 +157,11 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
                 officialPrice: 71.11,
                 currency: "USDC",
                 imageLink: [],
-                marketplaceLink: ""
+                marketplaceLink: "",
+                netRentYearPerToken: 5.8627777777778,
             }
         ]
+        propertiesGoerli.forEach((token) => token.annualYield = token.officialPrice ? token.netRentYearPerToken/token.officialPrice : 0)
         propertiesNonFiltered.push(...propertiesGoerli);
     }else{
         communityProperties.forEach((propertyToken: APIPropertiesToken) => {
