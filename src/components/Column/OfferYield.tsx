@@ -16,8 +16,8 @@ export const OfferYield = ({ offer } : OfferYieldProps) => {
 
     const tokenPriceInDollar: BigNumber|undefined = useMemo(() => {
         if(!price) return undefined;
-        const priceInDollar = new BigNumber(offer.price).dividedBy(price);
-        return offer.type == OFFER_TYPE.BUY ? new BigNumber(1).dividedBy(priceInDollar) : priceInDollar;
+        const priceInDollar = OFFER_TYPE.BUY ? new BigNumber(offer.price).multipliedBy(price) : new BigNumber(offer.price).dividedBy(price);
+        return offer.type == OFFER_TYPE.BUY ? new BigNumber(price).dividedBy(priceInDollar) : priceInDollar;
     },[offer.price, offer.type, price]);
 
     const offerAjustedYield: BigNumber|undefined = useMemo(() => {
