@@ -12,6 +12,7 @@ import { ShowOfferAction } from "src/components/Market/ShowOfferAction/ShowOffer
 import { OfferTypeBadge } from "src/components/Offer/OfferTypeBadge"
 import { Offer, OFFER_TYPE } from "src/types/offer"
 import { getReduceAddress } from "src/utils/address"
+import { ENV, isEnvs } from "src/utils/isEnv"
 
 type ColumnFn<T> = (t: TFunction<"buy","table">, span: number) => ColumnDef<Offer,T>
 
@@ -42,7 +43,7 @@ export const idColumn: ColumnFn<OFFER_TYPE> = (t,span) => {
         cell: ({ row, getValue }) => { 
             return (
             <Group noWrap={true} spacing={'xs'}>
-                { row.original.hasPropertyToken && process.env.NEXT_PUBLIC_ENV != "production" ?
+                { row.original.hasPropertyToken && isEnvs([ENV.DEV]) ?
                 <ActionIcon
                     variant={'transparent'}
                     color={'brand'}

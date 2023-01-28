@@ -17,17 +17,17 @@ export const useRightTableColumn: UseRightTableColumn = ()  => {
         {
             id: 'title',
             header: () => header({ title: t('title') }),
-            meta: { colSpan: 14 },
+            meta: { colSpan: 12 },
             columns: [
                 idColumn(t,1),
                 offerShortTokenNameColumn(t,2),
                 buyerTokenNameColumn(t,2),
                 originalYieldColumn(t,1),
                 offerYieldColumn(t,1),
-                sellerAddressColumn(t,1),
+                // sellerAddressColumn(t,1),
                 officialPriceColumn(t,1),
-                priceColumn(t,2),
-                amountColumn(t,2),
+                priceColumn(t,1),
+                amountColumn(t,1),
                 publicActionsColumn(t,1)
             ]
     }],[t]);

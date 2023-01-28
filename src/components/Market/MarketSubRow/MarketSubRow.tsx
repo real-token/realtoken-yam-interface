@@ -22,78 +22,18 @@ type TokenInfoShow = {
 };
 export const MarketSubRow: FC<TableSubRowProps<Offer>> = ({
   row: {
-    original: { offerTokenAddress, buyerTokenAddress, price },
+    original: offer,
   },
 }) => {
   const { t } = useTranslation('buy', { keyPrefix: 'subRow' });
 
-  const columns = useMemo<ColumnDef<TokenInfoShow,string>[]>(
+  const columns = useMemo<ColumnDef<Offer,string>[]>(
     () => [
       {
-        id: 'fullName',
-        accessorKey: 'fullName',
-        header: () => <Title order={6}>{t('offerTokenName')}</Title>,
-        cell: ({ getValue }: CellContext<TokenInfoShow,string>) => (
-          <Text
-            size={'sm'}
-            sx={{
-              fontVariantNumeric: 'tabular-nums',
-              textAlign: 'center',
-              textOverflow: 'ellipsis',
-              overflow: 'hidden',
-            }}
-          >
-            {getValue()}
-          </Text>
-        ),
-        enableSorting: false,
-        meta: { colSpan: 1 },
-      },
-      {
-        id: 'initialPrice',
-        accessorKey: 'initialPrice',
-        header: () => <Title order={6}>{t('officialPrice')}</Title>,
-        cell: ({ getValue }: CellContext<TokenInfoShow,string>) => (
-          <Text
-            size={'sm'}
-            sx={{
-              fontVariantNumeric: 'tabular-nums',
-              textAlign: 'center',
-              textOverflow: 'ellipsis',
-              overflow: 'hidden',
-            }}
-          >
-            {getValue()}
-          </Text>
-        ),
-        enableSorting: false,
-        meta: { colSpan: 1 },
-      },
-      {
-        id: 'offerPrice',
-        accessorKey: 'offerPrice',
-        header: () => <Title order={6}>{t('offerPrice')}</Title>,
-        cell: ({ getValue }: CellContext<TokenInfoShow,string>) => (
-          <Text
-            size={'sm'}
-            sx={{
-              fontVariantNumeric: 'tabular-nums',
-              textAlign: 'center',
-              textOverflow: 'ellipsis',
-              overflow: 'hidden',
-            }}
-          >
-            {getValue()}
-          </Text>
-        ),
-        enableSorting: false,
-        meta: { colSpan: 1 },
-      },
-      {
-        id: 'priceDifference',
-        accessorKey: 'priceDifference',
-        header: () => <Title order={6}>{t('priceDifference')}</Title>,
-        cell: ({ getValue }: CellContext<TokenInfoShow,string>) => (
+        id: 'sellerAddress',
+        accessorKey: 'sellerAddress',
+        header: () => <Title order={6}>{t("sellerAddress")}</Title>,
+        cell: ({ getValue }: CellContext<Offer,string>) => (
           <Text
             size={'sm'}
             sx={{
@@ -113,24 +53,8 @@ export const MarketSubRow: FC<TableSubRowProps<Offer>> = ({
     [t]
   );
 
-  const { tokenInfo } = useTokenInfo(offerTokenAddress,buyerTokenAddress);
-
-  const priceDifference = (
-    ((Number(price) - tokenInfo.tokenPrice) / tokenInfo.tokenPrice) *
-    100
-  ).toFixed(2);
-
-  const tokenInfoShow: TokenInfoShow[] = useMemo(() => {
-    return [{
-      fullName: tokenInfo.fullName,
-    initialPrice: tokenInfo.tokenPrice ? tokenInfo.tokenPrice.toString() : "",
-    offerPrice: price,
-    priceDifference: `${priceDifference} %`,
-    }]
-  },[tokenInfo,price,priceDifference]);
-
   const table = useReactTable({
-    data: tokenInfoShow,
+    data: [offer],
     columns: columns,
     getCoreRowModel: getCoreRowModel(),
     meta: { colSpan: 1 },
