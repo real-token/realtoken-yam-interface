@@ -93,7 +93,7 @@ export const AddWLAction = () => {
                     <Text style={{ width: calcRem(400)}}>{"Token type"}</Text>
                     <Text>{"Token address"}</Text>
                 </Flex>
-                <Flex direction={"column"} mb={0} gap={"md"}>
+                <Flex direction={"column"} mb={10} gap={"md"}>
                     { wlTokens.map((wlToken,index) => <AddWL key={`wl-${index}`} index={index}/>)}
                     <Flex justify={"center"} className={classes.addButton} onClick={() => setWlTokens((prev) => [...prev,DEFAULT_WL_TOKEN])}><IconPlus /></Flex>
                 </Flex>

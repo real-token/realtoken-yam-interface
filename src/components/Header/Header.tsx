@@ -18,7 +18,8 @@ import { SettingsMenu } from '../SettingsMenu';
 import { WalletMenu } from '../WalletMenu';
 import { styles } from './Header.styles';
 import { useRouter } from 'next/router';
-import { useAdmin } from 'src/hooks/useAdmin';
+import { useRole } from 'src/hooks/useRole';
+import { isRole, USER_ROLE } from 'src/types/admin';
 
 const LogoWithName: FC = () => {
   const { t } = useTranslation('common', { keyPrefix: 'header' });
@@ -68,7 +69,7 @@ export const Header: FC = () => {
   const router = useRouter()
   const colorSelected = '#cfaa70';
 
-  const { isAdmin } = useAdmin();
+  const { role } = useRole();
 
   return (
     <div>
@@ -93,7 +94,7 @@ export const Header: FC = () => {
           >
             {t('titleCat2')}
           </Text>
-          { isAdmin ? 
+          { isRole(role,[USER_ROLE.MODERATOR,USER_ROLE.ADMIN]) ? 
               <Text
               size={'xl'}
               weight={700}

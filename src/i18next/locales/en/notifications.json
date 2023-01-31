@@ -1,4 +1,17 @@
 {
+  "grantRoleLoading": {
+    "title": "Copied 🎉",
+    "message": "Your transaction is being validated."
+  },
+  "grantRoleSuccess": {
+    "title": "Copied 🎉",
+    "message": "User grant role transaction succeed."
+  },
+  "grantRoleInvalid": {
+    "title": "Error",
+    "message": "User grant role transaction failed."
+  },
+
   "userCopied": {
     "title": "Copied 🎉",
     "message": "Your address have been copied to clipboard."

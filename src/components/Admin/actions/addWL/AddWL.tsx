@@ -8,7 +8,6 @@ import { useContract } from "src/hooks";
 import { wlTokensAtom } from "src/states";
 import { calcRem } from "src/utils/style";
 import { utils } from "ethers";
-import { useQuery } from "react-query";
 
 interface AddWLForm{
     type: string;
