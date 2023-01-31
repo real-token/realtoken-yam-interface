@@ -3,6 +3,7 @@ import { IconChevronDown, IconChevronUp } from "@tabler/icons"
 import { ColumnDef } from "@tanstack/react-table"
 import BigNumber from "bignumber.js"
 import { TFunction } from "react-i18next"
+import { OfferPrice } from "src/components/Column/OfferPrice"
 import { OfferYield } from "src/components/Column/OfferYield"
 import { OffialPrice } from "src/components/Column/OfficialPrice"
 import { OriginalYield } from "src/components/Column/OriginalYield"
@@ -12,6 +13,7 @@ import { ShowOfferAction } from "src/components/Market/ShowOfferAction/ShowOffer
 import { OfferTypeBadge } from "src/components/Offer/OfferTypeBadge"
 import { Offer, OFFER_TYPE } from "src/types/offer"
 import { getReduceAddress } from "src/utils/address"
+import { ENV, isEnvs } from "src/utils/isEnv"
 
 type ColumnFn<T> = (t: TFunction<"buy","table">, span: number) => ColumnDef<Offer,T>
 
@@ -42,7 +44,7 @@ export const idColumn: ColumnFn<OFFER_TYPE> = (t,span) => {
         cell: ({ row, getValue }) => { 
             return (
             <Group noWrap={true} spacing={'xs'}>
-                { row.original.hasPropertyToken && process.env.NEXT_PUBLIC_ENV != "production" ?
+                { row.original.hasPropertyToken && isEnvs([ENV.DEV]) ?
                 <ActionIcon
                     variant={'transparent'}
                     color={'brand'}
@@ -157,7 +159,7 @@ export const priceColumn: ColumnFn<number> = (t,span) => {
                 overflow: 'hidden',
                 }}
             >
-                {row.original.type == OFFER_TYPE.SELL ? getValue() : (1/getValue()).toFixed(6)}
+                <OfferPrice offer={row.original}/>
             </Text>
         ),
         enableSorting: true,

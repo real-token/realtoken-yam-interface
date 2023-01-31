@@ -17,18 +17,17 @@ export const useRightTableColumn: UseRightTableColumn = ()  => {
         {
             id: 'title',
             header: () => header({ title: t('title') }),
-            meta: { colSpan: 15 },
+            meta: { colSpan: 12 },
             columns: [
-                typeColumn,
                 idColumn(t,1),
                 offerShortTokenNameColumn(t,2),
                 buyerTokenNameColumn(t,2),
                 originalYieldColumn(t,1),
                 offerYieldColumn(t,1),
-                sellerAddressColumn(t,1),
+                // sellerAddressColumn(t,1),
                 officialPriceColumn(t,1),
-                priceColumn(t,2),
-                amountColumn(t,2),
+                priceColumn(t,1),
+                amountColumn(t,1),
                 publicActionsColumn(t,1)
             ]
     }],[t]);
@@ -36,9 +35,8 @@ export const useRightTableColumn: UseRightTableColumn = ()  => {
     const buyColumns = useMemo(() => [{
         id: 'title',
         header: () => header({ title: t('title') }),
-        meta: { colSpan: 15 },
+        meta: { colSpan: 14 },
         columns: [
-            typeColumn,
             idColumn(t,1),
             offerTokenNameColumn(t,2),
             buyShortTokenNameColumn(t,2),
@@ -56,9 +54,8 @@ export const useRightTableColumn: UseRightTableColumn = ()  => {
         {
             id: 'title',
             header: () => header({ title: t('title') }),
-            meta: { colSpan: 12 },
+            meta: { colSpan: 11 },
             columns: [
-                typeColumn,
                 idColumn(t,1),
                 offerTokenNameColumn(t,2),
                 buyerTokenNameColumn(t,2),
