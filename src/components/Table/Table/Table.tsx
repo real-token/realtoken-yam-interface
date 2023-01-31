@@ -9,6 +9,7 @@ import {
 import { Table as ReactTable, Row, flexRender } from '@tanstack/react-table';
 import { TableCaption, TableCaptionOptions } from '../TableCaption';
 import { TableHeader } from '../TableHeader';
+import { ENV, isEnvs } from 'src/utils/isEnv';
 
 export type TableSubRowProps<T> = { row: Row<T> };
 
@@ -68,7 +69,7 @@ export const Table = <T,>({
                     </td>
                   ))}
                 </tr>
-                {TableSubRow && row.original && row.getIsExpanded() && process.env.NEXT_PUBLIC_ENV == "staging" ? (
+                {TableSubRow && row.original && row.getIsExpanded() && isEnvs([ENV.DEV]) ? (
                   <tr>
                     <td
                       colSpan={table.options.meta?.colSpan}

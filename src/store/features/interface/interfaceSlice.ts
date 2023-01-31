@@ -14,9 +14,8 @@ interface InterfaceInitialStateType {
   privateOffers: Offer[];
   properties: {
     isloading: boolean;
-    properties: APIPropertiesToken[];
+    properties: PropertiesToken[];
   };
-  chainProperties: PropertiesToken[];
 }
 
 const interfaceInitialState: InterfaceInitialStateType = {
@@ -28,8 +27,7 @@ const interfaceInitialState: InterfaceInitialStateType = {
   properties: {
     properties: [],
     isloading: true,
-  },
-  chainProperties: [],
+  }
 };
 
 //DISPATCH TYPE
@@ -47,14 +45,11 @@ export const offersIsloading = createAction<boolean>(
   offersIsLoadingDispatchType
 );
 export const offersReset = createAction<undefined>(offersResetDispatchType);
-export const propertiesChanged = createAction<APIPropertiesToken[]>(
+export const propertiesChanged = createAction<PropertiesToken[]>(
   propertiesChangedDispatchType
 );
 export const propertiesIsLoading = createAction<boolean>(
   propertiesIsLoadingDispatchType
-);
-export const chainPropertiesChanged = createAction<PropertiesToken[]>(
-  chainPropertiesChangedDispatchType
 );
 
 // THUNKS
@@ -83,13 +78,13 @@ export function fetchOffers(
     dispatch({ type: offersIsLoadingDispatchType, payload: false });
   };
 }
-export function fetchProperties() {
+export function fetchProperties(chainId: number) {
   return async function fetchPropertiesThunk(dispatch: any) {
     try {
-      const response = await fetch('/api/properties');
+      const response = await fetch(`/api/properties/${chainId}`);
 
       if (response.ok) {
-        const responseJson: APIPropertiesToken[] = await response.json();
+        const responseJson: PropertiesToken[] = await response.json();
         dispatch({
           type: propertiesChangedDispatchType,
           payload: responseJson,
@@ -114,9 +109,6 @@ export const interfaceReducers = createReducer(
       })
       .addCase(propertiesChanged, (state, action) => {
         state.properties.properties = action.payload;
-      })
-      .addCase(chainPropertiesChanged, (state, action) => {
-        state.chainProperties = action.payload;
       })
       .addCase(propertiesIsLoading, (state, action) => {
         state.properties.isloading = action.payload;

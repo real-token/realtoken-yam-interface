@@ -2,7 +2,6 @@ import { createStyles, Flex, Skeleton, Text } from "@mantine/core"
 import { FC, useMemo } from "react"
 import { useTranslation } from "react-i18next";
 import { OfferTypeBadge } from "src/components/Offer/OfferTypeBadge";
-import { useRefreshOffers } from "src/hooks/offers/useRefreshOffers";
 import { usePropertiesToken } from "src/hooks/usePropertiesToken";
 import { OFFER_TYPE } from "src/types/offer";
 import { Offer } from "src/types/offer/Offer"
@@ -73,12 +72,10 @@ interface GridPaneProps{
 }
 export const GridPane: FC<GridPaneProps> = ({ offer }) => {
 
-    const { refreshOffers } = useRefreshOffers(false);
-
     const { t } = useTranslation('buy', { keyPrefix: 'table' });
     const { classes } = useStyle();
 
-    const { propertiesToken } = usePropertiesToken(false);
+    const { propertiesToken } = usePropertiesToken();
 
     const offerType: OFFER_TYPE = useMemo((): OFFER_TYPE => {
         if(!offer && !propertiesToken) return OFFER_TYPE.EXCHANGE
@@ -129,7 +126,6 @@ export const GridPane: FC<GridPaneProps> = ({ offer }) => {
                     <Flex gap={"sm"}>
                         <BuyActionsWithPermit
                             buyOffer={offer}
-                            triggerRefresh={refreshOffers}
                             groupClassName={classes.buyButtonGroup}
                             buttonClassName={classes.buyButton}
                         />

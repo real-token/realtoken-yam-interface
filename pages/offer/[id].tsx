@@ -73,7 +73,7 @@ const ShowOfferPage: FC = () => {
 
     const { account } = useWeb3React();
     const { offer, isLoading } = useOffer(offerId);
-    const { getPropertyToken, propertiesIsloading } = usePropertiesToken(false);
+    const { getPropertyToken, propertiesIsloading } = usePropertiesToken();
 
     const { refreshOffers } = useRefreshOffers(false);
 
@@ -100,7 +100,7 @@ const ShowOfferPage: FC = () => {
     
       const isAccountOffer: boolean = useMemo(() => {
         if(!offer || !account) return false;
-        return offer.sellerAddress == account || (isAccountOffer && offer.buyerAddress == account)
+        return offer.sellerAddress == account.toLowerCase()
       },[offer, account])
 
     const onOpenBuyModal = useCallback(
@@ -109,14 +109,7 @@ const ShowOfferPage: FC = () => {
             title: <Title order={3}>{t2('buy.title')}</Title>,
             size: "lg",
             innerProps: {
-              offerId: offer.offerId,
-              price: offer.price,
-              offerAmount: offer.amount,
-              offerTokenAddress: offer.offerTokenAddress,
-              offerTokenDecimals: offer.offerTokenDecimals,
-              buyerTokenAddress: offer.buyerTokenAddress,
-              buyerTokenDecimals: offer.buyerTokenDecimals,
-              sellerAddress: offer.sellerAddress,
+              offer: offer,
               triggerTableRefresh: refreshOffers,
             },
         });

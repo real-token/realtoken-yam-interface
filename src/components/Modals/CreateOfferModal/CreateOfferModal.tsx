@@ -428,7 +428,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   const buyTokenSymbol =  buyerTokens.find(value => value.value == values.buyerTokenAddress)?.label ?? exchangeBuyerToken.find(value => value.value == values.buyerTokenAddress)?.label;
   const total = (values.amount ?? 0) * (values.price ?? 0);
 
-  const { getPropertyToken } = usePropertiesToken(false);
+  const { getPropertyToken } = usePropertiesToken();
   const officialPrice = getPropertyToken ? getPropertyToken(values.offerTokenAddress)?.officialPrice : undefined;
   const officialSellCurrency = getPropertyToken ? getPropertyToken(values.offerTokenAddress)?.currency : undefined;
 
@@ -522,6 +522,8 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
     )
   );
 
+  const [priceInDollar,setPriceInDollar] = useState<number|undefined>(undefined);
+
   // COMPONENTS
   const getSelect = (offerTokenSelectData: SelectItem[], buyerTokenSelectData: SelectItem[]) => {
 
@@ -568,27 +570,32 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
       </>
     )
   }
-  const PriceNumberInput = ({ label, width }:{ label?: string, width?: string }) => {
+  const PriceNumberInput = ({ label, width }:{ label: string, width: string }) => {
     return(
-      <>
-      <NumberInput
-        label={label ? label : t('price')}
-        placeholder={t('placeholderPrice')}
-        required={true}
-        disabled={false}
-        min={0.000001}
-        width={width ? width : "100%"}
-        max={undefined}
-        step={undefined}
-        showMax={false}
-        sx={{ flexGrow: 1 }}
-        {...getInputProps('price')}
-        error={shieldError && priceDifference ? t("shieldError", { priceDifference: (priceDifference*100).toFixed(2), maxPriceDifference: maxPriceDifference*100 }) : undefined}
-      />
-      <Text fz={"sm"} fs={"italic"}>
-        { officialPrice && officialSellCurrency ? t("officialPriceInfos", { officialPrice, officialSellCurrency }) : undefined }
-      </Text>
-      </>
+      <Flex direction={"column"} gap={"sm"} style={{ width: width ? width : "100%" }}>
+        <NumberInput
+          label={label}
+          placeholder={t('placeholderPrice')}
+          value={priceInDollar}
+          onChange={setPriceInDollar}
+          required={true}
+          disabled={false}
+          min={0.000001}
+          width={width ? width : "100%"}
+          max={undefined}
+          step={undefined}
+          showMax={false}
+          sx={{ flexGrow: 1 }}
+          error={shieldError && priceDifference ? t("shieldError", { priceDifference: (priceDifference*100).toFixed(2), maxPriceDifference: maxPriceDifference*100 }) : undefined}
+        />
+        { officialPrice && officialSellCurrency ?
+          <Text fz={"sm"} fs={"italic"}>
+            {t("officialPriceInfos", { officialPrice, officialSellCurrency })}
+          </Text>
+          :
+          undefined
+        }
+      </Flex>
     )
   }
 
@@ -628,7 +635,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
     const exchangeOfferTokenSymbol = exchangeOfferTokens.find(value => value.value == values.offerTokenAddress)?.label;
     const exchangeBuyerTokenSymbol = exchangeBuyerToken.find(value => value.value == values.buyerTokenAddress)?.label;
 
-    // const { getPropertyToken } = usePropertiesToken(false);
+    // const { getPropertyToken } = usePropertiesToken();
 
     // const exchangeOfferTokenPrice = values.offerTokenAddress ? getPropertyToken(values.offerTokenAddress)?.officialPrice : undefined;
     // const exchangeBuyerTokenPrice = values.buyerTokenAddress ? getPropertyToken(values.buyerTokenAddress)?.officialPrice : undefined;
@@ -686,35 +693,40 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
     )
   }
 
-  // BUY
-  const GetBuyPriceNumberInputs = () => {
+  // BUY and SELL
+  const GetPriceNumberInputs = () => {
 
-    const buyerTokenSymbol = offerTokens.find(token => token.value == values.offerTokenAddress)?.label;
-    const { price } = useOraclePriceFeed(values.offerTokenAddress);
-
-    const [value,setValue] = useState<string|undefined>("0");
+    const tokenSymbol = offer.offerType == OFFER_TYPE.BUY ?
+      offerTokens.find(token => token.value == values.offerTokenAddress)?.label
+      :
+      buyerTokens.find(token => token.value == values.buyerTokenAddress)?.label
+      ;
+    const { price } = useOraclePriceFeed(offer.offerType == OFFER_TYPE.BUY ? values.offerTokenAddress : values.buyerTokenAddress);
 
     useEffect(() => {
-      if(!values.price || !price) return;
-      setValue(new BigNumber(1).dividedBy(new BigNumber(values.price).dividedBy(price)).toString());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[values,price])
+      if(price && priceInDollar){
+        setFieldValue("price",parseFloat(new BigNumber(priceInDollar).dividedBy(price).toString().toString()))
+      }
+    },[price,priceInDollar])
 
     return(
-      <Flex direction={"column"} gap={9}>
-        <Flex gap={10} align={"center"}>
-          {PriceNumberInput({ label: t("priceInCurrency", { currency: "$" }), width: "100%" })}
-          <IconArrowsSort style={{ marginTop: "22px", rotate: "90deg" }} size={46}/>
+      <Flex gap={10} align={"start"}>
+        {PriceNumberInput({ 
+          label: t("priceInCurrency", { currency: "$" }), 
+          width: "100%" 
+        })}
+        <IconArrowRight style={{ marginTop: "22px" }} size={46}/>
+        <Flex direction={"column"} gap={"sm"} style={{ width: "100%" }}>
           <MantineInput
             hideControls={true}
-            label={buyTokenSymbol ? `${t("price")} "${buyTokenSymbol}"` : `${t("price")}`}
+            label={t("convertBuyPrice", { buyerTokenSymbol: tokenSymbol, prep: t("in") })}
             disabled={true}
             precision={6}
-            value={parseFloat(value ?? "0")}
+            {...getInputProps("price")}
             style={{ width: "100%" }}
           />
+          { tokenSymbol && price ? <Text fz={"sm"} fs={"italic"}>{t("withPrice", { buyerTokenSymbol: tokenSymbol, price: price.toString(), currency: "$" })}</Text> : undefined }
         </Flex>
-        { buyerTokenSymbol && price ? <Text>{t("withPrice", { buyerTokenSymbol: buyerTokenSymbol, price: price.toString(), currency: "$" })}</Text> : undefined }
       </Flex>
     )
   }
@@ -737,12 +749,10 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
             getSelect(offerTokens,buyerTokens) 
         }
 
-        { offer.offerType == OFFER_TYPE.BUY ?
-            GetBuyPriceNumberInputs()
-          : offer.offerType == OFFER_TYPE.EXCHANGE ?
+        { offer.offerType == OFFER_TYPE.EXCHANGE ?
             GetExchangePriceNumberInputs()
           :
-            PriceNumberInput({})
+            GetPriceNumberInputs()
         }
         
         <Divider />
@@ -753,9 +763,9 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
           placeholder={t('placeholderAmount')}
           required={true}
           min={0.000001}
-          max={parseFloat(balance ?? "0")}
+          max={balance && new BigNumber(balance).isGreaterThan(0) ? parseFloat(balance ?? "0") : undefined}
           setFieldValue={setFieldValue}
-          showMax={bigNumberbalance !== undefined}
+          showMax={bigNumberbalance && bigNumberbalance.isGreaterThan(0)}
           sx={{ flexGrow: 1 }}
           {...getInputProps('amount')}
         />
@@ -771,16 +781,11 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         <Group position={'left'} mt={'md'}>
           <>
             {summary()}
-            {  values.offerTokenAddress && bigNumberbalance && bigNumberbalance.eq(0) ? 
-                <Text color={"red"} fz={"sm"}>{t("zeroBalanceError", { tokenSymbol: offerTokenSymbol })}</Text> 
-              : 
-                undefined 
-            }
             <Button
               type={'submit'}
               aria-label={'submit'}
               loading={(bigNumberbalance && bigNumberbalance == undefined) || isSubmitting}
-              disabled={!isValid || bigNumberbalance?.eq(0) || shieldError}
+              disabled={!isValid || shieldError}
             >
               {"Approve offer"}
             </Button>

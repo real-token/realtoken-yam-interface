@@ -1,6 +1,5 @@
 import { useWeb3React } from "@web3-react/core"
 import BigNumber from "bignumber.js"
-import { Contract } from "ethers"
 import { useEffect, useState } from "react"
 import { oraclePriceFeedABI } from "src/abis"
 import { OraclePriceFeed } from "src/abis/types/oraclePriceFeed"
@@ -16,6 +15,7 @@ type UseOraclePriceFeed = (
 export const useOraclePriceFeed : UseOraclePriceFeed = (tokenAddress) => {
 
     const oracleContractAddress: string|undefined = chainLink.get(tokenAddress);
+
     const { provider } = useWeb3React();
 
     const [price,setPrice] = useState<BigNumber|undefined>(undefined)

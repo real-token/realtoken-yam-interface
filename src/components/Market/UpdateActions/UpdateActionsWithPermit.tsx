@@ -28,13 +28,7 @@ export const UpdateActionsWithPermit: FC<UpdateActions> = ({
         title: <Title order={3}>{t('update.title')}</Title>,
         size: "lg",
         innerProps: {
-          offerId: offer.offerId,
-          price: offer.price,
-          amount: offer.amount,
-          offerTokenAddress: offer.offerTokenAddress,
-          offerTokenDecimals: offer.offerTokenDecimals,
-          buyerTokenAddress: offer.buyerTokenAddress,
-          buyerTokenDecimals: offer.buyerTokenDecimals,
+          offer: offer,
           triggerTableRefresh: triggerRefresh,
         },
       });

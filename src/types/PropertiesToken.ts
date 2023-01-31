@@ -29,5 +29,6 @@ export type PropertiesToken = {
     currency: string,
     marketplaceLink: string
     imageLink: string[]
-    netRentYearPerToken?: number
+    netRentYearPerToken: number
+    annualYield?: number
 }

@@ -73,12 +73,8 @@ export const BuyModalWithPermit: FC<
     const activeChain = useActiveChain();
     
     const [offerTokenSellerBalance,setOfferTokenSellerBalance] = useState<string|undefined>("");
-    const { name:offerTokenName, symbol:offerTokenSymbol  } = useERC20TokenInfo(
-      offer.type == OFFER_TYPE.BUY ? offer.buyerTokenAddress : offer.offerTokenAddress
-    );
-    const { symbol:buyTokenSymbol, address:buyerTokenAddress } = useERC20TokenInfo(
-      offer.type == OFFER_TYPE.BUY ? offer.offerTokenAddress : offer.buyerTokenAddress
-    );
+    const { name:offerTokenName, symbol:offerTokenSymbol  } = useERC20TokenInfo(offer.offerTokenAddress);
+    const { symbol:buyTokenSymbol, address:buyerTokenAddress } = useERC20TokenInfo(offer.buyerTokenAddress);
     
     const realTokenYamUpgradeable = useContract(
       ContractsID.realTokenYamUpgradeable
