@@ -16,7 +16,7 @@ export const AdminActions = () => {
             { isRole(role,[USER_ROLE.ADMIN]) ? <AddWLAction/> : undefined }
             { isRole(role,[USER_ROLE.ADMIN]) ? <GrantRole /> : undefined }
             <CheckRole />
-            <PauseAction />
+            { isRole(role,[USER_ROLE.ADMIN]) ? <PauseAction /> : undefined }
         </Flex>
     )
 }

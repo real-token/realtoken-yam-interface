@@ -31,7 +31,6 @@ export const OfferPrice = ({ offer } : OfferPriceProps) => {
     const isZero: boolean|undefined = useMemo(() => {
         if(!offerPriceDelta) return undefined;
         const valueFloat = Math.abs(parseFloat(offerPriceDelta.toString())*100).toFixed(0);
-        console.log(valueFloat)
         return valueFloat == "0"
     },[offerPriceDelta]);
 

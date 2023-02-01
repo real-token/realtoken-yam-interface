@@ -50,7 +50,7 @@ export const Table = <T,>({
                 <th
                   key={header.id}
                   colSpan={header.column.columnDef.meta?.colSpan}
-                  style={{ textAlign: 'center' }}
+                  style={{ textAlign: 'center', width: header.getSize() }}
                 >
                   <TableHeader header={header} />
                 </th>
@@ -64,7 +64,7 @@ export const Table = <T,>({
               <Fragment key={row.id}>
                 <tr>
                   {row.getVisibleCells().map(({ id, column, getContext, getValue }) => (
-                    <td key={id} colSpan={column.columnDef.meta?.colSpan}>
+                    <td key={id} colSpan={column.columnDef.meta?.colSpan} style={{ width: column.getSize() }}>
                       { String(getValue()) ? flexRender(column.columnDef.cell, getContext()) : <Skeleton height={15}/>}
                     </td>
                   ))}
@@ -73,7 +73,7 @@ export const Table = <T,>({
                   <tr>
                     <td
                       colSpan={table.options.meta?.colSpan}
-                      style={{ padding: 0 }}
+                      style={{ padding: 0}}
                     >
                       <TableSubRow row={row} />
                     </td>

@@ -19,7 +19,8 @@ export type Offer = {
   availableAmount: string;
   balanceWallet?: string;
   allowanceToken?: string;
-  type?: OFFER_TYPE|undefined
+  type?: OFFER_TYPE|undefined;
+  createdAtTimestamp: number
 };
 
 export const DEFAULT_OFFER: Offer = {
@@ -40,7 +41,8 @@ export const DEFAULT_OFFER: Offer = {
   removed: false,
   availableAmount: "",
   balanceWallet: "",
-  type: undefined
+  type: undefined,
+  createdAtTimestamp: 0
 }
 
 export const OFFER_LOADING = [DEFAULT_OFFER, DEFAULT_OFFER, DEFAULT_OFFER]

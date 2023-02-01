@@ -34,7 +34,7 @@ export const AddWL: FC<AddWLProps> = ({ index }) => {
         }
     ];
 
-    const { getInputProps, values, isValid, onSubmit, reset } = useForm<AddWLForm>({
+    const { getInputProps, values, isValid, onSubmit } = useForm<AddWLForm>({
         initialValues: {
             type: datas[0].value,
             address: ""

@@ -10,6 +10,8 @@
     "sellerAddress": "Adresse du vendeur",
     "price": "Prix/Jeton",
     "amount": "Quantité disponible",
+    "allowance": "Allowance",
+    "walletBalance": "Wallet balance",
     "address": "Adresse",
     "actionEdit": "Editer",
     "actionDelete": "Supprimer",

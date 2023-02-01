@@ -38,10 +38,10 @@ const HomePage: NextPage = () => {
     // </Tabs>
     <Flex my={"xl"} direction={"column"}>
       <MarketTableFilter />
-         <Display 
-            table={<MarketTable/>}
-            grid={<MarketGrid offers={offers}/>}
-          />
+      <Display 
+        table={<MarketTable/>}
+        grid={<MarketGrid offers={offers}/>}
+      />
     </Flex>
   );
 };

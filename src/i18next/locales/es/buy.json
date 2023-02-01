@@ -10,6 +10,8 @@
     "sellerAddress": "Seller Address",
     "price": "Price/token",
     "amount": "Available quantity",
+    "allowance": "Allowance",
+    "walletBalance": "Wallet balance",
     "address": "Address",
     "actionEdit": "Edit",
     "actionDelete": "Delete",

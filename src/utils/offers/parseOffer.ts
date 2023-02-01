@@ -97,6 +97,7 @@ export const parseOffer = (
           hasPropertyToken: false,
           type: undefined,
           removed: false,
+          createdAtTimestamp: offer.createdAtTimestamp
         };
 
         o.type = getOfferType(o.offerTokenType,o.buyerTokenType);

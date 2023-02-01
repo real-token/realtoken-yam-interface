@@ -34,5 +34,6 @@ export const getOfferQuery = (): string => {
         buyer {
             address
         }
+        createdAtTimestamp
     `
 }

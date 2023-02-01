@@ -14,7 +14,7 @@ export const Admin = () => {
             p={"xl"}
             style={{ flexGrow: 1 }}
             >
-            <Tabs color={"brand"} variant={"pills"} defaultValue={'adminActions'}>
+            <Tabs color={"brand"} variant={"pills"} defaultValue={'adminMarketTable'}>
                 <Tabs.List>
                     <Tabs.Tab value={'adminMarketTable'} icon={<IconList size={18} />}>
                         {t('adminMarketTable')}

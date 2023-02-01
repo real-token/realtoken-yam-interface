@@ -20,6 +20,7 @@ import { useAppSelector } from 'src/hooks/react-hooks';
 type DeleteModalProps = {
   offerId: string;
   triggerTableRefresh: Dispatch<SetStateAction<boolean>>;
+  isAdminDelete?: boolean;
 };
 
 type DeleteFormValues = {
@@ -29,12 +30,12 @@ type DeleteFormValues = {
 export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
   context,
   id,
-  innerProps: { offerId, triggerTableRefresh },
+  innerProps: { offerId, triggerTableRefresh, isAdminDelete = false },
 }) => {
   const { account, provider } = useWeb3React();
   const { onSubmit, reset, setFieldValue, values } = useForm<DeleteFormValues>({
     initialValues: {
-      offerId: offerId,
+      offerId,
     },
   });
 
@@ -84,10 +85,13 @@ export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
 
         setSubmitting(true);
 
-        const transaction = await realTokenYamUpgradeable.deleteOffer(
-          formValues.offerId
-        );
-
+        let transaction;
+        if(isAdminDelete){
+          transaction = await realTokenYamUpgradeable.deleteOfferByAdmin([formValues.offerId]);
+        }else{
+          transaction = await realTokenYamUpgradeable.deleteOffer(formValues.offerId);
+        }
+          
         const notificationPayload = {
           key: transaction.hash,
           href: `${activeChain?.blockExplorerUrl}tx/${transaction.hash}`,
