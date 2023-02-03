@@ -1,6 +1,6 @@
 import BigNumber from "bignumber.js"
 import { useMemo } from "react";
-import { Offer, OFFER_TYPE } from "src/types/offer";
+import { Offer } from "src/types/offer";
 
 type UseOfferPriceInDollar = (
     tokenPrice: BigNumber|undefined,

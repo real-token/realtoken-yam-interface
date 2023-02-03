@@ -1,4 +1,4 @@
-import { Skeleton, Text } from "@mantine/core"
+import { Flex, Skeleton, Text } from "@mantine/core"
 import BigNumber from "bignumber.js";
 import { useMemo } from "react";
 import { useOfferPriceInDollar } from "src/hooks/useOfferPriceInDollar";
@@ -36,14 +36,7 @@ export const OfferPrice = ({ offer } : OfferPriceProps) => {
     },[offerPriceDelta]);
 
     return(
-        <Text
-            size={'sm'}
-            sx={{
-            textAlign: 'center',
-            textOverflow: 'ellipsis',
-            overflow: 'hidden',
-            }}
-        >
+        <Flex justify={"center"} gap={"sm"}>
             <Text>{`${offerPrice} ($${parseFloat(tokenPriceInDollar ? tokenPriceInDollar?.toString() : "0").toFixed(2)})`}</Text>
             {   
                 !offerPriceDelta && isZero == undefined ?
@@ -55,6 +48,6 @@ export const OfferPrice = ({ offer } : OfferPriceProps) => {
                 :
                     undefined
             }
-        </Text>
+        </Flex>
     )
 }

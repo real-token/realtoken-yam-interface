@@ -20,7 +20,7 @@ export const OffialPrice = ({ offer } : OffialPriceProps) => {
     },[propertyToken]);
 
     return(
-        <Flex>
+        <Flex justify={"center"}>
             { officialPrice ? officialPrice : <Skeleton height={15}/> }
         </Flex>
     )

@@ -16,7 +16,7 @@ export const OriginalYield = ({ offer } : OriginalYieldProps) => {
     },[propertyToken])
 
     return(
-        <Flex>
+        <Flex justify={"center"}>
             {originalYield ? `${originalYield.toFixed(2)}%` : <Skeleton height={15}/>}
         </Flex>
     )

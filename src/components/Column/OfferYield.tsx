@@ -37,7 +37,7 @@ export const OfferYield = ({ offer } : OfferYieldProps) => {
     },[offerDelta])
 
     return(
-        <Flex gap={"sm"}>
+        <Flex gap={"sm"} justify={"center"}>
             { offerAjustedYield && offerDelta && isZero !== undefined ?
             <>
             <Text>{`${parseFloat(offerAjustedYield.multipliedBy(100).toString()).toFixed(2)}%`}</Text>
