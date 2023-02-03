@@ -1,4 +1,4 @@
-import { ActionIcon, Group, Title, Text, Flex, Button, Skeleton } from "@mantine/core"
+import { ActionIcon, Group, Title, Text, Flex, Button, Skeleton, Tooltip } from "@mantine/core"
 import { IconChevronDown, IconChevronUp, IconTrash } from "@tabler/icons"
 import { ColumnDef, RowSelectionState, Table } from "@tanstack/react-table"
 import BigNumber from "bignumber.js"
@@ -354,4 +354,82 @@ export const offerDateColumn: ColumnFn<number> = (t,span) => {
     ),
     meta: { colSpan: span },
   }
+}
+
+export const adminOfferTokenNameColumn: ColumnFn<string> = (t,span) => {
+  return{
+    id: `admin-offer-token`,
+    accessorKey: "offerTokenName",
+    header: t('offerTokenName'),
+    cell: ({ row, getValue }) => {
+      const offer :Offer = row.original;
+      return(
+        <Flex justify={"center"}>
+          { offer.type == OFFER_TYPE.SELL ?
+              <TokenName offer={row.original}/>
+            :
+            <Text
+              size={'sm'}
+              sx={{
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+              }}
+            >
+              {getValue()}
+            </Text>
+          }
+        </Flex>
+      )
+    },
+    meta: { colSpan: span },
+  }
+}
+
+export const adminBuyerTokenNameColumn: ColumnFn<string> = (t,span) => {
+  return{
+    id: `admin-buyer-token`,
+    accessorKey: "offerTokenName",
+    header: t('offerTokenName'),
+    cell: ({ row, getValue }) => {
+      const offer :Offer = row.original;
+      return(
+        <Flex justify={"center"}>
+          { offer.type == OFFER_TYPE.BUY ?
+              <TokenName offer={row.original}/>
+            :
+            <Text
+              size={'sm'}
+              sx={{
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+              }}
+            >
+              {getValue()}
+            </Text>
+          }
+        </Flex>
+      )
+    },
+    meta: { colSpan: span },
+  }
+}
+
+export const adminAmount: ColumnFn<string> = (t,span) => {
+  return{
+    id: 'amount',
+    accessorKey: 'amount',
+    header: t('amount'),
+    cell: ({ row }) => {
+      const offer:Offer = row.original;
+      return(
+        <Flex justify={"center"} direction={"column"}>
+          <Text>{`Amount: ${offer.amount}`}</Text>              
+          <Text>{`Wallet balance: ${offer.balanceWallet}`}</Text>     
+          <Text>{`Allowance: ${offer.allowanceToken}`}</Text>              
+        </Flex>
+      )
+    },
+    enableSorting: true,
+    meta: { colSpan: span },
+}
 }

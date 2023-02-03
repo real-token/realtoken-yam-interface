@@ -101,7 +101,7 @@ export const parseOffer = (
         };
 
         o.type = getOfferType(o.offerTokenType,o.buyerTokenType);
-  
+
         // console.log(offer.availableAmount, balanceWallet, allowance)
         resolve(o);
       } catch (err) {

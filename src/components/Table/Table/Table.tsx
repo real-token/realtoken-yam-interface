@@ -64,7 +64,7 @@ export const Table = <T,>({
               <Fragment key={row.id}>
                 <tr>
                   {row.getVisibleCells().map(({ id, column, getContext, getValue }) => (
-                    <td key={id} colSpan={column.columnDef.meta?.colSpan} style={{ width: column.getSize() }}>
+                    <td key={id} colSpan={column.columnDef.meta?.colSpan}>
                       { String(getValue()) ? flexRender(column.columnDef.cell, getContext()) : <Skeleton height={15}/>}
                     </td>
                   ))}

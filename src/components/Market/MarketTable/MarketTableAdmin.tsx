@@ -18,7 +18,7 @@ import { MarketSubRow } from '../MarketSubRow';
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 import { selectOffers } from 'src/store/features/interface/interfaceSelector';
 import { useSelector } from 'react-redux';
-import { adminActionsColumn, adminHeader, allowanceColumn, amountColumn, buyerTokenNameColumn, idColumn, offerDateColumn, offerShortTokenNameColumn, priceColumn, sellerAddressColumn, walletBalanceColumn } from 'src/hooks/column';
+import { adminActionsColumn, adminAmount, adminBuyerTokenNameColumn, adminHeader, adminOfferTokenNameColumn, allowanceColumn, amountColumn, buyerTokenNameColumn, idColumn, offerDateColumn, offerShortTokenNameColumn, priceColumn, sellerAddressColumn, typeColumn, walletBalanceColumn } from 'src/hooks/column';
 import React from 'react';
 import { Offer } from 'src/types/offer';
 import { useModals } from '@mantine/modals';
@@ -68,7 +68,7 @@ export const MarketTableAdmin: FC = () => {
       {
           id: 'title',
           header: ({ table }) => adminHeader(table, rowSelection, deleteSelectedOffers, { title: t('title') }),
-          meta: { colSpan: 13 },
+          meta: { colSpan: 15 },
           columns: [
             {
               id: 'select',
@@ -95,14 +95,13 @@ export const MarketTableAdmin: FC = () => {
               ),
               size: '20'
             },
+            typeColumn,
             idColumn(t,1),
-            offerShortTokenNameColumn(t,2),
-            buyerTokenNameColumn(t,2),
+            adminOfferTokenNameColumn(t,2),
+            adminBuyerTokenNameColumn(t,2),
             sellerAddressColumn(t,1),
             priceColumn(t,1),
-            amountColumn(t,1),
-            allowanceColumn(t,1),
-            walletBalanceColumn(t,1),
+            adminAmount(t,1),
             offerDateColumn(t,1),
             adminActionsColumn(t,1)
           ]
@@ -123,7 +122,7 @@ export const MarketTableAdmin: FC = () => {
     getExpandedRowModel: getExpandedRowModel(),
     onRowSelectionChange: setRowSelection,
     enableRowSelection: true,
-    meta: { colSpan: 13 },
+    meta: { colSpan: 15 },
   });
 
   return (
