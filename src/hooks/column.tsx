@@ -27,15 +27,13 @@ export const header = ({ title } : { title: string }) => {
     )
 }
 
-export const adminHeader = (table: Table<Offer>, rowSelection: RowSelectionState,{ title } : { title: string }) => {
+export const adminHeader = (table: Table<Offer>, rowSelection: RowSelectionState, deleteOffers: () => void, { title } : { title: string }) => {
 
   const { getIsSomeRowsSelected, getIsAllRowsSelected } = table;
 
-  console.log(rowSelection)
-
   return (
     <Flex justify={"space-between"}>
-      <Button color={"red"} style={{ display: "flex", gap: 5 }} disabled={!getIsSomeRowsSelected() && !getIsAllRowsSelected()}>
+      <Button color={"red"} style={{ display: "flex", gap: 5 }} disabled={!getIsSomeRowsSelected() && !getIsAllRowsSelected()} onClick={() => deleteOffers()}>
         <Flex gap={"sm"} align={"center"}>
           <IconTrash size={16} />
           {`Delete ${Object.keys(rowSelection).length} selected offers`}

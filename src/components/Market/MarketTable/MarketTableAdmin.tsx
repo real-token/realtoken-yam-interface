@@ -1,6 +1,6 @@
-import { FC, HTMLProps, useMemo, useState } from 'react';
+import { FC, HTMLProps, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Flex, MantineSize, TextInput } from '@mantine/core';
+import { Flex, MantineSize, TextInput, Title } from '@mantine/core';
 import {
   ExpandedState,
   PaginationState,
@@ -18,9 +18,10 @@ import { MarketSubRow } from '../MarketSubRow';
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 import { selectOffers } from 'src/store/features/interface/interfaceSelector';
 import { useSelector } from 'react-redux';
-import { adminActionsColumn, adminHeader, allowanceColumn, amountColumn, buyerTokenNameColumn, idColumn, offerDateColumn, offerShortTokenNameColumn, offerYieldColumn, officialPriceColumn, originalYieldColumn, priceColumn, sellerAddressColumn, walletBalanceColumn } from 'src/hooks/column';
+import { adminActionsColumn, adminHeader, allowanceColumn, amountColumn, buyerTokenNameColumn, idColumn, offerDateColumn, offerShortTokenNameColumn, priceColumn, sellerAddressColumn, walletBalanceColumn } from 'src/hooks/column';
 import React from 'react';
 import { Offer } from 'src/types/offer';
+import { useModals } from '@mantine/modals';
 
 export const MarketTableAdmin: FC = () => {
 
@@ -40,12 +41,33 @@ export const MarketTableAdmin: FC = () => {
   const { t } = useTranslation('buy', { keyPrefix: 'table' });
   const { t: t2 } = useTranslation('table', { keyPrefix: 'filters' });
 
-  const [rowSelection, setRowSelection] = useState({})
+  const [rowSelection, setRowSelection] = useState<{ [key: number]: boolean }>({});
 
+  const modals = useModals();
+  const { t: t3 } = useTranslation('modals');
+
+  const deleteSelectedOffers = useCallback(() => {
+    const offerIds: string[] = [];
+    const selectedId: string[] = Array.from(Object.keys(rowSelection));
+    selectedId.forEach( (id: string) => {
+      offerIds.push(offers[parseInt(id)].offerId)
+    });
+
+    modals.openContextModal('delete', {
+      title: <Title order={3}>{t3('delete.title')}</Title>,
+      size: "lg",
+      innerProps: {
+        offerIds: offerIds,
+        onSuccess: () => setRowSelection({}),
+        isAdminDelete: true
+      }
+    });
+  },[modals, offers, rowSelection, t3]);
+ 
   const adminColumns: ColumnDef<Offer>[] = useMemo(() => [
       {
           id: 'title',
-          header: ({ table }) => adminHeader(table, rowSelection, { title: t('title') }),
+          header: ({ table }) => adminHeader(table, rowSelection, deleteSelectedOffers, { title: t('title') }),
           meta: { colSpan: 13 },
           columns: [
             {
@@ -84,7 +106,7 @@ export const MarketTableAdmin: FC = () => {
             offerDateColumn(t,1),
             adminActionsColumn(t,1)
           ]
-  }],[rowSelection, t]);
+  }],[deleteSelectedOffers, rowSelection, t]);
 
   const table = useReactTable({
     data: offers,
