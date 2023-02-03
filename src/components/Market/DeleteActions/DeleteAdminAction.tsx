@@ -29,8 +29,8 @@ export const DeleteAdminAction: FC<DeleteActions> = ({
         title: <Title order={3}>{t('delete.title')}</Title>,
         size: "lg",
         innerProps: {
-          offerId: offer.offerId,
-          triggerTableRefresh: refreshOffers,
+          offerIds: [offer.offerId],
+          onSuccess: refreshOffers,
           isAdminDelete: true
         },
       });
