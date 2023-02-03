@@ -8,6 +8,7 @@ import { useContract } from "src/hooks";
 import { wlTokensAtom } from "src/states";
 import { calcRem } from "src/utils/style";
 import { utils } from "ethers";
+import { useTranslation } from "react-i18next";
 
 interface AddWLForm{
     type: string;
@@ -19,29 +20,35 @@ interface AddWLProps{
 }
 export const AddWL: FC<AddWLProps> = ({ index }) => {
 
-    const datas = [
+    const { t } = useTranslation("admin", { keyPrefix: "addWL" });
+
+    const datas: { label: string, value: string }[] = [
         {
-            label: "RealT token",
+            label: t("tokenType.0"),
+            value: "0"
+        },
+        {
+            label: t("tokenType.1"),
             value: "1"
         },
         {
-            label: "ERC20 with permit",
+            label: t("tokenType.2"),
             value: "2"
         },
         {
-            label: "ERC20 witeout permit",
+            label: t("tokenType.3"),
             value: "3"
         }
     ];
 
     const { getInputProps, values, isValid, onSubmit } = useForm<AddWLForm>({
         initialValues: {
-            type: datas[0].value,
+            type: datas[1].value,
             address: ""
         },
         validate: {
-            type: (value) => value !== "" ? null : "Wrong token type.",
-            address: (value) => utils.isAddress(value) && value !== "" ? null : "Address is not valid."
+            type: (value) => value !== "" ? null : t("invalidTokenType"),
+            address: (value) => utils.isAddress(value) && value !== "" ? null : t("invalidAddress")
         }
     });
 
@@ -124,7 +131,7 @@ export const AddWL: FC<AddWLProps> = ({ index }) => {
                     style={{ width: calcRem(400) }}
                     disabled={!isEdit}
                 />
-                <Tooltip label={"Token already whitelisted."} position={"right"} opened={isAlreadyWL} color={"red"} withArrow={true} offset={10}>
+                <Tooltip label={t("tokenAlreadyWL")} position={"right"} opened={isAlreadyWL} color={"red"} withArrow={true} offset={10}>
                     <TextInput
                         style={{ width: calcRem(400) }}
                         disabled={!isEdit}

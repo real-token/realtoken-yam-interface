@@ -7,6 +7,7 @@ import { utils } from "ethers";
 import { ContractsID, NOTIFICATIONS, NotificationsID } from "src/constants";
 import { useActiveChain, useContract } from "src/hooks";
 import { showNotification, updateNotification } from "@mantine/notifications";
+import { useTranslation } from "react-i18next";
 
 interface GrandRoleForm{
     type: string;
@@ -14,6 +15,8 @@ interface GrandRoleForm{
 }
 
 export const GrantRole = () => {
+
+    const { t } = useTranslation("admin");
 
     const datas = [
         {
@@ -32,7 +35,7 @@ export const GrantRole = () => {
             address: "",
         },
         validate: {
-            address: (value) => utils.isAddress(value) && value !== "" ? null : "Address is not valid."
+            address: (value) => utils.isAddress(value) && value !== "" ? null : t("addWL.invalidAddress")
         }
     });
 
@@ -79,12 +82,12 @@ export const GrantRole = () => {
     }
 
     return(
-        <Action title={"Grant role"}>
+        <Action title={t("grantRole.title")}>
             <form onSubmit={onSubmit(grantRole)}>
                 <Flex gap={"sm"}>
                     <Select data={datas} {...getInputProps("type")}/>
                     <TextInput {...getInputProps("address")} style={{ width: calcRem(400) }}/>
-                    <Button type={"submit"} disabled={!isValid()}>{"Grant Role"}</Button>
+                    <Button type={"submit"} disabled={!isValid()}>{t("grantRole.title")}</Button>
                 </Flex>
             </form>
         </Action>

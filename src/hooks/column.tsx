@@ -335,7 +335,7 @@ export const offerDateColumn: ColumnFn<number> = (t,span) => {
   return{
     id: 'offer-date',
     accessorKey: "createdAtTimestamp",
-    header: "On market since",
+    header: t("onMarketSince"),
     cell: ({ getValue }) => (
       <Text
             size={'sm'}

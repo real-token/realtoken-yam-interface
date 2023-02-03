@@ -16,7 +16,8 @@
     "actionEdit": "Edit",
     "actionDelete": "Delete",
     "buy": "Buy",
-    "privateTexte": "private"
+    "privateTexte": "private",
+    "onMarketSince": "On market since"
   },
   "grid": {
     "buy": "Buy",

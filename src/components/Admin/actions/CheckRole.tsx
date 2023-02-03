@@ -7,6 +7,7 @@ import { utils } from "ethers";
 import { ContractsID } from "src/constants";
 import { useContract } from "src/hooks";
 import { calcRem } from "src/utils/style";
+import { useTranslation } from "react-i18next";
 
 interface GetRoleForm{
     address: string;
@@ -14,12 +15,14 @@ interface GetRoleForm{
 
 export const CheckRole = () => {
 
+    const { t } = useTranslation("admin");
+
     const { getInputProps, isValid, onSubmit } = useForm<GetRoleForm>({
         initialValues: {
             address: ""
         },
         validate: {
-            address: (value) => utils.isAddress(value) && value !== "" ? null : "Address is not valid."
+            address: (value) => utils.isAddress(value) && value !== "" ? null : t("addWL.invalidAddress")
         }
     });
 
@@ -53,11 +56,11 @@ export const CheckRole = () => {
     }
 
     return(
-        <Action title={"Check address role"}>
+        <Action title={t("checkAddress.title")}>
             <form onSubmit={onSubmit(getRole)}>
                 <Flex gap={"sm"}>
                     <TextInput {...getInputProps("address")} style={{ width: calcRem(400) }}/>
-                    <Button type={"submit"} disabled={!isValid()}>{"Get address Role"}</Button>
+                    <Button type={"submit"} disabled={!isValid()}>{t("checkAddress.getAddressButton")}</Button>
                 </Flex>
             </form>
             { role ? <Text>{`Role: ${role}`}</Text> : undefined }

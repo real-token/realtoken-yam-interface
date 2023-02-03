@@ -1,0 +1,25 @@
+{
+    "addWL": {
+        "invalidTokenType": "Wrong token type.",
+        "invalidAddress": "Address is not valid.",
+        "tokenAlreadyWL": "Token already whitelisted.",
+        "tokenType": {
+            "0": "Delete",
+            "1": "RealT token",
+            "2": "ERC20 with permit",
+            "3": "ERC20 witeout permit"
+        }
+    },
+    "addWlActions": {
+        "title": "Whitelist token",
+        "tokenAddress": "Token address",
+        "wlToken": "Whitelist token(s)"
+    },
+    "checkAddress": {
+        "title": "Check address role",
+        "getAddressButton": "Get address Role"
+    },
+    "grantRole":{
+        "title": "Grant role"
+    }
+}

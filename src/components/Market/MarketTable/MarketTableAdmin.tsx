@@ -18,7 +18,7 @@ import { MarketSubRow } from '../MarketSubRow';
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 import { selectOffers } from 'src/store/features/interface/interfaceSelector';
 import { useSelector } from 'react-redux';
-import { adminActionsColumn, adminAmount, adminBuyerTokenNameColumn, adminHeader, adminOfferTokenNameColumn, allowanceColumn, amountColumn, buyerTokenNameColumn, idColumn, offerDateColumn, offerShortTokenNameColumn, priceColumn, sellerAddressColumn, typeColumn, walletBalanceColumn } from 'src/hooks/column';
+import { adminActionsColumn, adminAmount, adminBuyerTokenNameColumn, adminHeader, adminOfferTokenNameColumn, idColumn, offerDateColumn, priceColumn, sellerAddressColumn, typeColumn } from 'src/hooks/column';
 import React from 'react';
 import { Offer } from 'src/types/offer';
 import { useModals } from '@mantine/modals';
