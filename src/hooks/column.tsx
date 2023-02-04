@@ -258,7 +258,7 @@ export const offerYieldColumn: ColumnFn<unknown> = (t,span) => {
       }
 }
 
-export const buyShortTokenNameColumn: ColumnFn<unknown> = (t,span) => {
+export const offerShortTokenNameColumn: ColumnFn<unknown> = (t,span) => {
     return {
         id: 'offerShortTokenName',
         accessorKey: 'offerTokenName',
@@ -270,7 +270,7 @@ export const buyShortTokenNameColumn: ColumnFn<unknown> = (t,span) => {
     }
 }
 
-export const offerShortTokenNameColumn: ColumnFn<string> = (t,span) => {
+export const buyShortTokenNameColumn: ColumnFn<string> = (t,span) => {
     return {
         id: 'buyerShortTokenName',
         accessorKey: 'buyerTokenName',
