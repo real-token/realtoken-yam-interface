@@ -27,6 +27,10 @@ export enum NotificationsID {
   deleteOfferError = 'deleteOfferError',
   createOfferInvalid = 'createOfferInvalid',
   buyOfferInvalid = 'buyOfferInvalid',
+
+  grantRoleLoading = "grantRoleLoading",
+  grantRoleSuccess = "grantRoleSuccess",
+  grantRoleInvalid = "grantRoleInvalid",
 }
 
 export const NOTIFICATIONS = asConst<
@@ -36,6 +40,87 @@ export const NOTIFICATIONS = asConst<
     NotificationProps | ((payload: any) => NotificationProps)
   >
 >()({
+  [NotificationsID.grantRoleLoading]: (payload: {
+    key: string;
+    hash: string;
+    href: string;
+  }) => ({
+    id: `grant-role-${payload.key}`,
+    loading: true,
+    autoClose: false,
+    disallowClose: true,
+    title: (
+      <Translation ns={'notifications'}>
+        {(t) => t('grantRoleLoading.title')}
+      </Translation>
+    ),
+    message: (
+      <Translation ns={'notifications'}>
+        {(t) => (
+          <Stack spacing={1}>
+            {`${t('grantRoleLoading.message')}`}
+            <Anchor component={NextLink} href={payload.href} target={'_blank'}>
+              <Text>{`(${shortenString(payload.hash)})`}</Text>
+            </Anchor>
+          </Stack>
+        )}
+      </Translation>
+    ),
+  }),
+  [NotificationsID.grantRoleSuccess]: (payload: {
+    key: string;
+    hash: string;
+    href: string;
+  }) => ({
+    id: `grant-role-${payload.key}`,
+    loading: true,
+    autoClose: false,
+    disallowClose: true,
+    title: (
+      <Translation ns={'notifications'}>
+        {(t) => t('grantRoleSuccess.title')}
+      </Translation>
+    ),
+    message: (
+      <Translation ns={'notifications'}>
+        {(t) => (
+          <Stack spacing={1}>
+            {`${t('grantRoleSuccess.message')}`}
+            <Anchor component={NextLink} href={payload.href} target={'_blank'}>
+              <Text>{`(${shortenString(payload.hash)})`}</Text>
+            </Anchor>
+          </Stack>
+        )}
+      </Translation>
+    ),
+  }),
+  [NotificationsID.grantRoleInvalid]: (payload: {
+    key: string;
+    hash: string;
+    href: string;
+  }) => ({
+    id: `grant-role-${payload.key}`,
+    loading: true,
+    autoClose: false,
+    disallowClose: true,
+    title: (
+      <Translation ns={'notifications'}>
+        {(t) => t('grantRoleInvalid.title')}
+      </Translation>
+    ),
+    message: (
+      <Translation ns={'notifications'}>
+        {(t) => (
+          <Stack spacing={1}>
+            {`${t('grantRoleInvalid.message')}`}
+            <Anchor component={NextLink} href={payload.href} target={'_blank'}>
+              <Text>{`(${shortenString(payload.hash)})`}</Text>
+            </Anchor>
+          </Stack>
+        )}
+      </Translation>
+    ),
+  }),
   [NotificationsID.userCopied]: {
     id: 'user-copied',
     color: 'teal',

@@ -1,4 +1,16 @@
 {
+  "grantRoleLoading": {
+    "title": "Veuillez patienter",
+    "message": "Votre transaction est en cours de validation."
+  },
+  "grantRoleSuccess": {
+    "title": "Veuillez patienter",
+    "message": "La transaction d'octroy de rôle est validé."
+  },
+  "grantRoleInvalid": {
+    "title": "Error",
+    "message": "La transaction d'octroy de rôle à rencontré un problème."
+  },
   "userCopied": {
     "title": "Copié 🎉",
     "message": "Votre adresse a bien été copiéé à votre presse-papiers."

@@ -101,7 +101,7 @@ export const fetchOfferTheGraph = (
               where: { offers_: { removedAtBlock: null } }
             ) {
               address
-              offers(first: 1000) {
+              offers(first: 1000){
                 id
                 offerToken {
                   address

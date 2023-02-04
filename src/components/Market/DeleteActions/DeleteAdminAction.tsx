@@ -1,4 +1,4 @@
-import { Dispatch, FC, SetStateAction, useCallback } from 'react';
+import { FC, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ActionIcon, Group, Title } from '@mantine/core';
@@ -7,20 +7,21 @@ import { IconTrash } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
 
 import { Offer } from 'src/types/offer/Offer';
+import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 
 type DeleteActions = {
   deleteOffer: Offer;
-  triggerRefresh: Dispatch<SetStateAction<boolean>>;
 };
 
-export const DeleteActions: FC<DeleteActions> = ({
+export const DeleteAdminAction: FC<DeleteActions> = ({
   deleteOffer,
-  triggerRefresh,
 }) => {
   const { account } = useWeb3React();
   const modals = useModals();
 
   const { t } = useTranslation('modals');
+
+  const { refreshOffers } = useRefreshOffers(false);
 
   const onOpenDeleteModal = useCallback(
     (offer: Offer) => {
@@ -29,11 +30,12 @@ export const DeleteActions: FC<DeleteActions> = ({
         size: "lg",
         innerProps: {
           offerIds: [offer.offerId],
-          onSuccess: triggerRefresh,
+          onSuccess: refreshOffers,
+          isAdminDelete: true
         },
       });
     },
-    [modals, triggerRefresh, t]
+    [modals, refreshOffers, t]
   );
 
   const onOpenWalletModal = useCallback(() => {

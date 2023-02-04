@@ -1,17 +1,19 @@
-import { ActionIcon, Group, Title, Text, Flex, Skeleton } from "@mantine/core"
-import { IconChevronDown, IconChevronUp } from "@tabler/icons"
-import { ColumnDef } from "@tanstack/react-table"
+import { ActionIcon, Group, Title, Text, Flex, Button, Skeleton } from "@mantine/core"
+import { IconChevronDown, IconChevronUp, IconTrash } from "@tabler/icons"
+import { ColumnDef, RowSelectionState, Table } from "@tanstack/react-table"
 import BigNumber from "bignumber.js"
 import { TFunction } from "react-i18next"
 import { OfferPrice } from "src/components/Column/OfferPrice"
 import { OfferYield } from "src/components/Column/OfferYield"
 import { TokenName } from "src/components/Column/TokenName"
 import { BuyActionsWithPermit } from "src/components/Market/BuyActions"
+import { DeleteAdminAction } from "src/components/Market/DeleteActions/DeleteAdminAction"
 import { ShowOfferAction } from "src/components/Market/ShowOfferAction/ShowOfferAction"
 import { OfferTypeBadge } from "src/components/Offer/OfferTypeBadge"
 import { Offer, OFFER_TYPE } from "src/types/offer"
 import { getReduceAddress } from "src/utils/address"
 import { ENV, isEnvs } from "src/utils/isEnv"
+import moment from "moment"
 
 type ColumnFn<T> = (t: TFunction<"buy","table">, span: number) => ColumnDef<Offer,T>
 
@@ -21,6 +23,25 @@ export const header = ({ title } : { title: string }) => {
           {title} 
         </Title>
     )
+}
+
+export const adminHeader = (table: Table<Offer>, rowSelection: RowSelectionState, deleteOffers: () => void, { title } : { title: string }) => {
+
+  const { getIsSomeRowsSelected, getIsAllRowsSelected } = table;
+
+  return (
+    <Flex justify={"space-between"}>
+      <Button color={"red"} style={{ display: "flex", gap: 5 }} disabled={!getIsSomeRowsSelected() && !getIsAllRowsSelected()} onClick={() => deleteOffers()}>
+        <Flex gap={"sm"} align={"center"}>
+          <IconTrash size={16} />
+          {`Delete ${Object.keys(rowSelection).length} selected offers`}
+        </Flex>
+      </Button>
+      <Title order={4} style={{ flexGrow:1, textAlign: 'center' }}>
+        {title} 
+      </Title>
+    </Flex>
+  )
 }
 
 export const typeColumn: ColumnDef<Offer,OFFER_TYPE> = {
@@ -188,6 +209,50 @@ export const amountColumn: ColumnFn<string> = (t,span) => {
     }
 }
 
+export const walletBalanceColumn: ColumnFn<string> = (t,span) => {
+  return{
+      id: 'wallet-balance',
+      accessorKey: 'balanceWallet',
+      header: t('walletBalance'),
+      cell: ({ getValue }) => (
+        <Text
+          size={'sm'}
+          sx={{
+            textAlign: 'center',
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+          }}
+        >
+          {BigNumber(getValue()).toString(10)}
+        </Text>
+      ),
+      enableSorting: true,
+      meta: { colSpan: span },
+  }
+}
+
+export const allowanceColumn: ColumnFn<string> = (t,span) => {
+  return{
+      id: 'allowance',
+      accessorKey: 'allowanceToken',
+      header: t('allowance'),
+      cell: ({ getValue }) => (
+        <Text
+          size={'sm'}
+          sx={{
+            textAlign: 'center',
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+          }}
+        >
+          {BigNumber(getValue()).toString(10)}
+        </Text>
+      ),
+      enableSorting: true,
+      meta: { colSpan: span },
+  }
+}
+
 export const publicActionsColumn: ColumnFn<unknown> = (t,span) => {
     return{
         id: 'actions',
@@ -280,4 +345,121 @@ export const buyShortTokenNameColumn: ColumnFn<string> = (t,span) => {
         enableGlobalFilter: true,
         meta: { colSpan: span },
       }
+}
+
+// ADMIN
+export const adminActionsColumn: ColumnFn<unknown> = (t,span) => {
+  return{
+    id: 'admin-actions',
+    header: undefined,
+    cell: ({ row }) => (
+      <Flex gap={"md"}>
+        <DeleteAdminAction deleteOffer={row.original}/>
+      </Flex>
+    ),
+    meta: { colSpan: span },
+  }
+}
+
+export const offerDateColumn: ColumnFn<number> = (t,span) => {
+  return{
+    id: 'offer-date',
+    accessorKey: "createdAtTimestamp",
+    header: t("onMarketSince"),
+    cell: ({ getValue }) => (
+      <Text
+            size={'sm'}
+            sx={{
+              textAlign: 'center',
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+            }}
+          >
+        { getValue() ?
+          <Text>{`${moment().diff(moment.unix(getValue()),"days")}j`}</Text>
+        :
+        <Skeleton height={15} />
+        }
+      </Text>
+    ),
+    meta: { colSpan: span },
+  }
+}
+
+export const adminOfferTokenNameColumn: ColumnFn<string> = (t,span) => {
+  return{
+    id: `admin-offer-token`,
+    accessorKey: "offerTokenName",
+    header: t('offerTokenName'),
+    cell: ({ row, getValue }) => {
+      const offer :Offer = row.original;
+      return(
+        <Flex justify={"center"}>
+          { offer.type == OFFER_TYPE.SELL ?
+              <TokenName offer={row.original}/>
+            :
+            <Text
+              size={'sm'}
+              sx={{
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+              }}
+            >
+              {getValue()}
+            </Text>
+          }
+        </Flex>
+      )
+    },
+    meta: { colSpan: span },
+  }
+}
+
+export const adminBuyerTokenNameColumn: ColumnFn<string> = (t,span) => {
+  return{
+    id: `admin-buyer-token`,
+    accessorKey: "offerTokenName",
+    header: t('offerTokenName'),
+    cell: ({ row, getValue }) => {
+      const offer :Offer = row.original;
+      return(
+        <Flex justify={"center"}>
+          { offer.type == OFFER_TYPE.BUY ?
+              <TokenName offer={row.original}/>
+            :
+            <Text
+              size={'sm'}
+              sx={{
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+              }}
+            >
+              {getValue()}
+            </Text>
+          }
+        </Flex>
+      )
+    },
+    meta: { colSpan: span },
+  }
+}
+
+export const adminAmount: ColumnFn<string> = (t,span) => {
+  return{
+    id: 'amount',
+    accessorKey: 'amount',
+    header: t('amount'),
+    cell: ({ row }) => {
+      const offer:Offer = row.original;
+      return(
+        <Flex justify={"center"} direction={"column"}>
+          <Text>{`Amount: ${offer.amount}`}</Text>              
+          <Text>{`Wallet balance: ${offer.balanceWallet}`}</Text>     
+          <Text>{`Allowance: ${offer.allowanceToken}`}</Text>              
+        </Flex>
+      )
+    },
+    enableSorting: true,
+    meta: { colSpan: span },
+}
 }
