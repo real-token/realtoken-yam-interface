@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { tableOfferTypeAtom } from "src/states";
 import { Offer, OFFER_TYPE } from "src/types/offer";
-import { amountColumn, buyerTokenNameColumn, buyShortTokenNameColumn, header, idColumn, offerShortTokenNameColumn, offerTokenNameColumn, offerYieldColumn, officialPriceColumn, originalYieldColumn, priceColumn, publicActionsColumn, sellerAddressColumn, typeColumn } from "./column";
+import { amountColumn, buyerTokenNameColumn, buyShortTokenNameColumn, header, idColumn, offerShortTokenNameColumn, offerTokenNameColumn, offerYieldColumn, officialPriceColumn, officialYieldColumn, priceColumn, publicActionsColumn, sellerAddressColumn } from "./column";
 
 type UseRightTableColumn = () => ColumnDef<Offer>[]
 export const useRightTableColumn: UseRightTableColumn = ()  => {
@@ -22,9 +22,9 @@ export const useRightTableColumn: UseRightTableColumn = ()  => {
                 idColumn(t,1),
                 offerShortTokenNameColumn(t,2),
                 buyerTokenNameColumn(t,2),
-                originalYieldColumn(t,1),
+                officialYieldColumn(t,1),
                 offerYieldColumn(t,1),
-                // sellerAddressColumn(t,1),
+                sellerAddressColumn(t,1),
                 officialPriceColumn(t,1),
                 priceColumn(t,1),
                 amountColumn(t,1),
@@ -40,7 +40,7 @@ export const useRightTableColumn: UseRightTableColumn = ()  => {
             idColumn(t,1),
             offerTokenNameColumn(t,2),
             buyShortTokenNameColumn(t,2),
-            originalYieldColumn(t,1),
+            officialYieldColumn(t,1),
             offerYieldColumn(t,1),
             sellerAddressColumn(t,1),
             officialPriceColumn(t,1),

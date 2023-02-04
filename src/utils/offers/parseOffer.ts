@@ -1,8 +1,14 @@
+import { Web3Provider } from '@ethersproject/providers';
 import BigNumber from 'bignumber.js';
+import { oraclePriceFeedABI } from 'src/abis';
+import { OraclePriceFeed } from 'src/abis/types/oraclePriceFeed';
+import { PropertiesToken } from 'src/types';
 import { DataRealtokenType } from 'src/types/offer/DataRealTokenType';
 import { Offer } from 'src/types/offer/Offer';
 import { OFFER_TYPE } from 'src/types/offer/OfferType';
 import { Offer as OfferGraphQl } from '../../../.graphclient/index';
+import { chainLink } from '../chainlink/chainlink';
+import { getContract } from '../getContract';
 
 // TOKEN TYPE
 // 1 = RealToken
@@ -18,8 +24,10 @@ export const getOfferType = (offerTokenType: number, buyerTokenType: number): OF
 }
 
 export const parseOffer = (
+    provider: Web3Provider,
     offer: OfferGraphQl,
     accountUserRealtoken: DataRealtokenType,
+    propertiesToken: PropertiesToken[]
   ): Promise<Offer> => {
     return new Promise<Offer>(async (resolve, reject) => {
       try {
@@ -97,10 +105,32 @@ export const parseOffer = (
           hasPropertyToken: false,
           type: undefined,
           removed: false,
+          createdAtTimestamp: offer.createdAtTimestamp,
+          buyCurrency: "",
+          officialPrice: undefined,
+          offerPrice: "",
+          officialYield: undefined,
+          offerYield: undefined
         };
 
         o.type = getOfferType(o.offerTokenType,o.buyerTokenType);
-  
+
+        const propertyToken = getProperty(
+          o.type == OFFER_TYPE.BUY ? o.buyerTokenAddress : o.offerTokenAddress,
+          propertiesToken
+        );
+
+        //add price and yield infos
+        o.buyCurrency = propertyToken?.currency ?? "";
+        o.officialPrice = getOfficialPrice(propertyToken);
+        o.officialYield = getOfficialYield(propertyToken);
+
+        // const prices: { [address: string]: BigNumber} = {};
+        // const price = await getPrice(prices,provider,o);
+        // if(price){
+        //  o.offerYield = getOfferYield(price,o,propertyToken);
+        //}
+
         // console.log(offer.availableAmount, balanceWallet, allowance)
         resolve(o);
       } catch (err) {
@@ -109,3 +139,78 @@ export const parseOffer = (
       }
     });
 };
+
+const getProperty = (propertyAddress: string, propertiesToken: PropertiesToken[]) => {
+  return propertiesToken.find(propertyToken => propertyToken.contractAddress.toLowerCase() == propertyAddress.toLowerCase())
+}
+
+const getOfficialPrice = (propertyToken: PropertiesToken|undefined): number|undefined => {
+  if(propertyToken){
+    const buyPrice = propertyToken.officialPrice;
+    return buyPrice;
+  }else{
+    return undefined;
+  }
+}
+
+const getOfficialYield = (propertyToken: PropertiesToken|undefined): number|undefined => {
+  if(propertyToken){
+    const originalYield = propertyToken.annualYield ? propertyToken.annualYield*100 : 0;
+    return originalYield;
+  }else{
+    return undefined;
+  }
+}
+
+const getPrice = (prices: { [address: string]: BigNumber}, provider: Web3Provider, offer: Offer) => {
+  return new Promise<BigNumber|undefined>(async (resolve) => {
+    try{
+
+      console.log(prices);
+
+      const tokenAddress = offer.type == OFFER_TYPE.BUY ? offer.offerTokenAddress: offer.buyerTokenAddress;
+
+      console.log("tokenAddress: ", tokenAddress)
+
+      let tokenPrice = prices[tokenAddress];
+      if(!tokenPrice){
+
+        const oracleContractAddress: string|undefined = chainLink.get(tokenAddress);
+
+        if(!oracleContractAddress) return undefined;
+
+        const oracleContract = getContract<OraclePriceFeed>(
+          oracleContractAddress,
+          oraclePriceFeedABI,
+          provider
+        );
+
+        if(!oracleContract) return undefined;
+
+        const assetPrice = await oracleContract.latestAnswer();
+        const assetDecimals = await oracleContract.decimals()
+        tokenPrice = new BigNumber(assetPrice.toString()).shiftedBy(-assetDecimals);
+
+        console.log("tokenPrice: ", tokenPrice.toString())
+
+        prices[tokenAddress] = tokenPrice;
+
+      }
+
+      resolve(tokenPrice)
+
+      }catch(err){
+        console.log("Error while getting oracle price: ", err);
+      }
+  });
+}
+
+const getOfferYield = (tokenPrice: BigNumber, offer: Offer, propertyToken: PropertiesToken|undefined): number|undefined => {
+  const tokenPriceInDollar = new BigNumber(offer.price).multipliedBy(tokenPrice);
+  if(propertyToken){
+    const offerAdjusted = new BigNumber(propertyToken.netRentYearPerToken).dividedBy(tokenPriceInDollar);
+    return parseFloat(offerAdjusted.multipliedBy(100).toString());
+  }else{
+    return undefined;
+  }
+}

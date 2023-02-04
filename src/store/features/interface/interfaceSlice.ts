@@ -1,8 +1,8 @@
-import { Web3Provider } from '@ethersproject/providers';
+import { Provider, Web3Provider } from '@ethersproject/providers';
 import { createAction, createReducer } from '@reduxjs/toolkit';
 
 import { ContractsID, TypedContract } from 'src/constants';
-import { APIPropertiesToken, PropertiesToken } from 'src/types';
+import { PropertiesToken } from 'src/types';
 import { OFFER_LOADING, Offer } from 'src/types/offer/Offer';
 import { fetchOfferTheGraph } from 'src/utils/offers/fetchOffers';
 
@@ -54,9 +54,7 @@ export const propertiesIsLoading = createAction<boolean>(
 
 // THUNKS
 export function fetchOffers(
-  realTokenYamUpgradeable: TypedContract<ContractsID>,
   provider: Web3Provider,
-  account: string,
   chainId: number,
   properties: PropertiesToken[]
 ) {
@@ -68,7 +66,7 @@ export function fetchOffers(
     let offersData;
     if (chainId == 1 || chainId == 100 || chainId == 5) {
       //offersData = await fetchOfferTheGraph(chainId,properties);
-      offersData = await fetchOfferTheGraph(chainId);
+      offersData = await fetchOfferTheGraph(provider,chainId, properties);
     }
     // else{
     //   offersData = await fetchOffersBasic(realTokenYamUpgradeable,provider,account,properties);

@@ -32,7 +32,6 @@ export const OfferYield = ({ offer } : OfferYieldProps) => {
     const isZero: boolean|undefined = useMemo(() => {
         if(!offerDelta) return undefined;
         const valueFloat = (parseFloat(offerDelta.toString())*100).toFixed(0);
-        console.log(valueFloat)
         return valueFloat == "0" || valueFloat == "-0"
     },[offerDelta])
 

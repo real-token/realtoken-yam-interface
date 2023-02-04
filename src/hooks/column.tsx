@@ -1,12 +1,10 @@
-import { ActionIcon, Group, Title, Text, Flex } from "@mantine/core"
+import { ActionIcon, Group, Title, Text, Flex, Skeleton } from "@mantine/core"
 import { IconChevronDown, IconChevronUp } from "@tabler/icons"
 import { ColumnDef } from "@tanstack/react-table"
 import BigNumber from "bignumber.js"
 import { TFunction } from "react-i18next"
 import { OfferPrice } from "src/components/Column/OfferPrice"
 import { OfferYield } from "src/components/Column/OfferYield"
-import { OffialPrice } from "src/components/Column/OfficialPrice"
-import { OriginalYield } from "src/components/Column/OriginalYield"
 import { TokenName } from "src/components/Column/TokenName"
 import { BuyActionsWithPermit } from "src/components/Market/BuyActions"
 import { ShowOfferAction } from "src/components/Market/ShowOfferAction/ShowOfferAction"
@@ -128,17 +126,16 @@ export const sellerAddressColumn: ColumnFn<string> = (t,span) => {
         accessorKey: 'sellerAddress',
         header: t('sellerAddress'),
         cell: ({ getValue }) => (
-          <Group noWrap={true} spacing={'xs'}>
-            <Text
-              size={'sm'}
-              sx={{
-                textOverflow: 'ellipsis',
-                overflow: 'hidden',
-              }}
-            >
-              {getReduceAddress(getValue())}
-            </Text>
-          </Group>
+          <Text
+            size={'sm'}
+            sx={{
+              textAlign: "center",
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+            }}
+          >
+            {getReduceAddress(getValue())}
+          </Text>
         ),
         enableSorting: true,
         meta: { colSpan: span },
@@ -150,7 +147,7 @@ export const priceColumn: ColumnFn<number> = (t,span) => {
         id: 'price',
         accessorKey: 'price',
         header: t('price'),
-        cell: ({ getValue, row }) => (
+        cell: ({ row }) => (
             <Text
                 size={'sm'}
                 sx={{
@@ -163,6 +160,7 @@ export const priceColumn: ColumnFn<number> = (t,span) => {
             </Text>
         ),
         enableSorting: true,
+        enableGlobalFilter: true,
         meta: { colSpan: span },
       }
 }
@@ -185,6 +183,7 @@ export const amountColumn: ColumnFn<string> = (t,span) => {
           </Text>
         ),
         enableSorting: true,
+        enableGlobalFilter: true,
         meta: { colSpan: span },
     }
 }
@@ -203,20 +202,47 @@ export const publicActionsColumn: ColumnFn<unknown> = (t,span) => {
     }
 }
 
-export const officialPriceColumn: ColumnFn<unknown> = (t,span) => {
+export const officialPriceColumn: ColumnFn<number|undefined> = (t,span) => {
     return{
         id: 'officialPrice',
         header: "Official price",
-        cell: ({ row }) => <OffialPrice offer={row.original} />,
+        accessorKey: "officialPrice",
+        cell: ({ row }) => (
+            row.original.officialPrice ?
+              <Text>
+                {`${row.original.officialPrice} $${row.original.buyCurrency}`}
+              </Text>
+            :
+              <Skeleton height={15} />
+          ),
+        enableColumnFilter: true,
+        enableSorting: true,
         meta: { colSpan: span },
     }
 }
 
-export const originalYieldColumn: ColumnFn<unknown> = (t,span) => {
+export const officialYieldColumn: ColumnFn<number|undefined> = (t,span) => {
     return{
-        id: 'originalYield',
-        header: "Original Yield",
-        cell: ({ row }) => <OriginalYield offer={row.original} />,
+        id: 'officialYield',
+        header: "Official Yield",
+        accessorKey: "officialYield",
+        cell: ({ getValue }) => (
+          getValue() !== undefined ?
+            <Text
+              size={'sm'}
+              sx={{
+                textAlign: 'center',
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+              }}
+            >
+              {`${getValue()?.toFixed(2)}%`}
+            </Text>
+          :
+            <Skeleton height={15} />
+        ),
+        enableSorting: true,
+        enableGlobalFilter: true,
         meta: { colSpan: span },
       }
 }
@@ -226,6 +252,8 @@ export const offerYieldColumn: ColumnFn<unknown> = (t,span) => {
         id: 'offerYield',
         header: "Offer Yield",
         cell: ({ row }) => <OfferYield offer={row.original} />,
+        enableSorting: true,
+        enableGlobalFilter: true,
         meta: { colSpan: span },
       }
 }
@@ -237,6 +265,7 @@ export const buyShortTokenNameColumn: ColumnFn<unknown> = (t,span) => {
         header: t('offerTokenName'),
         cell: ({ row }) => <TokenName offer={row.original}/>,
         enableSorting: true,
+        enableGlobalFilter: true,
         meta: { colSpan: span },
     }
 }
@@ -248,6 +277,7 @@ export const offerShortTokenNameColumn: ColumnFn<string> = (t,span) => {
         header: t('buyerTokenName'),
         cell: ({ row }) => <TokenName offer={row.original}/>,
         enableSorting: true,
+        enableGlobalFilter: true,
         meta: { colSpan: span },
       }
 }

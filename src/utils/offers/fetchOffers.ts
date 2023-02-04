@@ -12,6 +12,8 @@ import { parseOffer } from './parseOffer';
 import { getTheGraphUrlYAM, getTheGraphUrlRealtoken } from './getClientURL';
 import { getOfferQuery } from './getOfferQuery';
 import { DataRealtokenType } from 'src/types/offer/DataRealTokenType';
+import { PropertiesToken } from 'src/types';
+import { Web3Provider } from '@ethersproject/providers';
 
 export const getBigDataGraphRealtoken = async (
   chainId: number,
@@ -70,8 +72,9 @@ export const getBigDataGraphRealtoken = async (
 };
 
 export const fetchOfferTheGraph = (
-  chainId: number
-  //propertiesToken: PropertiesToken[]
+  provider: Web3Provider,
+  chainId: number,
+  propertiesToken: PropertiesToken[]
 ): Promise<Offer[]> => {
   return new Promise<Offer[]>(async (resolve, reject) => {
     try {
@@ -183,8 +186,10 @@ export const fetchOfferTheGraph = (
           )!;
 
           const offerData: Offer = await parseOffer(
+            provider,
             offer,
             accountUserRealtoken,
+            propertiesToken
           );
 
           /* const hasPropertyToken = propertiesToken.find(

@@ -28,12 +28,12 @@ export const useRefreshOffers: UseRefreshOffers = (refreshOnMount) => {
   const refreshOffers = useCallback(() => {
     try{
       // console.log(!realTokenYamUpgradeable, !provider, !account, !chainId, !propertiesToken, propertiesToken.length == 0, propertiesIsloading)
-      if(!realTokenYamUpgradeable || !provider || !account || !chainId || !propertiesToken || propertiesToken.length == 0 || propertiesIsloading) return;
-      dispatch(fetchOffers(realTokenYamUpgradeable,provider,account, chainId, propertiesToken))
+      if(!provider || !chainId || !propertiesToken || propertiesToken.length == 0 || propertiesIsloading) return;
+      dispatch(fetchOffers(provider, chainId, propertiesToken))
     }catch(err){
       console.log(err)
     }
-  },[realTokenYamUpgradeable, provider, account, chainId, propertiesToken, propertiesIsloading, dispatch])
+  },[provider, chainId, propertiesToken, propertiesIsloading, dispatch])
 
 useEffect(() => {
     if(realTokenYamUpgradeable && provider && account && refreshOnMount && !initialized && !propertiesIsloading && propertiesToken.length > 0){
