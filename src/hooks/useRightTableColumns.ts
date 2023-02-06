@@ -148,15 +148,19 @@ export const useRightTableColumn: UseRightTableColumn = (offersType)  => {
     const rightColumn: ColumnDef<Offer>[] = useMemo(() => {
         switch(offersType){
             case OFFERS_TYPE.PUBLIC:
-                return publicColumns.get(tableOfferType);
+                const publicOffers = publicColumns.get(tableOfferType);
+                return publicOffers ?? sellPublicColumns
             case OFFERS_TYPE.ADDRESS:
-                return addressColumns.get(tableOfferType);
+                const addressOffers = addressColumns.get(tableOfferType);
+                return addressOffers ?? sellAddressColumns;
             case OFFERS_TYPE.PRIVATE:
-                return publicColumns.get(tableOfferType);
+                const privateOffers = publicColumns.get(tableOfferType);
+                return privateOffers ?? sellPublicColumns;
             default:
-                return publicColumns.get(tableOfferType);
+                const defaultOffers = publicColumns.get(tableOfferType);
+                return defaultOffers ?? sellPublicColumns
         }
-    },[addressColumns, offersType, publicColumns, tableOfferType])
+    },[addressColumns, offersType, publicColumns, sellAddressColumns, sellPublicColumns, tableOfferType])
 
     return rightColumn;
 
