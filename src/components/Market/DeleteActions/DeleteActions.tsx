@@ -7,18 +7,19 @@ import { IconTrash } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
 
 import { Offer } from 'src/types/offer/Offer';
+import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 
 type DeleteActions = {
   deleteOffer: Offer;
-  triggerRefresh: Dispatch<SetStateAction<boolean>>;
 };
 
 export const DeleteActions: FC<DeleteActions> = ({
   deleteOffer,
-  triggerRefresh,
 }) => {
   const { account } = useWeb3React();
   const modals = useModals();
+
+  const { refreshOffers } = useRefreshOffers(false); 
 
   const { t } = useTranslation('modals');
 
@@ -29,11 +30,11 @@ export const DeleteActions: FC<DeleteActions> = ({
         size: "lg",
         innerProps: {
           offerIds: [offer.offerId],
-          onSuccess: triggerRefresh,
+          onSuccess: refreshOffers,
         },
       });
     },
-    [modals, triggerRefresh, t]
+    [modals, refreshOffers, t]
   );
 
   const onOpenWalletModal = useCallback(() => {

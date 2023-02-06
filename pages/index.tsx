@@ -11,10 +11,10 @@ const HomePage: NextPage = () => {
   return (
     <Flex my={"xl"} direction={"column"}>
       <MarketTableFilter />
-         <Display 
-            table={<MarketTable/>}
-            grid={<MarketGrid/>}
-          />
+      <Display 
+        table={<MarketTable/>}
+        grid={<MarketGrid/>}
+      />
     </Flex>
   );
 };

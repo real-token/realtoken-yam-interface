@@ -17,8 +17,10 @@ import { useAtom } from 'jotai';
 import { nameFilterValueAtom } from 'src/states';
 import React from 'react';
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
-import { usePublicOffers } from 'src/hooks/offers/usePublicOffers';
-import { useRightTableColumn } from 'src/hooks/useRightTableColumns';
+import { OFFERS_TYPE, useRightTableColumn } from 'src/hooks/useRightTableColumns';
+import { selectPublicOffers } from 'src/store/features/interface/interfaceSelector';
+import { useAppSelector } from 'src/hooks/react-hooks';
+import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
 
 export const MarketTable: FC = () => {
 
@@ -45,8 +47,9 @@ export const MarketTable: FC = () => {
     }
   },[nameFilterValue])
 
-  const { offers } = usePublicOffers();
-  const columns = useRightTableColumn();
+  const publicOffers = useAppSelector(selectPublicOffers);
+  const { offers } = useTypedOffers(publicOffers);
+  const columns = useRightTableColumn(OFFERS_TYPE.PUBLIC);
 
   const table = useReactTable({
     data: offers,

@@ -14,6 +14,8 @@ import { Offer, OFFER_TYPE } from "src/types/offer"
 import { getReduceAddress } from "src/utils/address"
 import { ENV, isEnvs } from "src/utils/isEnv"
 import moment from "moment"
+import { DeleteActions } from "src/components/Market/DeleteActions"
+import { UpdateActionsWithPermit } from "src/components/Market/UpdateActions"
 
 type ColumnFn<T> = (t: TFunction<"buy","table">, span: number) => ColumnDef<Offer,T>
 
@@ -393,6 +395,36 @@ export const exchangeBuyShortTokenNameColumn: ColumnFn<string> = (t,span) => {
       meta: { colSpan: span },
     }
 }
+export const viewActionColumn: ColumnFn<Offer> = (t,span) => {
+  return {
+    id: 'view-action',
+    header: undefined,
+    cell: ({ row }) => <ShowOfferAction offer={row.original}/>,
+    meta: { colSpan: span },
+  }
+}
+
+// ADDRESS
+export const deleteOfferActionColumn: ColumnFn<unknown> = (t,span) => {
+  return{
+    id: 'delete',
+    header: t('actionDelete'),
+    cell: ({ row }) => <DeleteActions deleteOffer={row.original} />,
+    enableSorting: false,
+    meta: { colSpan: span },
+  };
+}
+
+export const modifyOfferActionColumn: ColumnFn<unknown> = (t,span) => {
+  return {
+    id: 'update',
+    header: t('actionEdit'),
+    cell: ({ row }) => <UpdateActionsWithPermit updateOffer={row.original} />,
+    enableSorting: false,
+    meta: { colSpan: span },
+  }
+}
+
 
 // ADMIN
 export const adminActionsColumn: ColumnFn<unknown> = (t,span) => {

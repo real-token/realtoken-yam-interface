@@ -6,11 +6,14 @@ import { useTranslation } from "react-i18next";
 import { Offer } from "src/types/offer";
 import { GridPane } from "./GridPane";
 import { styles } from '../../Table/TableCaption/TableCaption.styles';
-import { usePublicOffers } from "src/hooks/offers/usePublicOffers";
+import { useTypedOffers } from "src/hooks/offers/useTypedOffers";
+import { useAppSelector } from "src/hooks/react-hooks";
+import { selectPublicOffers } from "src/store/features/interface/interfaceSelector";
 
 export const MarketGrid: FC = () => {
 
-    const { offers } = usePublicOffers();
+    const publicOffers = useAppSelector(selectPublicOffers);
+  const { offers } = useTypedOffers(publicOffers);
 
     const [data,setData] = useState<string[]>([
         '9',

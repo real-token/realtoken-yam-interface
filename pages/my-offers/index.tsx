@@ -12,8 +12,7 @@ const TransfersPage = () => {
   return (
     <Flex
       direction={"column"}
-      p={"xl"}
-      style={{ flexGrow: 1 }}
+      my={"xl"}
     >
       <Tabs color={"brand"} variant={"pills"} defaultValue={'myOffers'}>
         <Tabs.List>

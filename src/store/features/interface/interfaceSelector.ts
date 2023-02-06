@@ -36,27 +36,6 @@ export const selectPublicOffers = (state: RootState) => {
       !BigNumber(offer.amount).isZero()
   );
 };
-export const selectSellPublicOffers = (state: RootState) => {
-  const offers = selectPublicOffers(state);
-  const offersIsLoading = selectOffersIsLoading(state);
-  if (!offers || offersIsLoading) return OFFER_LOADING;
-
-  return offers.filter((offer: Offer) => offer.type == OFFER_TYPE.SELL);
-}
-export const selectBuyPublicOffers = (state: RootState) => {
-  const offers = selectPublicOffers(state);
-  const offersIsLoading = selectOffersIsLoading(state);
-  if (!offers || offersIsLoading) return OFFER_LOADING;
-
-  return offers.filter((offer: Offer) => offer.type == OFFER_TYPE.BUY);
-}
-export const selectExchangePublicOffers = (state: RootState) => {
-  const offers = selectPublicOffers(state);
-  const offersIsLoading = selectOffersIsLoading(state);
-  if (!offers || offersIsLoading) return OFFER_LOADING;
-
-  return offers.filter((offer: Offer) => offer.type == OFFER_TYPE.EXCHANGE);
-}
 
 export const selectPrivateOffers = (state: RootState) => {
   const address = selectAddress(state);
@@ -72,25 +51,3 @@ export const selectPrivateOffers = (state: RootState) => {
 export const selectSellRealTOffers = (state: RootState) => {
   return OFFER_LOADING;
 };
-
-// const condFiltreZeroAmount = filterZeroAmount ? !bnAmount.isZero() : true;
-//         if(condFiltreZeroAmount){
-//           if (filterSeller) {
-//             //console.log("is seller", account, sellerAddress,buyerAddress)
-//             if (offerData.sellerAddress === account) {
-//               offersData.push(offerData);
-//             }
-//           } else if (filterBuyer) {
-//             // Filter offer by buyer
-//             //console.log("is buyer", account, buyerAddress,sellerAddress);
-//             if (offerData.buyerAddress === account) {
-//               offersData.push(offerData);
-//             }
-//           } else {
-//             // No filter, show public offers
-//             // console.log("is public", account, sellerAddress, buyerAddress);
-//             if (offerData.buyerAddress === ZERO_ADDRESS) {
-//               offersData.push(offerData);
-//             }
-//           }
-//         }
