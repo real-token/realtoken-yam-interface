@@ -186,6 +186,29 @@ export const priceColumn: ColumnFn<number> = (t,span) => {
       }
 }
 
+export const simplePriceColumn: ColumnFn<number> = (t,span) => {
+  return {
+      id: 'price',
+      accessorKey: 'price',
+      header: t('price'),
+      cell: ({ getValue }) => (
+          <Text
+              size={'sm'}
+              sx={{
+              textAlign: 'center',
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+              }}
+          >
+              {getValue()}
+          </Text>
+      ),
+      enableSorting: true,
+      enableGlobalFilter: true,
+      meta: { colSpan: span },
+    }
+}
+
 export const amountColumn: ColumnFn<string> = (t,span) => {
     return{
         id: 'amount',
@@ -335,6 +358,18 @@ export const offerShortTokenNameColumn: ColumnFn<unknown> = (t,span) => {
     }
 }
 
+export const exchangeOfferShortTokenNameColumn: ColumnFn<unknown> = (t,span) => {
+  return {
+      id: 'offerShortTokenName',
+      accessorKey: 'offerTokenName',
+      header: t('offerTokenName'),
+      cell: ({ row }) => <TokenName offer={row.original} tokenName={row.original.offerTokenName}/>,
+      enableSorting: true,
+      enableGlobalFilter: true,
+      meta: { colSpan: span },
+  }
+}
+
 export const buyShortTokenNameColumn: ColumnFn<string> = (t,span) => {
     return {
         id: 'buyerShortTokenName',
@@ -345,6 +380,18 @@ export const buyShortTokenNameColumn: ColumnFn<string> = (t,span) => {
         enableGlobalFilter: true,
         meta: { colSpan: span },
       }
+}
+
+export const exchangeBuyShortTokenNameColumn: ColumnFn<string> = (t,span) => {
+  return {
+      id: 'buyerShortTokenName',
+      accessorKey: 'buyerTokenName',
+      header: t('buyerTokenName'),
+      cell: ({ row }) => <TokenName offer={row.original} tokenName={row.original.buyerTokenName}/>,
+      enableSorting: true,
+      enableGlobalFilter: true,
+      meta: { colSpan: span },
+    }
 }
 
 // ADMIN

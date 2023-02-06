@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { tableOfferTypeAtom } from "src/states";
 import { Offer, OFFER_TYPE } from "src/types/offer";
-import { amountColumn, buyerTokenNameColumn, buyShortTokenNameColumn, header, idColumn, offerShortTokenNameColumn, offerTokenNameColumn, offerYieldColumn, officialPriceColumn, officialYieldColumn, priceColumn, publicActionsColumn, sellerAddressColumn } from "./column";
+import { amountColumn, buyerTokenNameColumn, buyShortTokenNameColumn, exchangeBuyShortTokenNameColumn, exchangeOfferShortTokenNameColumn, header, idColumn, offerShortTokenNameColumn, offerTokenNameColumn, offerYieldColumn, officialPriceColumn, officialYieldColumn, priceColumn, publicActionsColumn, sellerAddressColumn, simplePriceColumn } from "./column";
 
 type UseRightTableColumn = () => ColumnDef<Offer>[]
 export const useRightTableColumn: UseRightTableColumn = ()  => {
@@ -57,10 +57,10 @@ export const useRightTableColumn: UseRightTableColumn = ()  => {
             meta: { colSpan: 11 },
             columns: [
                 idColumn(t,1),
-                offerTokenNameColumn(t,2),
-                buyerTokenNameColumn(t,2),
+                exchangeOfferShortTokenNameColumn(t,2),
+                exchangeBuyShortTokenNameColumn(t,2),
                 sellerAddressColumn(t,1),
-                priceColumn(t,2),
+                simplePriceColumn(t,2),
                 amountColumn(t,2),
                 publicActionsColumn(t,1)
             ]

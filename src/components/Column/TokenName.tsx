@@ -1,21 +1,25 @@
-import { Flex, Skeleton } from "@mantine/core";
+import { Flex, Skeleton, Text } from "@mantine/core";
 import { usePropertyToken } from "src/hooks/usePropertyToken";
 import { Offer, OFFER_TYPE } from "src/types/offer"
 import { TextUrl } from "../TextUrl/TextUrl";
 
 interface TokenNameProps{
-    offer: Offer
+    offer: Offer,
+    tokenName?: string
 }
-export const TokenName = ({ offer } : TokenNameProps) => {
+export const TokenName = ({ offer, tokenName } : TokenNameProps) => {
 
-    const { propertyToken } = usePropertyToken(offer.type == OFFER_TYPE.BUY ? offer.buyerTokenAddress : offer.offerTokenAddress);
+    const tokenAddress = offer.type == OFFER_TYPE.BUY ? offer.buyerTokenAddress : offer.offerTokenAddress;
+    const { propertyToken } = usePropertyToken(tokenAddress);
 
     return(
         <Flex justify={"start"}>
-        {propertyToken ? 
+        {   propertyToken ? 
                 <TextUrl url={propertyToken.marketplaceLink}>{propertyToken.shortName}</TextUrl>
-            : 
-            <Skeleton height={15} />
+            : !tokenAddress ?
+                <Skeleton height={15} />
+            :
+                <Text>{tokenName}</Text>
         }
         </Flex>
     )
