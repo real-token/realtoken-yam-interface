@@ -9,7 +9,7 @@ import { fetchProperties } from "src/store/features/interface/interfaceSlice";
 export default function useInitStore(){
 
     const dispatch = useAppDispatch();
-    const { account, chainId } = useWeb3React();
+    const { account, chainId  } = useWeb3React();
 
     // INIT REDUX STORE HERE
     useRefreshOffers(true);
@@ -21,8 +21,8 @@ export default function useInitStore(){
     },[account])
 
     useEffect(() => {
-        if(chainId) dispatch(fetchProperties(chainId))
+        if(chainId && account) dispatch(fetchProperties(chainId))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[chainId])
+    },[chainId,account])
 
 }
