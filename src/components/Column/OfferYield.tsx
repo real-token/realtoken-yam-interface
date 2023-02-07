@@ -15,7 +15,11 @@ export const OfferYield = ({ offer } : OfferYieldProps) => {
     const { propertyToken } = usePropertyToken(getPropertyTokenAddress(offer));
     const { price } = useOraclePriceFeed(offer.type == OFFER_TYPE.BUY ? offer.offerTokenAddress: offer.buyerTokenAddress);
 
+    // console.log(price?.toString(),propertyToken)
+
     const { tokenPriceInDollar } = useOfferPriceInDollar(price,offer);
+
+    console.log(tokenPriceInDollar?.toString())
 
     const offerAjustedYield: BigNumber|undefined = useMemo(() => {
         if(!propertyToken || !propertyToken.netRentYearPerToken || !tokenPriceInDollar) return undefined;
@@ -34,6 +38,9 @@ export const OfferYield = ({ offer } : OfferYieldProps) => {
         const valueFloat = (parseFloat(offerDelta.toString())*100).toFixed(0);
         return valueFloat == "0" || valueFloat == "-0"
     },[offerDelta])
+
+    // console.log(offerAjustedYield?.toString(), offerDelta?.toString(), isZero !== undefined);
+    // console.log(offerAjustedYield && offerDelta && isZero !== undefined)
 
     return(
         <Flex gap={"sm"} justify={"center"}>

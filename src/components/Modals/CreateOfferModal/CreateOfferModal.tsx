@@ -436,6 +436,8 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
 
   const { bigNumberbalance, balance } = useWalletERC20Balance(values.offerTokenAddress);
 
+  console.log(values)
+
   const approveAndsaveCreatedOffer = async (formValues: SellFormValues) => {
     try{
 
@@ -446,7 +448,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         offerId: offers.length,
         offerTokenAddress: formValues.offerTokenAddress,
         buyerTokenAddress: formValues.buyerTokenAddress,
-        price: formValues.price ?? 0,
+        price: formValues.price ? parseFloat(formValues.price.toFixed(6)) : 0,
         amount: formValues.amount,
         buyerAddress: formValues.buyerAddress,
         isPrivateOffer: formValues.isPrivateOffer
@@ -720,7 +722,6 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
           <MantineInput
             hideControls={true}
             label={t("convertBuyPrice", { buyerTokenSymbol: tokenSymbol, prep: t("in") })}
-            disabled={true}
             precision={6}
             {...getInputProps("price")}
             style={{ width: "100%" }}

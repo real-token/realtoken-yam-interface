@@ -23,7 +23,7 @@ export const MarketSort = ({ sellCount, buyCount, exchangeCount } : MarketSortPr
             >{  !sellCount ?
                     t("sell")
                 :
-                    `${t("buy")} (${sellCount})`
+                    `${t("sell")} (${sellCount})`
             }</Button>
             <Button 
                 variant={sorting == OFFER_TYPE.BUY ? "filled" : "outline"}

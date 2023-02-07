@@ -20,9 +20,10 @@ export const OfferPrice = ({ offer } : OfferPriceProps) => {
 
     const { tokenPriceInDollar } = useOfferPriceInDollar(price, offer);
 
-    if(offer.offerId == "2142"){
-        console.log("price: ", price?.toString())
-        console.log("price in Dollar: ", tokenPriceInDollar?.toString())
+    if(offer.offerId == "394"){
+        console.log("offer price: ", offer.price);
+        console.log("price from oracle: ", price?.toString());
+        console.log("price in Dollar: ", tokenPriceInDollar?.toString());
     }
 
     const offerPriceDelta: BigNumber|undefined = useMemo(() => {

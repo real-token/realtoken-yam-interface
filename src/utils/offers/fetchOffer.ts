@@ -9,7 +9,7 @@ import { gql } from "@apollo/client";
 import { getOfferQuery } from "./getOfferQuery";
 import { Web3Provider } from "@ethersproject/providers";
 
-export const fetchOffer = (provider: Web3Provider, chainId: number, offerId: number, propertiesToken: PropertiesToken[]): Promise<Offer> => {
+export const fetchOffer = (provider: Web3Provider, account: string, chainId: number, offerId: number, propertiesToken: PropertiesToken[]): Promise<Offer> => {
     return new Promise(async (resolve,reject) => {
       try{
 
@@ -33,7 +33,7 @@ export const fetchOffer = (provider: Web3Provider, chainId: number, offerId: num
         const realtokenData: [DataRealtokenType] = await getBigDataGraphRealtoken(chainId, clientRealToken, batch);
 
         const accountUser = realtokenData[0];
-        const offer = await parseOffer(provider,offerFromTheGraph,accountUser,propertiesToken);
+        const offer = await parseOffer(provider, account, offerFromTheGraph,accountUser,propertiesToken);
   
         const hasPropertyToken = propertiesToken.find(propertyToken => (propertyToken.contractAddress == offer.buyerTokenAddress || propertyToken.contractAddress == offer.offerTokenAddress));
         offer.hasPropertyToken = hasPropertyToken ? true : false;

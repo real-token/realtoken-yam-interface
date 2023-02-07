@@ -1,17 +1,17 @@
 import { ApolloClient, InMemoryCache, NormalizedCacheObject } from "@apollo/client";
 
 export const getTheGraphUrlYAM = (chainId: number): string => {
-    switch (chainId) {
-      case 1:
-        return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph';
-      case 5:
-        return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-goerli';
-      case 100:
-        return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-gnosis';
-      default:
-        return '';
-    }
-  };
+  switch (chainId) {
+    case 1:
+      return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph';
+    case 5:
+      return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-goerli';
+    case 100:
+      return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-gnosis';
+    default:
+      return '';
+  }
+};
   
 export const getTheGraphUrlRealtoken = (chainId: number): string => {
     switch (chainId) {

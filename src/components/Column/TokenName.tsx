@@ -9,7 +9,7 @@ interface TokenNameProps{
 }
 export const TokenName = ({ offer, tokenName } : TokenNameProps) => {
 
-    const tokenAddress = offer.type == OFFER_TYPE.BUY ? offer.buyerTokenAddress : offer.offerTokenAddress;
+    const tokenAddress = offer.type == OFFER_TYPE.SELL ? offer.buyerTokenAddress : offer.offerTokenAddress;
     const { propertyToken } = usePropertyToken(tokenAddress);
 
     return(

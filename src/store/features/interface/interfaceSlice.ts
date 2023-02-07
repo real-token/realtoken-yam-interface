@@ -55,6 +55,7 @@ export const propertiesIsLoading = createAction<boolean>(
 // THUNKS
 export function fetchOffers(
   provider: Web3Provider,
+  account: string,
   chainId: number,
   properties: PropertiesToken[]
 ) {
@@ -66,7 +67,7 @@ export function fetchOffers(
     let offersData;
     if (chainId == 1 || chainId == 100 || chainId == 5) {
       //offersData = await fetchOfferTheGraph(chainId,properties);
-      offersData = await fetchOfferTheGraph(provider,chainId, properties);
+      offersData = await fetchOfferTheGraph(provider,account,chainId, properties);
     }
     // else{
     //   offersData = await fetchOffersBasic(realTokenYamUpgradeable,provider,account,properties);

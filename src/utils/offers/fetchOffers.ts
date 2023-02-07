@@ -73,6 +73,7 @@ export const getBigDataGraphRealtoken = async (
 
 export const fetchOfferTheGraph = (
   provider: Web3Provider,
+  account: string,
   chainId: number,
   propertiesToken: PropertiesToken[]
 ): Promise<Offer[]> => {
@@ -187,6 +188,7 @@ export const fetchOfferTheGraph = (
 
           const offerData: Offer = await parseOffer(
             provider,
+            account,
             offer,
             accountUserRealtoken,
             propertiesToken

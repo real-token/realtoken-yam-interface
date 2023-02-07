@@ -16,8 +16,8 @@ import { getContract } from '../getContract';
 //3 = sans permit
 export const getOfferType = (offerTokenType: number, buyerTokenType: number): OFFER_TYPE => {
 
-  if(offerTokenType == 1 && (buyerTokenType == 2 || buyerTokenType == 3)) return OFFER_TYPE.SELL
-  if((offerTokenType == 2 || offerTokenType == 3) && buyerTokenType == 1) return OFFER_TYPE.BUY;
+  if(offerTokenType == 1 && (buyerTokenType == 2 || buyerTokenType == 3)) return OFFER_TYPE.BUY
+  if((offerTokenType == 2 || offerTokenType == 3) && buyerTokenType == 1) return OFFER_TYPE.SELL;
 
   return OFFER_TYPE.EXCHANGE;
 
@@ -25,6 +25,7 @@ export const getOfferType = (offerTokenType: number, buyerTokenType: number): OF
 
 export const parseOffer = (
     provider: Web3Provider,
+    account: string,
     offer: OfferGraphQl,
     accountUserRealtoken: DataRealtokenType,
     propertiesToken: PropertiesToken[]
@@ -116,7 +117,7 @@ export const parseOffer = (
         o.type = getOfferType(o.offerTokenType,o.buyerTokenType);
 
         const propertyToken = getProperty(
-          o.type == OFFER_TYPE.BUY ? o.buyerTokenAddress : o.offerTokenAddress,
+          o.type == OFFER_TYPE.SELL ? o.buyerTokenAddress : o.offerTokenAddress,
           propertiesToken
         );
 
@@ -124,6 +125,8 @@ export const parseOffer = (
         o.buyCurrency = propertyToken?.currency ?? "";
         o.officialPrice = getOfficialPrice(propertyToken);
         o.officialYield = getOfficialYield(propertyToken);
+
+        console.log(o)
 
         // const prices: { [address: string]: BigNumber} = {};
         // const price = await getPrice(prices,provider,o);
@@ -154,8 +157,10 @@ const getOfficialPrice = (propertyToken: PropertiesToken|undefined): number|unde
 }
 
 const getOfficialYield = (propertyToken: PropertiesToken|undefined): number|undefined => {
+  // console.log("getOfficialYield: ", propertyToken)
   if(propertyToken){
     const originalYield = propertyToken.annualYield ? propertyToken.annualYield*100 : 0;
+    console.log(originalYield)
     return originalYield;
   }else{
     return undefined;

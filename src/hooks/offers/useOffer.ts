@@ -11,24 +11,25 @@ type UseOfferProps  = (offerId: number) => {
 };
 
 export const useOffer: UseOfferProps = (offerId: number) => {
-    const { chainId, provider } = useWeb3React();
+    const { chainId, provider, account } = useWeb3React();
     const [offer,setOffer] = useState<Offer>(DEFAULT_OFFER);
     const [isLoading,setIsLoading] = useState<boolean>(true);
 
     const { propertiesToken, propertiesIsloading } = usePropertiesToken();
 
     const fetch = useCallback(async (provider: Web3Provider, chainId: number, offerId: number) => {
-        fetchOffer(provider, chainId,offerId, propertiesToken)
+        if(!account) return;
+        fetchOffer(provider, account, chainId,offerId, propertiesToken)
             .then((offer: Offer) => { 
                 setOffer(offer);
                 setIsLoading(false);
             })
             .catch(err => console.log(err))
-    },[propertiesToken])
+    },[account, propertiesToken])
 
     useEffect(() => {
-        if(offerId && chainId && provider && propertiesToken && !propertiesIsloading && propertiesToken.length > 0) fetch(provider,chainId, offerId);
-    },[offerId, chainId, propertiesIsloading,provider, propertiesToken, fetch])
+        if(offerId && chainId && provider && account && propertiesToken && !propertiesIsloading && propertiesToken.length > 0) fetch(provider,chainId, offerId);
+    },[offerId, chainId, propertiesIsloading,provider,account, propertiesToken, fetch])
 
     return{
         offer,

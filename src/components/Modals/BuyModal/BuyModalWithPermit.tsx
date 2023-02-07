@@ -365,7 +365,7 @@ export const BuyModalWithPermit: FC<
           <NumberInput
             label={t('amount')}
             required={true}
-            disabled={maxTokenBuy == 0 || maxTokenBuy == undefined}
+            //disabled={maxTokenBuy == 0 || maxTokenBuy == undefined}
             min={0}
             max={maxTokenBuy}
             showMax={true}
