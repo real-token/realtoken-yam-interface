@@ -436,19 +436,19 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
 
   const { bigNumberbalance, balance } = useWalletERC20Balance(values.offerTokenAddress);
 
-  console.log(values)
-
   const approveAndsaveCreatedOffer = async (formValues: SellFormValues) => {
     try{
 
       await approve(formValues);
+
+      const price = offer.offerType !== OFFER_TYPE.BUY ? formValues.price : formValues.price ? 1/formValues.price : undefined;
 
       const createdOffer: CreatedOffer = {
         offerType: offer.offerType,
         offerId: offers.length,
         offerTokenAddress: formValues.offerTokenAddress,
         buyerTokenAddress: formValues.buyerTokenAddress,
-        price: formValues.price ? parseFloat(formValues.price.toFixed(6)) : 0,
+        price: price ? parseFloat(price.toFixed(6)) : 0,
         amount: formValues.amount,
         buyerAddress: formValues.buyerAddress,
         isPrivateOffer: formValues.isPrivateOffer
@@ -465,8 +465,6 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
 
   const summary = () => {
     if(total && buyTokenSymbol && offerTokenSymbol){
-
-      console.log(offer.offerType)
 
       if(offer.offerType == OFFER_TYPE.BUY){
         return (
@@ -705,11 +703,17 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
       ;
     const { price } = useOraclePriceFeed(offer.offerType == OFFER_TYPE.BUY ? values.offerTokenAddress : values.buyerTokenAddress);
 
+    // When price in USDC/WDAI changed
     useEffect(() => {
       if(price && priceInDollar){
         setFieldValue("price",parseFloat(new BigNumber(priceInDollar).dividedBy(price).toString().toString()))
       }
-    },[price,priceInDollar])
+    },[price,priceInDollar]);
+
+    // When price in $ changed
+    useEffect(() => {
+        if(values.price && price) setPriceInDollar(parseFloat(new BigNumber(values.price).multipliedBy(price).toString()))
+    },[values.price,price])
 
     return(
       <Flex gap={10} align={"start"}>
