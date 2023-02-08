@@ -4,7 +4,7 @@ import { useRefreshOffers } from "./offers/useRefreshOffers";
 import { useWeb3React } from "@web3-react/core";
 import { addressChangedDispatchType } from "src/store/features/settings/settingsSlice";
 import { useAutoRefresh } from "./offers/useAutoRefresh";
-import { fetchProperties } from "src/store/features/interface/interfaceSlice";
+import { fetchAddressWlProperties, fetchProperties } from "src/store/features/interface/interfaceSlice";
 
 export default function useInitStore(){
 
@@ -21,7 +21,10 @@ export default function useInitStore(){
     },[account])
 
     useEffect(() => {
-        if(chainId && account) dispatch(fetchProperties(chainId))
+        if(chainId && account){
+            dispatch(fetchProperties(chainId));
+            dispatch(fetchAddressWlProperties(account,chainId))
+        }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[chainId,account])
 
