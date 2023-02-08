@@ -117,7 +117,7 @@ export const BuyModalWithPermit: FC<
     context.closeModal(id);
   }, [context, id, reset]);
 
-  const { bigNumberbalance, WalletERC20Balance } = useWalletERC20Balance(buyerTokenAddress)
+  const { balance, WalletERC20Balance } = useWalletERC20Balance(buyerTokenAddress)
 
   const onHandleSubmit = useCallback(
     async (formValues: BuyWithPermitFormValues) => {
@@ -315,12 +315,13 @@ export const BuyModalWithPermit: FC<
   const total = values?.amount * values?.price;
 
   const maxTokenBuy: number|undefined = useMemo(() => {
-    if(bigNumberbalance == undefined || !offer.price) return undefined;
+    if(!balance || !offer.price) return undefined;
 
-    const max = bigNumberbalance.eq(0) ? new BigNumber(0) : bigNumberbalance.dividedBy(offer.price);
+    const b = new BigNumber(balance);
+    const max = b.eq(0) ? new BigNumber(0) : b.dividedBy(offer.price);
 
-    return max.isGreaterThanOrEqualTo(BigNumber(offer.amount)) ? new BigNumber(offer.amount).toNumber() : max.toNumber();
-  },[bigNumberbalance,offer])
+    return max.isGreaterThanOrEqualTo(new BigNumber(offer.amount)) ? new BigNumber(offer.amount).toNumber() : parseFloat(max.toString());
+  },[balance,offer])
 
   return (
     <form onSubmit={onSubmit(onHandleSubmit)} style={{ width: calcRem(500) }}>
