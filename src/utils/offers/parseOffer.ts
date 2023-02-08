@@ -126,8 +126,6 @@ export const parseOffer = (
         o.officialPrice = getOfficialPrice(propertyToken);
         o.officialYield = getOfficialYield(propertyToken);
 
-        console.log(o)
-
         // const prices: { [address: string]: BigNumber} = {};
         // const price = await getPrice(prices,provider,o);
         // if(price){
@@ -160,7 +158,6 @@ const getOfficialYield = (propertyToken: PropertiesToken|undefined): number|unde
   // console.log("getOfficialYield: ", propertyToken)
   if(propertyToken){
     const originalYield = propertyToken.annualYield ? propertyToken.annualYield*100 : 0;
-    console.log(originalYield)
     return originalYield;
   }else{
     return undefined;

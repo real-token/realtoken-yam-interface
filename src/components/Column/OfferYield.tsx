@@ -15,11 +15,7 @@ export const OfferYield = ({ offer } : OfferYieldProps) => {
     const { propertyToken } = usePropertyToken(getPropertyTokenAddress(offer));
     const { price } = useOraclePriceFeed(offer.type == OFFER_TYPE.BUY ? offer.offerTokenAddress: offer.buyerTokenAddress);
 
-    // console.log(price?.toString(),propertyToken)
-
     const { tokenPriceInDollar } = useOfferPriceInDollar(price,offer);
-
-    console.log(tokenPriceInDollar?.toString())
 
     const offerAjustedYield: BigNumber|undefined = useMemo(() => {
         if(!propertyToken || !propertyToken.netRentYearPerToken || !tokenPriceInDollar) return undefined;
