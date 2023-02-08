@@ -425,7 +425,6 @@ export const modifyOfferActionColumn: ColumnFn<unknown> = (t,span) => {
   }
 }
 
-
 // ADMIN
 export const adminActionsColumn: ColumnFn<unknown> = (t,span) => {
   return{

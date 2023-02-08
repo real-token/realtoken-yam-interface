@@ -176,8 +176,8 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
                     currency: propertyToken.currency,
                     marketplaceLink: propertyToken.marketplaceLink,
                     imageLink: propertyToken.imageLink,
-                    netRentYearPerToken: propertyToken.netRentYearPerToken,
-                    annualYield: propertyToken.netRentYearPerToken/propertyToken.tokenPrice
+                    netRentYearPerToken: propertyToken.netRentYearPerToken ?? 0,
+                    annualYield: propertyToken.netRentYearPerToken && propertyToken.tokenPrice ? propertyToken.netRentYearPerToken/propertyToken.tokenPrice : 0
                 })
             }
             
