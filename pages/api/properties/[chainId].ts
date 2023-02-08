@@ -49,6 +49,7 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
                 imageLink: [],
                 marketplaceLink: "",
                 netRentYearPerToken: 4.8929230769231,
+                tokenIdRules: 100038
             },
             {
                 uuid: "14319 Rosemary",
@@ -60,6 +61,7 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
                 imageLink: [],
                 marketplaceLink: "",
                 netRentYearPerToken: 5.28,
+                tokenIdRules: 100040
             },
             {
                 uuid: "14078 Carlisle",
@@ -71,6 +73,7 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
                 imageLink: [],
                 marketplaceLink: "",
                 netRentYearPerToken: 5.6167,
+                tokenIdRules: 100041
             },
             {
                 uuid: "13895 Saratoga",
@@ -82,6 +85,7 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
                 imageLink: [],
                 marketplaceLink: "",
                 netRentYearPerToken: 6.0808333333333,
+                tokenIdRules: 100042
             },
             {
                 uuid: "4380 Beaconsfield",
@@ -93,6 +97,7 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
                 imageLink: [],
                 marketplaceLink: "",
                 netRentYearPerToken: 5.7141666666667,
+                tokenIdRules: 100043
             },
             {
                 uuid: "17813 Bradford",
@@ -104,6 +109,7 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
                 imageLink: [],
                 marketplaceLink: "",
                 netRentYearPerToken: 5.5625,
+                tokenIdRules: 100044
             },
             {
                 uuid: "15796 Hartwell",
@@ -115,6 +121,7 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
                 imageLink: [],
                 marketplaceLink: "",
                 netRentYearPerToken: 5.6866666666667,
+                tokenIdRules: 100045
             },
             {
                 uuid: "9717 Everts",
@@ -126,6 +133,7 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
                 imageLink: [],
                 marketplaceLink: "",
                 netRentYearPerToken: 5.2358333333333,
+                tokenIdRules: 100046
             },
             {
                 uuid: "19201 Westphalia",
@@ -137,6 +145,7 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
                 imageLink: [],
                 marketplaceLink: "",
                 netRentYearPerToken: 5.4633333333333,
+                tokenIdRules: 100047
             },
             {
                 uuid: "19163 Mitchell",
@@ -148,6 +157,7 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
                 imageLink: [],
                 marketplaceLink: "",
                 netRentYearPerToken: 5.7441666666667,
+                tokenIdRules: 100048
             },
             {
                 uuid: "4061 Grand",
@@ -159,6 +169,7 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
                 imageLink: [],
                 marketplaceLink: "",
                 netRentYearPerToken: 5.8627777777778,
+                tokenIdRules: 100049
             }
         ]
         propertiesGoerli.forEach((token) => token.annualYield = token.officialPrice ? token.netRentYearPerToken/token.officialPrice : 0)
@@ -177,8 +188,9 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
                     marketplaceLink: propertyToken.marketplaceLink,
                     imageLink: propertyToken.imageLink,
                     netRentYearPerToken: propertyToken.netRentYearPerToken ?? 0,
-                    annualYield: propertyToken.netRentYearPerToken && propertyToken.tokenPrice ? propertyToken.netRentYearPerToken/propertyToken.tokenPrice : 0
-                })
+                    annualYield: propertyToken.netRentYearPerToken && propertyToken.tokenPrice ? propertyToken.netRentYearPerToken/propertyToken.tokenPrice : 0,
+                    tokenIdRules: propertyToken.tokenIdRules
+                });
             }
             
         });

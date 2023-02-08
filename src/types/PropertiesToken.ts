@@ -12,6 +12,7 @@ export type APIPropertiesToken = {
     marketplaceLink: string
     imageLink: string[]
     netRentYearPerToken: number
+    tokenIdRules: number
 }
 
 export type ShortProperty = {
@@ -29,6 +30,7 @@ export type PropertiesToken = {
     currency: string,
     marketplaceLink: string
     imageLink: string[]
+    tokenIdRules: number
     netRentYearPerToken: number
     annualYield?: number
 }
