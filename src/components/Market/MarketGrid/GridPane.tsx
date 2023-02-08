@@ -103,23 +103,6 @@ export const GridPane: FC<GridPaneProps> = ({ offer }) => {
     const { t } = useTranslation('buy', { keyPrefix: 'table' });
     const { classes } = useStyle();
 
-    const { propertiesToken } = usePropertiesToken();
-
-    const offerType: OFFER_TYPE = useMemo((): OFFER_TYPE => {
-        if(!offer && !propertiesToken) return OFFER_TYPE.EXCHANGE
-        const buyerTokenIsProperty = propertiesToken.find(propertyToken => propertyToken.contractAddress.toLowerCase() == offer.buyerTokenAddress) !== undefined;
-        const offerTokenIsProperty = propertiesToken.find(propertyToken => propertyToken.contractAddress.toLowerCase() == offer.offerTokenAddress) !== undefined;
-
-        // console.log(buyerTokenIsProperty,offerTokenIsProperty)
-
-        if(buyerTokenIsProperty && offerTokenIsProperty) return OFFER_TYPE.EXCHANGE
-        if(buyerTokenIsProperty) return OFFER_TYPE.BUY
-        if(offerTokenIsProperty) return OFFER_TYPE.SELL
-
-        return OFFER_TYPE.EXCHANGE
-
-    },[propertiesToken,offer])
-
     return(
         <>
         {
@@ -130,7 +113,7 @@ export const GridPane: FC<GridPaneProps> = ({ offer }) => {
                 <Flex direction={"column"} align={"start"} color={"brand"} className={classes.header} >
                     <Flex gap={"sm"}>
                         <Flex className={classes.offerId} mb={10}>{offer.offerId}</Flex>
-                        <OfferTypeBadge offerType={offerType}/>
+                        <OfferTypeBadge offerType={offer.type ?? OFFER_TYPE.SELL}/>
                     </Flex>
                 
                     <Text className={classes.offerTokenName}>{offer.offerTokenName}</Text>

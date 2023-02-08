@@ -8,7 +8,7 @@ interface OriginalYieldProps{
 }
 export const OriginalYield = ({ offer } : OriginalYieldProps) => {
 
-    const { propertyToken } = usePropertyToken(offer.type == OFFER_TYPE.BUY ? offer.buyerTokenAddress : offer.offerTokenAddress);
+    const { propertyToken } = usePropertyToken(offer.type == OFFER_TYPE.SELL ? offer.buyerTokenAddress : offer.offerTokenAddress);
 
     const originalYield: number|undefined = useMemo(() => {
         if(!propertyToken) return undefined;

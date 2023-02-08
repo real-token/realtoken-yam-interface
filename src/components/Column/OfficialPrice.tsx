@@ -8,7 +8,7 @@ interface OffialPriceProps{
 }
 export const OffialPrice = ({ offer } : OffialPriceProps) => {
 
-    const { propertyToken } = usePropertyToken(offer.type == OFFER_TYPE.BUY ? offer.buyerTokenAddress : offer.offerTokenAddress);
+    const { propertyToken } = usePropertyToken(offer.type == OFFER_TYPE.SELL ? offer.buyerTokenAddress : offer.offerTokenAddress);
 
     const officialPrice: string|undefined = useMemo(() => {
         if(!propertyToken) return undefined;
