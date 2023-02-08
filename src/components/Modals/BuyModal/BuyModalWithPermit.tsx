@@ -321,7 +321,13 @@ export const BuyModalWithPermit: FC<
     const max = b.eq(0) ? new BigNumber(0) : b.dividedBy(offer.price);
 
     return max.isGreaterThanOrEqualTo(new BigNumber(offer.amount)) ? new BigNumber(offer.amount).toNumber() : parseFloat(max.toString());
-  },[balance,offer])
+  },[balance,offer]);
+
+  const priceTranslation: Map<OFFER_TYPE,string> = new Map<OFFER_TYPE,string>([
+    [OFFER_TYPE.BUY,t("buyOfferTypePrice")],
+    [OFFER_TYPE.SELL,t("sellOfferTypePrice")],
+    [OFFER_TYPE.EXCHANGE,t("exchangeOfferTypePrice")]
+  ]);
 
   return (
     <form onSubmit={onSubmit(onHandleSubmit)} style={{ width: calcRem(500) }}>
@@ -347,7 +353,7 @@ export const BuyModalWithPermit: FC<
               <Text>{BigNumber.minimum(offer.amount,offerTokenSellerBalance!).toString()}</Text>
             </Flex>
             <Flex direction={"column"}>
-                <Text fw={700}>{t("price")}</Text>
+                <Text fw={700}>{priceTranslation.get(offer.type)}</Text>
                 <Text>{`${offer.price} ${buyTokenSymbol}`}</Text>
               </Flex>
         </Flex>
