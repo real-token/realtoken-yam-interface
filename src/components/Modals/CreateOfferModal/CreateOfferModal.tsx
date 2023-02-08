@@ -570,7 +570,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
       </>
     )
   }
-  const PriceNumberInput = ({ label, width }:{ label: string, width: string }) => {
+  const PriceNumberInput = ({ label, width, onBlur }:{ label: string, width: string, onBlur: () => void }) => {
     return(
       <Flex direction={"column"} gap={"sm"} style={{ width: width ? width : "100%" }}>
         <NumberInput
@@ -586,6 +586,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
           step={undefined}
           showMax={false}
           sx={{ flexGrow: 1 }}
+          onBlur={() => onBlur()}
           error={shieldError && priceDifference ? t("shieldError", { priceDifference: (priceDifference*100).toFixed(2), maxPriceDifference: maxPriceDifference*100 }) : undefined}
         />
         { officialPrice && officialSellCurrency ?
@@ -703,23 +704,24 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
       ;
     const { price } = useOraclePriceFeed(offer.offerType == OFFER_TYPE.BUY ? values.offerTokenAddress : values.buyerTokenAddress);
 
-    // When price in USDC/WDAI changed
-    useEffect(() => {
+    const setPInDollar = () => {
+      console.log("test")
+      if(values.price && price) setPriceInDollar(parseFloat(new BigNumber(values.price).multipliedBy(price).toString()))
+    }
+
+    const setPrice = () => {
+      console.log("test")
       if(price && priceInDollar){
         setFieldValue("price",parseFloat(new BigNumber(priceInDollar).dividedBy(price).toString().toString()))
       }
-    },[price,priceInDollar]);
-
-    // When price in $ changed
-    useEffect(() => {
-        if(values.price && price) setPriceInDollar(parseFloat(new BigNumber(values.price).multipliedBy(price).toString()))
-    },[values.price,price])
+    }
 
     return(
       <Flex gap={10} align={"start"}>
         {PriceNumberInput({ 
           label: t("priceInCurrency", { currency: "$" }), 
-          width: "100%" 
+          width: "100%" ,
+          onBlur: setPrice
         })}
         <IconArrowRight style={{ marginTop: "22px" }} size={46}/>
         <Flex direction={"column"} gap={"sm"} style={{ width: "100%" }}>
@@ -729,6 +731,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
             precision={6}
             {...getInputProps("price")}
             style={{ width: "100%" }}
+            onBlur={() => setPInDollar()}
           />
           { tokenSymbol && price ? <Text fz={"sm"} fs={"italic"}>{t("withPrice", { buyerTokenSymbol: tokenSymbol, price: price.toString(), currency: "$" })}</Text> : undefined }
         </Flex>
