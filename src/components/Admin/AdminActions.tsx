@@ -4,6 +4,7 @@ import { isRole, USER_ROLE } from "src/types/admin"
 import { AddWLAction } from "./actions/addWL/AddWLAction"
 import { CheckRole } from "./actions/CheckRole"
 import { GrantRole } from "./actions/GrandRole"
+import { PauseAction } from "./actions/PauseAction"
 
 export const AdminActions = () => {
 
@@ -12,9 +13,9 @@ export const AdminActions = () => {
     return(
         <Flex direction={"column"} gap={"md"}>
             { isRole(role,[USER_ROLE.ADMIN]) ? <AddWLAction/> : undefined }
-            { isRole(role,[USER_ROLE.ADMIN]) ? <GrantRole /> : undefined }
+            { isRole(role,[USER_ROLE.ADMIN,USER_ROLE.MODERATOR]) ? <GrantRole /> : undefined }
             <CheckRole />
-            {/* { isRole(role,[USER_ROLE.ADMIN]) ? <PauseAction /> : undefined } */}
+            { isRole(role,[USER_ROLE.ADMIN]) ? <PauseAction /> : undefined }
         </Flex>
     )
 }
