@@ -329,6 +329,12 @@ export const BuyModalWithPermit: FC<
     [OFFER_TYPE.EXCHANGE,t("exchangeOfferTypePrice")]
   ]);
 
+  const amountTranslation: Map<OFFER_TYPE,string> = new Map<OFFER_TYPE,string>([
+    [OFFER_TYPE.BUY,t("buyOfferTypeAmount")],
+    [OFFER_TYPE.SELL,t("sellOfferTypeAmount")],
+    [OFFER_TYPE.EXCHANGE,t("exchangeOfferTypeAmount")]
+  ]);
+
   return (
     <form onSubmit={onSubmit(onHandleSubmit)} style={{ width: calcRem(500) }}>
       <Stack justify={'center'} align={'stretch'}>
@@ -349,11 +355,11 @@ export const BuyModalWithPermit: FC<
               <Text>{offer.sellerAddress}</Text>
             </Flex>
             <Flex direction={"column"} >
-              <Text fw={700}>{t("amount")}</Text>
+              <Text fw={700}>{offer.type ? amountTranslation.get(offer.type) : ""}</Text>
               <Text>{BigNumber.minimum(offer.amount,offerTokenSellerBalance!).toString()}</Text>
             </Flex>
             <Flex direction={"column"}>
-                <Text fw={700}>{priceTranslation.get(offer.type)}</Text>
+                <Text fw={700}>{offer.type ? priceTranslation.get(offer.type) : ""}</Text>
                 <Text>{`${offer.price} ${buyTokenSymbol}`}</Text>
               </Flex>
         </Flex>
