@@ -57,11 +57,10 @@
     "buyOfferTypePrice": "Prix/Jeton (Nb de jeton d'achat par jeton RealT)",
     "sellOfferTypePrice": "Prix/Jeton (Nb de jeton RealT par jeton en vente)",
     "exchangeOfferTypePrice": "Prix/Jeton (Nb de jeton d'achat par jeton en vente)",
-
+    "amount": "Quantité",
     "buyOfferTypeAmount": "Quantité (de jeton en achat)",
     "sellOfferTypeAmount": "Quantité (de jeton en vente)",
     "exchangeOfferTypeAmount": "Quantité (de jeton en échange)",
-
     "cancel": "Annuler",
     "confirm": "Confirmer",
     "buy": "Acheter",
