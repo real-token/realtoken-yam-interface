@@ -8,6 +8,7 @@ import { ContractsID, NOTIFICATIONS, NotificationsID } from "src/constants";
 import { useActiveChain, useContract } from "src/hooks";
 import { showNotification, updateNotification } from "@mantine/notifications";
 import { useTranslation } from "react-i18next";
+import { useRole } from "src/hooks/useRole";
 
 interface GrandRoleForm{
     type: string;
@@ -18,14 +19,18 @@ export const GrantRole = () => {
 
     const { t } = useTranslation("admin");
 
+    const { role } = useRole();
+
     const datas = [
         {
-            label: "Administrator",
-            value: ROLE.get(USER_ROLE.ADMIN) ?? ""
+            label: "Moderator",
+            value: ROLE.get(USER_ROLE.MODERATOR) ?? "",
+            disabled: false
         },
         {
-            label: "Moderator",
-            value: ROLE.get(USER_ROLE.MODERATOR) ?? ""
+            label: "Administrator",
+            value: ROLE.get(USER_ROLE.ADMIN) ?? "",
+            disabled: role == USER_ROLE.MODERATOR
         }
     ];
 
