@@ -1,5 +1,5 @@
-import { FC, useEffect, useState } from 'react';
-import { MantineSize } from '@mantine/core';
+import { FC, useEffect, useMemo, useState } from 'react';
+import { ActionIcon, Group, MantineSize, Text } from '@mantine/core';
 import {
   ExpandedState,
   PaginationState,
@@ -21,6 +21,10 @@ import { OFFERS_TYPE, useRightTableColumn } from 'src/hooks/useRightTableColumns
 import { selectPublicOffers } from 'src/store/features/interface/interfaceSelector';
 import { useAppSelector } from 'src/hooks/react-hooks';
 import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
+import { useTranslation } from 'react-i18next';
+import { header, idColumn, publicActionsColumn } from 'src/hooks/column';
+import { ENV, isEnvs } from 'src/utils/isEnv';
+import { IconChevronDown, IconChevronUp } from '@tabler/icons';
 
 export const MarketTable: FC = () => {
 
@@ -28,7 +32,7 @@ export const MarketTable: FC = () => {
   const [nameFilterValue,setNamefilterValue] = useAtom(nameFilterValueAtom);
   
   const [sorting, setSorting] = useState<SortingState>([
-    { id: 'offerId', desc: false },
+    { id: 'offer-id', desc: false },
   ]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -36,6 +40,7 @@ export const MarketTable: FC = () => {
   });
   const [expanded, setExpanded] = useState<ExpandedState>({});
 
+  // Sort offer by best price
   useEffect(() => {
     if(nameFilterValue !== ""){
       setSorting([
@@ -43,16 +48,16 @@ export const MarketTable: FC = () => {
         { id: "price", desc: false }
       ])
     }else{
-      setSorting([{ id: 'offerId', desc: false }])
+      setSorting([{ id: 'offer-id', desc: false }])
     }
   },[nameFilterValue])
 
   const publicOffers = useAppSelector(selectPublicOffers);
-  const { offers } = useTypedOffers(publicOffers);
+  const { offers: data } = useTypedOffers(publicOffers);
   const columns = useRightTableColumn(OFFERS_TYPE.PUBLIC);
 
   const table = useReactTable({
-    data: offers,
+    data: data,
     columns: columns,
     state: { 
       sorting: sorting, 

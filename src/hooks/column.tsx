@@ -59,7 +59,7 @@ export const typeColumn: ColumnDef<Offer,OFFER_TYPE> = {
 
 export const idColumn: ColumnFn<OFFER_TYPE> = (t,span) => {
     return{
-        id: 'offerId',
+        id: 'offer-id',
         accessorKey: 'offerId',
         header: t('offerId'),
         cell: ({ row, getValue }) => { 
@@ -190,7 +190,7 @@ export const priceColumn: ColumnFn<number> = (t,span) => {
 
 export const simplePriceColumn: ColumnFn<number> = (t,span) => {
   return {
-      id: 'price',
+      id: 'simple-price',
       accessorKey: 'price',
       header: t('price'),
       cell: ({ getValue }) => (
@@ -280,7 +280,7 @@ export const allowanceColumn: ColumnFn<string> = (t,span) => {
 
 export const publicActionsColumn: ColumnFn<unknown> = (t,span) => {
     return{
-        id: 'actions',
+        id: 'public-actions',
         header: undefined,
         cell: ({ row }) => (
           <Flex gap={"md"}>
@@ -288,13 +288,15 @@ export const publicActionsColumn: ColumnFn<unknown> = (t,span) => {
             <ShowOfferAction offer={row.original}/>
           </Flex>
         ),
+        enableSorting: false,
+        enableGlobalFilter: false,
         meta: { colSpan: span },
     }
 }
 
 export const officialPriceColumn: ColumnFn<number|undefined> = (t,span) => {
     return{
-        id: 'officialPrice',
+        id: 'official-price',
         header: "Official price",
         accessorKey: "officialPrice",
         cell: ({ row }) => (
@@ -313,7 +315,7 @@ export const officialPriceColumn: ColumnFn<number|undefined> = (t,span) => {
 
 export const officialYieldColumn: ColumnFn<number|undefined> = (t,span) => {
     return{
-        id: 'officialYield',
+        id: 'official-yield',
         header: "Official Yield",
         accessorKey: "officialYield",
         cell: ({ getValue }) => (
@@ -339,7 +341,7 @@ export const officialYieldColumn: ColumnFn<number|undefined> = (t,span) => {
 
 export const offerYieldColumn: ColumnFn<unknown> = (t,span) => {
     return{
-        id: 'offerYield',
+        id: 'offer-yield',
         header: "Offer Yield",
         cell: ({ row }) => <OfferYield offer={row.original} />,
         enableSorting: true,
@@ -350,7 +352,7 @@ export const offerYieldColumn: ColumnFn<unknown> = (t,span) => {
 
 export const offerShortTokenNameColumn: ColumnFn<unknown> = (t,span) => {
     return {
-        id: 'offerShortTokenName',
+        id: 'offer-short-token-name',
         accessorKey: 'offerTokenName',
         header: t('offerTokenName'),
         cell: ({ row }) => <TokenName offer={row.original}/>,
@@ -362,7 +364,7 @@ export const offerShortTokenNameColumn: ColumnFn<unknown> = (t,span) => {
 
 export const exchangeOfferShortTokenNameColumn: ColumnFn<unknown> = (t,span) => {
   return {
-      id: 'offerShortTokenName',
+      id: 'offer-short-token-name',
       accessorKey: 'offerTokenName',
       header: t('offerTokenName'),
       cell: ({ row }) => <TokenName offer={row.original} tokenName={row.original.offerTokenName}/>,
@@ -374,7 +376,7 @@ export const exchangeOfferShortTokenNameColumn: ColumnFn<unknown> = (t,span) => 
 
 export const buyShortTokenNameColumn: ColumnFn<string> = (t,span) => {
     return {
-        id: 'buyerShortTokenName',
+        id: 'buyerTokenName',
         accessorKey: 'buyerTokenName',
         header: t('buyerTokenName'),
         cell: ({ row }) => <TokenName offer={row.original}/>,
@@ -386,7 +388,7 @@ export const buyShortTokenNameColumn: ColumnFn<string> = (t,span) => {
 
 export const exchangeBuyShortTokenNameColumn: ColumnFn<string> = (t,span) => {
   return {
-      id: 'buyerShortTokenName',
+      id: 'buyer-short-token-name',
       accessorKey: 'buyerTokenName',
       header: t('buyerTokenName'),
       cell: ({ row }) => <TokenName offer={row.original} tokenName={row.original.buyerTokenName}/>,
@@ -395,7 +397,7 @@ export const exchangeBuyShortTokenNameColumn: ColumnFn<string> = (t,span) => {
       meta: { colSpan: span },
     }
 }
-export const viewActionColumn: ColumnFn<Offer> = (t,span) => {
+export const viewActionColumn: ColumnFn<unknown> = (t,span) => {
   return {
     id: 'view-action',
     header: undefined,
@@ -407,7 +409,7 @@ export const viewActionColumn: ColumnFn<Offer> = (t,span) => {
 // ADDRESS
 export const deleteOfferActionColumn: ColumnFn<unknown> = (t,span) => {
   return{
-    id: 'delete',
+    id: 'delete-action',
     header: t('actionDelete'),
     cell: ({ row }) => <DeleteActions deleteOffer={row.original} />,
     enableSorting: false,
@@ -417,7 +419,7 @@ export const deleteOfferActionColumn: ColumnFn<unknown> = (t,span) => {
 
 export const modifyOfferActionColumn: ColumnFn<unknown> = (t,span) => {
   return {
-    id: 'update',
+    id: 'modify-action',
     header: t('actionEdit'),
     cell: ({ row }) => <UpdateActionsWithPermit updateOffer={row.original} />,
     enableSorting: false,
@@ -524,7 +526,7 @@ export const adminBuyerTokenNameColumn: ColumnFn<string> = (t,span) => {
 
 export const adminAmount: ColumnFn<string> = (t,span) => {
   return{
-    id: 'amount',
+    id: 'admin-amount',
     accessorKey: 'amount',
     header: t('amount'),
     cell: ({ row }) => {

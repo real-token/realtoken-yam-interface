@@ -28,7 +28,7 @@
     "@mantine/notifications": "^5.7.1",
     "@reduxjs/toolkit": "^1.9.1",
     "@tabler/icons": "^1.74.0",
-    "@tanstack/react-table": "^8.2.2",
+    "@tanstack/react-table": "^8.7.9",
     "@types/react-redux": "^7.1.24",
     "@types/redux": "^3.6.0",
     "@web3-react/coinbase-wallet": "^8.0.34-beta.0",
