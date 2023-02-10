@@ -428,6 +428,7 @@ export const exchangeBuyShortTokenNameColumn: ColumnFn<string> = (t,span) => {
       meta: { colSpan: span },
     }
 }
+
 export const viewActionColumn: ColumnFn<unknown> = (t,span) => {
   return {
     id: 'view-action',

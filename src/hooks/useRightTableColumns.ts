@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { tableOfferTypeAtom } from "src/states";
 import { Offer, OFFER_TYPE } from "src/types/offer";
-import { amountColumn, buyerTokenNameColumn, buyShortTokenNameColumn, deleteOfferActionColumn, header, idColumn, modifyOfferActionColumn, offerShortTokenNameColumn, offerTokenNameColumn, offerYieldColumn, officialPriceColumn, officialYieldColumn, priceColumn, priceDeltaColumn, publicActionsColumn, sellerAddressColumn, viewActionColumn, yieldDeltaColumn } from "./column";
+import { amountColumn, buyerTokenNameColumn, buyShortTokenNameColumn, deleteOfferActionColumn, exchangeBuyShortTokenNameColumn, exchangeOfferShortTokenNameColumn, header, idColumn, modifyOfferActionColumn, offerShortTokenNameColumn, offerTokenNameColumn, offerYieldColumn, officialPriceColumn, officialYieldColumn, priceColumn, priceDeltaColumn, publicActionsColumn, sellerAddressColumn, viewActionColumn, yieldDeltaColumn } from "./column";
 
 export enum OFFERS_TYPE{
     PUBLIC,
@@ -46,11 +46,8 @@ export const useRightTableColumn: UseRightTableColumn = (offersType)  => {
     ],[t]);
     const basicExchangeColumns = useMemo(() => [
         idColumn(t,1),
-        offerTokenNameColumn(t,2),
-        buyShortTokenNameColumn(t,2),
-        officialYieldColumn(t,1),
-        offerYieldColumn(t,1),
-        officialPriceColumn(t,1),
+        exchangeOfferShortTokenNameColumn(t,2),
+        exchangeBuyShortTokenNameColumn(t,2),
         priceColumn(t,2),
         amountColumn(t,2)
     ],[t]);

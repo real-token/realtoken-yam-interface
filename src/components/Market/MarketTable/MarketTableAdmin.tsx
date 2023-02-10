@@ -17,7 +17,7 @@ import { Table } from '../../Table';
 import { MarketSubRow } from '../MarketSubRow';
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 import { selectPublicOffers } from 'src/store/features/interface/interfaceSelector';
-import { adminActionsColumn, adminAmount, adminHeader, buyerTokenNameColumn, buyShortTokenNameColumn, idColumn, offerDateColumn, offerShortTokenNameColumn, offerTokenNameColumn, priceColumn, priceDeltaColumn, sellerAddressColumn, yieldDeltaColumn } from 'src/hooks/column';
+import { adminActionsColumn, adminAmount, adminHeader, buyerTokenNameColumn, buyShortTokenNameColumn, exchangeBuyShortTokenNameColumn, exchangeOfferShortTokenNameColumn, idColumn, offerDateColumn, offerShortTokenNameColumn, offerTokenNameColumn, priceColumn, priceDeltaColumn, sellerAddressColumn, yieldDeltaColumn } from 'src/hooks/column';
 import React from 'react';
 import { Offer, OFFER_TYPE } from 'src/types/offer';
 import { useModals } from '@mantine/modals';
@@ -162,8 +162,8 @@ export const MarketTableAdmin: FC = () => {
         columns: [
           checkboxColumn,
           idColumn(t,1),
-          offerTokenNameColumn(t,2),
-          buyShortTokenNameColumn(t,2),
+          exchangeOfferShortTokenNameColumn(t,2),
+          exchangeBuyShortTokenNameColumn(t,2),
           sellerAddressColumn(t,1),
           priceColumn(t,1),
           adminAmount(t,1),

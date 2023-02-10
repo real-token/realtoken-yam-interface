@@ -15,12 +15,6 @@ export const OfferPriceDelta = ({ offer }: OfferPriceDeltaProps) => {
         return valueFloat == "0"
     },[priceDelta]);
 
-    console.log(offer.offerId)
-
-    if(offer.offerId == "11"){
-        console.log(priceDelta,isZero)
-    }
-
     return(
         <Flex justify={"center"}>
             {   
