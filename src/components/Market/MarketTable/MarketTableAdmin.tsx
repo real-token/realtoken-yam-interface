@@ -1,4 +1,4 @@
-import { FC, HTMLProps, useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, HTMLProps, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Flex, MantineSize, TextInput, Title } from '@mantine/core';
 import {
@@ -16,22 +16,26 @@ import {
 import { Table } from '../../Table';
 import { MarketSubRow } from '../MarketSubRow';
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
-import { selectOffers } from 'src/store/features/interface/interfaceSelector';
-import { useSelector } from 'react-redux';
-import { adminActionsColumn, adminAmount, adminBuyerTokenNameColumn, adminHeader, adminOfferTokenNameColumn, idColumn, offerDateColumn, priceColumn, sellerAddressColumn, typeColumn } from 'src/hooks/column';
+import { selectPublicOffers } from 'src/store/features/interface/interfaceSelector';
+import { adminActionsColumn, adminAmount, adminHeader, buyerTokenNameColumn, buyShortTokenNameColumn, idColumn, offerDateColumn, offerShortTokenNameColumn, offerTokenNameColumn, priceColumn, priceDeltaColumn, sellerAddressColumn, yieldDeltaColumn } from 'src/hooks/column';
 import React from 'react';
-import { Offer } from 'src/types/offer';
+import { Offer, OFFER_TYPE } from 'src/types/offer';
 import { useModals } from '@mantine/modals';
 import { MarketSort } from '../MarketSort/MarketSort';
+import { useAtomValue } from 'jotai';
+import { tableOfferTypeAtom } from 'src/states';
+import { useRole } from 'src/hooks/useRole';
+import { USER_ROLE } from 'src/types/admin';
+import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
+import { useAppSelector } from 'src/hooks/react-hooks';
 
 export const MarketTableAdmin: FC = () => {
 
   const { refreshOffers, offersIsLoading } = useRefreshOffers(false);
-  const offers = useSelector(selectOffers);
 
   const [globalFilter,setGlobalFilter] = useState<string>("");
   const [sorting, setSorting] = useState<SortingState>([
-    { id: 'offerId', desc: false },
+    { id: 'offer-id', desc: false },
   ]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -43,6 +47,11 @@ export const MarketTableAdmin: FC = () => {
   const { t: t2 } = useTranslation('table', { keyPrefix: 'filters' });
 
   const [rowSelection, setRowSelection] = useState<{ [key: number]: boolean }>({});
+
+  const publicOffers = useAppSelector(selectPublicOffers);
+  const { offers } = useTypedOffers(publicOffers);
+
+  const { role } = useRole();
 
   const modals = useModals();
   const { t: t3 } = useTranslation('modals');
@@ -64,53 +73,125 @@ export const MarketTableAdmin: FC = () => {
       }
     });
   },[modals, offers, rowSelection, t3]);
+
+  const checkboxColumn: ColumnDef<Offer> = useMemo(() => (
+    {
+      id: 'select',
+      header: ({ table }) => (
+        <>
+        {
+          role == USER_ROLE.ADMIN ?
+            <IndeterminateCheckbox
+            {...{
+              checked: table.getIsAllRowsSelected(),
+              indeterminate: table.getIsSomeRowsSelected(),
+              onChange: table.getToggleAllRowsSelectedHandler(),
+            }}
+          />
+          :
+          undefined
+        }
+        </>
+      ),
+      cell: ({ row }) => (
+        <div className={"px-1"}>
+          {
+            role == USER_ROLE.ADMIN ?
+              <IndeterminateCheckbox
+                {...{
+                  checked: row.getIsSelected(),
+                  disabled: !row.getCanSelect(),
+                  indeterminate: row.getIsSomeSelected(),
+                  onChange: row.getToggleSelectedHandler(),
+                }}
+              />
+              :
+            undefined
+          }
+        </div>
+      ),
+      size: 20
+    }
+  ),[role]);
  
-  const adminColumns: ColumnDef<Offer>[] = useMemo(() => [
+  const sellAdminColumns: ColumnDef<Offer>[] = useMemo(() => [
       {
           id: 'title',
-          header: ({ table }) => adminHeader(table, rowSelection, deleteSelectedOffers, { title: t('title') }),
+          header: ({ table }) => adminHeader(role == USER_ROLE.ADMIN, table, rowSelection, deleteSelectedOffers, { title: t('title') }),
           meta: { colSpan: 15 },
           columns: [
-            {
-              id: 'select',
-              header: ({ table }) => (
-                <IndeterminateCheckbox
-                  {...{
-                    checked: table.getIsAllRowsSelected(),
-                    indeterminate: table.getIsSomeRowsSelected(),
-                    onChange: table.getToggleAllRowsSelectedHandler(),
-                  }}
-                />
-              ),
-              cell: ({ row }) => (
-                <div className={"px-1"}>
-                  <IndeterminateCheckbox
-                    {...{
-                      checked: row.getIsSelected(),
-                      disabled: !row.getCanSelect(),
-                      indeterminate: row.getIsSomeSelected(),
-                      onChange: row.getToggleSelectedHandler(),
-                    }}
-                  />
-                </div>
-              ),
-              size: '20'
-            },
-            typeColumn,
+            checkboxColumn,
             idColumn(t,1),
-            adminOfferTokenNameColumn(t,2),
-            adminBuyerTokenNameColumn(t,2),
+            offerTokenNameColumn(t,2),
+            buyShortTokenNameColumn(t,2),
+            yieldDeltaColumn(t,1),
             sellerAddressColumn(t,1),
             priceColumn(t,1),
+            priceDeltaColumn(t,1),
             adminAmount(t,1),
             offerDateColumn(t,1),
             adminActionsColumn(t,1)
           ]
-  }],[deleteSelectedOffers, rowSelection, t]);
+  }],[checkboxColumn, t, role, rowSelection, deleteSelectedOffers]);
+
+  const buyAdminColumns: ColumnDef<Offer>[] = useMemo(() => [
+    {
+        id: 'title',
+        header: ({ table }) => adminHeader(role == USER_ROLE.ADMIN,table, rowSelection, deleteSelectedOffers, { title: t('title') }),
+        meta: { colSpan: 15 },
+        columns: [
+          checkboxColumn,
+          idColumn(t,1),
+          offerShortTokenNameColumn(t,2),
+          buyerTokenNameColumn(t,2),
+          yieldDeltaColumn(t,1),
+          sellerAddressColumn(t,1),
+          priceColumn(t,1),
+          priceDeltaColumn(t,1),
+          adminAmount(t,1),
+          offerDateColumn(t,1),
+          adminActionsColumn(t,1)
+        ]
+  }],[checkboxColumn, t, role, rowSelection, deleteSelectedOffers]);
+
+  const exchangeAdminColumns: ColumnDef<Offer>[] = useMemo(() => [
+    {
+        id: 'title',
+        header: ({ table }) => adminHeader(role == USER_ROLE.ADMIN,table, rowSelection, deleteSelectedOffers, { title: t('title') }),
+        meta: { colSpan: 15 },
+        columns: [
+          checkboxColumn,
+          idColumn(t,1),
+          offerTokenNameColumn(t,2),
+          buyShortTokenNameColumn(t,2),
+          sellerAddressColumn(t,1),
+          priceColumn(t,1),
+          adminAmount(t,1),
+          offerDateColumn(t,1),
+          adminActionsColumn(t,1)
+        ]
+  }],[checkboxColumn, t, role, rowSelection, deleteSelectedOffers]);
+
+  const sortingType = useAtomValue(tableOfferTypeAtom);
+
+  // const
+  const rightColumn: ColumnDef<Offer>[] = useMemo(() => {
+    switch(sortingType){
+      case OFFER_TYPE.SELL:
+        return sellAdminColumns;
+      case OFFER_TYPE.BUY:
+        return buyAdminColumns;
+      case OFFER_TYPE.EXCHANGE:
+        return exchangeAdminColumns;
+      default:
+        return sellAdminColumns;
+    }
+  },[sortingType, sellAdminColumns, buyAdminColumns, exchangeAdminColumns]);
+
 
   const table = useReactTable({
     data: offers,
-    columns: adminColumns,
+    columns: rightColumn,
     state: { sorting, pagination, expanded, rowSelection, globalFilter },
     onGlobalFilterChange: setGlobalFilter,
     onSortingChange: setSorting,
@@ -129,9 +210,7 @@ export const MarketTableAdmin: FC = () => {
   return (
     <Flex direction={"column"} gap={"sm"} align={"flex-start"} mt={20}>
       <TextInput placeholder={t2("nameFilterPlaceholder")} value={globalFilter} onChange={(event) => setGlobalFilter(event.currentTarget.value)}/>
-      <MarketSort 
-        
-      />
+      <MarketSort/>
       <Table
         tableProps={{
           highlightOnHover: true,

@@ -34,7 +34,7 @@ export const MarketTableUser: FC = () => {
   const [expanded, setExpanded] = useState<ExpandedState>({});
 
   const addressOffers = useSelector(selectAddressOffers);
-  const { offers, sellCount, buyCount, exchangeCount } = useTypedOffers(addressOffers)
+  const { offers, sellCount, buyCount, exchangeCount } = useTypedOffers(addressOffers);
   const columns = useRightTableColumn(OFFERS_TYPE.ADDRESS);
 
   const table = useReactTable({

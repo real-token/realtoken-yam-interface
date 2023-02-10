@@ -1,4 +1,4 @@
-import { ActionIcon, Group, Title, Text, Flex, Button, Skeleton } from "@mantine/core"
+import { ActionIcon, Group, Title, Text, Flex, Button, Skeleton, Tooltip } from "@mantine/core"
 import { IconChevronDown, IconChevronUp, IconTrash } from "@tabler/icons"
 import { ColumnDef, RowSelectionState, Table } from "@tanstack/react-table"
 import BigNumber from "bignumber.js"
@@ -29,18 +29,22 @@ export const header = ({ title } : { title: string }) => {
     )
 }
 
-export const adminHeader = (table: Table<Offer>, rowSelection: RowSelectionState, deleteOffers: () => void, { title } : { title: string }) => {
+export const adminHeader = (isAdmin: boolean, table: Table<Offer>, rowSelection: RowSelectionState, deleteOffers: () => void, { title } : { title: string }) => {
 
   const { getIsSomeRowsSelected, getIsAllRowsSelected } = table;
 
   return (
     <Flex justify={"space-between"}>
-      <Button color={"red"} style={{ display: "flex", gap: 5 }} disabled={!getIsSomeRowsSelected() && !getIsAllRowsSelected()} onClick={() => deleteOffers()}>
-        <Flex gap={"sm"} align={"center"}>
-          <IconTrash size={16} />
-          {`Delete ${Object.keys(rowSelection).length} selected offers`}
-        </Flex>
-      </Button>
+      { isAdmin ?
+        <Button color={"red"} style={{ display: "flex", gap: 5 }} disabled={!getIsSomeRowsSelected() && !getIsAllRowsSelected()} onClick={() => deleteOffers()}>
+          <Flex gap={"sm"} align={"center"}>
+            <IconTrash size={16} />
+            {`Delete ${Object.keys(rowSelection).length} selected offers`}
+          </Flex>
+        </Button>
+        :
+        undefined
+      }
       <Title order={4} style={{ flexGrow:1, textAlign: 'center' }}>
         {title} 
       </Title>
@@ -489,64 +493,6 @@ export const offerDateColumn: ColumnFn<number> = (t,span) => {
         }
       </Text>
     ),
-    meta: { colSpan: span },
-  }
-}
-
-export const adminOfferTokenNameColumn: ColumnFn<string> = (t,span) => {
-  return{
-    id: `admin-offer-token`,
-    accessorKey: "offerTokenName",
-    header: t('offerTokenName'),
-    cell: ({ row, getValue }) => {
-      const offer :Offer = row.original;
-      return(
-        <Flex justify={"center"}>
-          { offer.type == OFFER_TYPE.SELL ?
-              <TokenName offer={row.original}/>
-            :
-            <Text
-              size={'sm'}
-              sx={{
-                textOverflow: 'ellipsis',
-                overflow: 'hidden',
-              }}
-            >
-              {getValue()}
-            </Text>
-          }
-        </Flex>
-      )
-    },
-    meta: { colSpan: span },
-  }
-}
-
-export const adminBuyerTokenNameColumn: ColumnFn<string> = (t,span) => {
-  return{
-    id: `admin-buyer-token`,
-    accessorKey: "offerTokenName",
-    header: t('offerTokenName'),
-    cell: ({ row, getValue }) => {
-      const offer :Offer = row.original;
-      return(
-        <Flex justify={"center"}>
-          { offer.type == OFFER_TYPE.BUY ?
-              <TokenName offer={row.original}/>
-            :
-            <Text
-              size={'sm'}
-              sx={{
-                textOverflow: 'ellipsis',
-                overflow: 'hidden',
-              }}
-            >
-              {getValue()}
-            </Text>
-          }
-        </Flex>
-      )
-    },
     meta: { colSpan: span },
   }
 }

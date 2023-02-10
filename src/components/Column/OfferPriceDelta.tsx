@@ -15,10 +15,16 @@ export const OfferPriceDelta = ({ offer }: OfferPriceDeltaProps) => {
         return valueFloat == "0"
     },[priceDelta]);
 
+    console.log(offer.offerId)
+
+    if(offer.offerId == "11"){
+        console.log(priceDelta,isZero)
+    }
+
     return(
         <Flex justify={"center"}>
             {   
-                !priceDelta && isZero == undefined ?
+                !priceDelta ?
                     <Skeleton height={15}/>
                 : priceDelta && !isZero ?
                     <Text color={isZero ? "white" : priceDelta > 0 ? "red" : "green"}>
