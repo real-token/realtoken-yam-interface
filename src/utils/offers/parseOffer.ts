@@ -1,7 +1,10 @@
+import { Web3Provider } from '@ethersproject/providers';
 import BigNumber from 'bignumber.js';
+import { PropertiesToken } from 'src/types';
 import { DataRealtokenType } from 'src/types/offer/DataRealTokenType';
 import { Offer } from 'src/types/offer/Offer';
 import { OFFER_TYPE } from 'src/types/offer/OfferType';
+import { Price } from 'src/types/price';
 import { Offer as OfferGraphQl } from '../../../.graphclient/index';
 
 // TOKEN TYPE
@@ -10,16 +13,20 @@ import { Offer as OfferGraphQl } from '../../../.graphclient/index';
 //3 = sans permit
 export const getOfferType = (offerTokenType: number, buyerTokenType: number): OFFER_TYPE => {
 
-  if(offerTokenType == 1 && (buyerTokenType == 2 || buyerTokenType == 3)) return OFFER_TYPE.SELL
-  if((offerTokenType == 2 || offerTokenType == 3) && buyerTokenType == 1) return OFFER_TYPE.BUY;
+  if(offerTokenType == 1 && (buyerTokenType == 2 || buyerTokenType == 3)) return OFFER_TYPE.BUY
+  if((offerTokenType == 2 || offerTokenType == 3) && buyerTokenType == 1) return OFFER_TYPE.SELL;
 
   return OFFER_TYPE.EXCHANGE;
 
 }
 
 export const parseOffer = (
+    provider: Web3Provider,
+    account: string,
     offer: OfferGraphQl,
     accountUserRealtoken: DataRealtokenType,
+    propertiesToken: PropertiesToken[],
+    prices: Price
   ): Promise<Offer> => {
     return new Promise<Offer>(async (resolve, reject) => {
       try {
@@ -97,10 +104,31 @@ export const parseOffer = (
           hasPropertyToken: false,
           type: undefined,
           removed: false,
+          createdAtTimestamp: offer.createdAtTimestamp,
+          buyCurrency: "",
+          officialPrice: undefined,
+          offerPrice: undefined,
+          priceDelta: undefined,
+          officialYield: undefined,
+          offerYield: undefined,
+          yieldDelta: undefined
         };
 
         o.type = getOfferType(o.offerTokenType,o.buyerTokenType);
-  
+
+        const propertyToken = getProperty(
+          o.type == OFFER_TYPE.SELL ? o.buyerTokenAddress : o.offerTokenAddress,
+          propertiesToken
+        );
+
+        //add price and yield infos
+        o.buyCurrency = propertyToken?.currency ?? "";
+        o.officialPrice = getOfficialPrice(propertyToken);
+        o.officialYield = getOfficialYield(propertyToken);
+        o.offerYield = getOfferYield(prices,o,propertyToken);
+        o.yieldDelta = getYieldDelta(o);
+        o.priceDelta = getPriceDelta(prices,o);
+
         // console.log(offer.availableAmount, balanceWallet, allowance)
         resolve(o);
       } catch (err) {
@@ -109,3 +137,64 @@ export const parseOffer = (
       }
     });
 };
+
+const getProperty = (propertyAddress: string, propertiesToken: PropertiesToken[]) => {
+  return propertiesToken.find(propertyToken => propertyToken.contractAddress.toLowerCase() == propertyAddress.toLowerCase())
+}
+
+const getOfficialPrice = (propertyToken: PropertiesToken|undefined): number|undefined => {
+  if(propertyToken){
+    const buyPrice = propertyToken.officialPrice;
+    return buyPrice;
+  }else{
+    return undefined;
+  }
+}
+
+const getOfficialYield = (propertyToken: PropertiesToken|undefined): number|undefined => {
+  // console.log("getOfficialYield: ", propertyToken)
+  if(propertyToken){
+    const originalYield = propertyToken.annualYield ? propertyToken.annualYield*100 : 0;
+    return originalYield;
+  }else{
+    return undefined;
+  }
+}
+
+const getOfferYield = (prices: Price, offer: Offer, propertyToken: PropertiesToken|undefined): number|undefined => {
+
+  const tokenAddress = (offer.type == OFFER_TYPE.SELL ? offer.offerTokenAddress : offer.buyerTokenAddress).toLowerCase();
+  const tokenPrice = prices[tokenAddress];
+
+  const tokenPriceInDollar =  offer.type == OFFER_TYPE.BUY ? new BigNumber(offer.price).multipliedBy(tokenPrice) : new BigNumber(tokenPrice).dividedBy(offer.price);
+  if(propertyToken){
+    const offerAdjusted = new BigNumber(propertyToken.netRentYearPerToken).dividedBy(tokenPriceInDollar);
+    return parseFloat(offerAdjusted.multipliedBy(100).toString());
+  }else{
+    return undefined;
+  }
+}
+
+const getYieldDelta = (offer: Offer): number|undefined => {
+
+  const offerYield = offer.offerYield;
+  const officialYield = offer.officialYield;
+
+  return offerYield && officialYield ? 
+    parseFloat(new BigNumber(offerYield).multipliedBy(new BigNumber(1)).dividedBy(new BigNumber(officialYield)).minus(1).toString()) 
+    : 
+    undefined;
+
+}
+
+const getPriceDelta = (prices: Price, offer: Offer): number|undefined => {
+
+  const tokenAddress = (offer.type == OFFER_TYPE.SELL ? offer.offerTokenAddress : offer.buyerTokenAddress).toLowerCase();
+  const tokenPrice = prices[tokenAddress];
+
+  const tokenPriceInDollar =  offer.type == OFFER_TYPE.BUY ? new BigNumber(offer.price).multipliedBy(tokenPrice) : new BigNumber(tokenPrice).dividedBy(offer.price);
+
+  const officialPrice = offer.officialPrice;
+
+  return officialPrice ? parseFloat(tokenPriceInDollar.multipliedBy(new BigNumber(1)).dividedBy(new BigNumber(officialPrice)).minus(1).toString()) : undefined
+}

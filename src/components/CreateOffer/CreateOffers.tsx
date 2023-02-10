@@ -92,6 +92,8 @@ export const CreateOffer = () => {
                 const amountInWei = new BigNumber(createdOffer.amount.toString()).shiftedBy(Number(offerTokenDecimals));
                 const priceInWei = new BigNumber(createdOffer.price.toString()).shiftedBy(Number(buyerTokenDecimals));
 
+                console.log(priceInWei.toString(),buyerTokenDecimals)
+
                 _offerTokens.push(createdOffer.offerTokenAddress);
                 _buyerTokens.push(createdOffer.buyerTokenAddress);
                 _buyers.push(createdOffer.buyerAddress);

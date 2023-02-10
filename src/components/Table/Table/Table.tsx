@@ -50,7 +50,7 @@ export const Table = <T,>({
                 <th
                   key={header.id}
                   colSpan={header.column.columnDef.meta?.colSpan}
-                  style={{ textAlign: 'center' }}
+                  style={{ textAlign: 'center', width: header.getSize() }}
                 >
                   <TableHeader header={header} />
                 </th>
@@ -73,7 +73,7 @@ export const Table = <T,>({
                   <tr>
                     <td
                       colSpan={table.options.meta?.colSpan}
-                      style={{ padding: 0 }}
+                      style={{ padding: 0}}
                     >
                       <TableSubRow row={row} />
                     </td>

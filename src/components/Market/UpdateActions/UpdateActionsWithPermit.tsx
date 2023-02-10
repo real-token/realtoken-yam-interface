@@ -1,4 +1,4 @@
-import { Dispatch, FC, SetStateAction, useCallback } from 'react';
+import { FC, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ActionIcon, Group, Title } from '@mantine/core';
@@ -7,18 +7,19 @@ import { IconEdit } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
 
 import { Offer } from 'src/types/offer/Offer';
+import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 
 type UpdateActions = {
   updateOffer: Offer;
-  triggerRefresh: Dispatch<SetStateAction<boolean>>;
 };
 
 export const UpdateActionsWithPermit: FC<UpdateActions> = ({
   updateOffer,
-  triggerRefresh,
 }) => {
   const { account } = useWeb3React();
   const modals = useModals();
+
+  const { refreshOffers } = useRefreshOffers(false); 
 
   const { t } = useTranslation('modals');
 
@@ -29,11 +30,11 @@ export const UpdateActionsWithPermit: FC<UpdateActions> = ({
         size: "lg",
         innerProps: {
           offer: offer,
-          triggerTableRefresh: triggerRefresh,
+          triggerTableRefresh: refreshOffers,
         },
       });
     },
-    [modals, triggerRefresh, t]
+    [modals, refreshOffers, t]
   );
 
   const onOpenWalletModal = useCallback(() => {

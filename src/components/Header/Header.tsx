@@ -18,6 +18,8 @@ import { SettingsMenu } from '../SettingsMenu';
 import { WalletMenu } from '../WalletMenu';
 import { styles } from './Header.styles';
 import { useRouter } from 'next/router';
+import { useRole } from 'src/hooks/useRole';
+import { isRole, USER_ROLE } from 'src/types/admin';
 
 const LogoWithName: FC = () => {
   const { t } = useTranslation('common', { keyPrefix: 'header' });
@@ -66,6 +68,9 @@ export const Header: FC = () => {
   const { t } = useTranslation('common', { keyPrefix: 'header' });
   const router = useRouter()
   const colorSelected = '#cfaa70';
+
+  const { role } = useRole();
+
   return (
     <div>
       <Box sx={styles.container}>
@@ -89,6 +94,19 @@ export const Header: FC = () => {
           >
             {t('titleCat2')}
           </Text>
+          { isRole(role,[USER_ROLE.MODERATOR,USER_ROLE.ADMIN]) ? 
+              <Text
+              size={'xl'}
+              weight={700}
+              component={NextLink}
+              href={'/admin'}
+              color={router.pathname === '/admin' ? colorSelected : ''}
+            >
+              {t('titleAdmin')}
+            </Text>
+              :
+              undefined
+          }
           <HeaderButtons />
         </Group>
       </Box>

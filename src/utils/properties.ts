@@ -40,5 +40,5 @@ export const getWhitelistedProperties = async (chainId: number): Promise<ShortPr
 }
 
 export const getPropertyTokenAddress = (offer: Offer): string => {
-    return offer.type == OFFER_TYPE.BUY ? offer.buyerTokenAddress : offer.offerTokenAddress
+    return offer.type == OFFER_TYPE.SELL ? offer.buyerTokenAddress : offer.offerTokenAddress
 }   

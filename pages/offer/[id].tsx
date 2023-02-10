@@ -88,9 +88,6 @@ const ShowOfferPage: FC = () => {
         return getPropertyToken(offer.offerTokenAddress);
     },[getPropertyToken, offer, propertiesIsloading])
 
-    // console.log(offer)
-    console.log(propertyToken)
-
     const onOpenWalletModal = useCallback(() => {
         modals.openContextModal('wallet', {
           title: <Title order={3}>{t2('wallet.title')}</Title>,
@@ -158,7 +155,7 @@ const ShowOfferPage: FC = () => {
                         <Divider />
                         <ActionIcon
                             color={'green'}
-                            disabled={isAccountOffer}
+                            //disabled={isAccountOffer}
                             className={classes.buyButton}
                             onClick={() => account && offer ? onOpenBuyModal(offer) : onOpenWalletModal() }
                         >

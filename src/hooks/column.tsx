@@ -1,19 +1,23 @@
-import { ActionIcon, Group, Title, Text, Flex } from "@mantine/core"
-import { IconChevronDown, IconChevronUp } from "@tabler/icons"
-import { ColumnDef } from "@tanstack/react-table"
+import { ActionIcon, Group, Title, Text, Flex, Button, Skeleton, Tooltip } from "@mantine/core"
+import { IconChevronDown, IconChevronUp, IconTrash } from "@tabler/icons"
+import { ColumnDef, RowSelectionState, Table } from "@tanstack/react-table"
 import BigNumber from "bignumber.js"
 import { TFunction } from "react-i18next"
 import { OfferPrice } from "src/components/Column/OfferPrice"
 import { OfferYield } from "src/components/Column/OfferYield"
-import { OffialPrice } from "src/components/Column/OfficialPrice"
-import { OriginalYield } from "src/components/Column/OriginalYield"
 import { TokenName } from "src/components/Column/TokenName"
 import { BuyActionsWithPermit } from "src/components/Market/BuyActions"
+import { DeleteAdminAction } from "src/components/Market/DeleteActions/DeleteAdminAction"
 import { ShowOfferAction } from "src/components/Market/ShowOfferAction/ShowOfferAction"
 import { OfferTypeBadge } from "src/components/Offer/OfferTypeBadge"
 import { Offer, OFFER_TYPE } from "src/types/offer"
 import { getReduceAddress } from "src/utils/address"
 import { ENV, isEnvs } from "src/utils/isEnv"
+import moment from "moment"
+import { DeleteActions } from "src/components/Market/DeleteActions"
+import { UpdateActionsWithPermit } from "src/components/Market/UpdateActions"
+import { OfferYieldDelta } from "src/components/Column/OfferYieldDelta"
+import { OfferPriceDelta } from "src/components/Column/OfferPriceDelta"
 
 type ColumnFn<T> = (t: TFunction<"buy","table">, span: number) => ColumnDef<Offer,T>
 
@@ -23,6 +27,29 @@ export const header = ({ title } : { title: string }) => {
           {title} 
         </Title>
     )
+}
+
+export const adminHeader = (isAdmin: boolean, table: Table<Offer>, rowSelection: RowSelectionState, deleteOffers: () => void, { title } : { title: string }) => {
+
+  const { getIsSomeRowsSelected, getIsAllRowsSelected } = table;
+
+  return (
+    <Flex justify={"space-between"}>
+      { isAdmin ?
+        <Button color={"red"} style={{ display: "flex", gap: 5 }} disabled={!getIsSomeRowsSelected() && !getIsAllRowsSelected()} onClick={() => deleteOffers()}>
+          <Flex gap={"sm"} align={"center"}>
+            <IconTrash size={16} />
+            {`Delete ${Object.keys(rowSelection).length} selected offers`}
+          </Flex>
+        </Button>
+        :
+        undefined
+      }
+      <Title order={4} style={{ flexGrow:1, textAlign: 'center' }}>
+        {title} 
+      </Title>
+    </Flex>
+  )
 }
 
 export const typeColumn: ColumnDef<Offer,OFFER_TYPE> = {
@@ -38,7 +65,7 @@ export const typeColumn: ColumnDef<Offer,OFFER_TYPE> = {
 
 export const idColumn: ColumnFn<OFFER_TYPE> = (t,span) => {
     return{
-        id: 'offerId',
+        id: 'offer-id',
         accessorKey: 'offerId',
         header: t('offerId'),
         cell: ({ row, getValue }) => { 
@@ -128,17 +155,16 @@ export const sellerAddressColumn: ColumnFn<string> = (t,span) => {
         accessorKey: 'sellerAddress',
         header: t('sellerAddress'),
         cell: ({ getValue }) => (
-          <Group noWrap={true} spacing={'xs'}>
-            <Text
-              size={'sm'}
-              sx={{
-                textOverflow: 'ellipsis',
-                overflow: 'hidden',
-              }}
-            >
-              {getReduceAddress(getValue())}
-            </Text>
-          </Group>
+          <Text
+            size={'sm'}
+            sx={{
+              textAlign: "center",
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+            }}
+          >
+            {getReduceAddress(getValue())}
+          </Text>
         ),
         enableSorting: true,
         meta: { colSpan: span },
@@ -150,7 +176,7 @@ export const priceColumn: ColumnFn<number> = (t,span) => {
         id: 'price',
         accessorKey: 'price',
         header: t('price'),
-        cell: ({ getValue, row }) => (
+        cell: ({ row }) => (
             <Text
                 size={'sm'}
                 sx={{
@@ -163,8 +189,44 @@ export const priceColumn: ColumnFn<number> = (t,span) => {
             </Text>
         ),
         enableSorting: true,
+        enableGlobalFilter: true,
         meta: { colSpan: span },
       }
+}
+
+export const simplePriceColumn: ColumnFn<number> = (t,span) => {
+  return {
+      id: 'simple-price',
+      accessorKey: 'price',
+      header: t('price'),
+      cell: ({ getValue }) => (
+          <Text
+              size={'sm'}
+              sx={{
+              textAlign: 'center',
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+              }}
+          >
+              {getValue()}
+          </Text>
+      ),
+      enableSorting: true,
+      enableGlobalFilter: true,
+      meta: { colSpan: span },
+    }
+}
+
+export const priceDeltaColumn: ColumnFn<number> = (t,span) => {
+  return {
+    id: 'priceDelta',
+    accessorFn: (offer) => offer.priceDelta ? `${(offer.priceDelta*100).toFixed(2)}` : "",
+    header: "Price delta",
+    cell: ({ row }) => <OfferPriceDelta offer={row.original}/>,
+    enableSorting: true,
+    enableGlobalFilter: true,
+    meta: { colSpan: span },
+  } 
 }
 
 export const amountColumn: ColumnFn<string> = (t,span) => {
@@ -185,69 +247,273 @@ export const amountColumn: ColumnFn<string> = (t,span) => {
           </Text>
         ),
         enableSorting: true,
+        enableGlobalFilter: true,
         meta: { colSpan: span },
     }
 }
 
+export const walletBalanceColumn: ColumnFn<string> = (t,span) => {
+  return{
+      id: 'wallet-balance',
+      accessorKey: 'balanceWallet',
+      header: t('walletBalance'),
+      cell: ({ getValue }) => (
+        <Text
+          size={'sm'}
+          sx={{
+            textAlign: 'center',
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+          }}
+        >
+          {BigNumber(getValue()).toString(10)}
+        </Text>
+      ),
+      enableSorting: true,
+      meta: { colSpan: span },
+  }
+}
+
+export const allowanceColumn: ColumnFn<string> = (t,span) => {
+  return{
+      id: 'allowance',
+      accessorKey: 'allowanceToken',
+      header: t('allowance'),
+      cell: ({ getValue }) => (
+        <Text
+          size={'sm'}
+          sx={{
+            textAlign: 'center',
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+          }}
+        >
+          {BigNumber(getValue()).toString(10)}
+        </Text>
+      ),
+      enableSorting: true,
+      meta: { colSpan: span },
+  }
+}
+
 export const publicActionsColumn: ColumnFn<unknown> = (t,span) => {
     return{
-        id: 'actions',
-        header: undefined,
+        id: 'public-actions',
+        header: "",
         cell: ({ row }) => (
           <Flex gap={"md"}>
             <BuyActionsWithPermit buyOffer={row.original}/>
             <ShowOfferAction offer={row.original}/>
           </Flex>
         ),
+        enableSorting: false,
+        enableGlobalFilter: false,
         meta: { colSpan: span },
     }
 }
 
-export const officialPriceColumn: ColumnFn<unknown> = (t,span) => {
+export const officialPriceColumn: ColumnFn<number|undefined> = (t,span) => {
     return{
-        id: 'officialPrice',
+        id: 'official-price',
         header: "Official price",
-        cell: ({ row }) => <OffialPrice offer={row.original} />,
+        accessorKey: "officialPrice",
+        cell: ({ row }) => (
+            row.original.officialPrice ?
+              <Text>
+                {`${row.original.officialPrice} $${row.original.buyCurrency}`}
+              </Text>
+            :
+              <Skeleton height={15} />
+          ),
+        enableColumnFilter: true,
+        enableSorting: true,
         meta: { colSpan: span },
     }
 }
 
-export const originalYieldColumn: ColumnFn<unknown> = (t,span) => {
+export const officialYieldColumn: ColumnFn<number|undefined> = (t,span) => {
     return{
-        id: 'originalYield',
-        header: "Original Yield",
-        cell: ({ row }) => <OriginalYield offer={row.original} />,
+        id: 'official-yield',
+        header: "Official Yield",
+        accessorKey: "officialYield",
+        cell: ({ getValue }) => (
+          getValue() !== undefined ?
+            <Text
+              size={'sm'}
+              sx={{
+                textAlign: 'center',
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+              }}
+            >
+              {`${getValue()?.toFixed(2)}%`}
+            </Text>
+          :
+            <Skeleton height={15} />
+        ),
+        enableSorting: true,
+        enableGlobalFilter: true,
         meta: { colSpan: span },
       }
 }
 
-export const offerYieldColumn: ColumnFn<unknown> = (t,span) => {
+export const offerYieldColumn: ColumnFn<number> = (t,span) => {
     return{
-        id: 'offerYield',
+        id: 'offer-yield',
         header: "Offer Yield",
+        accessorFn: (offer) => offer.offerYield ? `${offer.offerYield.toFixed(2)}` : "",
         cell: ({ row }) => <OfferYield offer={row.original} />,
+        enableSorting: true,
+        enableGlobalFilter: true,
         meta: { colSpan: span },
       }
 }
 
-export const buyShortTokenNameColumn: ColumnFn<unknown> = (t,span) => {
+export const yieldDeltaColumn: ColumnFn<number> = (t,span) => {
+  return{
+    id: 'yield-delta',
+        header: "Yield delta",
+        accessorFn: (offer) => offer.yieldDelta ? `${offer.yieldDelta.toFixed(2)}` : "",
+        cell: ({ row }) => <OfferYieldDelta offer={row.original} />,
+        enableSorting: true,
+        enableGlobalFilter: true,
+        meta: { colSpan: span },
+  }
+}
+
+export const offerShortTokenNameColumn: ColumnFn<unknown> = (t,span) => {
     return {
-        id: 'offerShortTokenName',
+        id: 'offer-short-token-name',
         accessorKey: 'offerTokenName',
         header: t('offerTokenName'),
         cell: ({ row }) => <TokenName offer={row.original}/>,
         enableSorting: true,
+        enableGlobalFilter: true,
         meta: { colSpan: span },
     }
 }
 
-export const offerShortTokenNameColumn: ColumnFn<string> = (t,span) => {
+export const exchangeOfferShortTokenNameColumn: ColumnFn<unknown> = (t,span) => {
+  return {
+      id: 'offer-short-token-name',
+      accessorKey: 'offerTokenName',
+      header: t('offerTokenName'),
+      cell: ({ row }) => <TokenName offer={row.original} tokenName={row.original.offerTokenName}/>,
+      enableSorting: true,
+      enableGlobalFilter: true,
+      meta: { colSpan: span },
+  }
+}
+
+export const buyShortTokenNameColumn: ColumnFn<string> = (t,span) => {
     return {
-        id: 'buyerShortTokenName',
+        id: 'buyerTokenName',
         accessorKey: 'buyerTokenName',
         header: t('buyerTokenName'),
         cell: ({ row }) => <TokenName offer={row.original}/>,
         enableSorting: true,
+        enableGlobalFilter: true,
         meta: { colSpan: span },
       }
+}
+
+export const exchangeBuyShortTokenNameColumn: ColumnFn<string> = (t,span) => {
+  return {
+      id: 'buyer-short-token-name',
+      accessorKey: 'buyerTokenName',
+      header: t('buyerTokenName'),
+      cell: ({ row }) => <TokenName offer={row.original} tokenName={row.original.buyerTokenName}/>,
+      enableSorting: true,
+      enableGlobalFilter: true,
+      meta: { colSpan: span },
+    }
+}
+
+export const viewActionColumn: ColumnFn<unknown> = (t,span) => {
+  return {
+    id: 'view-action',
+    header: undefined,
+    cell: ({ row }) => <ShowOfferAction offer={row.original}/>,
+    meta: { colSpan: span },
+  }
+}
+
+// ADDRESS
+export const deleteOfferActionColumn: ColumnFn<unknown> = (t,span) => {
+  return{
+    id: 'delete-action',
+    header: t('actionDelete'),
+    cell: ({ row }) => <DeleteActions deleteOffer={row.original} />,
+    enableSorting: false,
+    meta: { colSpan: span },
+  };
+}
+
+export const modifyOfferActionColumn: ColumnFn<unknown> = (t,span) => {
+  return {
+    id: 'modify-action',
+    header: t('actionEdit'),
+    cell: ({ row }) => <UpdateActionsWithPermit updateOffer={row.original} />,
+    enableSorting: false,
+    meta: { colSpan: span },
+  }
+}
+
+// ADMIN
+export const adminActionsColumn: ColumnFn<unknown> = (t,span) => {
+  return{
+    id: 'admin-actions',
+    header: undefined,
+    cell: ({ row }) => (
+      <Flex gap={"md"}>
+        <DeleteAdminAction deleteOffer={row.original}/>
+      </Flex>
+    ),
+    meta: { colSpan: span },
+  }
+}
+
+export const offerDateColumn: ColumnFn<number> = (t,span) => {
+  return{
+    id: 'offer-date',
+    accessorKey: "createdAtTimestamp",
+    header: t("onMarketSince"),
+    cell: ({ getValue }) => (
+      <Text
+            size={'sm'}
+            sx={{
+              textAlign: 'center',
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+            }}
+          >
+        { getValue() ?
+          <Text>{`${moment().diff(moment.unix(getValue()),"days")}j`}</Text>
+        :
+        <Skeleton height={15} />
+        }
+      </Text>
+    ),
+    meta: { colSpan: span },
+  }
+}
+
+export const adminAmount: ColumnFn<string> = (t,span) => {
+  return{
+    id: 'admin-amount',
+    accessorKey: 'amount',
+    header: t('amount'),
+    cell: ({ row }) => {
+      const offer:Offer = row.original;
+      return(
+        <Flex justify={"center"} direction={"column"}>
+          <Text>{`Amount: ${offer.amount}`}</Text>              
+          <Text>{`Wallet balance: ${offer.balanceWallet}`}</Text>     
+          <Text>{`Allowance: ${offer.allowanceToken}`}</Text>              
+        </Flex>
+      )
+    },
+    enableSorting: true,
+    meta: { colSpan: span },
+}
 }

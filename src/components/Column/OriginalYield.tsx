@@ -8,7 +8,7 @@ interface OriginalYieldProps{
 }
 export const OriginalYield = ({ offer } : OriginalYieldProps) => {
 
-    const { propertyToken } = usePropertyToken(offer.type == OFFER_TYPE.BUY ? offer.buyerTokenAddress : offer.offerTokenAddress);
+    const { propertyToken } = usePropertyToken(offer.type == OFFER_TYPE.SELL ? offer.buyerTokenAddress : offer.offerTokenAddress);
 
     const originalYield: number|undefined = useMemo(() => {
         if(!propertyToken) return undefined;
@@ -16,7 +16,7 @@ export const OriginalYield = ({ offer } : OriginalYieldProps) => {
     },[propertyToken])
 
     return(
-        <Flex>
+        <Flex justify={"center"}>
             {originalYield ? `${originalYield.toFixed(2)}%` : <Skeleton height={15}/>}
         </Flex>
     )

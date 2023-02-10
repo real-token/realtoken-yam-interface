@@ -117,7 +117,7 @@ export const BuyModalWithPermit: FC<
     context.closeModal(id);
   }, [context, id, reset]);
 
-  const { bigNumberbalance, WalletERC20Balance } = useWalletERC20Balance(buyerTokenAddress)
+  const { balance, WalletERC20Balance } = useWalletERC20Balance(buyerTokenAddress)
 
   const onHandleSubmit = useCallback(
     async (formValues: BuyWithPermitFormValues) => {
@@ -315,12 +315,25 @@ export const BuyModalWithPermit: FC<
   const total = values?.amount * values?.price;
 
   const maxTokenBuy: number|undefined = useMemo(() => {
-    if(bigNumberbalance == undefined || !offer.price) return undefined;
+    if(!balance || !offer.price) return undefined;
 
-    const max = bigNumberbalance.eq(0) ? new BigNumber(0) : bigNumberbalance.dividedBy(offer.price);
+    const b = new BigNumber(balance);
+    const max = b.eq(0) ? new BigNumber(0) : b.dividedBy(offer.price);
 
-    return max.isGreaterThanOrEqualTo(BigNumber(offer.amount)) ? new BigNumber(offer.amount).toNumber() : max.toNumber();
-  },[bigNumberbalance,offer])
+    return max.isGreaterThanOrEqualTo(new BigNumber(offer.amount)) ? new BigNumber(offer.amount).toNumber() : parseFloat(max.toString());
+  },[balance,offer]);
+
+  const priceTranslation: Map<OFFER_TYPE,string> = new Map<OFFER_TYPE,string>([
+    [OFFER_TYPE.BUY,t("buyOfferTypePrice")],
+    [OFFER_TYPE.SELL,t("sellOfferTypePrice")],
+    [OFFER_TYPE.EXCHANGE,t("exchangeOfferTypePrice")]
+  ]);
+
+  const amountTranslation: Map<OFFER_TYPE,string> = new Map<OFFER_TYPE,string>([
+    [OFFER_TYPE.BUY,t("buyOfferTypeAmount")],
+    [OFFER_TYPE.SELL,t("sellOfferTypeAmount")],
+    [OFFER_TYPE.EXCHANGE,t("exchangeOfferTypeAmount")]
+  ]);
 
   return (
     <form onSubmit={onSubmit(onHandleSubmit)} style={{ width: calcRem(500) }}>
@@ -342,11 +355,11 @@ export const BuyModalWithPermit: FC<
               <Text>{offer.sellerAddress}</Text>
             </Flex>
             <Flex direction={"column"} >
-              <Text fw={700}>{t("amount")}</Text>
+              <Text fw={700}>{offer.type ? amountTranslation.get(offer.type) : ""}</Text>
               <Text>{BigNumber.minimum(offer.amount,offerTokenSellerBalance!).toString()}</Text>
             </Flex>
             <Flex direction={"column"}>
-                <Text fw={700}>{t("price")}</Text>
+                <Text fw={700}>{offer.type ? priceTranslation.get(offer.type) : ""}</Text>
                 <Text>{`${offer.price} ${buyTokenSymbol}`}</Text>
               </Flex>
         </Flex>

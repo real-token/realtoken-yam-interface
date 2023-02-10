@@ -1,7 +1,7 @@
 import { FC, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Group, MantineSize, Text, Title } from '@mantine/core';
+import { Flex, Group, MantineSize, Text, Title } from '@mantine/core';
 import {
   ColumnDef,
   ExpandedState,
@@ -19,13 +19,15 @@ import { Table } from '../../Table';
 import { BuyActionsWithPermit } from '../BuyActions';
 import { MarketSubRow } from '../MarketSubRow';
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
+import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
+import { OFFERS_TYPE, useRightTableColumn } from 'src/hooks/useRightTableColumns';
 import { selectPrivateOffers } from 'src/store/features/interface/interfaceSelector';
 import { useSelector } from 'react-redux';
+import { MarketSort } from '../MarketSort/MarketSort';
 
 export const MarketTablePrivate: FC = () => {
   
   const { refreshOffers, offersIsLoading } = useRefreshOffers(false);
-  const offers = useSelector(selectPrivateOffers);
 
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'offerId', desc: false },
@@ -36,140 +38,9 @@ export const MarketTablePrivate: FC = () => {
   });
   const [expanded, setExpanded] = useState<ExpandedState>({});
 
-  const { t } = useTranslation('buy', { keyPrefix: 'table' });
-
-  const columns = useMemo<ColumnDef<Offer>[]>(
-    () => [
-      {
-        id: 'title',
-        header: () => (
-          <Title order={4} style={{ textAlign: 'center' }}>
-            {t('title')}
-          </Title>
-        ),
-        meta: { colSpan: 15 },
-        columns: [
-          {
-            id: 'offerId',
-            accessorKey: 'offerId',
-            header: t('offerId'),
-            cell: ({ getValue }) => (
-              <Group noWrap={true} spacing={'xs'}>
-                <Text
-                  size={'sm'}
-                  sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
-                >
-                  {getValue()}
-                </Text>
-              </Group>
-            ),
-            enableSorting: false,
-            meta: { colSpan: 1 },
-          },
-          {
-            id: 'offerTokenName',
-            accessorKey: 'offerTokenName',
-            header: t('offerTokenName'),
-            cell: ({ getValue }) => (
-              <Group noWrap={true} spacing={'xs'}>
-                <Text
-                  size={'sm'}
-                  sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
-                >
-                  {getValue()}
-                </Text>
-              </Group>
-            ),
-            enableSorting: false,
-            meta: { colSpan: 2 },
-          },
-          {
-            id: 'buyerTokenName',
-            accessorKey: 'buyerTokenName',
-            header: t('buyerTokenName'),
-            cell: ({ getValue }) => (
-              <Group noWrap={true} spacing={'xs'}>
-                <Text
-                  size={'sm'}
-                  sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
-                >
-                  {getValue()}
-                </Text>
-              </Group>
-            ),
-            enableSorting: false,
-            meta: { colSpan: 2 },
-          },
-          {
-            id: 'sellerAddress',
-            accessorKey: 'sellerAddress',
-            header: t('sellerAddress'),
-            cell: ({ getValue }) => (
-              <Group noWrap={true} spacing={'xs'}>
-                <Text
-                  size={'sm'}
-                  sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
-                >
-                  {getValue()}
-                </Text>
-              </Group>
-            ),
-            enableSorting: false,
-            meta: { colSpan: 4 },
-          },
-          {
-            id: 'price',
-            accessorKey: 'price',
-            header: t('price'),
-            cell: ({ getValue }) => (
-              <Text
-                size={'sm'}
-                sx={{
-                  textAlign: 'center',
-                  textOverflow: 'ellipsis',
-                  overflow: 'hidden',
-                }}
-              >
-                {getValue()}
-              </Text>
-            ),
-            enableSorting: false,
-            meta: { colSpan: 2 },
-          },
-          {
-            id: 'amount',
-            accessorKey: 'amount',
-            header: t('amount'),
-            cell: ({ getValue }) => (
-              <Text
-                size={'sm'}
-                sx={{
-                  textAlign: 'center',
-                  textOverflow: 'ellipsis',
-                  overflow: 'hidden',
-                }}
-              >
-                {getValue()}
-              </Text>
-            ),
-            enableSorting: false,
-            meta: { colSpan: 2 },
-          },
-          {
-            id: 'actions',
-            header: undefined,
-            cell: ({ row }) => (
-              <BuyActionsWithPermit
-                buyOffer={row.original}
-              />
-            ),
-            meta: { colSpan: 1 },
-          },
-        ],
-      },
-    ],
-    [refreshOffers, t]
-  );
+  const privateOffers = useSelector(selectPrivateOffers);
+  const { offers, sellCount, buyCount, exchangeCount } = useTypedOffers(privateOffers)
+  const columns = useRightTableColumn(OFFERS_TYPE.PRIVATE);
 
   const table = useReactTable({
     data: offers,
@@ -182,26 +53,32 @@ export const MarketTablePrivate: FC = () => {
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
-    meta: { colSpan: 15 },
+    meta: { colSpan: 16 },
   });
 
   return (
-    <Table
-      tableProps={{
-        highlightOnHover: true,
-        verticalSpacing: 'sm',
-        horizontalSpacing: 'xs',
-        sx: (theme) => ({
-          tableLayout: 'fixed',
-          border: theme.other.border(theme),
-          borderRadius: theme.radius[theme.defaultRadius as MantineSize],
-          borderCollapse: 'separate',
-          borderSpacing: 0,
-        }),
-      }}
-      table={table}
-      tablecaptionOptions={{ refreshState: [offersIsLoading, refreshOffers], visible: true }}
-      TableSubRow={MarketSubRow}
-    />
+    <Flex direction={"column"} gap={"sm"} mt={10}>
+      <MarketSort 
+        sellCount={sellCount}
+        buyCount={buyCount}
+        exchangeCount={exchangeCount}
+      />
+      <Table
+        tableProps={{
+          highlightOnHover: true,
+          verticalSpacing: 'sm',
+          horizontalSpacing: 'xs',
+          sx: (theme) => ({
+            border: theme.other.border(theme),
+            borderRadius: theme.radius[theme.defaultRadius as MantineSize],
+            borderCollapse: 'separate',
+            borderSpacing: 0,
+          }),
+        }}
+        table={table}
+        tablecaptionOptions={{ refreshState: [offersIsLoading, refreshOffers], visible: true }}
+        TableSubRow={MarketSubRow}
+      />
+    </Flex>
   );
 };

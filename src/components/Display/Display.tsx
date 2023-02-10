@@ -9,7 +9,7 @@ interface DisplayProps{
   smallGrid?: JSX.Element,
   grid?: JSX.Element
 }
-const Display: FC<DisplayProps> = ({ table: Table, smallGrid: SmallGrid, grid: Grid } : DisplayProps) => {
+const Display: FC<DisplayProps> = ({ table: Table, grid: Grid } : DisplayProps) => {
 
   const [choosenDisplay,setChoosenDisplay] = useState<Displays>(Displays.TABLE);
 
@@ -17,8 +17,6 @@ const Display: FC<DisplayProps> = ({ table: Table, smallGrid: SmallGrid, grid: G
     switch(choosenDisplay){
         case Displays.TABLE:
             return Table ? Table : undefined;
-        case Displays.SMALL_GRID:
-            return SmallGrid ? SmallGrid : undefined;
         case Displays.GRID:
             return Grid ? Grid : undefined;
     }
@@ -37,7 +35,7 @@ const Display: FC<DisplayProps> = ({ table: Table, smallGrid: SmallGrid, grid: G
           >
               <IconLayoutList size={20}/>
           </ActionIcon>
-          { SmallGrid ? 
+          { Grid ? 
             <ActionIcon 
               color={"brand"} 
               size={"lg"} 

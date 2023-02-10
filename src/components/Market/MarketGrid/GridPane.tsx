@@ -1,10 +1,15 @@
 import { createStyles, Flex, Skeleton, Text } from "@mantine/core"
 import { FC, useMemo } from "react"
 import { useTranslation } from "react-i18next";
+import { OfferPrice } from "src/components/Column/OfferPrice";
+import { OfferYield } from "src/components/Column/OfferYield";
+import { OffialPrice } from "src/components/Column/OfficialPrice";
+import { OriginalYield } from "src/components/Column/OriginalYield";
 import { OfferTypeBadge } from "src/components/Offer/OfferTypeBadge";
 import { usePropertiesToken } from "src/hooks/usePropertiesToken";
 import { OFFER_TYPE } from "src/types/offer";
 import { Offer } from "src/types/offer/Offer"
+import { calcRem } from "src/utils/style";
 import { BuyActionsWithPermit } from "../BuyActions";
 import { ShowOfferAction } from "../ShowOfferAction/ShowOfferAction";
 
@@ -64,7 +69,30 @@ const useStyle = createStyles((theme) => ({
         fontSize: theme.fontSizes.lg,
         fontWeight: 700,
         color: "white"
-    }
+    },
+    table: {
+        width: "100%",
+        borderWidth: "1px",
+        borderStyle: "solid",
+        borderColor: theme.colors.brand,
+        borderRadius: theme.radius.md,
+        overflow: "hidden",
+        padding: 0,
+        borderSpacing: 0
+    },
+    tableHead: {
+        backgroundColor: theme.colors.brand,
+        borderWidth: "1px",
+        borderStyle: "solid",
+        borderColor: theme.colors.brand,
+    },
+    tableCell: {
+        padding: calcRem(5),
+        textAlign: "center",
+        borderWidth: "1px",
+        borderStyle: "solid",
+        borderColor: theme.colors.brand,
+    }   
 }));
 
 interface GridPaneProps{
@@ -74,23 +102,6 @@ export const GridPane: FC<GridPaneProps> = ({ offer }) => {
 
     const { t } = useTranslation('buy', { keyPrefix: 'table' });
     const { classes } = useStyle();
-
-    const { propertiesToken } = usePropertiesToken();
-
-    const offerType: OFFER_TYPE = useMemo((): OFFER_TYPE => {
-        if(!offer && !propertiesToken) return OFFER_TYPE.EXCHANGE
-        const buyerTokenIsProperty = propertiesToken.find(propertyToken => propertyToken.contractAddress.toLowerCase() == offer.buyerTokenAddress) !== undefined;
-        const offerTokenIsProperty = propertiesToken.find(propertyToken => propertyToken.contractAddress.toLowerCase() == offer.offerTokenAddress) !== undefined;
-
-        // console.log(buyerTokenIsProperty,offerTokenIsProperty)
-
-        if(buyerTokenIsProperty && offerTokenIsProperty) return OFFER_TYPE.EXCHANGE
-        if(buyerTokenIsProperty) return OFFER_TYPE.BUY
-        if(offerTokenIsProperty) return OFFER_TYPE.SELL
-
-        return OFFER_TYPE.EXCHANGE
-
-    },[propertiesToken,offer])
 
     return(
         <>
@@ -102,7 +113,7 @@ export const GridPane: FC<GridPaneProps> = ({ offer }) => {
                 <Flex direction={"column"} align={"start"} color={"brand"} className={classes.header} >
                     <Flex gap={"sm"}>
                         <Flex className={classes.offerId} mb={10}>{offer.offerId}</Flex>
-                        <OfferTypeBadge offerType={offerType}/>
+                        <OfferTypeBadge offerType={offer.type ?? OFFER_TYPE.SELL}/>
                     </Flex>
                 
                     <Text className={classes.offerTokenName}>{offer.offerTokenName}</Text>
@@ -118,9 +129,32 @@ export const GridPane: FC<GridPaneProps> = ({ offer }) => {
                             <Text fw={700}>{t("amount")}</Text>
                             {offer.amount}
                         </Flex>
-                        <Flex direction={"column"}>
+                        <Flex direction={"column"} mb={15}>
                             <Text fw={700}>{t("price")}</Text>
                             {offer.price}
+                        </Flex>
+                        <Flex>
+                            <table className={classes.table}>
+                                <thead className={classes.tableHead}>
+                                    <tr>
+                                        <th className={classes.tableCell}></th>
+                                        <th className={classes.tableCell}>Original</th>
+                                        <th className={classes.tableCell}>Offer</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td className={classes.tableCell}>Yield</td>
+                                        <td className={classes.tableCell}><OriginalYield offer={offer}/></td>
+                                        <td className={classes.tableCell}><OfferYield offer={offer}/></td>
+                                    </tr>
+                                    <tr>
+                                        <td className={classes.tableCell}>Price</td>
+                                        <td className={classes.tableCell}><OffialPrice offer={offer}/></td>
+                                        <td className={classes.tableCell}><OfferPrice offer={offer}/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </Flex>
                     </Flex>
                     <Flex gap={"sm"}>
