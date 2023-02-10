@@ -14,6 +14,7 @@ import { getOfferQuery } from './getOfferQuery';
 import { DataRealtokenType } from 'src/types/offer/DataRealTokenType';
 import { PropertiesToken } from 'src/types';
 import { Web3Provider } from '@ethersproject/providers';
+import { Price } from 'src/types/price';
 
 export const getBigDataGraphRealtoken = async (
   chainId: number,
@@ -71,11 +72,12 @@ export const getBigDataGraphRealtoken = async (
   });
 };
 
-export const fetchOfferTheGraph = (
+export const fetchOffersTheGraph = (
   provider: Web3Provider,
   account: string,
   chainId: number,
-  propertiesToken: PropertiesToken[]
+  propertiesToken: PropertiesToken[],
+  prices: Price
 ): Promise<Offer[]> => {
   return new Promise<Offer[]>(async (resolve, reject) => {
     try {
@@ -178,8 +180,8 @@ export const fetchOfferTheGraph = (
 
       //console.log('Debug Query dataRealtoken', dataRealtoken);
 
-      await Promise.all(
-        offers.map(async (offer: OfferGraphQl) => {
+      const promises = offers.map( (offer: OfferGraphQl) => new Promise<Offer>(async (resolve,reject) => {
+        try{
           const accountUserRealtoken: DataRealtokenType = dataRealtoken.find(
             (accountBalance: DataRealtokenType): boolean =>
               accountBalance.id ===
@@ -191,24 +193,24 @@ export const fetchOfferTheGraph = (
             account,
             offer,
             accountUserRealtoken,
-            propertiesToken
+            propertiesToken,
+            prices
           );
-
-          /* const hasPropertyToken = propertiesToken.find(
-            (propertyToken) =>
-              propertyToken.contractAddress == offerData.buyerTokenAddress ||
-              propertyToken.contractAddress == offerData.offerTokenAddress
-          ); */
-          //offerData.hasPropertyToken = hasPropertyToken ? true : false;
 
           offerData.hasPropertyToken =
             BigNumber(offerData.buyerTokenType).eq(1) ||
             BigNumber(offerData.offerTokenType).eq(1);
 
-          offersData.push({ ...offerData });
-        })
-      );
+          resolve(offerData)
+        }catch(err){
+          console.log("Error when parsingOffer: ", err);
+          reject(err);
+        }
+    }));
 
+    const parsedOffers = await Promise.all(promises);
+
+      offersData.push(...parsedOffers)
       console.log('Offers formated', offersData.length);
 
       resolve(offersData);

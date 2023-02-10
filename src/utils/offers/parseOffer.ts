@@ -1,14 +1,11 @@
 import { Web3Provider } from '@ethersproject/providers';
 import BigNumber from 'bignumber.js';
-import { oraclePriceFeedABI } from 'src/abis';
-import { OraclePriceFeed } from 'src/abis/types/oraclePriceFeed';
 import { PropertiesToken } from 'src/types';
 import { DataRealtokenType } from 'src/types/offer/DataRealTokenType';
 import { Offer } from 'src/types/offer/Offer';
 import { OFFER_TYPE } from 'src/types/offer/OfferType';
+import { Price } from 'src/types/price';
 import { Offer as OfferGraphQl } from '../../../.graphclient/index';
-import { chainLink } from '../chainlink/chainlink';
-import { getContract } from '../getContract';
 
 // TOKEN TYPE
 // 1 = RealToken
@@ -28,7 +25,8 @@ export const parseOffer = (
     account: string,
     offer: OfferGraphQl,
     accountUserRealtoken: DataRealtokenType,
-    propertiesToken: PropertiesToken[]
+    propertiesToken: PropertiesToken[],
+    prices: Price
   ): Promise<Offer> => {
     return new Promise<Offer>(async (resolve, reject) => {
       try {
@@ -109,9 +107,11 @@ export const parseOffer = (
           createdAtTimestamp: offer.createdAtTimestamp,
           buyCurrency: "",
           officialPrice: undefined,
-          offerPrice: "",
+          offerPrice: undefined,
+          priceDelta: undefined,
           officialYield: undefined,
-          offerYield: undefined
+          offerYield: undefined,
+          yieldDelta: undefined
         };
 
         o.type = getOfferType(o.offerTokenType,o.buyerTokenType);
@@ -125,12 +125,9 @@ export const parseOffer = (
         o.buyCurrency = propertyToken?.currency ?? "";
         o.officialPrice = getOfficialPrice(propertyToken);
         o.officialYield = getOfficialYield(propertyToken);
-
-        // const prices: { [address: string]: BigNumber} = {};
-        // const price = await getPrice(prices,provider,o);
-        // if(price){
-        //  o.offerYield = getOfferYield(price,o,propertyToken);
-        //}
+        o.offerYield = getOfferYield(prices,o,propertyToken);
+        o.yieldDelta = getYieldDelta(o);
+        o.priceDelta = getPriceDelta(prices,o);
 
         // console.log(offer.availableAmount, balanceWallet, allowance)
         resolve(o);
@@ -164,55 +161,40 @@ const getOfficialYield = (propertyToken: PropertiesToken|undefined): number|unde
   }
 }
 
-const getPrice = (prices: { [address: string]: BigNumber}, provider: Web3Provider, offer: Offer) => {
-  return new Promise<BigNumber|undefined>(async (resolve) => {
-    try{
+const getOfferYield = (prices: Price, offer: Offer, propertyToken: PropertiesToken|undefined): number|undefined => {
 
-      console.log(prices);
+  const tokenAddress = (offer.type == OFFER_TYPE.SELL ? offer.offerTokenAddress : offer.buyerTokenAddress).toLowerCase();
+  const tokenPrice = prices[tokenAddress];
 
-      const tokenAddress = offer.type == OFFER_TYPE.BUY ? offer.offerTokenAddress: offer.buyerTokenAddress;
-
-      console.log("tokenAddress: ", tokenAddress)
-
-      let tokenPrice = prices[tokenAddress];
-      if(!tokenPrice){
-
-        const oracleContractAddress: string|undefined = chainLink.get(tokenAddress);
-
-        if(!oracleContractAddress) return undefined;
-
-        const oracleContract = getContract<OraclePriceFeed>(
-          oracleContractAddress,
-          oraclePriceFeedABI,
-          provider
-        );
-
-        if(!oracleContract) return undefined;
-
-        const assetPrice = await oracleContract.latestAnswer();
-        const assetDecimals = await oracleContract.decimals()
-        tokenPrice = new BigNumber(assetPrice.toString()).shiftedBy(-assetDecimals);
-
-        console.log("tokenPrice: ", tokenPrice.toString())
-
-        prices[tokenAddress] = tokenPrice;
-
-      }
-
-      resolve(tokenPrice)
-
-      }catch(err){
-        console.log("Error while getting oracle price: ", err);
-      }
-  });
-}
-
-const getOfferYield = (tokenPrice: BigNumber, offer: Offer, propertyToken: PropertiesToken|undefined): number|undefined => {
-  const tokenPriceInDollar = new BigNumber(offer.price).multipliedBy(tokenPrice);
+  const tokenPriceInDollar =  offer.type == OFFER_TYPE.BUY ? new BigNumber(offer.price).multipliedBy(tokenPrice) : new BigNumber(tokenPrice).dividedBy(offer.price);
   if(propertyToken){
     const offerAdjusted = new BigNumber(propertyToken.netRentYearPerToken).dividedBy(tokenPriceInDollar);
     return parseFloat(offerAdjusted.multipliedBy(100).toString());
   }else{
     return undefined;
   }
+}
+
+const getYieldDelta = (offer: Offer): number|undefined => {
+
+  const offerYield = offer.offerYield;
+  const officialYield = offer.officialYield;
+
+  return offerYield && officialYield ? 
+    parseFloat(new BigNumber(offerYield).multipliedBy(new BigNumber(1)).dividedBy(new BigNumber(officialYield)).minus(1).toString()) 
+    : 
+    undefined;
+
+}
+
+const getPriceDelta = (prices: Price, offer: Offer): number|undefined => {
+
+  const tokenAddress = (offer.type == OFFER_TYPE.SELL ? offer.offerTokenAddress : offer.buyerTokenAddress).toLowerCase();
+  const tokenPrice = prices[tokenAddress];
+
+  const tokenPriceInDollar =  offer.type == OFFER_TYPE.BUY ? new BigNumber(offer.price).multipliedBy(tokenPrice) : new BigNumber(tokenPrice).dividedBy(offer.price);
+
+  const officialPrice = offer.officialPrice;
+
+  return officialPrice ? parseFloat(tokenPriceInDollar.multipliedBy(new BigNumber(1)).dividedBy(new BigNumber(officialPrice)).minus(1).toString()) : undefined
 }

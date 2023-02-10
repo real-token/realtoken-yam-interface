@@ -16,6 +16,8 @@ import { ENV, isEnvs } from "src/utils/isEnv"
 import moment from "moment"
 import { DeleteActions } from "src/components/Market/DeleteActions"
 import { UpdateActionsWithPermit } from "src/components/Market/UpdateActions"
+import { OfferYieldDelta } from "src/components/Column/OfferYieldDelta"
+import { OfferPriceDelta } from "src/components/Column/OfferPriceDelta"
 
 type ColumnFn<T> = (t: TFunction<"buy","table">, span: number) => ColumnDef<Offer,T>
 
@@ -211,6 +213,18 @@ export const simplePriceColumn: ColumnFn<number> = (t,span) => {
     }
 }
 
+export const priceDeltaColumn: ColumnFn<number> = (t,span) => {
+  return {
+    id: 'priceDelta',
+    accessorFn: (offer) => offer.priceDelta ? `${(offer.priceDelta*100).toFixed(2)}` : "",
+    header: "Price delta",
+    cell: ({ row }) => <OfferPriceDelta offer={row.original}/>,
+    enableSorting: true,
+    enableGlobalFilter: true,
+    meta: { colSpan: span },
+  } 
+}
+
 export const amountColumn: ColumnFn<string> = (t,span) => {
     return{
         id: 'amount',
@@ -281,7 +295,7 @@ export const allowanceColumn: ColumnFn<string> = (t,span) => {
 export const publicActionsColumn: ColumnFn<unknown> = (t,span) => {
     return{
         id: 'public-actions',
-        header: undefined,
+        header: "",
         cell: ({ row }) => (
           <Flex gap={"md"}>
             <BuyActionsWithPermit buyOffer={row.original}/>
@@ -339,15 +353,28 @@ export const officialYieldColumn: ColumnFn<number|undefined> = (t,span) => {
       }
 }
 
-export const offerYieldColumn: ColumnFn<unknown> = (t,span) => {
+export const offerYieldColumn: ColumnFn<number> = (t,span) => {
     return{
         id: 'offer-yield',
         header: "Offer Yield",
+        accessorFn: (offer) => offer.offerYield ? `${offer.offerYield.toFixed(2)}` : "",
         cell: ({ row }) => <OfferYield offer={row.original} />,
         enableSorting: true,
         enableGlobalFilter: true,
         meta: { colSpan: span },
       }
+}
+
+export const yieldDeltaColumn: ColumnFn<number> = (t,span) => {
+  return{
+    id: 'yield-delta',
+        header: "Yield delta",
+        accessorFn: (offer) => offer.yieldDelta ? `${offer.yieldDelta.toFixed(2)}` : "",
+        cell: ({ row }) => <OfferYieldDelta offer={row.original} />,
+        enableSorting: true,
+        enableGlobalFilter: true,
+        meta: { colSpan: span },
+  }
 }
 
 export const offerShortTokenNameColumn: ColumnFn<unknown> = (t,span) => {

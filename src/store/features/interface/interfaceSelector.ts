@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js';
 import { Offer, OFFER_LOADING } from 'src/types/offer/Offer';
 import { RootState } from 'src/store/store';
 import { selectAddress } from '../settings/settingsSelector';
-import { OFFER_TYPE } from 'src/types/offer';
+import { Price } from 'src/types/price';
 
 export const selectOffersIsLoading = (state: RootState) =>
   state.interface.offers.isLoading;
@@ -48,6 +48,10 @@ export const selectPrivateOffers = (state: RootState) => {
   );
 };
 
-export const selectSellRealTOffers = (state: RootState) => {
-  return OFFER_LOADING;
-};
+export const selectPricesIsLoading = (state: RootState): boolean => {
+  return state.interface.prices.isLoading;
+}
+
+export const selectPrices = (state: RootState): Price => {
+  return state.interface.prices.prices;
+}

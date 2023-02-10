@@ -11,7 +11,7 @@ type useAllowedBuyTokensReturn = {
   allowedTokens: AllowedToken[];
 };
 
-const getRightAllowBuyTokens = (
+export const getRightAllowBuyTokens = (
   chainId: number | undefined
 ): AllowedToken[] => {
   switch (chainId) {

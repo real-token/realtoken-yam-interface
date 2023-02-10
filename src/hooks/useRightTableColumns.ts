@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { tableOfferTypeAtom } from "src/states";
 import { Offer, OFFER_TYPE } from "src/types/offer";
-import { amountColumn, buyerTokenNameColumn, buyShortTokenNameColumn, deleteOfferActionColumn, header, idColumn, modifyOfferActionColumn, offerShortTokenNameColumn, offerTokenNameColumn, offerYieldColumn, officialPriceColumn, officialYieldColumn, priceColumn, publicActionsColumn, sellerAddressColumn, viewActionColumn } from "./column";
+import { amountColumn, buyerTokenNameColumn, buyShortTokenNameColumn, deleteOfferActionColumn, header, idColumn, modifyOfferActionColumn, offerShortTokenNameColumn, offerTokenNameColumn, offerYieldColumn, officialPriceColumn, officialYieldColumn, priceColumn, priceDeltaColumn, publicActionsColumn, sellerAddressColumn, viewActionColumn, yieldDeltaColumn } from "./column";
 
 export enum OFFERS_TYPE{
     PUBLIC,
@@ -26,8 +26,10 @@ export const useRightTableColumn: UseRightTableColumn = (offersType)  => {
         buyShortTokenNameColumn(t,2),
         officialYieldColumn(t,1),
         offerYieldColumn(t,1),
+        yieldDeltaColumn(t,1),
         officialPriceColumn(t,1),
         priceColumn(t,1),
+        priceDeltaColumn(t,1),
         amountColumn(t,1),
     ],[t]);
     const basicBuyColumns = useMemo(() => [
@@ -36,8 +38,10 @@ export const useRightTableColumn: UseRightTableColumn = (offersType)  => {
         buyerTokenNameColumn(t,2),
         officialYieldColumn(t,1),
         offerYieldColumn(t,1),
+        yieldDeltaColumn(t,1),
         officialPriceColumn(t,1),
         priceColumn(t,2),
+        priceDeltaColumn(t,1),
         amountColumn(t,2)
     ],[t]);
     const basicExchangeColumns = useMemo(() => [
@@ -56,7 +60,7 @@ export const useRightTableColumn: UseRightTableColumn = (offersType)  => {
         {
             id: 'title',
             header: () => header({ title: t('title') }),
-            meta: { colSpan: 12 },
+            meta: { colSpan: 13 },
             columns: [
                 ...basicSellColumns,
                 publicActionsColumn(t,1)

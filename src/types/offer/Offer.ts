@@ -22,9 +22,11 @@ export type Offer = {
   type?: OFFER_TYPE|undefined;
   createdAtTimestamp: number;
   officialPrice: number|undefined;
-  offerPrice: string;
+  offerPrice: number|undefined;
+  priceDelta: number|undefined;
   officialYield: number|undefined;
   offerYield: number|undefined;
+  yieldDelta: number|undefined,
   buyCurrency: string;
 };
 
@@ -49,9 +51,11 @@ export const DEFAULT_OFFER: Offer = {
   type: undefined,
   createdAtTimestamp: 0,
   officialPrice: undefined,
-  offerPrice: "",
+  offerPrice: undefined,
+  priceDelta: undefined,
   officialYield: undefined,
   offerYield: undefined,
+  yieldDelta: undefined,
   buyCurrency: ""
 }
 
