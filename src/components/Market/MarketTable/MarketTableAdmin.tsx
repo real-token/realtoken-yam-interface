@@ -22,6 +22,7 @@ import { adminActionsColumn, adminAmount, adminBuyerTokenNameColumn, adminHeader
 import React from 'react';
 import { Offer } from 'src/types/offer';
 import { useModals } from '@mantine/modals';
+import { MarketSort } from '../MarketSort/MarketSort';
 
 export const MarketTableAdmin: FC = () => {
 
@@ -128,6 +129,9 @@ export const MarketTableAdmin: FC = () => {
   return (
     <Flex direction={"column"} gap={"sm"} align={"flex-start"} mt={20}>
       <TextInput placeholder={t2("nameFilterPlaceholder")} value={globalFilter} onChange={(event) => setGlobalFilter(event.currentTarget.value)}/>
+      <MarketSort 
+        
+      />
       <Table
         tableProps={{
           highlightOnHover: true,

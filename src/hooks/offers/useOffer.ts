@@ -1,8 +1,10 @@
 import { Web3Provider } from "@ethersproject/providers";
 import { useWeb3React } from "@web3-react/core";
 import { useCallback, useEffect, useState } from "react"
+import { selectPrices, selectPricesIsLoading } from "src/store/features/interface/interfaceSelector";
 import { fetchOffer } from "src/utils/offers/fetchOffer";
 import { Offer, DEFAULT_OFFER } from '../../types/offer/Offer';
+import { useAppSelector } from "../react-hooks";
 import { usePropertiesToken } from '../usePropertiesToken';
 
 type UseOfferProps  = (offerId: number) => {
@@ -17,15 +19,18 @@ export const useOffer: UseOfferProps = (offerId: number) => {
 
     const { propertiesToken, propertiesIsloading } = usePropertiesToken();
 
+    const pricesIsLoading = useAppSelector(selectPricesIsLoading);
+    const prices = useAppSelector(selectPrices)
+
     const fetch = useCallback(async (provider: Web3Provider, chainId: number, offerId: number) => {
-        if(!account) return;
-        fetchOffer(provider, account, chainId,offerId, propertiesToken)
+        if(!account || pricesIsLoading) return;
+        fetchOffer(provider, account, chainId,offerId, propertiesToken,prices)
             .then((offer: Offer) => { 
                 setOffer(offer);
                 setIsLoading(false);
             })
             .catch(err => console.log(err))
-    },[account, propertiesToken])
+    },[account, pricesIsLoading, propertiesToken, prices])
 
     useEffect(() => {
         if(offerId && chainId && provider && account && propertiesToken && !propertiesIsloading && propertiesToken.length > 0) fetch(provider,chainId, offerId);
