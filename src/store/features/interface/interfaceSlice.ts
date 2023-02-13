@@ -158,7 +158,6 @@ export function fetchPrices(chainId: number, provider: Web3Provider){
     try{
 
       const tokens = getRightAllowBuyTokens(chainId);
-      console.log(tokens)
       const p = await Promise.all(tokens.map((allowedToken: AllowedToken) => getPrice(provider,allowedToken)));
 
       const prices: Price = {};

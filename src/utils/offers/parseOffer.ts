@@ -6,7 +6,7 @@ import { Offer } from 'src/types/offer/Offer';
 import { OFFER_TYPE } from 'src/types/offer/OfferType';
 import { Price } from 'src/types/price';
 import { Offer as OfferGraphQl } from '../../../.graphclient/index';
-import { getPriceInDollar } from '../price';
+import { getBuyPriceInDollar, getPriceInDollar } from '../price';
 
 // TOKEN TYPE
 // 1 = RealToken
@@ -125,6 +125,7 @@ export const parseOffer = (
         //add price and yield infos
         o.buyCurrency = propertyToken?.currency ?? "";
         o.officialPrice = getOfficialPrice(propertyToken);
+        o.offerPrice = getPriceInDollar(prices,o);
         o.officialYield = getOfficialYield(propertyToken);
         o.offerYield = getOfferYield(prices,o,propertyToken);
         o.yieldDelta = getYieldDelta(o);
@@ -187,15 +188,17 @@ const getYieldDelta = (offer: Offer): number|undefined => {
 const getPriceDelta = (prices: Price, offer: Offer): number|undefined => {
 
   const tokenPriceInDollar = getPriceInDollar(prices,offer);
+  const buyTokenPriceInDollar = getBuyPriceInDollar(prices, offer);
   const officialPrice = offer.officialPrice;
 
-  if(offer.offerId == "11" || offer.offerId == "32"){
-    console.log("-------------------------")
-    console.log(`OFFER ${offer.offerId} : de ${offer.type}`)
-    console.log("price in currency: ", offer.type == OFFER_TYPE.BUY ? 1/parseFloat(offer.price) : offer.price)
-    console.log("price in $: ", tokenPriceInDollar.toString())
-    console.log("-------------------------")
+  if(offer.type == OFFER_TYPE.SELL){
+    return officialPrice && tokenPriceInDollar ? parseFloat(new BigNumber(tokenPriceInDollar).dividedBy(new BigNumber(officialPrice)).minus(1).toString()) : undefined
+  }
+  if(offer.type == OFFER_TYPE.BUY && buyTokenPriceInDollar){
+    if(offer.offerId == "85"){
+      console.log(tokenPriceInDollar, buyTokenPriceInDollar, officialPrice)
+    }
+    return tokenPriceInDollar ? parseFloat(new BigNumber(tokenPriceInDollar).dividedBy(new BigNumber(buyTokenPriceInDollar)).minus(1).toString()) : undefined
   }
 
-  return officialPrice ? parseFloat(tokenPriceInDollar.dividedBy(new BigNumber(officialPrice)).minus(1).toString()) : undefined
 }

@@ -51,10 +51,29 @@ export const getPrice = (provider: Web3Provider, allowedToken: AllowedToken) => 
     });
 }
 
-export const getPriceInDollar = (prices: P, offer: Offer): BigNumber => {
-  const tokenAddress = (offer.type == OFFER_TYPE.BUY ? offer.offerTokenAddress : offer.buyerTokenAddress).toLowerCase();
-  const tokenPrice = prices[tokenAddress];
+export const getPriceInDollar = (prices: P, offer: Offer): number|undefined => {
 
-  const priceInCurrency = new BigNumber(offer.type == OFFER_TYPE.BUY ? 1/parseFloat(offer.price) : offer.price);
-  return priceInCurrency.multipliedBy(tokenPrice);
+  let buyTokenPriceInDollar;
+  if(offer.type == OFFER_TYPE.SELL){
+    buyTokenPriceInDollar = parseFloat(prices[offer.buyerTokenAddress.toLowerCase()]);
+  }
+  if(offer.type == OFFER_TYPE.BUY && offer.officialPrice){
+    buyTokenPriceInDollar = offer.officialPrice;
+  }
+
+  if(buyTokenPriceInDollar){
+
+    // const tokenName = offer.buyerTokenName;
+    // const price = buyTokenPriceInDollar*parseFloat(offer.price);
+    // console.log(`${tokenName}: ${buyTokenPriceInDollar}, $${price}`)
+
+    return buyTokenPriceInDollar*parseFloat(offer.price);
+  }else{
+    return undefined;
+  }
+
+}
+
+export const getBuyPriceInDollar = (prices: P, offer: Offer): number|undefined => {
+  return parseFloat(prices[offer.offerTokenAddress.toLowerCase()]);
 }
