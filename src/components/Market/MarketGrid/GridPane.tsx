@@ -6,6 +6,7 @@ import { OfferYield } from "src/components/Column/OfferYield";
 import { OffialPrice } from "src/components/Column/OfficialPrice";
 import { OriginalYield } from "src/components/Column/OriginalYield";
 import { OfferTypeBadge } from "src/components/Offer/OfferTypeBadge";
+import { OfferDeltaTable } from "src/components/Table/OfferDeltaTable/OfferDeltaTable";
 import { usePropertiesToken } from "src/hooks/usePropertiesToken";
 import { OFFER_TYPE } from "src/types/offer";
 import { Offer } from "src/types/offer/Offer"
@@ -69,30 +70,7 @@ const useStyle = createStyles((theme) => ({
         fontSize: theme.fontSizes.lg,
         fontWeight: 700,
         color: "white"
-    },
-    table: {
-        width: "100%",
-        borderWidth: "1px",
-        borderStyle: "solid",
-        borderColor: theme.colors.brand,
-        borderRadius: theme.radius.md,
-        overflow: "hidden",
-        padding: 0,
-        borderSpacing: 0
-    },
-    tableHead: {
-        backgroundColor: theme.colors.brand,
-        borderWidth: "1px",
-        borderStyle: "solid",
-        borderColor: theme.colors.brand,
-    },
-    tableCell: {
-        padding: calcRem(5),
-        textAlign: "center",
-        borderWidth: "1px",
-        borderStyle: "solid",
-        borderColor: theme.colors.brand,
-    }   
+    }
 }));
 
 interface GridPaneProps{
@@ -133,29 +111,7 @@ export const GridPane: FC<GridPaneProps> = ({ offer }) => {
                             <Text fw={700}>{t("price")}</Text>
                             {offer.price}
                         </Flex>
-                        <Flex>
-                            <table className={classes.table}>
-                                <thead className={classes.tableHead}>
-                                    <tr>
-                                        <th className={classes.tableCell}></th>
-                                        <th className={classes.tableCell}>Original</th>
-                                        <th className={classes.tableCell}>Offer</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td className={classes.tableCell}>Yield</td>
-                                        <td className={classes.tableCell}><OriginalYield offer={offer}/></td>
-                                        <td className={classes.tableCell}><OfferYield offer={offer}/></td>
-                                    </tr>
-                                    <tr>
-                                        <td className={classes.tableCell}>Price</td>
-                                        <td className={classes.tableCell}><OffialPrice offer={offer}/></td>
-                                        <td className={classes.tableCell}><OfferPrice offer={offer}/></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </Flex>
+                        <OfferDeltaTable offer={offer}/>
                     </Flex>
                     <Flex gap={"sm"}>
                         <BuyActionsWithPermit
