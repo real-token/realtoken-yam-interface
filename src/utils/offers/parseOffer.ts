@@ -9,8 +9,8 @@ import { Offer as OfferGraphQl } from '../../../.graphclient/index';
 
 // TOKEN TYPE
 // 1 = RealToken
-//2 = avec permit
-//3 = sans permit
+// 2 = ERC20 avec permit
+// 3 = ERC20 sans permit
 export const getOfferType = (offerTokenType: number, buyerTokenType: number): OFFER_TYPE => {
 
   if(offerTokenType == 1 && (buyerTokenType == 2 || buyerTokenType == 3)) return OFFER_TYPE.BUY
