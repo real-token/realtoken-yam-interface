@@ -13,8 +13,8 @@ export const useOfferPriceInDollar: UseOfferPriceInDollar = (tokenPrice, offer) 
 
     const tokenPriceInDollar: BigNumber|undefined = useMemo(() => {
         if(!tokenPrice || !offer) return undefined;
-        const priceInDollar = offer.type == OFFER_TYPE.BUY ? new BigNumber(offer.price).multipliedBy(tokenPrice) : new BigNumber(tokenPrice).dividedBy(offer.price);
-        return priceInDollar;
+        const priceInCurrency = new BigNumber(offer.type == OFFER_TYPE.BUY ? 1/parseFloat(offer.price) : offer.price);
+        return priceInCurrency.multipliedBy(tokenPrice);
     },[offer, tokenPrice]);
 
     return{

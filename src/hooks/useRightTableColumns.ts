@@ -22,8 +22,8 @@ export const useRightTableColumn: UseRightTableColumn = (offersType)  => {
     // COLUMN BASE
     const basicSellColumns = useMemo(() => [
         idColumn(t,1),
-        offerTokenNameColumn(t,2),
-        buyShortTokenNameColumn(t,2),
+        offerShortTokenNameColumn(t,2),
+        buyerTokenNameColumn(t,2),
         officialYieldColumn(t,1),
         offerYieldColumn(t,1),
         yieldDeltaColumn(t,1),
@@ -34,8 +34,8 @@ export const useRightTableColumn: UseRightTableColumn = (offersType)  => {
     ],[t]);
     const basicBuyColumns = useMemo(() => [
         idColumn(t,1),
-        offerShortTokenNameColumn(t,2),
-        buyerTokenNameColumn(t,2),
+        offerTokenNameColumn(t,2),
+        buyShortTokenNameColumn(t,2),
         officialYieldColumn(t,1),
         offerYieldColumn(t,1),
         yieldDeltaColumn(t,1),
@@ -68,7 +68,7 @@ export const useRightTableColumn: UseRightTableColumn = (offersType)  => {
         {
             id: 'title',
             header: () => header({ title: t('title') }),
-            meta: { colSpan: 14 },
+            meta: { colSpan: 15 },
             columns: [
                 ...basicBuyColumns,
                 publicActionsColumn(t,1)
