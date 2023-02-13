@@ -165,7 +165,7 @@ const getOfficialYield = (propertyToken: PropertiesToken|undefined): number|unde
 
 const getOfferYield = (prices: Price, offer: Offer, propertyToken: PropertiesToken|undefined): number|undefined => {
   const tokenPriceInDollar = getPriceInDollar(prices,offer);
-  if(propertyToken){
+  if(propertyToken && tokenPriceInDollar){
     const offerAdjusted = new BigNumber(propertyToken.netRentYearPerToken).dividedBy(tokenPriceInDollar);
     return parseFloat(offerAdjusted.multipliedBy(100).toString());
   }else{
