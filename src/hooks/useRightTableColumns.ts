@@ -37,8 +37,6 @@ export const useRightTableColumn: UseRightTableColumn = (offersType)  => {
         offerTokenNameColumn(t,2),
         buyShortTokenNameColumn(t,2),
         officialYieldColumn(t,1),
-        offerYieldColumn(t,1),
-        yieldDeltaColumn(t,1),
         officialPriceColumn(t,1),
         priceColumn(t,2),
         priceDeltaColumn(t,1),
