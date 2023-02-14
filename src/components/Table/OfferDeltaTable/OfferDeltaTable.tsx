@@ -1,7 +1,7 @@
 import { createStyles } from "@mantine/core";
 import { OfferPrice } from "src/components/Column/OfferPrice";
 import { OfferYield } from "src/components/Column/OfferYield";
-import { OffialPrice } from "src/components/Column/OfficialPrice";
+import { OfficialPrice } from "src/components/Column/OfficialPrice";
 import { OriginalYield } from "src/components/Column/OriginalYield";
 import { Offer } from "src/types/offer";
 import { calcRem } from "src/utils/style";
@@ -56,7 +56,7 @@ export const OfferDeltaTable = ({ offer }: OfferDeltaTableProps) => {
                 </tr>
                 <tr>
                     <td className={classes.tableCell}>Price</td>
-                    <td className={classes.tableCell}><OffialPrice offer={offer}/></td>
+                    <td className={classes.tableCell}><OfficialPrice offer={offer}/></td>
                     <td className={classes.tableCell}><OfferPrice offer={offer}/></td>
                 </tr>
             </tbody>

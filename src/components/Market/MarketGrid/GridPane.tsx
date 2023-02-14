@@ -1,16 +1,10 @@
 import { createStyles, Flex, Skeleton, Text } from "@mantine/core"
-import { FC, useMemo } from "react"
+import { FC } from "react"
 import { useTranslation } from "react-i18next";
-import { OfferPrice } from "src/components/Column/OfferPrice";
-import { OfferYield } from "src/components/Column/OfferYield";
-import { OffialPrice } from "src/components/Column/OfficialPrice";
-import { OriginalYield } from "src/components/Column/OriginalYield";
 import { OfferTypeBadge } from "src/components/Offer/OfferTypeBadge";
 import { OfferDeltaTable } from "src/components/Table/OfferDeltaTable/OfferDeltaTable";
-import { usePropertiesToken } from "src/hooks/usePropertiesToken";
 import { OFFER_TYPE } from "src/types/offer";
 import { Offer } from "src/types/offer/Offer"
-import { calcRem } from "src/utils/style";
 import { BuyActionsWithPermit } from "../BuyActions";
 import { ShowOfferAction } from "../ShowOfferAction/ShowOfferAction";
 
@@ -111,7 +105,7 @@ export const GridPane: FC<GridPaneProps> = ({ offer }) => {
                             <Text fw={700}>{t("price")}</Text>
                             {offer.price}
                         </Flex>
-                        <OfferDeltaTable offer={offer}/>
+                        { offer.type !== OFFER_TYPE.EXCHANGE ? <OfferDeltaTable offer={offer}/> : undefined }
                     </Flex>
                     <Flex gap={"sm"}>
                         <BuyActionsWithPermit

@@ -109,17 +109,9 @@ export const offerTokenNameColumn: ColumnFn<string> = (t,span) => {
         accessorKey: 'offerTokenName',
         header: t('offerTokenName'),
         cell: ({ getValue }) => (
-          <Group noWrap={true} spacing={'xs'}>
-            <Text
-              size={'sm'}
-              sx={{
-                textOverflow: 'ellipsis',
-                overflow: 'hidden',
-              }}
-            >
+          <Flex justify={"center"}>
               {getValue()}
-            </Text>
-          </Group>
+          </Flex>
         ),
         enableSorting: true,
         meta: { colSpan: span },
