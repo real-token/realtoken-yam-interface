@@ -25,7 +25,7 @@ export const MarketTableUser: FC = () => {
   const { refreshOffers, offersIsLoading } = useRefreshOffers(false);
 
   const [sorting, setSorting] = useState<SortingState>([
-    { id: 'offerId', desc: false },
+    { id: 'offer-id', desc: false },
   ]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,

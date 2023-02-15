@@ -195,9 +195,6 @@ const getPriceDelta = (prices: Price, offer: Offer): number|undefined => {
     return officialPrice && tokenPriceInDollar ? parseFloat(new BigNumber(tokenPriceInDollar).dividedBy(new BigNumber(officialPrice)).minus(1).toString()) : undefined
   }
   if(offer.type == OFFER_TYPE.BUY && buyTokenPriceInDollar){
-    if(offer.offerId == "85"){
-      console.log(tokenPriceInDollar, buyTokenPriceInDollar, officialPrice)
-    }
     return tokenPriceInDollar ? parseFloat(new BigNumber(tokenPriceInDollar).dividedBy(new BigNumber(buyTokenPriceInDollar)).minus(1).toString()) : undefined
   }
 
