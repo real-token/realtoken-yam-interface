@@ -37,8 +37,8 @@ const useStyle = createStyles((theme) => ({
         justifyContent: "center",
         backgroundColor: theme.colors.brand,
         borderRadius: theme.radius.md,
-        width: "40px",
         height: "40px",
+        padding: `0 ${10}px`,
         // color: theme.colors.brand,
         fontWeight: 700,
         fontSize: theme.fontSizes.xl
