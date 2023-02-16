@@ -52,7 +52,7 @@ export const useWalletERC20Balance = (
                 })
                 
             }catch(err){
-                console.log("Failed to get propertieqs from YAM TheGraph: ", err);
+                console.log("Failed to get wallet balance: ", err);
                 reject(err);
             }
         })
