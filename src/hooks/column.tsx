@@ -109,17 +109,9 @@ export const offerTokenNameColumn: ColumnFn<string> = (t,span) => {
         accessorKey: 'offerTokenName',
         header: t('offerTokenName'),
         cell: ({ getValue }) => (
-          <Group noWrap={true} spacing={'xs'}>
-            <Text
-              size={'sm'}
-              sx={{
-                textOverflow: 'ellipsis',
-                overflow: 'hidden',
-              }}
-            >
+          <Flex justify={"center"}>
               {getValue()}
-            </Text>
-          </Group>
+          </Flex>
         ),
         enableSorting: true,
         meta: { colSpan: span },
@@ -132,17 +124,18 @@ export const buyerTokenNameColumn: ColumnFn<string> = (t,span) => {
         accessorKey: 'buyerTokenName',
         header: t('buyerTokenName'),
         cell: ({ getValue }) => (
-          <Group noWrap={true} spacing={'xs'}>
+          <Flex justify={"center"}>
             <Text
               size={'sm'}
               sx={{
+                textAlign: "center",
                 textOverflow: 'ellipsis',
                 overflow: 'hidden',
               }}
             >
               {getValue()}
             </Text>
-          </Group>
+          </Flex>
         ),
         enableSorting: true,
         meta: { colSpan: span },
@@ -176,18 +169,7 @@ export const priceColumn: ColumnFn<number> = (t,span) => {
         id: 'price',
         accessorKey: 'price',
         header: t('price'),
-        cell: ({ row }) => (
-            <Text
-                size={'sm'}
-                sx={{
-                textAlign: 'center',
-                textOverflow: 'ellipsis',
-                overflow: 'hidden',
-                }}
-            >
-                <OfferPrice offer={row.original}/>
-            </Text>
-        ),
+        cell: ({ row }) => <OfferPrice offer={row.original}/>,
         enableSorting: true,
         enableGlobalFilter: true,
         meta: { colSpan: span },

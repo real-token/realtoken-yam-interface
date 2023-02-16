@@ -1,23 +1,14 @@
 import { Flex, Skeleton } from "@mantine/core"
-import { useMemo } from "react"
-import { usePropertyToken } from "src/hooks/usePropertyToken"
-import { Offer, OFFER_TYPE } from "src/types/offer"
+import { Offer } from "src/types/offer"
 
 interface OriginalYieldProps{
     offer: Offer
 }
 export const OriginalYield = ({ offer } : OriginalYieldProps) => {
 
-    const { propertyToken } = usePropertyToken(offer.type == OFFER_TYPE.SELL ? offer.buyerTokenAddress : offer.offerTokenAddress);
-
-    const originalYield: number|undefined = useMemo(() => {
-        if(!propertyToken) return undefined;
-        return propertyToken.annualYield ? propertyToken.annualYield*100 : undefined;
-    },[propertyToken])
-
     return(
         <Flex justify={"center"}>
-            {originalYield ? `${originalYield.toFixed(2)}%` : <Skeleton height={15}/>}
+            {offer.officialYield ? `${offer.officialYield.toFixed(2)}%` : <Skeleton height={15}/>}
         </Flex>
     )
 }

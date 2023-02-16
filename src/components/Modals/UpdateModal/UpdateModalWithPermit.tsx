@@ -68,6 +68,8 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
       },
     });
 
+    console.log(values)
+
   const [isSubmitting, setSubmitting] = useState<boolean>(false);
   const [amountMax, setAmountMax] = useState<number>();
 
@@ -133,6 +135,8 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           10 ** (await offerToken.decimals())
         );
 
+        console.log(newAmountInWei.toString())
+
         /*
          * Si old allowance est supperieur au amount old Yam : retirer du old alowance le old YAM amount et ajouter le new Amount YAM
          * Si old allowance est inférieur au amount old Yam : set le nouvelle allowance
@@ -155,6 +159,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
         );
 
         if (offerTokenType === 1) {
+          console.log("1")
           // TokenType = 1: RealToken
           const { r, s, v }: any = await coinBridgeTokenPermitSignature(
             account,
@@ -165,15 +170,15 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
             provider
           );
 
-          //TODO faire une getsion d'erreur ICI
+          //TODO faire une gestion d'erreur ICI
           const updateOfferWithPermitTx =
             await realTokenYamUpgradeable.updateOfferWithPermit(
               offer.offerId,
               BigNumber(formValues.price.toString())
-                .multipliedBy(10 ** parseFloat(offer.buyerTokenDecimals))
+                .shiftedBy(parseFloat(offer.buyerTokenDecimals))
                 .toString(10),
               BigNumber(formValues.amount)
-                .multipliedBy(10 ** parseFloat(offer.offerTokenDecimals))
+                .shiftedBy(parseFloat(offer.offerTokenDecimals))
                 .toString(10),
               amountInWeiToPermit.toString(10),
               transactionDeadline.toString(),
@@ -206,6 +211,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
               )
             );
         } else if (offerTokenType === 2) {
+          console.log("2")
           // TokenType = 2: ERC20 With Permit
           const { r, s, v }: any = await erc20PermitSignature(
             account,
@@ -220,10 +226,10 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
             await realTokenYamUpgradeable.updateOfferWithPermit(
               formValues.offerId,
               new BigNumber(formValues.price.toString())
-                .shiftedBy(10 ** parseFloat(offer.buyerTokenDecimals))
+                .shiftedBy(parseFloat(offer.buyerTokenDecimals))
                 .toString(10),
               new BigNumber(formValues.amount.toString())
-                .shiftedBy(10 ** parseFloat(offer.offerTokenDecimals))
+                .shiftedBy(parseFloat(offer.offerTokenDecimals))
                 .toString(10),
               amountInWeiToPermit.toString(10),
               transactionDeadline.toString(),
@@ -256,6 +262,8 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
               )
             );
         } else if (offerTokenType === 3) {
+          console.log("3")
+
           // TokenType = 3: ERC20 Without Permit, do Approve/buy
           const approveTx = await offerToken.approve(
             realTokenYamUpgradeable.address,
@@ -291,10 +299,10 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           const updateOfferTx = await realTokenYamUpgradeable.updateOffer(
             formValues.offerId,
             new BigNumber(formValues.price.toString())
-              .shiftedBy(10 ** parseFloat(offer.buyerTokenDecimals))
+              .shiftedBy(parseFloat(offer.buyerTokenDecimals))
               .toString(10),
             new BigNumber(formValues.amount.toString())
-              .shiftedBy(10 ** parseFloat(offer.offerTokenDecimals))
+              .shiftedBy(parseFloat(offer.offerTokenDecimals))
               .toString(10)
           );
 
@@ -330,7 +338,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
         onClose();
       }
     },
-    [account, provider, realTokenYamUpgradeable, offer.offerTokenAddress, offer.offerId, offer.price, offer.buyerTokenDecimals, offer.offerTokenDecimals, activeChain?.blockExplorerUrl, triggerTableRefresh, onClose]
+    [account, provider, realTokenYamUpgradeable, offer.offerTokenAddress, offer.offerId, offer.buyerTokenDecimals, offer.offerTokenDecimals, activeChain?.blockExplorerUrl, triggerTableRefresh, onClose]
   );
 
   const [offerTokenSymbol, setOfferTokenSymbol] = useState<string | undefined>(

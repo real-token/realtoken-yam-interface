@@ -6,15 +6,16 @@ import { Offer } from 'src/types/offer/Offer';
 import { OFFER_TYPE } from 'src/types/offer/OfferType';
 import { Price } from 'src/types/price';
 import { Offer as OfferGraphQl } from '../../../.graphclient/index';
+import { getBuyPriceInDollar, getPriceInDollar } from '../price';
 
 // TOKEN TYPE
 // 1 = RealToken
-//2 = avec permit
-//3 = sans permit
+// 2 = ERC20 avec permit
+// 3 = ERC20 sans permit
 export const getOfferType = (offerTokenType: number, buyerTokenType: number): OFFER_TYPE => {
 
-  if(offerTokenType == 1 && (buyerTokenType == 2 || buyerTokenType == 3)) return OFFER_TYPE.BUY
-  if((offerTokenType == 2 || offerTokenType == 3) && buyerTokenType == 1) return OFFER_TYPE.SELL;
+  if(offerTokenType == 1 && (buyerTokenType == 2 || buyerTokenType == 3)) return OFFER_TYPE.SELL
+  if((offerTokenType == 2 || offerTokenType == 3) && buyerTokenType == 1) return OFFER_TYPE.BUY;
 
   return OFFER_TYPE.EXCHANGE;
 
@@ -117,13 +118,14 @@ export const parseOffer = (
         o.type = getOfferType(o.offerTokenType,o.buyerTokenType);
 
         const propertyToken = getProperty(
-          o.type == OFFER_TYPE.SELL ? o.buyerTokenAddress : o.offerTokenAddress,
+          o.type == OFFER_TYPE.BUY ? o.buyerTokenAddress : o.offerTokenAddress,
           propertiesToken
         );
 
         //add price and yield infos
         o.buyCurrency = propertyToken?.currency ?? "";
         o.officialPrice = getOfficialPrice(propertyToken);
+        o.offerPrice = getPriceInDollar(prices,o);
         o.officialYield = getOfficialYield(propertyToken);
         o.offerYield = getOfferYield(prices,o,propertyToken);
         o.yieldDelta = getYieldDelta(o);
@@ -162,12 +164,8 @@ const getOfficialYield = (propertyToken: PropertiesToken|undefined): number|unde
 }
 
 const getOfferYield = (prices: Price, offer: Offer, propertyToken: PropertiesToken|undefined): number|undefined => {
-
-  const tokenAddress = (offer.type == OFFER_TYPE.SELL ? offer.offerTokenAddress : offer.buyerTokenAddress).toLowerCase();
-  const tokenPrice = prices[tokenAddress];
-
-  const tokenPriceInDollar =  offer.type == OFFER_TYPE.BUY ? new BigNumber(offer.price).multipliedBy(tokenPrice) : new BigNumber(tokenPrice).dividedBy(offer.price);
-  if(propertyToken){
+  const tokenPriceInDollar = getPriceInDollar(prices,offer);
+  if(propertyToken && tokenPriceInDollar){
     const offerAdjusted = new BigNumber(propertyToken.netRentYearPerToken).dividedBy(tokenPriceInDollar);
     return parseFloat(offerAdjusted.multipliedBy(100).toString());
   }else{
@@ -189,12 +187,15 @@ const getYieldDelta = (offer: Offer): number|undefined => {
 
 const getPriceDelta = (prices: Price, offer: Offer): number|undefined => {
 
-  const tokenAddress = (offer.type == OFFER_TYPE.SELL ? offer.offerTokenAddress : offer.buyerTokenAddress).toLowerCase();
-  const tokenPrice = prices[tokenAddress];
-
-  const tokenPriceInDollar =  offer.type == OFFER_TYPE.BUY ? new BigNumber(offer.price).multipliedBy(tokenPrice) : new BigNumber(tokenPrice).dividedBy(offer.price);
-
+  const tokenPriceInDollar = getPriceInDollar(prices,offer);
+  const buyTokenPriceInDollar = getBuyPriceInDollar(prices, offer);
   const officialPrice = offer.officialPrice;
 
-  return officialPrice ? parseFloat(tokenPriceInDollar.multipliedBy(new BigNumber(1)).dividedBy(new BigNumber(officialPrice)).minus(1).toString()) : undefined
+  if(offer.type == OFFER_TYPE.SELL){
+    return officialPrice && tokenPriceInDollar ? parseFloat(new BigNumber(tokenPriceInDollar).dividedBy(new BigNumber(officialPrice)).minus(1).toString()) : undefined
+  }
+  if(offer.type == OFFER_TYPE.BUY && buyTokenPriceInDollar){
+    return tokenPriceInDollar ? parseFloat(new BigNumber(tokenPriceInDollar).dividedBy(new BigNumber(buyTokenPriceInDollar)).minus(1).toString()) : undefined
+  }
+
 }

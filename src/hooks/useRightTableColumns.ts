@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { tableOfferTypeAtom } from "src/states";
 import { Offer, OFFER_TYPE } from "src/types/offer";
-import { amountColumn, buyerTokenNameColumn, buyShortTokenNameColumn, deleteOfferActionColumn, exchangeBuyShortTokenNameColumn, exchangeOfferShortTokenNameColumn, header, idColumn, modifyOfferActionColumn, offerShortTokenNameColumn, offerTokenNameColumn, offerYieldColumn, officialPriceColumn, officialYieldColumn, priceColumn, priceDeltaColumn, publicActionsColumn, sellerAddressColumn, viewActionColumn, yieldDeltaColumn } from "./column";
+import { amountColumn, buyerTokenNameColumn, buyShortTokenNameColumn, deleteOfferActionColumn, exchangeBuyShortTokenNameColumn, exchangeOfferShortTokenNameColumn, header, idColumn, modifyOfferActionColumn, offerShortTokenNameColumn, offerTokenNameColumn, offerYieldColumn, officialPriceColumn, officialYieldColumn, priceColumn, priceDeltaColumn, publicActionsColumn, simplePriceColumn, viewActionColumn, yieldDeltaColumn } from "./column";
 
 export enum OFFERS_TYPE{
     PUBLIC,
@@ -22,8 +22,8 @@ export const useRightTableColumn: UseRightTableColumn = (offersType)  => {
     // COLUMN BASE
     const basicSellColumns = useMemo(() => [
         idColumn(t,1),
-        offerTokenNameColumn(t,2),
-        buyShortTokenNameColumn(t,2),
+        offerShortTokenNameColumn(t,2),
+        buyerTokenNameColumn(t,2),
         officialYieldColumn(t,1),
         offerYieldColumn(t,1),
         yieldDeltaColumn(t,1),
@@ -34,11 +34,9 @@ export const useRightTableColumn: UseRightTableColumn = (offersType)  => {
     ],[t]);
     const basicBuyColumns = useMemo(() => [
         idColumn(t,1),
-        offerShortTokenNameColumn(t,2),
-        buyerTokenNameColumn(t,2),
+        offerTokenNameColumn(t,2),
+        buyShortTokenNameColumn(t,2),
         officialYieldColumn(t,1),
-        offerYieldColumn(t,1),
-        yieldDeltaColumn(t,1),
         officialPriceColumn(t,1),
         priceColumn(t,2),
         priceDeltaColumn(t,1),
@@ -48,7 +46,7 @@ export const useRightTableColumn: UseRightTableColumn = (offersType)  => {
         idColumn(t,1),
         exchangeOfferShortTokenNameColumn(t,2),
         exchangeBuyShortTokenNameColumn(t,2),
-        priceColumn(t,2),
+        simplePriceColumn(t,2),
         amountColumn(t,2)
     ],[t]);
 
@@ -68,7 +66,7 @@ export const useRightTableColumn: UseRightTableColumn = (offersType)  => {
         {
             id: 'title',
             header: () => header({ title: t('title') }),
-            meta: { colSpan: 14 },
+            meta: { colSpan: 15 },
             columns: [
                 ...basicBuyColumns,
                 publicActionsColumn(t,1)

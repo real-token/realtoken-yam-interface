@@ -1,25 +1,23 @@
 import { Flex, Skeleton, Text } from "@mantine/core"
-import BigNumber from "bignumber.js";
-import { useMemo } from "react";
-import { useOfferPriceInDollar } from "src/hooks/useOfferPriceInDollar";
-import { useOraclePriceFeed } from "src/hooks/useOraclePriceFeed";
-import { usePropertyToken } from "src/hooks/usePropertyToken";
-import { Offer, OFFER_TYPE } from "src/types/offer"
-import { getPropertyTokenAddress } from "src/utils/properties";
+import { Offer } from "src/types/offer"
 
 interface OfferPriceProps{
     offer: Offer
 }
 export const OfferPrice = ({ offer } : OfferPriceProps) => {
 
-    const { price } = useOraclePriceFeed(offer.type == OFFER_TYPE.BUY ? offer.offerTokenAddress: offer.buyerTokenAddress);
     const offerPrice = offer.price;
-
-    const { tokenPriceInDollar } = useOfferPriceInDollar(price, offer);
+    const tokenPriceInDollar = offer.offerPrice;
 
     return(
         <Flex justify={"center"} gap={"sm"}>
-            <Text>{`${offerPrice} ($${parseFloat(tokenPriceInDollar ? tokenPriceInDollar?.toString() : "0").toFixed(2)})`}</Text>
+            <Text style={{ textAlign: "center" }}>
+                { tokenPriceInDollar !== undefined && offerPrice !== undefined ? 
+                    `${offerPrice} ($${parseFloat(tokenPriceInDollar ? tokenPriceInDollar?.toString() : "0").toFixed(2)})` 
+                    : 
+                    <Skeleton height={15}/>
+                }
+            </Text>
         </Flex>
     )
 }

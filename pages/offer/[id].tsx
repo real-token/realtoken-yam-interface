@@ -1,7 +1,7 @@
 import { Flex, Text, createStyles, Skeleton, ActionIcon, Title, Divider, useMantineTheme } from "@mantine/core";
 import { IconExternalLink, IconShoppingCart } from "@tabler/icons";
 import { useRouter } from "next/router"
-import { FC, useCallback, useMemo } from "react"
+import { FC, useCallback, useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next";
 import { OfferText } from "src/components/Offer/OfferText";
 import { useOffer } from "src/hooks/offers/useOffer";
@@ -14,6 +14,8 @@ import { useRefreshOffers } from "src/hooks/offers/useRefreshOffers";
 import BigNumber from "bignumber.js";
 import { PropertyImage } from "src/components/Offer/Image/PropertyImage";
 import { openInNewTab } from "src/utils/window";
+import { OfferDeltaTable } from "src/components/Table/OfferDeltaTable/OfferDeltaTable";
+import { PropertyCard } from "src/components/Offer/PropertyCard";
 
 const useStyle = createStyles((theme) => ({
     container: {
@@ -64,7 +66,6 @@ const useStyle = createStyles((theme) => ({
 const ShowOfferPage: FC = () => {
 
     const { classes } = useStyle();
-    const { colors } = useMantineTheme();
 
     const router = useRouter();
     const { id } = router.query;
@@ -73,7 +74,6 @@ const ShowOfferPage: FC = () => {
 
     const { account } = useWeb3React();
     const { offer, isLoading } = useOffer(offerId);
-    const { getPropertyToken, propertiesIsloading } = usePropertiesToken();
 
     const { refreshOffers } = useRefreshOffers(false);
 
@@ -82,11 +82,23 @@ const ShowOfferPage: FC = () => {
 
     const modals = useModals();
 
-    const propertyToken: PropertiesToken | undefined = useMemo(() => {
-        // console.log(!offer, !offer?.hasPropertyToken, !offer?.offerTokenAddress, propertiesIsloading)
-        if(!offer || !offer.hasPropertyToken || !offer.offerTokenAddress || propertiesIsloading) return undefined;
-        return getPropertyToken(offer.offerTokenAddress);
-    },[getPropertyToken, offer, propertiesIsloading])
+    const [propertyTokens,setPropertyTokens] = useState<PropertiesToken[]>([]);
+    const { getPropertyToken, propertiesIsloading } = usePropertiesToken();
+
+    useEffect(() => {
+        if(!offer || propertiesIsloading || propertyTokens.length > 0) return undefined;
+
+        if(offer.buyerTokenType == 1){
+            const token = getPropertyToken(offer.buyerTokenAddress);
+            if(token) setPropertyTokens(prev => [...prev,token])
+        }
+
+        if(offer.offerTokenType == 1){
+            const token = getPropertyToken(offer.offerTokenAddress);
+            if(token) setPropertyTokens(prev => [...prev,token])
+        }
+
+    },[getPropertyToken, offer, propertiesIsloading, propertyTokens.length]);
 
     const onOpenWalletModal = useCallback(() => {
         modals.openContextModal('wallet', {
@@ -95,10 +107,10 @@ const ShowOfferPage: FC = () => {
         });
       }, [modals, t2]);
     
-      const isAccountOffer: boolean = useMemo(() => {
-        if(!offer || !account) return false;
-        return offer.sellerAddress == account.toLowerCase()
-      },[offer, account])
+    const isAccountOffer: boolean = useMemo(() => {
+    if(!offer || !account) return false;
+    return offer.sellerAddress == account.toLowerCase()
+    },[offer, account])
 
     const onOpenBuyModal = useCallback(
         (offer: Offer) => {
@@ -166,40 +178,12 @@ const ShowOfferPage: FC = () => {
                             }
                         </ActionIcon>
                     </Flex>
-                    <Flex className={classes.container}>
-                        <Flex className={classes.propertyInfosContainer}>
-                            <PropertyImage property={propertyToken}/>
-                            <Flex direction={"column"}>
-                                <div className={classes.propertyNameContainer}>
-                                {   propertyToken ?
-                                        <Flex className={classes.propertyName} gap={5} align={"center"} onClick={() => openInNewTab(propertyToken.marketplaceLink)}>
-                                            <Text color={"brand"} fw={700} fz={"xl"}>{propertyToken.shortName}</Text>
-                                            <IconExternalLink size={20} color={colors.brand[9]}/>
-                                        </Flex>
-                                    : 
-                                        <Skeleton height={25} width={200}/> 
-                                }
-                                </div>
-                                <Flex direction={"column"} gap={"sm"}>
-                                    {/* TODO: add translation */}
-                                    <OfferText 
-                                        title="Price"
-                                        value={propertyToken?.officialPrice ? `${propertyToken?.officialPrice} $USDC` : undefined}
-                                        width={200}
-                                    />
-                                    <OfferText 
-                                        title="Yearly yield(%)"
-                                        value={ 
-                                            propertyToken && propertyToken.officialPrice && propertyToken?.netRentYearPerToken ? 
-                                                `${(propertyToken?.officialPrice/propertyToken?.netRentYearPerToken).toFixed(4)}% (${propertyToken?.netRentYearPerToken.toFixed(4)}$)` 
-                                            : 
-                                                undefined
-                                        }
-                                        width={200}
-                                    />
-                                </Flex>
-                            </Flex>
-                        </Flex>
+                    <Flex direction={"column"} gap={"md"} align={"center"}>
+                    { propertyTokens && offer && propertyTokens.length > 0 ? 
+                        propertyTokens.map(token => <PropertyCard key={token.contractAddress} propertyToken={token} offer={offer}/>)
+                        :
+                        undefined
+                    }
                     </Flex>
                 </Flex>
             )
