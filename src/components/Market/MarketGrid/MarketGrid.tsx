@@ -13,7 +13,7 @@ import { selectPublicOffers } from "src/store/features/interface/interfaceSelect
 export const MarketGrid: FC = () => {
 
     const publicOffers = useAppSelector(selectPublicOffers);
-  const { offers } = useTypedOffers(publicOffers);
+    const { offers } = useTypedOffers(publicOffers);
 
     const [data,setData] = useState<string[]>([
         '9',

@@ -62,6 +62,7 @@ export const useWalletERC20Balance = (
 
     useEffect(() => {
         if(tokenAddress){
+            console.log("RETEST31")
             setBigNumberbalance(undefined);
             setTokenSymbol(undefined);
             setBalance(undefined);

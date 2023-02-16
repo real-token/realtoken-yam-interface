@@ -21,7 +21,7 @@ const useStyle = createStyles((theme) => ({
     },
     header: {
         backgroundColor: "#624105",
-        padding: theme.spacing.sm
+        padding: theme.spacing.sm,
     },
     content: {
         height: "100%",
@@ -83,11 +83,10 @@ export const GridPane: FC<GridPaneProps> = ({ offer }) => {
             :
             <Flex className={classes.container}>
                 <Flex direction={"column"} align={"start"} color={"brand"} className={classes.header} >
-                    <Flex gap={"sm"}>
+                    <Flex gap={"sm"} pb={12}>
                         <Flex className={classes.offerId} mb={10}>{offer.offerId}</Flex>
                         <OfferTypeBadge offerType={offer.type ?? OFFER_TYPE.SELL}/>
                     </Flex>
-                
                     <Text className={classes.offerTokenName}>{offer.offerTokenName}</Text>
                     <Text className={classes.buyerTokenName}>{offer.buyerTokenName}</Text>
                 </Flex>
