@@ -2,28 +2,44 @@ import { FC, ReactNode, useEffect } from 'react';
 
 import { Web3ReactProvider } from '@web3-react/core';
 
-import { connectors, metaMask, network } from 'src/connectors';
+import { connectors, metaMask, network, walletConnect } from 'src/connectors';
 import { gnosisSafe } from 'src/connectors/gnosisSafe';
+import { useAtomValue } from 'jotai';
+import { providerAtom } from 'src/states';
 
 type Web3ProvidersProps = {
   children: ReactNode;
 };
 
 const ConnectEagerly: FC = () => {
+
+  const lastUsedProvider = useAtomValue(providerAtom);
+
+
   useEffect(() => {
     void network.activate();
   }, []);
 
   useEffect(() => {
+    if(!lastUsedProvider) return;
 		console.log('Variable version: ', 2);
 		console.log('process.env.NODE_ENV', process.env.NODE_ENV);
     console.log('process.env.NEXT_PUBLIC_ENV', process.env.NEXT_PUBLIC_ENV);
-    process.env.NEXT_PUBLIC_ENV === "dev" ? //TODO utiliser un varaible dans le storage pour savoir quelle a été la dernière connexion active 
-    void gnosisSafe.connectEagerly().catch(() => {
-      console.debug('Failed to connect eagerly to gnosis safe')
-    }): 
-    void metaMask.connectEagerly();
-  }, [])
+
+    if(lastUsedProvider !== ""){
+      switch(lastUsedProvider){
+        case "metamask":
+          metaMask.connectEagerly();
+          break;
+        case "wallet-connect":
+          walletConnect.connectEagerly();
+          break;
+        case "gnosis-safe":
+          gnosisSafe.connectEagerly();
+          break;
+      }
+    }
+  }, [lastUsedProvider])
 
   return null;
 };

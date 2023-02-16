@@ -19,8 +19,6 @@ export const getPrice = (provider: Web3Provider, allowedToken: AllowedToken) => 
   
         const tokenAddress = allowedToken.contractAddress;
         const oracleContractAddress: string|undefined = chainLink.get(tokenAddress.toLowerCase());
-
-        console.log(oracleContractAddress)
   
         if(!oracleContractAddress){
           resolve({ contractAddress: tokenAddress, price: BigNumber(1).toString() });

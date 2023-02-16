@@ -14,3 +14,5 @@ export const displayChoosedAtom = atomWithStorage<Displays>("displayChoosed",Dis
 export const shieldDisabledAtom = atomWithStorage<boolean>("shieldDisabled",false);
 export const shieldValueAtom = atomWithStorage<number>("shieldValue",0.05);
 export const wlTokensAtom = atom<WLToken[]>([DEFAULT_WL_TOKEN]);
+
+export const providerAtom = atomWithStorage<string>("provider","");

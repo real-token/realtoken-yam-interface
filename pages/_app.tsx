@@ -38,21 +38,21 @@ const queryClient = new QueryClient({});
 const App = ({ Component, pageProps, colorScheme, locale }: AppProps) => {
   return (
     <QueryClientProvider client={queryClient}>
-      <Web3Providers>
-        <Provider store={store}>
-          <InitStoreProvider>
-            <Head title={'Realtoken YAM'} />
-            <JotaiProvider>
-              <MantineProviders initialColorScheme={colorScheme}>
-                  <LanguageInit initialLocale={locale} />
-                  <Layout>
-                    <Component {...pageProps} />
-                  </Layout>
-              </MantineProviders>
-            </JotaiProvider>
-          </InitStoreProvider>
-        </Provider>
-      </Web3Providers>
+      <JotaiProvider>
+        <Web3Providers>
+          <Provider store={store}>
+            <InitStoreProvider>
+              <Head title={'Realtoken YAM'} />
+                <MantineProviders initialColorScheme={colorScheme}>
+                    <LanguageInit initialLocale={locale} />
+                    <Layout>
+                      <Component {...pageProps} />
+                    </Layout>
+                </MantineProviders>
+            </InitStoreProvider>
+          </Provider>
+        </Web3Providers>
+      </JotaiProvider>
     </QueryClientProvider>
   );
 };
