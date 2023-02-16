@@ -58,8 +58,7 @@ export const useWalletERC20Balance = (
         })
     }
 
-    const { data, refetch } = useQuery([tokenAddress], getTokenInfos, { enabled: (!!provider && !!tokenAddress && !!account)}
-    );
+    const { data, refetch } = useQuery([tokenAddress], getTokenInfos, { enabled: (!!provider && !!tokenAddress && !!account)});
 
     useEffect(() => {
         if(tokenAddress){

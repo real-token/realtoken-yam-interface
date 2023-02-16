@@ -17,7 +17,7 @@ type UseCreateOfferTokens = (
     buyerTokens: SelectItem[];
 }
 
-export const useCreateOfferTokens: UseCreateOfferTokens = (offerType, choosedOfferTokenAddress, choosedBuyerTokenAddress) => {
+export const useCreateOfferTokens: UseCreateOfferTokens = (offerType) => {
 
     const { propertiesToken } = usePropertiesToken();
     const { allowedTokens } = useAllowedTokens();

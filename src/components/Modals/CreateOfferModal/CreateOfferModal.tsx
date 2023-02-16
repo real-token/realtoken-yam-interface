@@ -411,8 +411,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
     }
   }
 
-  const { allowedTokens, properties, buyerTokens, offerTokens } 
-    = useCreateOfferTokens(offer.offerType, values.offerTokenAddress, values.buyerTokenAddress);
+  const { allowedTokens, properties, buyerTokens, offerTokens } = useCreateOfferTokens(offer.offerType, values.offerTokenAddress, values.buyerTokenAddress);
 
   // NEEDED because when offer type is exchange, user cannot exchange token from different type and cannot exchange two same token
   const exchangeOfferTokens = exchangeType == realT ? 
@@ -429,8 +428,9 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   const total = (values.amount ?? 0) * (values.price ?? 0);
 
   const { getPropertyToken } = usePropertiesToken();
-  const officialPrice = getPropertyToken ? getPropertyToken(values.offerTokenAddress)?.officialPrice : undefined;
-  const officialSellCurrency = getPropertyToken ? getPropertyToken(values.offerTokenAddress)?.currency : undefined;
+  const propertyTokenAddress = offer.offerType == OFFER_TYPE.BUY ? values.buyerTokenAddress : values.offerTokenAddress;
+  const officialPrice = getPropertyToken ? getPropertyToken(propertyTokenAddress)?.officialPrice : undefined;
+  const officialSellCurrency = getPropertyToken ? getPropertyToken(propertyTokenAddress)?.currency : undefined;
 
   const { isError: shieldError, maxPriceDifference, priceDifference } = useShield(offer.offerType,values.price,officialPrice);
 
@@ -515,7 +515,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
 
   const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
     ({ label, value, ...others }: ItemProps, ref) => (
-      <Flex ref={ref} {...others} key={label} gap={"sx"} direction={"column"}>
+      <Flex ref={ref} {...others} key={value} gap={"sx"} direction={"column"}>
           <Text fz={"sm"} fw={700}>{label}</Text>
           <Text fz={"xs"} fs={"italic"}>{value}</Text>
       </Flex>
@@ -705,12 +705,10 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
     const { price } = useOraclePriceFeed(offer.offerType == OFFER_TYPE.BUY ? values.offerTokenAddress : values.buyerTokenAddress);
 
     const setPInDollar = () => {
-      console.log("test")
       if(values.price && price) setPriceInDollar(parseFloat(new BigNumber(values.price).multipliedBy(price).toString()))
     }
 
     const setPrice = () => {
-      console.log("test")
       if(price && priceInDollar){
         setFieldValue("price",parseFloat(new BigNumber(priceInDollar).dividedBy(price).toString().toString()))
       }
