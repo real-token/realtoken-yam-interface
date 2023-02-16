@@ -1,5 +1,7 @@
 import { Flex, Select } from "@mantine/core";
+import { useAtom } from "jotai";
 import React, { FC, useMemo, useState } from "react";
+import { displayChoosedAtom } from "src/states";
 import { Displays } from "src/types/Displays";
 import { MarketTable } from "../Market";
 import { MarketGrid } from "../Market/MarketGrid/MarketGrid";
@@ -12,7 +14,7 @@ interface Display{
 }
 const Display: FC = () => {
 
-  const [choosenDisplay,setChoosenDisplay] = useState<string>(Displays.TABLE);
+  const [choosenDisplay,setChoosenDisplay] = useAtom(displayChoosedAtom);
 
   const availableDisplays = useMemo(() => {
     return new Map<Displays,Display>([
