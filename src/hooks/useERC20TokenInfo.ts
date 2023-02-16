@@ -1,7 +1,6 @@
 import { Web3Provider } from "@ethersproject/providers";
 import { useWeb3React } from "@web3-react/core";
 import BigNumber from "bignumber.js";
-import { randomUUID } from "crypto";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { Erc20, Erc20ABI } from "src/abis";
@@ -53,7 +52,7 @@ export const useERC20TokenInfo: UseERC20TokenInfo = (tokenAddress) => {
                 resolove(res)
                 
             }catch(err){
-                console.log("Failed to get propertieqs from YAM TheGraph: ", err);
+                console.log("Failed to get ERC20 token infos: ", err);
                 reject(err);
             }
         })

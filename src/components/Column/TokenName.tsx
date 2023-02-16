@@ -14,12 +14,14 @@ export const TokenName = ({ offer, tokenName } : TokenNameProps) => {
 
     return(
         <Flex justify={"center"}>
-        {   propertyToken ? 
+        {  tokenName ?
+                <Text>{tokenName}</Text>
+            : propertyToken ? 
                 <TextUrl url={propertyToken.marketplaceLink}>{propertyToken.shortName}</TextUrl>
             : !tokenAddress ?
                 <Skeleton height={15} />
             :
-                <Text>{tokenName}</Text>
+                undefined
         }
         </Flex>
     )

@@ -377,7 +377,7 @@ export const offerShortTokenNameColumn: ColumnFn<unknown> = (t,span) => {
 
 export const exchangeOfferShortTokenNameColumn: ColumnFn<unknown> = (t,span) => {
   return {
-      id: 'offer-short-token-name',
+      id: 'offer-token-name',
       accessorKey: 'offerTokenName',
       header: t('offerTokenName'),
       cell: ({ row }) => <TokenName offer={row.original} tokenName={row.original.offerTokenName}/>,
@@ -401,7 +401,7 @@ export const buyShortTokenNameColumn: ColumnFn<string> = (t,span) => {
 
 export const exchangeBuyShortTokenNameColumn: ColumnFn<string> = (t,span) => {
   return {
-      id: 'buyer-short-token-name',
+      id: 'buyer-token-name',
       accessorKey: 'buyerTokenName',
       header: t('buyerTokenName'),
       cell: ({ row }) => <TokenName offer={row.original} tokenName={row.original.buyerTokenName}/>,
