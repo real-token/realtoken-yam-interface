@@ -57,10 +57,7 @@ export const CHAINS: Record<ChainsID, Chain> = {
     chainName: 'Goerli',
     logo: EthereumSVG.src,
     nativeCurrency: ETH,
-    rpcUrl:
-      'https://eth-goerli.g.alchemy.com/v2/ot7yWosiHjoC8DMV_ESJxZtrMj55za-k', // realt-goerli API 300M/month
-    // rpcUrl:
-    //   'https://eth.getblock.io/goerli/?api_key=eda96727-5cdd-4551-9e24-aef68d33e782', // getblock API 40k/day
+    rpcUrl: 'https://rpc.ankr.com/eth_goerli',
     blockExplorerUrl: 'https://goerli.etherscan.io/',
     contracts: {
       [ContractsID.realTokenYamUpgradeable]: {
