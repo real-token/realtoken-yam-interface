@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { CoinBridgeToken, coinBridgeTokenABI, Erc20, Erc20ABI } from "src/abis";
 import { ContractsID, NOTIFICATIONS, NotificationsID } from "src/constants";
 import { useActiveChain, useContract } from "src/hooks";
+import { useRefreshOffers } from "src/hooks/offers/useRefreshOffers";
 import { useAppDispatch, useAppSelector } from "src/hooks/react-hooks";
 import { selectCreateOffers } from "src/store/features/createOffers/createOffersSelector";
 import { createOfferResetDispatchType } from "src/store/features/createOffers/createOffersSlice";
@@ -38,6 +39,8 @@ const useStyles = createStyles((theme) => ({
 export const CreateOffer = () => {
 
     const [loading,setLoading] = useState<boolean>(false);
+
+    const { refreshOffers } = useRefreshOffers(false);
 
     const { classes } = useStyles();
     const offers = useAppSelector(selectCreateOffers);
@@ -130,6 +133,7 @@ export const CreateOffer = () => {
 
                     if(status == 1){
                         dispatch({ type: createOfferResetDispatchType });
+                        refreshOffers();
                     } 
                     setLoading(false);
                 }
