@@ -92,13 +92,13 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   const offers = useAppSelector(selectCreateOffers);
   const [exchangeType,setExchangeType] = useState<string|null>(null);
 
-  const approve = (formValues: SellFormValues): Promise<void> => {
+  const approve = (createdOffer: CreatedOffer): Promise<void> => {
     return new Promise<void>(async (resolve,reject) => {
-      if(!provider || !realTokenYamUpgradeable || !account || !formValues.amount) return;
+      if(!provider || !realTokenYamUpgradeable || !account || !createdOffer.amount) return;
       try{
         setSubmitting(true);
         const offerToken = getContract<CoinBridgeToken>(
-          formValues.offerTokenAddress,
+          createdOffer.offerTokenAddress,
           coinBridgeTokenABI,
           provider,
           account
@@ -111,7 +111,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
           return;
         }
 
-        const amountInWei = new BigNumber(formValues.amount.toString()).shiftedBy(Number(offerTokenDecimals));
+        const amountInWei = new BigNumber(createdOffer.amount.toString()).shiftedBy(Number(offerTokenDecimals));
         const oldAllowance = await offerToken.allowance(account,realTokenYamUpgradeable.address);
         const amountInWeiToPermit = amountInWei.plus(new BigNumber(oldAllowance.toString()));
 
@@ -439,8 +439,6 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   const approveAndsaveCreatedOffer = async (formValues: SellFormValues) => {
     try{
 
-      await approve(formValues);
-
       const price = offer.offerType !== OFFER_TYPE.BUY ? formValues.price : formValues.price ? 1/formValues.price : undefined;
 
       const createdOffer: CreatedOffer = {
@@ -453,6 +451,8 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         buyerAddress: formValues.buyerAddress,
         isPrivateOffer: formValues.isPrivateOffer
       }
+
+      await approve(createdOffer);
 
       dispatch({ type: createOfferAddedDispatchType, payload: createdOffer });
 

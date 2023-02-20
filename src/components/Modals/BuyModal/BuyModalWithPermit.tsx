@@ -78,21 +78,19 @@ export const BuyModalWithPermit: FC<
     
     const realTokenYamUpgradeable = useContract(
       ContractsID.realTokenYamUpgradeable
-      );
+    );
     const buyerToken = getContract<CoinBridgeToken>(
         offer.buyerTokenAddress,
         coinBridgeTokenABI,
         provider as Web3Provider,
         account
-      );
+    );
     const offerToken = getContract<Erc20>(
           offer.offerTokenAddress,
           Erc20ABI,
           provider as Web3Provider,
           account
-      )
-    //const newOfferAmount = new BigNumber(((await offerToken?.balanceOf(sellerAddress))?._hex ?? '0')).toNumber();
-    //console.log('DEBUG BuyWithPermitFormValues value',newOfferAmount,values)
+    )
 
   const getOfferTokenInfos = async () => {
     if(!offerToken) return;
@@ -111,6 +109,7 @@ export const BuyModalWithPermit: FC<
   },[offerToken])
 
   const { t } = useTranslation('modals', { keyPrefix: 'buy' });
+  const { t: t1 } = useTranslation('modals', { keyPrefix: 'sell' });
 
   const onClose = useCallback(() => {
     reset();
@@ -314,8 +313,6 @@ export const BuyModalWithPermit: FC<
     [account, provider, realTokenYamUpgradeable, buyerToken, offer, activeChain?.blockExplorerUrl, triggerTableRefresh, onClose]
   );
 
-  
-
   const maxTokenBuy: number|undefined = useMemo(() => {
     if(!balance || !offer.price) return undefined;
 
@@ -340,79 +337,78 @@ export const BuyModalWithPermit: FC<
   return (
     <form onSubmit={onSubmit(onHandleSubmit)} style={{ width: calcRem(500) }}>
       <Stack justify={'center'} align={'stretch'}>
-
-      <Flex direction={"column"} gap={"sm"}>
-        <Text size={"xl"}>{t('selectedOffer')}</Text>
-        <Flex direction={"column"} gap={8}>
-            <Flex direction={"column"}>
-              <Text fw={700}>{t("offerId")}</Text>
-              <Text>{offer.offerId}</Text>
-            </Flex>
-            <Flex direction={"column"}>
-              <Text fw={700}>{t("offerTokenName")}</Text>
-              <Text>{offerTokenName}</Text>
-            </Flex>
-            <Flex direction={"column"}>
-              <Text fw={700}>{t("sellerAddress")}</Text>
-              <Text>{offer.sellerAddress}</Text>
-            </Flex>
-            <Flex direction={"column"} >
-              <Text fw={700}>{offer.type ? amountTranslation.get(offer.type) : ""}</Text>
-              <Text>{BigNumber.minimum(offer.amount,offerTokenSellerBalance!).toString()}</Text>
-            </Flex>
-            <Flex direction={"column"}>
-                <Text fw={700}>{offer.type ? priceTranslation.get(offer.type) : ""}</Text>
-                <Text>{`${offer.price} ${buyTokenSymbol}`}</Text>
+        <Flex direction={"column"} gap={"sm"}>
+          <Text size={"xl"}>{t('selectedOffer')}</Text>
+          <Flex direction={"column"} gap={8}>
+              <Flex direction={"column"}>
+                <Text fw={700}>{t("offerId")}</Text>
+                <Text>{offer.offerId}</Text>
               </Flex>
+              <Flex direction={"column"}>
+                <Text fw={700}>{t("offerTokenName")}</Text>
+                <Text>{offerTokenName}</Text>
+              </Flex>
+              <Flex direction={"column"}>
+                <Text fw={700}>{t("sellerAddress")}</Text>
+                <Text>{offer.sellerAddress}</Text>
+              </Flex>
+              <Flex direction={"column"} >
+                <Text fw={700}>{offer.type ? amountTranslation.get(offer.type) : ""}</Text>
+                <Text>{BigNumber.minimum(offer.amount,offerTokenSellerBalance!).toString()}</Text>
+              </Flex>
+              <Flex direction={"column"}>
+                  <Text fw={700}>{offer.type ? priceTranslation.get(offer.type) : ""}</Text>
+                  <Text>{`${offer.price} ${buyTokenSymbol}`}</Text>
+                </Flex>
+          </Flex>
         </Flex>
-      </Flex>
 
-      <Divider />
+        <Divider />
 
-      <WalletERC20Balance 
-        tokenAddress={offer.buyerTokenAddress}
-        tokenDecimals={offer.buyerTokenDecimals}
-      />
+        <WalletERC20Balance 
+          tokenAddress={offer.buyerTokenAddress}
+          tokenDecimals={offer.buyerTokenDecimals}
+        />
 
-      <Flex direction={"column"} gap={"sm"} >
-        <Text size={"xl"}>{t("buy")}</Text>
-        <Flex direction={"column"} gap={8}>
-          <NumberInput
-            label={t('amount')}
-            required={true}
-            disabled={maxTokenBuy == 0 || maxTokenBuy == undefined}
-            min={0}
-            max={maxTokenBuy}
-            showMax={true}
-            placeholder={t('amount')}
-            sx={{ flexGrow: 1 }}
-            groupMarginBottom={16}
-            setFieldValue={setFieldValue}
-            {...getInputProps('amount')}
-          />
+        <Flex direction={"column"} gap={"sm"} >
+          <Text size={"xl"}>{t1("sell")}</Text>
+          <Flex direction={"column"} gap={8}>
+            <NumberInput
+              label={t('amount')}
+              required={true}
+              disabled={maxTokenBuy == 0 || maxTokenBuy == undefined}
+              min={0}
+              max={maxTokenBuy}
+              showMax={true}
+              placeholder={t('amount')}
+              sx={{ flexGrow: 1 }}
+              groupMarginBottom={16}
+              setFieldValue={setFieldValue}
+              {...getInputProps('amount')}
+            />
 
-          <Text size={"xl"}>{t("summary")}</Text>
-          <Text size={"md"} mb={10}>
-            {` ${t("summaryText1")} ${values?.amount} ${offerTokenSymbol} ${t("summaryText2")} ${cleanNumber(values?.price)} ${buyTokenSymbol} ${t("summaryText3")} ${total} ${buyTokenSymbol}`}
-          </Text>
+            <Text size={"xl"}>{t("summary")}</Text>
+            <Text size={"md"} mb={10}>
+              {` ${t("summaryText1")} ${values?.amount} ${offerTokenSymbol} ${t("summaryText2")} ${cleanNumber(values?.price)} ${buyTokenSymbol} ${t("summaryText3")} ${total} ${buyTokenSymbol}`}
+            </Text>
+            
+            <Group grow={true}>
+              <Button color={'red'} onClick={onClose} aria-label={t('cancel')}>
+                {t('cancel')}
+              </Button>
+              <Button
+                type={'submit'}
+                loading={isSubmitting}
+                aria-label={t('confirm')}
+                disabled={values?.amount == 0 || !values.amount}
+              >
+                {t('confirm')}
+              </Button>
+            </Group>
+          </Flex>
+        </Flex>
           
-          <Group grow={true}>
-            <Button color={'red'} onClick={onClose} aria-label={t('cancel')}>
-              {t('cancel')}
-            </Button>
-            <Button
-              type={'submit'}
-              loading={isSubmitting}
-              aria-label={t('confirm')}
-              disabled={values?.amount == 0 || !values.amount}
-            >
-              {t('confirm')}
-            </Button>
-          </Group>
-        </Flex>
-      </Flex>
-        
-    </Stack>
+      </Stack>
     </form>
   );
 };

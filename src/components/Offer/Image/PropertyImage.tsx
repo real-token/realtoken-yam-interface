@@ -1,6 +1,9 @@
-import { Image, Skeleton} from "@mantine/core";
-import { FC } from "react";
+import { Skeleton, Image} from "@mantine/core";
+import { FC, useEffect, useState } from "react";
 import { PropertiesToken } from "src/types";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import imageExists from "image-exists";
 
 interface PropertyImageProps{
     property: PropertiesToken | undefined
@@ -9,6 +12,12 @@ interface PropertyImageProps{
 const imageSize = 200;
 
 export const PropertyImage: FC<PropertyImageProps> = ({ property }) => {
+
+    const [imageExist,setImageExist] = useState<boolean>(false);
+    useEffect(() => {
+        imageExists(property ? property.imageLink[0] : "",(exist: boolean) => setImageExist(exist))
+    },[property]);
+
     return(
         <>
         {
@@ -17,8 +26,8 @@ export const PropertyImage: FC<PropertyImageProps> = ({ property }) => {
                     radius={"md"}
                     height={imageSize}
                     width={imageSize}
-                    src={property ? property.imageLink[0] : ""}
-                    alt={property ? property.fullName : ""}
+                    alt={""}
+                    src={imageExist ? property.imageLink[0] : "https://realt.co/wp-content/uploads/2022/10/house-placeholder-150x150.jpg"}
                     fit={"cover"}
                 />
             :

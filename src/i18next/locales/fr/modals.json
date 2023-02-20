@@ -3,6 +3,7 @@
     "title": "Connecter mon portefeuille"
   },
   "sell": {
+    "sell": "Vente",
     "titleFormCreateOffer": "Créer votre offre",
     "offerTokenAddress": "Jeton en vente",
     "offerTokenName": "Jeton en vente",
