@@ -35,18 +35,15 @@
 <details>
   <summary>Table of Contents</summary>
   <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-    </li>
+    <li><a href="#roadmap">Roadmap</a></li>
     <li>
       <a href="#getting-started">Getting Started</a>
       <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#requirements">Requirements</a></li>
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -54,11 +51,34 @@
   </ol>
 </details>
 
+<!-- ROADMAP -->
+
+# Roadmap
+
+- Replicate interface for each offer type to modify modal ❌
+
+  See the [open issues](https://github.com/real-token/realtoken-yam-interface/issues) for a full list of proposed features (and known issues).
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 <!-- GETTING STARTED -->
 
-## Getting Started
+# Getting Started
 
-### Installation
+## Requirements
+To run the project you will need to set-up a `.env` file in the root folder:
+```
+COMMUNITY_API_KEY=XXXXXXXXXXXX
+NEXT_PUBLIC_ENV=XX
+```
+
+To get a `COMMUNITY_API_KEY`, join the dedicated [telegram dev channel](https://t.me/+XQyoaFfmN61yk7X0) then ask for.
+
+The var `NEXT_PUBLIC_ENV` is used to hide/show some features depeding the environement.
+There values are allowed: `dev`, `stating` or `production`.
+By default the value is `dev`;
+
+## Installation
 
 1. Clone the repo
    ```sh
@@ -80,29 +100,12 @@
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-<!-- ROADMAP -->
-
-## Roadmap
-
-- YAM interface with basic functionnalities ✅
-- Sellers can create offers, update offers, delete offers ✅
-- Buyers can choose and buy offers with a certain amount ✅
-- Fetch all offers in main page and user's offers in user page ✅
-- Add testing Cypress ❌
-- Add private offer ❌
-- Add create and buy offer in native currency ❌
-- Add create/update/delete/buy in batch features ❌
-- Add user porfolio ❌
-- Add user portfolio analytics ❌
-- Add more token informations ❌
-
-  See the [open issues](https://github.com/real-token/realtoken-yam-interface/issues) for a full list of proposed features (and known issues).
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
 <!-- CONTRIBUTING -->
 
-## Contributing
+# Contributing
+The community is welcome to participate in the development of the YAM.
+
+## Create a PR (Pull request)
 
 If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
 Don't forget to give the project a star! Thanks again!
@@ -113,11 +116,56 @@ Don't forget to give the project a star! Thanks again!
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
+## Operation
+If you want to improve the YAM there is few things you need to know.
+
+### Technologies stack
+- [Node.js](https://nodejs.org/)
+- [Nextjs](https://nextjs.org/)
+- [React](https://reactjs.org/)
+- [Typescript](https://www.typescriptlang.org/)
+- [Mantine](https://mantine.dev/)
+- [web3-react](https://github.com/Uniswap/web3-react)
+- [Redux](https://redux.js.org)
+- [Jotai](https://jotai.org/)
+- [Eslint](https://eslint.org/)
+- [Prettier](https://github.com/prettier/prettier)
+- [dotenv](https://www.npmjs.com/package/dotenv)
+
+### State management
+Two state managers are working together inside YAM app: [Redux](https://redux.js.org/) and [Jotai](https://jotai.org/).
+</br>
+</br>
+Redux stores the most heavy datas (offers, properties,etc...) while Jotai will be used to store datas in cookies and small state that need to be shared between 1-2 components and not the whole application.
+
+You can visualize the redux store with the [redux dev tool](https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd?hl=en).
+
+### Add a new display
+At the moment only two displays are available: Table and Grid. But as a community driven projet you are encouraged to add new ones.
+</br>
+</br>
+If you want to one more you will need:
+1. Modify the enum file `src/types/Displays.ts`, to add a new display declaration.
+2. Goto `src/components/Display/Display.tsx` file:
+3. Add your brand new display in `availableDisplays` Map.
+   ```ts
+    const availableDisplays = useMemo(() => {
+      return new Map<Displays,Display>([
+        [Displays.TABLE, {
+          display: Displays.TABLE,                // This is the enum key you created before
+        title: "Table",                           // This is your display's name
+          component: <MarketTable key={"table"}/> // This is your display's component
+        }]
+      ]);
+    },[])```
+
+Then everything is ready to works !
+
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- LICENSE -->
 
-## License
+# License
 
 Distributed under the MIT License. See `LICENSE.txt` for more information.
 
@@ -125,24 +173,12 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 <!-- CONTACT -->
 
-## Contact
+# Contact
 
-Support - [@RealTPlatform](https://twitter.com/RealTPlatform) - support@realt.co
+- Support - [@RealTPlatform](https://twitter.com/RealTPlatform) - support@realt.co
+- Testnet version: [YAM testnet channel](https://t.me/+ENPNiuYajY00ZjQ0)
 
 Project Link: [https://github.com/real-token/realtoken-yam-interface](https://github.com/real-token/realtoken-yam-interface)
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-<!-- BUILD WITH HARDHAT -->
-
-## Built With Hardhat
-
-- [Eslint](https://eslint.org/)
-- [Nextjs](https://nextjs.org/)
-- [Prettier](https://github.com/prettier/prettier)
-- [dotenv](https://www.npmjs.com/package/dotenv)
-- [Typescript](https://www.typescriptlang.org/)
-- [web3-react](https://github.com/Uniswap/web3-react)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
