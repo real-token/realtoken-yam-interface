@@ -119,6 +119,8 @@ export const BuyModalWithPermit: FC<
 
   const { balance, WalletERC20Balance } = useWalletERC20Balance(buyerTokenAddress)
 
+  const total = values?.amount * values?.price;
+
   const onHandleSubmit = useCallback(
     async (formValues: BuyWithPermitFormValues) => {
       try {
@@ -312,7 +314,7 @@ export const BuyModalWithPermit: FC<
     [account, provider, realTokenYamUpgradeable, buyerToken, offer, activeChain?.blockExplorerUrl, triggerTableRefresh, onClose]
   );
 
-  const total = values?.amount * values?.price;
+  
 
   const maxTokenBuy: number|undefined = useMemo(() => {
     if(!balance || !offer.price) return undefined;

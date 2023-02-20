@@ -449,7 +449,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         offerTokenAddress: formValues.offerTokenAddress,
         buyerTokenAddress: formValues.buyerTokenAddress,
         price: price ? parseFloat(price.toFixed(6)) : 0,
-        amount: formValues.amount,
+        amount: total,
         buyerAddress: formValues.buyerAddress,
         isPrivateOffer: formValues.isPrivateOffer
       }
