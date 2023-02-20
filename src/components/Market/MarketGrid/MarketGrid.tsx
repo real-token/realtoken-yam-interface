@@ -9,6 +9,9 @@ import { styles } from '../../Table/TableCaption/TableCaption.styles';
 import { useTypedOffers } from "src/hooks/offers/useTypedOffers";
 import { useAppSelector } from "src/hooks/react-hooks";
 import { selectPublicOffers } from "src/store/features/interface/interfaceSelector";
+import { nameFilterValueAtom } from "src/states";
+import { useAtomValue } from "jotai";
+import { useFilter } from "src/hooks/useFilter";
 
 export const MarketGrid: FC = () => {
 
@@ -37,15 +40,18 @@ export const MarketGrid: FC = () => {
     const [isOpen, handlers] = useDisclosure(false);
     const { t } = useTranslation('table', { keyPrefix: 'caption' });
 
+    const nameFilterValue = useAtomValue(nameFilterValueAtom);
+    const { filteredDatas } = useFilter(nameFilterValue,offers);
+
     const paginationOffers: Offer[] = useMemo(() => {
         const start = (page-1)*pageSize;
         const end = start+pageSize;
-        return offers ? offers.slice(start,end) : []
-    },[offers, page, pageSize])
+        return filteredDatas ? filteredDatas.slice(start,end) : []
+    },[filteredDatas, page, pageSize])
 
     return(
         <Flex gap={"md"} direction={"column"} align={"center"}>
-            <Grid gutterMd={25}>
+            <Grid gutterMd={25} style={{ width: "100%" }}>
                 {   offers.length > 0 ? 
                         paginationOffers.map((offer: Offer, index: number) => (
                             <Grid.Col span={4} key={`grid-${index}`}>
