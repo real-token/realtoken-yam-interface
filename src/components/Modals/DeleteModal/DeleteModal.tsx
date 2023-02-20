@@ -1,7 +1,5 @@
 import {
-  Dispatch,
   FC,
-  SetStateAction,
   useCallback,
   useState,
 } from 'react';
@@ -99,14 +97,14 @@ export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
               setSubmitting(false);
               refreshOffers();
               onSuccess();
+              onClose();
             }
           }
             
           );
       } catch (e) {
         console.error('Error in DeleteModal', e);
-      }finally{
-        onClose();
+        setSubmitting(false);
       }
     },
     [account, provider, realTokenYamUpgradeable, isAdminDelete, activeChain?.blockExplorerUrl, refreshOffers, onSuccess, onClose]

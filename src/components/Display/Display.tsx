@@ -1,6 +1,6 @@
 import { Flex, Select } from "@mantine/core";
 import { useAtom } from "jotai";
-import React, { FC, useMemo, useState } from "react";
+import React, { FC, useMemo } from "react";
 import { displayChoosedAtom } from "src/states";
 import { Displays } from "src/types/Displays";
 import { MarketTable } from "../Market";

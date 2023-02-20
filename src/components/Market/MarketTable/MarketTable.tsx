@@ -1,5 +1,5 @@
-import { FC, useEffect, useMemo, useState } from 'react';
-import { ActionIcon, Group, MantineSize, Text } from '@mantine/core';
+import { FC, useEffect, useState } from 'react';
+import { MantineSize } from '@mantine/core';
 import {
   ExpandedState,
   PaginationState,
@@ -21,10 +21,6 @@ import { OFFERS_TYPE, useRightTableColumn } from 'src/hooks/useRightTableColumns
 import { selectPublicOffers } from 'src/store/features/interface/interfaceSelector';
 import { useAppSelector } from 'src/hooks/react-hooks';
 import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
-import { useTranslation } from 'react-i18next';
-import { header, idColumn, publicActionsColumn } from 'src/hooks/column';
-import { ENV, isEnvs } from 'src/utils/isEnv';
-import { IconChevronDown, IconChevronUp } from '@tabler/icons';
 
 export const MarketTable: FC = () => {
 

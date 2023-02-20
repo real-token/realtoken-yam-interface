@@ -15,7 +15,7 @@ export const TokenName = ({ offer, tokenName } : TokenNameProps) => {
     return(
         <Flex justify={"center"}>
         {  tokenName ?
-                <Text>{tokenName}</Text>
+                <Text style={{ textAlign: "center" }}>{tokenName}</Text>
             : propertyToken ? 
                 <TextUrl url={propertyToken.marketplaceLink}>{propertyToken.shortName}</TextUrl>
             : !tokenAddress ?
