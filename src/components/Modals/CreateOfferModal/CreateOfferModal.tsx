@@ -1,7 +1,7 @@
 /* eslint-disable react/display-name */
 import { FC, forwardRef, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Checkbox, Flex, Group, Select, SelectItem, Stack, TextInput, Text, NumberInput as MantineInput, Skeleton, Tooltip, Divider } from '@mantine/core';
+import { Button, Checkbox, Flex, Group, Select, SelectItem, Stack, TextInput, Text, NumberInput as MantineInput, Skeleton, Divider } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { showNotification, updateNotification } from '@mantine/notifications';
 import BigNumber from 'bignumber.js';
@@ -24,7 +24,7 @@ import { OfferTypeBadge } from 'src/components/Offer/OfferTypeBadge';
 import { OFFER_TYPE } from 'src/types/offer';
 import { useOraclePriceFeed } from 'src/hooks/useOraclePriceFeed';
 import { calcRem } from 'src/utils/style';
-import { IconArrowRight, IconArrowsHorizontal, IconArrowsSort } from '@tabler/icons';
+import { IconArrowRight, IconArrowsHorizontal } from '@tabler/icons';
 import { Shield } from 'src/components/Shield/Shield';
 import { useWalletERC20Balance } from 'src/hooks/useWalletERC20Balance';
 import { useShield } from 'src/hooks/useShield';
@@ -92,13 +92,13 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   const offers = useAppSelector(selectCreateOffers);
   const [exchangeType,setExchangeType] = useState<string|null>(null);
 
-  const approve = (formValues: SellFormValues): Promise<void> => {
+  const approve = (createdOffer: CreatedOffer): Promise<void> => {
     return new Promise<void>(async (resolve,reject) => {
-      if(!provider || !realTokenYamUpgradeable || !account || !formValues.amount) return;
+      if(!provider || !realTokenYamUpgradeable || !account || !createdOffer.amount) return;
       try{
         setSubmitting(true);
         const offerToken = getContract<CoinBridgeToken>(
-          formValues.offerTokenAddress,
+          createdOffer.offerTokenAddress,
           coinBridgeTokenABI,
           provider,
           account
@@ -111,7 +111,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
           return;
         }
 
-        const amountInWei = new BigNumber(formValues.amount.toString()).shiftedBy(Number(offerTokenDecimals));
+        const amountInWei = new BigNumber(createdOffer.amount.toString()).shiftedBy(Number(offerTokenDecimals));
         const oldAllowance = await offerToken.allowance(account,realTokenYamUpgradeable.address);
         const amountInWeiToPermit = amountInWei.plus(new BigNumber(oldAllowance.toString()));
 
@@ -439,8 +439,6 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   const approveAndsaveCreatedOffer = async (formValues: SellFormValues) => {
     try{
 
-      await approve(formValues);
-
       const price = offer.offerType !== OFFER_TYPE.BUY ? formValues.price : formValues.price ? 1/formValues.price : undefined;
 
       const createdOffer: CreatedOffer = {
@@ -449,10 +447,12 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         offerTokenAddress: formValues.offerTokenAddress,
         buyerTokenAddress: formValues.buyerTokenAddress,
         price: price ? parseFloat(price.toFixed(6)) : 0,
-        amount: formValues.amount,
+        amount: total,
         buyerAddress: formValues.buyerAddress,
         isPrivateOffer: formValues.isPrivateOffer
       }
+
+      await approve(createdOffer);
 
       dispatch({ type: createOfferAddedDispatchType, payload: createdOffer });
 
@@ -759,7 +759,6 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
           placeholder={t('placeholderAmount')}
           required={true}
           min={0.000001}
-          max={balance && new BigNumber(balance).isGreaterThan(0) ? parseFloat(balance ?? "0") : undefined}
           setFieldValue={setFieldValue}
           showMax={bigNumberbalance && bigNumberbalance.isGreaterThan(0)}
           sx={{ flexGrow: 1 }}
