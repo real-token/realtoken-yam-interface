@@ -22,7 +22,7 @@ export const OfferPriceDelta = ({ offer }: OfferPriceDeltaProps) => {
                     <Skeleton height={15}/>
                 : priceDelta && !isZero ?
                     <Text color={isZero ? "white" : priceDelta > 0 ? "red" : "green"}>
-                        {`(${priceDelta > 0 ? "+" : ""}${(priceDelta*100).toFixed(2)}%)`}
+                        {`${priceDelta > 0 ? "+" : ""}${(priceDelta*100).toFixed(2)}%`}
                     </Text>
                 :
                     "-"

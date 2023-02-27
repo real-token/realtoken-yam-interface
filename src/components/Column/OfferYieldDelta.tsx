@@ -20,7 +20,7 @@ export const OfferYieldDelta = ({ offer }: OfferYieldDeltaProps) => {
         <Flex justify={"center"}>
             <Text color={isZero ? "white" : offerDelta.gt(0) ? "green" : "red"}>
                 { !isZero ? 
-                    `(${offerDelta.gt(0) ? "+" : ""}${parseFloat(offerDelta.multipliedBy(100).toString()).toFixed(2)}%)`
+                    `${offerDelta.gt(0) ? "+" : ""}${parseFloat(offerDelta.multipliedBy(100).toString()).toFixed(2)}%`
                     :
                     "-"
                 }   
