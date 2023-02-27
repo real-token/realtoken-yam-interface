@@ -167,7 +167,7 @@ const ShowOfferPage: FC = () => {
                         <Divider />
                         <ActionIcon
                             color={'green'}
-                            //disabled={isAccountOffer}
+                            disabled={isAccountOffer}
                             className={classes.buyButton}
                             onClick={() => account && offer ? onOpenBuyModal(offer) : onOpenWalletModal() }
                         >

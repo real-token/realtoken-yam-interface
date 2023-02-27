@@ -3,7 +3,7 @@ import { OfferPrice } from "src/components/Column/OfferPrice";
 import { OfferYield } from "src/components/Column/OfferYield";
 import { OfficialPrice } from "src/components/Column/OfficialPrice";
 import { OriginalYield } from "src/components/Column/OriginalYield";
-import { Offer } from "src/types/offer";
+import { Offer, OFFER_TYPE } from "src/types/offer";
 import { calcRem } from "src/utils/style";
 
 const useStyle = createStyles((theme) => ({
@@ -45,19 +45,19 @@ export const OfferDeltaTable = ({ offer }: OfferDeltaTableProps) => {
                 <tr>
                     <th className={classes.tableCell}></th>
                     <th className={classes.tableCell}>Original</th>
-                    <th className={classes.tableCell}>Offer</th>
+                    { offer.type !== OFFER_TYPE.EXCHANGE ? <th className={classes.tableCell}>Offer</th> : undefined }
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td className={classes.tableCell}>Yield</td>
                     <td className={classes.tableCell}><OriginalYield offer={offer}/></td>
-                    <td className={classes.tableCell}><OfferYield offer={offer}/></td>
+                    { offer.type !== OFFER_TYPE.EXCHANGE ? <td className={classes.tableCell}><OfferYield offer={offer}/></td> : undefined }
                 </tr>
                 <tr>
                     <td className={classes.tableCell}>Price</td>
                     <td className={classes.tableCell}><OfficialPrice offer={offer}/></td>
-                    <td className={classes.tableCell}><OfferPrice offer={offer}/></td>
+                    { offer.type !== OFFER_TYPE.EXCHANGE ? <td className={classes.tableCell}><OfferPrice offer={offer}/></td> : undefined }
                 </tr>
             </tbody>
         </table>
