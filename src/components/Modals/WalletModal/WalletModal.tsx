@@ -48,6 +48,7 @@ const WalletModalButton: FC<WalletModalButtonProps> = ({
   const setProviderCookie = useSetAtom(providerAtom);
 
   const onActivating = useCallback(async () => {
+
     try{
       setIsActivating(true);
       await connector.activate();

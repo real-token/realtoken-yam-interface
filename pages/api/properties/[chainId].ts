@@ -204,6 +204,7 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
 }
 
 const handler: NextApiHandler = async (req: NextApiRequest,res: NextApiResponse) => {
+
     try{
 
         const { chainId: id } = req.query;
