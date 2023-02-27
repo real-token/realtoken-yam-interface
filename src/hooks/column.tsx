@@ -420,6 +420,8 @@ export const viewActionColumn: ColumnFn<unknown> = (t,span) => {
   }
 }
 
+
+
 // ADDRESS
 export const deleteOfferActionColumn: ColumnFn<unknown> = (t,span) => {
   return{
@@ -437,6 +439,21 @@ export const modifyOfferActionColumn: ColumnFn<unknown> = (t,span) => {
     header: t('actionEdit'),
     cell: ({ row }) => <UpdateActionsWithPermit updateOffer={row.original} />,
     enableSorting: false,
+    meta: { colSpan: span },
+  }
+}
+
+export const accountOfferActionsColumn: ColumnFn<unknown> = (t,span) => {
+  return {
+    id: 'actions',
+    header: undefined,
+    cell: ({ row }) => (
+      <Flex gap={"md"}>
+        <UpdateActionsWithPermit updateOffer={row.original} />
+        <DeleteActions deleteOffer={row.original} />
+        <ShowOfferAction offer={row.original}/>
+      </Flex>
+    ),
     meta: { colSpan: span },
   }
 }

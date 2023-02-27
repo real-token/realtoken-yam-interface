@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { tableOfferTypeAtom } from "src/states";
 import { Offer, OFFER_TYPE } from "src/types/offer";
-import { amountColumn, buyerTokenNameColumn, buyShortTokenNameColumn, deleteOfferActionColumn, exchangeBuyShortTokenNameColumn, exchangeOfferShortTokenNameColumn, header, idColumn, modifyOfferActionColumn, offerShortTokenNameColumn, offerTokenNameColumn, offerYieldColumn, officialPriceColumn, officialYieldColumn, priceColumn, priceDeltaColumn, publicActionsColumn, simplePriceColumn, viewActionColumn, yieldDeltaColumn } from "./column";
+import { accountOfferActionsColumn, amountColumn, buyerTokenNameColumn, buyShortTokenNameColumn, deleteOfferActionColumn, exchangeBuyShortTokenNameColumn, exchangeOfferShortTokenNameColumn, header, idColumn, modifyOfferActionColumn, offerShortTokenNameColumn, offerTokenNameColumn, offerYieldColumn, officialPriceColumn, officialYieldColumn, priceColumn, priceDeltaColumn, publicActionsColumn, simplePriceColumn, viewActionColumn, yieldDeltaColumn } from "./column";
 
 export enum OFFERS_TYPE{
     PUBLIC,
@@ -93,9 +93,7 @@ export const useRightTableColumn: UseRightTableColumn = (offersType)  => {
             meta: { colSpan: 12 },
             columns: [
                 ...basicSellColumns,
-                modifyOfferActionColumn(t,1),
-                deleteOfferActionColumn(t,1),
-                viewActionColumn(t,1)
+                accountOfferActionsColumn(t,1)
             ]
         }
     ],[basicSellColumns, t]); 
@@ -106,9 +104,7 @@ export const useRightTableColumn: UseRightTableColumn = (offersType)  => {
             meta: { colSpan: 14 },
             columns: [
                 ...basicBuyColumns,
-                modifyOfferActionColumn(t,1),
-                deleteOfferActionColumn(t,1),
-                viewActionColumn(t,1)
+                accountOfferActionsColumn(t,1)
             ]
         }
     ],[t,basicBuyColumns]);
@@ -119,9 +115,7 @@ export const useRightTableColumn: UseRightTableColumn = (offersType)  => {
             meta: { colSpan: 11 },
             columns: [
                 ...basicExchangeColumns,
-                modifyOfferActionColumn(t,1),
-                deleteOfferActionColumn(t,1),
-                viewActionColumn(t,1)
+                accountOfferActionsColumn(t,1)
             ]
         }
     ],[t,basicExchangeColumns]);
