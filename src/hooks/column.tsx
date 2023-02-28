@@ -202,7 +202,7 @@ export const simplePriceColumn: ColumnFn<number> = (t,span) => {
 export const priceDeltaColumn: ColumnFn<number> = (t,span) => {
   return {
     id: 'priceDelta',
-    accessorFn: (offer) => offer.priceDelta ? `${(offer.priceDelta*100).toFixed(2)}` : "",
+    accessorFn: (offer) => offer.priceDelta !== undefined ? `${(offer.priceDelta*100).toFixed(2)}` : "",
     header: "Price delta",
     cell: ({ row }) => <OfferPriceDelta offer={row.original}/>,
     enableSorting: true,
@@ -355,7 +355,7 @@ export const yieldDeltaColumn: ColumnFn<number> = (t,span) => {
   return{
     id: 'yield-delta',
         header: "Yield delta",
-        accessorFn: (offer) => offer.yieldDelta ? `${offer.yieldDelta.toFixed(2)}` : "",
+        accessorFn: (offer) => offer.yieldDelta !== undefined ? `${offer.yieldDelta.toFixed(2)}` : "",
         cell: ({ row }) => <OfferYieldDelta offer={row.original} />,
         enableSorting: true,
         enableGlobalFilter: true,
