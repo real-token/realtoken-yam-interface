@@ -142,9 +142,9 @@ export const BuyModalWithPermit: FC<
 
         setSubmitting(true);
 
-        const amountInWei = new BigNumber(
-          formValues.amount.toString()
-        ).shiftedBy(Number(offer.offerTokenDecimals));
+        const amountInWei = new BigNumber(parseInt(new BigNumber(formValues.amount.toString()).shiftedBy(Number(offer.offerTokenDecimals)).toString()));
+
+        console.log(amountInWei.toString())
 
         const priceInWei = new BigNumber(formValues.price.toString()).shiftedBy(
           Number(offer.buyerTokenDecimals)
@@ -374,13 +374,13 @@ export const BuyModalWithPermit: FC<
           }
         }
 
+        onClose();
+        triggerTableRefresh(true);
+
       } catch (e) {
         console.error('Error in BuyModalWithPermit', e);
         showNotification(NOTIFICATIONS[NotificationsID.buyOfferInvalid]());
-      } finally {
         setSubmitting(false);
-        triggerTableRefresh(true);
-        onClose();
       }
     },
     [account, provider, realTokenYamUpgradeable, buyerToken, offer.offerTokenDecimals, offer.buyerTokenDecimals, connector, activeChain?.blockExplorerUrl, triggerTableRefresh, onClose]
