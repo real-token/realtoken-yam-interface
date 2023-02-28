@@ -61,6 +61,8 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   const { t } = useTranslation('modals', { keyPrefix: 'sell' });
   const { account, provider } = useWeb3React();
 
+  const isModification  = offer.price !== undefined;
+
   const { getInputProps, onSubmit, values, isValid, setFieldValue } =
     useForm<SellFormValues>({
       // eslint-disable-next-line object-shorthand
@@ -68,7 +70,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         offerTokenAddress: offer?.offerTokenAddress ?? '',
         buyerTokenAddress: offer?.buyerTokenAddress ?? '',
         price: offer?.price ?? undefined,
-        amount: offer?.amount ?? undefined,
+        amount: isModification && offer.amount && offer.price ? offer.amount/offer.price : undefined,
         buyerAddress: offer?.buyerAddress ?? ZERO_ADDRESS,
         isPrivateOffer: offer?.isPrivateOffer ?? false,
       },
@@ -77,7 +79,6 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
       },
     });
 
-    // TODO: add translate
     const realT = t("realtTokenType");
     const others = t("otherTokenType");
     const data = [{ value: realT, label: realT },{ value: others, label: others }];
@@ -150,6 +151,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         resolve();
 
       }catch(err){
+        setSubmitting(false);
         reject(err)
       }
     });
@@ -760,7 +762,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
           required={true}
           min={0.000001}
           setFieldValue={setFieldValue}
-          showMax={bigNumberbalance && bigNumberbalance.isGreaterThan(0)}
+          showMax={false}
           sx={{ flexGrow: 1 }}
           {...getInputProps('amount')}
         />

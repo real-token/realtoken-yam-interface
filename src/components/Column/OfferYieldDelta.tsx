@@ -14,7 +14,7 @@ export const OfferYieldDelta = ({ offer }: OfferYieldDeltaProps) => {
         if(!offerDelta) return undefined;
         const valueFloat = (parseFloat(offerDelta.toString())*100).toFixed(0);
         return valueFloat == "0" || valueFloat == "-0"
-    },[offerDelta])
+    },[offerDelta]);   
 
     return(
         <Flex justify={"center"}>

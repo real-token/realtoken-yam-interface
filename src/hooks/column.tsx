@@ -1,4 +1,4 @@
-import { ActionIcon, Group, Title, Text, Flex, Button, Skeleton, Tooltip } from "@mantine/core"
+import { ActionIcon, Group, Title, Text, Flex, Button, Skeleton, Badge } from "@mantine/core"
 import { IconChevronDown, IconChevronUp, IconTrash } from "@tabler/icons"
 import { ColumnDef, RowSelectionState, Table } from "@tanstack/react-table"
 import BigNumber from "bignumber.js"
@@ -71,20 +71,21 @@ export const idColumn: ColumnFn<OFFER_TYPE> = (t,span) => {
         cell: ({ row, getValue }) => { 
             return (
             <Group noWrap={true} spacing={'xs'}>
+                { row.original.buyerAddress ? <Badge>{t('privateTexte')}</Badge> : undefined }
                 { row.original.hasPropertyToken && isEnvs([ENV.DEV]) ?
-                <ActionIcon
-                    variant={'transparent'}
-                    color={'brand'}
-                    onClick={() => row.toggleExpanded()}
-                >
-                    {row.getIsExpanded() ? (
-                    <IconChevronUp size={16} />
-                    ) : (
-                    <IconChevronDown size={16} />
-                    )}
-                </ActionIcon>
-                :
-                <ActionIcon variant={'transparent'} color={'brand'} disabled={true}/>
+                  <ActionIcon
+                      variant={'transparent'}
+                      color={'brand'}
+                      onClick={() => row.toggleExpanded()}
+                  >
+                      {row.getIsExpanded() ? (
+                      <IconChevronUp size={16} />
+                      ) : (
+                      <IconChevronDown size={16} />
+                      )}
+                  </ActionIcon>
+                  :
+                  <ActionIcon variant={'transparent'} color={'brand'} disabled={true}/>
                 }
                 <Text
                     size={'sm'}
@@ -101,6 +102,46 @@ export const idColumn: ColumnFn<OFFER_TYPE> = (t,span) => {
         enableSorting: true,
         meta: { colSpan: span },
     }
+}
+
+export const idPrivateColumn: ColumnFn<OFFER_TYPE> = (t,span) => {
+  return{
+      id: 'offer-id',
+      accessorKey: 'offerId',
+      header: t('offerId'),
+      cell: ({ row, getValue }) => { 
+          return (
+          <Group noWrap={true} spacing={'xs'}>
+              { row.original.hasPropertyToken && isEnvs([ENV.DEV]) ?
+                <ActionIcon
+                    variant={'transparent'}
+                    color={'brand'}
+                    onClick={() => row.toggleExpanded()}
+                >
+                    {row.getIsExpanded() ? (
+                    <IconChevronUp size={16} />
+                    ) : (
+                    <IconChevronDown size={16} />
+                    )}
+                </ActionIcon>
+                :
+                <ActionIcon variant={'transparent'} color={'brand'} disabled={true}/>
+              }
+              <Text
+                  size={'sm'}
+                  sx={{
+                  textOverflow: 'ellipsis',
+                  overflow: 'hidden',
+                  }}
+              >
+                  {getValue()}
+              </Text>
+          </Group>
+          )
+      },
+      enableSorting: true,
+      meta: { colSpan: span },
+  }
 }
 
 export const offerTokenNameColumn: ColumnFn<string> = (t,span) => {
@@ -202,7 +243,7 @@ export const simplePriceColumn: ColumnFn<number> = (t,span) => {
 export const priceDeltaColumn: ColumnFn<number> = (t,span) => {
   return {
     id: 'priceDelta',
-    accessorFn: (offer) => offer.priceDelta ? `${(offer.priceDelta*100).toFixed(2)}` : "",
+    accessorFn: (offer) => offer.priceDelta !== undefined ? `${(offer.priceDelta*100).toFixed(2)}` : "",
     header: "Price delta",
     cell: ({ row }) => <OfferPriceDelta offer={row.original}/>,
     enableSorting: true,
@@ -355,7 +396,7 @@ export const yieldDeltaColumn: ColumnFn<number> = (t,span) => {
   return{
     id: 'yield-delta',
         header: "Yield delta",
-        accessorFn: (offer) => offer.yieldDelta ? `${offer.yieldDelta.toFixed(2)}` : "",
+        accessorFn: (offer) => offer.yieldDelta !== undefined ? `${offer.yieldDelta.toFixed(2)}` : "",
         cell: ({ row }) => <OfferYieldDelta offer={row.original} />,
         enableSorting: true,
         enableGlobalFilter: true,

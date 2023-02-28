@@ -18,7 +18,7 @@ export const OfferPriceDelta = ({ offer }: OfferPriceDeltaProps) => {
     return(
         <Flex justify={"center"}>
             {   
-                !priceDelta ?
+                priceDelta == undefined ?
                     <Skeleton height={15}/>
                 : priceDelta && !isZero ?
                     <Text color={isZero ? "white" : priceDelta > 0 ? "red" : "green"}>
