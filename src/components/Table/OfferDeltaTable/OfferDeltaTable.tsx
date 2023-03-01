@@ -1,8 +1,4 @@
-import { createStyles } from "@mantine/core";
-import { OfferPrice } from "src/components/Column/OfferPrice";
-import { OfferYield } from "src/components/Column/OfferYield";
-import { OfficialPrice } from "src/components/Column/OfficialPrice";
-import { OriginalYield } from "src/components/Column/OriginalYield";
+import { createStyles, Skeleton, Text } from "@mantine/core";
 import { Offer, OFFER_TYPE } from "src/types/offer";
 import { calcRem } from "src/utils/style";
 
@@ -33,9 +29,13 @@ const useStyle = createStyles((theme) => ({
 }));
 
 interface OfferDeltaTableProps{
-    offer: Offer
+    offer: Offer, 
+    officialPrice: number|undefined,
+    officialYield: number|undefined,
+    offerPrice: number|undefined,
+    offerYield: number|undefined,
 }
-export const OfferDeltaTable = ({ offer }: OfferDeltaTableProps) => {
+export const OfferDeltaTable = ({ offer, officialPrice, officialYield, offerPrice, offerYield }: OfferDeltaTableProps) => {
 
     const { classes } = useStyle();
 
@@ -51,13 +51,33 @@ export const OfferDeltaTable = ({ offer }: OfferDeltaTableProps) => {
             <tbody>
                 <tr>
                     <td className={classes.tableCell}>Yield</td>
-                    <td className={classes.tableCell}><OriginalYield offer={offer}/></td>
-                    { offer.type !== OFFER_TYPE.EXCHANGE ? <td className={classes.tableCell}><OfferYield offer={offer}/></td> : undefined }
+                    <td className={classes.tableCell}>
+                        { officialYield ? `${officialYield.toFixed(2)}%` : <Skeleton height={15}/> }
+                    </td>
+                    { offer.type !== OFFER_TYPE.EXCHANGE ? 
+                        <td className={classes.tableCell}>
+                            { offerYield ? <Text>{`${offerYield.toFixed(2)}%`}</Text> : <Skeleton height={15}/> }
+                        </td> 
+                        : 
+                        undefined 
+                    }
                 </tr>
                 <tr>
                     <td className={classes.tableCell}>Price</td>
-                    <td className={classes.tableCell}><OfficialPrice offer={offer}/></td>
-                    { offer.type !== OFFER_TYPE.EXCHANGE ? <td className={classes.tableCell}><OfferPrice offer={offer}/></td> : undefined }
+                    <td className={classes.tableCell}>
+                        { officialPrice ? officialPrice : <Skeleton height={15}/> }
+                    </td>
+                    { offer.type !== OFFER_TYPE.EXCHANGE ? 
+                        <td className={classes.tableCell}>
+                            { offerPrice !== undefined ? 
+                                `${offerPrice}` 
+                                : 
+                                <Skeleton height={15}/>
+                            }
+                        </td> 
+                        :
+                        undefined 
+                    }
                 </tr>
             </tbody>
         </table>
