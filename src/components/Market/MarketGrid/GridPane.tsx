@@ -104,7 +104,17 @@ export const GridPane: FC<GridPaneProps> = ({ offer }) => {
                             <Text fw={700}>{t("price")}</Text>
                             {offer.price}
                         </Flex>
-                        { offer.type !== OFFER_TYPE.EXCHANGE ? <OfferDeltaTable offer={offer}/> : undefined }
+                        { offer.type !== OFFER_TYPE.EXCHANGE ? 
+                            <OfferDeltaTable 
+                                offer={offer}
+                                offerPrice={offer.offerPrice}
+                                officialPrice={offer.officialPrice}
+                                offerYield={offer.offerYield}
+                                officialYield={offer.officialYield}
+                            /> 
+                            : 
+                            undefined
+                        }
                     </Flex>
                     <Flex gap={"sm"}>
                         <BuyActionsWithPermit

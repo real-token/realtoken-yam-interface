@@ -63,7 +63,13 @@ export const PropertyCard = ({ propertyToken, offer }: PropertyCardProps) => {
                     </div>
                     <Flex direction={"column"} gap={"sm"}>
                         { offer ?
-                            <OfferDeltaTable offer={offer} />
+                            <OfferDeltaTable 
+                                offer={offer}
+                                offerPrice={undefined}
+                                offerYield={undefined}
+                                officialPrice={propertyToken.officialPrice}
+                                officialYield={propertyToken.annualYield ? propertyToken.annualYield*100 : 0}
+                            />
                             :
                             <Skeleton height={15}/>
                         }

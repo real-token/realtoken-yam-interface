@@ -736,7 +736,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
           <OfferTypeBadge offerType={offer.offerType} />
           <h3 style={{ margin: 0 }}>{t('titleFormCreateOffer')}</h3>
         </Flex>
-        <Shield />        
+        { offer.offerType !== OFFER_TYPE.EXCHANGE ? <Shield /> : undefined }        
       </Flex>
       <form onSubmit={onSubmit(approveAndsaveCreatedOffer)}>
         <Stack justify={'center'} align={'stretch'}>
