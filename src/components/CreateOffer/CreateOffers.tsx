@@ -14,6 +14,7 @@ import { createOfferResetDispatchType } from "src/store/features/createOffers/cr
 import { CreatedOffer } from "src/types/offer/CreatedOffer";
 import { getContract } from "src/utils";
 import { CreateOfferPane } from "./CreateOfferPane";
+import { BigNumber as BigN } from "ethers";
 
 const useStyles = createStyles((theme) => ({
     container:{
@@ -92,10 +93,10 @@ export const CreateOffer = () => {
                     return;
                 }
 
+                BigNumber.set({EXPONENTIAL_AT: 25});
+
                 const amountInWei = new BigNumber(createdOffer.amount.toString()).shiftedBy(Number(offerTokenDecimals));
                 const priceInWei = new BigNumber(createdOffer.price.toString()).shiftedBy(Number(buyerTokenDecimals));
-
-                console.log(priceInWei.toString(),buyerTokenDecimals)
 
                 _offerTokens.push(createdOffer.offerTokenAddress);
                 _buyerTokens.push(createdOffer.buyerTokenAddress);
@@ -103,8 +104,10 @@ export const CreateOffer = () => {
                 _prices.push(priceInWei.toString());
                 _amounts.push(amountInWei.toString());
 
-                // console.log(_offerTokens, _buyerTokens, _buyers, _prices, _amounts)
             }
+
+            console.log(_offerTokens, _buyerTokens, _buyers, _prices, _amounts)
+
 
             const createBatchOffersTx = await realTokenYamUpgradeable.createOfferBatch(_offerTokens,_buyerTokens,_buyers,_prices,_amounts);
 

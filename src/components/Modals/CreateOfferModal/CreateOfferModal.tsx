@@ -30,6 +30,7 @@ import { useWalletERC20Balance } from 'src/hooks/useWalletERC20Balance';
 import { useShield } from 'src/hooks/useShield';
 import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
 import { WalletERC20Balance } from 'src/components/WalletBalance/WalletERC20Balance';
+import { BigNumber as BigN } from 'ethers';
 
 interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
   label: string;
@@ -112,11 +113,21 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
           return;
         }
 
-        const amountInWei = new BigNumber(createdOffer.amount.toString()).shiftedBy(Number(offerTokenDecimals));
+        if(!values.amount) return;
+
+        const amountInWei = new BigNumber(values.amount.toString()).shiftedBy(Number(offerTokenDecimals));
+
+        if( !amountInWei) return;
+
         const oldAllowance = await offerToken.allowance(account,realTokenYamUpgradeable.address);
-        const amountInWeiToPermit = amountInWei.plus(new BigNumber(oldAllowance.toString()));
+        const amountInWeiToPermit = amountInWei?.plus(new BigNumber(oldAllowance.toString()));
+
+        console.log("amountInWei: ", amountInWei.toString())
+        console.log("oldAllowance: ", oldAllowance.toString())
+        console.log("amountInWeiToPermit: ", amountInWeiToPermit.toString())
 
         // TokenType = 3: ERC20 Without Permit, do Approve/CreateOffer
+        BigNumber.set({EXPONENTIAL_AT: 25});
         const approveTx = await offerToken.approve(
           realTokenYamUpgradeable.address,
           amountInWeiToPermit.toString()
