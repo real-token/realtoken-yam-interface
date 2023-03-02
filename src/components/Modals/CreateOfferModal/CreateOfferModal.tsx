@@ -127,9 +127,10 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         console.log("amountInWeiToPermit: ", amountInWeiToPermit.toString())
 
         // TokenType = 3: ERC20 Without Permit, do Approve/CreateOffer
+        BigNumber.set({EXPONENTIAL_AT: 25});
         const approveTx = await offerToken.approve(
           realTokenYamUpgradeable.address,
-          BigN.from(amountInWeiToPermit.toString())
+          amountInWeiToPermit.toString()
         );
 
         const notificationApprove = {
