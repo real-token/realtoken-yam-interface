@@ -143,19 +143,15 @@ export const BuyModalWithPermit: FC<
         setSubmitting(true);
 
         const amountInWei = new BigNumber(parseInt(new BigNumber(formValues.amount.toString()).shiftedBy(Number(offer.offerTokenDecimals)).toString()));
+        const priceInWei = new BigNumber(formValues.price.toString()).shiftedBy(Number(offer.buyerTokenDecimals));
 
-        console.log(amountInWei.toString())
+        console.log("amountInWei: ", amountInWei.toString());
+        console.log("priceInWei: ", priceInWei.toString())
 
-        const priceInWei = new BigNumber(formValues.price.toString()).shiftedBy(
-          Number(offer.buyerTokenDecimals)
-        );
+        console.log(amountInWei.multipliedBy(priceInWei).shiftedBy(-offer.offerTokenDecimals).toString())
 
-        const buyerTokenAmount = amountInWei
-          .multipliedBy(priceInWei)
-          .shiftedBy(-offer.offerTokenDecimals);
+        const buyerTokenAmount = new BigNumber(parseInt(amountInWei.multipliedBy(priceInWei).shiftedBy(-offer.offerTokenDecimals).toString()));
         const transactionDeadline = Math.floor(Date.now() / 1000) + 3600; // permit valable during 1h
-
-        console.log(buyerTokenAmount.toString())
 
         const buyerTokenType = await realTokenYamUpgradeable.getTokenType(
           formValues.buyerTokenAddress
