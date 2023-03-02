@@ -95,8 +95,10 @@ export const CreateOffer = () => {
 
                 BigNumber.set({EXPONENTIAL_AT: 25});
 
-                const amountInWei = new BigNumber(createdOffer.amount.toString()).shiftedBy(Number(offerTokenDecimals));
-                const priceInWei = new BigNumber(createdOffer.price.toString()).shiftedBy(Number(buyerTokenDecimals));
+                const amountInWei = new BigNumber(parseInt(new BigNumber(createdOffer.amount.toString()).shiftedBy(Number(offerTokenDecimals)).toString()));
+                const priceInWei = new BigNumber(parseInt(new BigNumber(createdOffer.price.toString()).shiftedBy(Number(buyerTokenDecimals)).toString()));
+
+                console.log(priceInWei)
 
                 _offerTokens.push(createdOffer.offerTokenAddress);
                 _buyerTokens.push(createdOffer.buyerTokenAddress);
@@ -107,7 +109,6 @@ export const CreateOffer = () => {
             }
 
             console.log(_offerTokens, _buyerTokens, _buyers, _prices, _amounts)
-
 
             const createBatchOffersTx = await realTokenYamUpgradeable.createOfferBatch(_offerTokens,_buyerTokens,_buyers,_prices,_amounts);
 
