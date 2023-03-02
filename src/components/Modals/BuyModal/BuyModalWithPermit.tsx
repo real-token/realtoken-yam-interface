@@ -24,16 +24,15 @@ import { NumberInput } from '../../NumberInput';
 import { useWalletERC20Balance } from 'src/hooks/useWalletERC20Balance';
 import { cleanNumber } from 'src/utils/number';
 import { useWeb3React } from '@web3-react/core';
+import { calcRem } from 'src/utils/style';
+import { useERC20TokenInfo } from 'src/hooks/useERC20TokenInfo';
+import { Offer, OFFER_TYPE } from 'src/types/offer';
+import { GnosisSafe } from '@web3-react/gnosis-safe';
+import { useAtomValue } from 'jotai';
+import { providerAtom } from 'src/states';
 
 type BuyModalWithPermitProps = {
-  offerId: string;
-  price: number;
-  offerAmount: number;
-  offerTokenAddress: string;
-  offerTokenDecimals: number;
-  buyerTokenAddress: string;
-  buyerTokenDecimals: number;
-  sellerAddress: string;
+  offer: Offer,
   triggerTableRefresh: Dispatch<SetStateAction<boolean>>;
 };
 
@@ -45,7 +44,6 @@ type BuyWithPermitFormValues = {
   offerTokenDecimals: number;
   buyerTokenAddress: string;
   buyerTokenDecimals: number;
-  
 };
 
 export const BuyModalWithPermit: FC<
@@ -54,72 +52,56 @@ export const BuyModalWithPermit: FC<
   context,
   id,
   innerProps: {
-    offerId,
-    price,
-    offerAmount,
-    offerTokenAddress,
-    offerTokenDecimals,
-    buyerTokenAddress,
-    buyerTokenDecimals,
+    offer,
     triggerTableRefresh,
-    sellerAddress
   },
 }) => {
+
   const { account, provider } = useWeb3React();
   const { getInputProps, onSubmit, reset, setFieldValue, values } =
     useForm<BuyWithPermitFormValues>({
       // eslint-disable-next-line object-shorthand
       initialValues: {
-        offerId: offerId,
-        price: price,
+        offerId: offer.offerId,
+        price: parseFloat(offer.price),
         amount: 0,
-        offerTokenAddress: offerTokenAddress,
-        offerTokenDecimals: offerTokenDecimals,
-        buyerTokenAddress: buyerTokenAddress,
-        buyerTokenDecimals: buyerTokenDecimals
+        offerTokenAddress: offer.offerTokenAddress,
+        offerTokenDecimals: parseFloat(offer.offerTokenDecimals),
+        buyerTokenAddress: offer.buyerTokenAddress,
+        buyerTokenDecimals: parseFloat(offer.buyerTokenDecimals)
       },
     });
 
     const [isSubmitting, setSubmitting] = useState<boolean>(false);
     const activeChain = useActiveChain();
     
-    const [offerTokenName,setOfferTokenName] = useState<string|undefined>("");
-    const [offerTokenSymbol,setOfferTokenSymbol] = useState<string|undefined>("");
     const [offerTokenSellerBalance,setOfferTokenSellerBalance] = useState<string|undefined>("");
-
-    const [buyTokenSymbol,setBuyTokenSymbol] = useState<string|undefined>("");
+    const { name:offerTokenName, symbol:offerTokenSymbol  } = useERC20TokenInfo(offer.offerTokenAddress);
+    const { symbol:buyTokenSymbol, address:buyerTokenAddress } = useERC20TokenInfo(offer.buyerTokenAddress);
     
     const realTokenYamUpgradeable = useContract(
       ContractsID.realTokenYamUpgradeable
     );
     const buyerToken = getContract<CoinBridgeToken>(
-        buyerTokenAddress,
+        offer.buyerTokenAddress,
         coinBridgeTokenABI,
         provider as Web3Provider,
         account
     );
     const offerToken = getContract<Erc20>(
-        offerTokenAddress,
-        Erc20ABI,
-        provider as Web3Provider,
-        account
+          offer.offerTokenAddress,
+          Erc20ABI,
+          provider as Web3Provider,
+          account
     )
-        //const newOfferAmount = new BigNumber(((await offerToken?.balanceOf(sellerAddress))?._hex ?? '0')).toNumber();
-        //console.log('DEBUG BuyWithPermitFormValues value',newOfferAmount,values)
 
   const getOfferTokenInfos = async () => {
     if(!offerToken) return;
     try{
-
       // console.log("offerToken: ", offerToken)
       // console.log("sellerAddress: ", sellerAddress)
-      const tokenName = await offerToken.name();
-      const tokenSymbol = await offerToken.symbol();
-      const balanceSeller = await offerToken.balanceOf(sellerAddress)
+      const balanceSeller = await offerToken.balanceOf(offer.sellerAddress)
       setOfferTokenSellerBalance((balanceSeller ?? BigNumber(0)).toString())
-      setOfferTokenName(tokenName);
-      setOfferTokenSymbol(tokenSymbol)
-
     }catch(err){
       console.log(err)
     }
@@ -129,29 +111,19 @@ export const BuyModalWithPermit: FC<
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[offerToken])
 
-  const getBuyTokenInfos = async () => {
-
-    try{
-      const tokenSymbol = await buyerToken?.symbol();
-      setBuyTokenSymbol(tokenSymbol);
-    }catch(err){
-      console.log(err)
-    }
-
-  }
-  useEffect(() => {
-    if(buyerToken) getBuyTokenInfos();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[buyerToken])
-
   const { t } = useTranslation('modals', { keyPrefix: 'buy' });
+  const { t: t1 } = useTranslation('modals', { keyPrefix: 'sell' });
 
   const onClose = useCallback(() => {
     reset();
     context.closeModal(id);
   }, [context, id, reset]);
 
-  const { balance, WalletERC20Balance } = useWalletERC20Balance(buyerTokenAddress,buyerTokenDecimals)
+  const { balance, WalletERC20Balance } = useWalletERC20Balance(buyerTokenAddress)
+
+  const total = values?.amount * values?.price;
+
+  const connector = useAtomValue(providerAtom);
 
   const onHandleSubmit = useCallback(
     async (formValues: BuyWithPermitFormValues) => {
@@ -170,107 +142,23 @@ export const BuyModalWithPermit: FC<
 
         setSubmitting(true);
 
-        const amountInWei = new BigNumber(
-          formValues.amount.toString()
-        ).shiftedBy(Number(offerTokenDecimals));
+        const amountInWei = new BigNumber(parseInt(new BigNumber(formValues.amount.toString()).shiftedBy(Number(offer.offerTokenDecimals)).toString()));
+        const priceInWei = new BigNumber(formValues.price.toString()).shiftedBy(Number(offer.buyerTokenDecimals));
 
-        const priceInWei = new BigNumber(formValues.price.toString()).shiftedBy(
-          Number(buyerTokenDecimals)
-        );
+        // console.log("amountInWei: ", amountInWei.toString());
+        // console.log("priceInWei: ", priceInWei.toString())
 
-        const buyerTokenAmount = amountInWei
-          .multipliedBy(priceInWei)
-          .shiftedBy(-offerTokenDecimals);
+        // console.log(amountInWei.multipliedBy(priceInWei).shiftedBy(-offer.offerTokenDecimals).toString())
+
+        const buyerTokenAmount = new BigNumber(parseInt(amountInWei.multipliedBy(priceInWei).shiftedBy(-offer.offerTokenDecimals).toString()));
         const transactionDeadline = Math.floor(Date.now() / 1000) + 3600; // permit valable during 1h
 
         const buyerTokenType = await realTokenYamUpgradeable.getTokenType(
           formValues.buyerTokenAddress
         );
 
-        if (buyerTokenType === 1) {
-          // TokenType = 1: RealToken
-          const { r, s, v }: any = await coinBridgeTokenPermitSignature(
-            account,
-            realTokenYamUpgradeable.address,
-            buyerTokenAmount.toString(),
-            transactionDeadline,
-            buyerToken,
-            provider
-          );
-
-          const buyWithPermitTx = await realTokenYamUpgradeable.buyWithPermit(
-            formValues.offerId,
-            priceInWei.toString(),
-            amountInWei.toString(),
-            transactionDeadline.toString(),
-            v,
-            r,
-            s
-          );
-          const notificationPayload = {
-            key: buyWithPermitTx.hash,
-            href: `${activeChain?.blockExplorerUrl}tx/${buyWithPermitTx.hash}`,
-            hash: buyWithPermitTx.hash,
-          };
-
-          showNotification(
-            NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationPayload)
-          );
-
-          buyWithPermitTx
-            .wait()
-            .then(({ status }) =>
-              updateNotification(
-                NOTIFICATIONS[
-                  status === 1
-                    ? NotificationsID.buyOfferSuccess
-                    : NotificationsID.buyOfferError
-                ](notificationPayload)
-              )
-            );
-        } else if (buyerTokenType === 2) {
-          // TokenType = 2: ERC20 With Permit
-          const { r, s, v }: any = await erc20PermitSignature(
-            account,
-            realTokenYamUpgradeable.address,
-            buyerTokenAmount.toString(),
-            transactionDeadline,
-            buyerToken,
-            provider
-          );
-
-          const buyWithPermitTx = await realTokenYamUpgradeable.buyWithPermit(
-            formValues.offerId,
-            priceInWei.toString(),
-            amountInWei.toString(),
-            transactionDeadline.toString(),
-            v,
-            r,
-            s
-          );
-
-          const notificationPayload = {
-            key: buyWithPermitTx.hash,
-            href: `${activeChain?.blockExplorerUrl}tx/${buyWithPermitTx.hash}`,
-            hash: buyWithPermitTx.hash,
-          };
-
-          showNotification(
-            NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationPayload)
-          );
-
-          buyWithPermitTx
-            .wait()
-            .then(({ status }) =>
-              updateNotification(
-                NOTIFICATIONS[
-                  status === 1
-                    ? NotificationsID.buyOfferSuccess
-                    : NotificationsID.buyOfferError
-                ](notificationPayload)
-              )
-            );
-        } else if (buyerTokenType === 3) {
+        if(connector == "gnosis-safe"){
+            
           // TokenType = 3: ERC20 Without Permit, do Approve/buy
           const approveTx = await buyerToken.approve(
             realTokenYamUpgradeable.address,
@@ -330,119 +218,268 @@ export const BuyModalWithPermit: FC<
                 ](notificationBuy)
               )
             );
-        } else {
-          console.log('Token is not whitelisted');
-          showNotification(NOTIFICATIONS[NotificationsID.buyOfferInvalid]());
+            
+
+        }else{
+          if (buyerTokenType === 1) {
+            // TokenType = 1: RealToken
+  
+            const { r, s, v }: any = await coinBridgeTokenPermitSignature(
+              account,
+              realTokenYamUpgradeable.address,
+              buyerTokenAmount.toString(),
+              transactionDeadline,
+              buyerToken,
+              provider
+            );
+  
+            const tx = await realTokenYamUpgradeable.buyWithPermit(
+              formValues.offerId,
+              priceInWei.toString(),
+              amountInWei.toString(),
+              transactionDeadline.toString(),
+              v,
+              r,
+              s
+            );
+            
+            const notificationPayload = {
+              key: tx.hash,
+              href: `${activeChain?.blockExplorerUrl}tx/${tx.hash}`,
+              hash: tx.hash,
+            };
+  
+            showNotification(
+              NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationPayload)
+            );
+  
+            tx
+              .wait()
+              .then(({ status }) =>
+                updateNotification(
+                  NOTIFICATIONS[
+                    status === 1
+                      ? NotificationsID.buyOfferSuccess
+                      : NotificationsID.buyOfferError
+                  ](notificationPayload)
+                )
+              );
+          } else if (buyerTokenType === 2) {
+            // TokenType = 2: ERC20 With Permit
+            const { r, s, v }: any = await erc20PermitSignature(
+              account,
+              realTokenYamUpgradeable.address,
+              buyerTokenAmount.toString(),
+              transactionDeadline,
+              buyerToken,
+              provider
+            );
+  
+            const buyWithPermitTx = await realTokenYamUpgradeable.buyWithPermit(
+              formValues.offerId,
+              priceInWei.toString(),
+              amountInWei.toString(),
+              transactionDeadline.toString(),
+              v,
+              r,
+              s
+            );
+  
+            const notificationPayload = {
+              key: buyWithPermitTx.hash,
+              href: `${activeChain?.blockExplorerUrl}tx/${buyWithPermitTx.hash}`,
+              hash: buyWithPermitTx.hash,
+            };
+  
+            showNotification(
+              NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationPayload)
+            );
+  
+            buyWithPermitTx
+              .wait()
+              .then(({ status }) =>
+                updateNotification(
+                  NOTIFICATIONS[
+                    status === 1
+                      ? NotificationsID.buyOfferSuccess
+                      : NotificationsID.buyOfferError
+                  ](notificationPayload)
+                )
+              );
+          } else if (buyerTokenType === 3) {
+            // TokenType = 3: ERC20 Without Permit, do Approve/buy
+            const approveTx = await buyerToken.approve(
+              realTokenYamUpgradeable.address,
+              buyerTokenAmount.toString()
+            );
+  
+            const notificationApprove = {
+              key: approveTx.hash,
+              href: `${activeChain?.blockExplorerUrl}tx/${approveTx.hash}`,
+              hash: approveTx.hash,
+            };
+  
+            showNotification(
+              NOTIFICATIONS[NotificationsID.approveOfferLoading](
+                notificationApprove
+              )
+            );
+  
+            approveTx
+              .wait()
+              .then(({ status }) =>
+                updateNotification(
+                  NOTIFICATIONS[
+                    status === 1
+                      ? NotificationsID.approveOfferSuccess
+                      : NotificationsID.approveOfferError
+                  ](notificationApprove)
+                )
+              );
+  
+            await approveTx.wait(1);
+  
+            const buyTx = await realTokenYamUpgradeable.buy(
+              formValues.offerId,
+              priceInWei.toString(),
+              amountInWei.toString()
+            );
+  
+            const notificationBuy = {
+              key: buyTx.hash,
+              href: `${activeChain?.blockExplorerUrl}tx/${buyTx.hash}`,
+              hash: buyTx.hash,
+            };
+  
+            showNotification(
+              NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationBuy)
+            );
+  
+            buyTx
+              .wait()
+              .then(({ status }) =>
+                updateNotification(
+                  NOTIFICATIONS[
+                    status === 1
+                      ? NotificationsID.buyOfferSuccess
+                      : NotificationsID.buyOfferError
+                  ](notificationBuy)
+                )
+              );
+          } else {
+            console.log('Token is not whitelisted');
+            showNotification(NOTIFICATIONS[NotificationsID.buyOfferInvalid]());
+          }
         }
+
+        onClose();
+        triggerTableRefresh(true);
+
       } catch (e) {
         console.error('Error in BuyModalWithPermit', e);
         showNotification(NOTIFICATIONS[NotificationsID.buyOfferInvalid]());
-      } finally {
         setSubmitting(false);
-        triggerTableRefresh(true);
-        onClose();
       }
     },
-    [
-      account,
-      provider,
-      realTokenYamUpgradeable,
-      buyerToken,
-      offerTokenDecimals,
-      buyerTokenDecimals,
-      values,
-      activeChain?.blockExplorerUrl,
-      triggerTableRefresh,
-      onClose,
-    ]
+    [account, provider, realTokenYamUpgradeable, buyerToken, offer.offerTokenDecimals, offer.buyerTokenDecimals, connector, activeChain?.blockExplorerUrl, triggerTableRefresh, onClose]
   );
 
-  const total = values?.amount * values?.price;
-
   const maxTokenBuy: number|undefined = useMemo(() => {
-    if(balance == undefined || !price) return undefined;
+    if(!balance || !offer.price) return undefined;
 
-    const max = balance != 0 ? balance/price : 0;
+    const b = new BigNumber(balance);
+    const max = b.eq(0) ? new BigNumber(0) : b.dividedBy(offer.price);
 
-    return max >= offerAmount ? offerAmount : max;
-  },[balance,price,offerAmount])
+    return max.isGreaterThanOrEqualTo(new BigNumber(offer.amount)) ? new BigNumber(offer.amount).toNumber() : parseFloat(max.toString());
+  },[balance,offer]);
+
+  const priceTranslation: Map<OFFER_TYPE,string> = new Map<OFFER_TYPE,string>([
+    [OFFER_TYPE.BUY,t("buyOfferTypePrice")],
+    [OFFER_TYPE.SELL,t("sellOfferTypePrice")],
+    [OFFER_TYPE.EXCHANGE,t("exchangeOfferTypePrice")]
+  ]);
+
+  const amountTranslation: Map<OFFER_TYPE,string> = new Map<OFFER_TYPE,string>([
+    [OFFER_TYPE.BUY,t("buyOfferTypeAmount")],
+    [OFFER_TYPE.SELL,t("sellOfferTypeAmount")],
+    [OFFER_TYPE.EXCHANGE,t("exchangeOfferTypeAmount")]
+  ]);
 
   return (
-    <form onSubmit={onSubmit(onHandleSubmit)}>
+    <form onSubmit={onSubmit(onHandleSubmit)} style={{ width: calcRem(500) }}>
       <Stack justify={'center'} align={'stretch'}>
-
-      <Flex direction={"column"} gap={"sm"}>
-        <Text size={"xl"}>{t('selectedOffer')}</Text>
-        <Flex direction={"column"} gap={8}>
-            <Flex direction={"column"}>
-              <Text fw={700}>{t("offerId")}</Text>
-              <Text>{offerId}</Text>
-            </Flex>
-            <Flex direction={"column"}>
-              <Text fw={700}>{t("offerTokenName")}</Text>
-              <Text>{offerTokenName}</Text>
-            </Flex>
-            <Flex direction={"column"}>
-              <Text fw={700}>{t("sellerAddress")}</Text>
-              <Text>{sellerAddress}</Text>
-            </Flex>
-            <Flex direction={"column"} >
-              <Text fw={700}>{t("amount")}</Text>
-              <Text>{BigNumber.minimum(offerAmount,offerTokenSellerBalance!).toString()}</Text>
-            </Flex>
-            <Flex direction={"column"}>
-                <Text fw={700}>{t("price")}</Text>
-                <Text>{`${price} ${buyTokenSymbol}`}</Text>
+        <Flex direction={"column"} gap={"sm"}>
+          <Text size={"xl"}>{t('selectedOffer')}</Text>
+          <Flex direction={"column"} gap={8}>
+              <Flex direction={"column"}>
+                <Text fw={700}>{t("offerId")}</Text>
+                <Text>{offer.offerId}</Text>
               </Flex>
+              <Flex direction={"column"}>
+                <Text fw={700}>{t("offerTokenName")}</Text>
+                <Text>{offerTokenName}</Text>
+              </Flex>
+              <Flex direction={"column"}>
+                <Text fw={700}>{t("sellerAddress")}</Text>
+                <Text>{offer.sellerAddress}</Text>
+              </Flex>
+              <Flex direction={"column"} >
+                <Text fw={700}>{offer.type ? amountTranslation.get(offer.type) : ""}</Text>
+                <Text>{BigNumber.minimum(offer.amount,offerTokenSellerBalance!).toString()}</Text>
+              </Flex>
+              <Flex direction={"column"}>
+                  <Text fw={700}>{offer.type ? priceTranslation.get(offer.type) : ""}</Text>
+                  <Text>{`${offer.price} ${buyTokenSymbol}`}</Text>
+                </Flex>
+          </Flex>
         </Flex>
-      </Flex>
 
-      <Divider />
+        <Divider />
 
-      <WalletERC20Balance 
-        tokenAddress={buyerTokenAddress}
-        tokenDecimals={buyerTokenDecimals}
-      />
+        <WalletERC20Balance 
+          tokenAddress={offer.buyerTokenAddress}
+          tokenDecimals={offer.buyerTokenDecimals}
+        />
 
-      <Flex direction={"column"} gap={"sm"} >
-        <Text size={"xl"}>{t("buy")}</Text>
-        <Flex direction={"column"} gap={8}>
-          <NumberInput
-            label={t('amount')}
-            required={true}
-            disabled={maxTokenBuy == 0 || maxTokenBuy == undefined}
-            min={0}
-            max={maxTokenBuy}
-            showMax={true}
-            placeholder={t('amount')}
-            sx={{ flexGrow: 1 }}
-            groupMarginBottom={16}
-            setFieldValue={setFieldValue}
-            {...getInputProps('amount')}
-          />
+        <Flex direction={"column"} gap={"sm"} >
+          <Text size={"xl"}>{t1("sell")}</Text>
+          <Flex direction={"column"} gap={8}>
+            <NumberInput
+              label={t('amount')}
+              required={true}
+              disabled={maxTokenBuy == 0 || maxTokenBuy == undefined}
+              min={0}
+              max={maxTokenBuy}
+              showMax={true}
+              placeholder={t('amount')}
+              sx={{ flexGrow: 1 }}
+              groupMarginBottom={16}
+              setFieldValue={setFieldValue}
+              {...getInputProps('amount')}
+            />
 
-          <Text size={"xl"}>{t("summary")}</Text>
-          <Text size={"md"} mb={10}>
-            {` ${t("summaryText1")} ${values?.amount} ${offerTokenSymbol} ${t("summaryText2")} ${cleanNumber(values?.price)} ${buyTokenSymbol} ${t("summaryText3")} ${total} ${buyTokenSymbol}`}
-          </Text>
+            <Text size={"xl"}>{t("summary")}</Text>
+            <Text size={"md"} mb={10}>
+              {` ${t("summaryText1")} ${values?.amount} ${offerTokenSymbol} ${t("summaryText2")} ${cleanNumber(values?.price)} ${buyTokenSymbol} ${t("summaryText3")} ${total} ${buyTokenSymbol}`}
+            </Text>
+            
+            <Group grow={true}>
+              <Button color={'red'} onClick={onClose} aria-label={t('cancel')}>
+                {t('cancel')}
+              </Button>
+              <Button
+                type={'submit'}
+                loading={isSubmitting}
+                aria-label={t('confirm')}
+                disabled={values?.amount == 0 || !values.amount}
+              >
+                {t('confirm')}
+              </Button>
+            </Group>
+          </Flex>
+        </Flex>
           
-          <Group grow={true}>
-            <Button color={'red'} onClick={onClose} aria-label={t('cancel')}>
-              {t('cancel')}
-            </Button>
-            <Button
-              type={'submit'}
-              loading={isSubmitting}
-              aria-label={t('confirm')}
-              disabled={values?.amount == 0 || !values.amount}
-            >
-              {t('confirm')}
-            </Button>
-          </Group>
-        </Flex>
-      </Flex>
-        
-    </Stack>
+      </Stack>
     </form>
   );
 };

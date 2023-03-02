@@ -1,15 +1,14 @@
-import { Web3Provider } from "@ethersproject/providers";
-import { createStyles, Flex, Text } from "@mantine/core"
+import { createStyles, Flex, Skeleton, Text } from "@mantine/core"
 import { IconWallet } from "@tabler/icons"
-import { useWeb3React } from "@web3-react/core";
 import React from "react";
-import { FC, useEffect, useState } from "react"
+import { FC } from "react"
 import { useTranslation } from "react-i18next";
-import { Erc20, Erc20ABI } from "src/abis";
-import { useWalletERC20Balance } from "src/hooks/useWalletERC20Balance"
-import { getContract } from "src/utils";
 
-const useStyles = createStyles((theme, _params, getRef) => ({
+interface Param{
+  isLoading: boolean;
+}
+
+const useStyles = createStyles((theme, { isLoading } : Param, getRef) => ({
     container: {
       // subscribe to color scheme changes right in your styles
       backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[1],
@@ -34,18 +33,21 @@ const useStyles = createStyles((theme, _params, getRef) => ({
     balanceContainer: {
       display: "flex",
       flexDirection: "column",
-      rowGap: 0
+      rowGap: isLoading ? 5 : 0,
+      width: "100%"
     }
   }));
 
 type WalletERC20BalanceProps = {
-    balance: number|undefined
+    balance: string|undefined
     symbol: string|undefined
 }
 
 export const WalletERC20Balance: FC<WalletERC20BalanceProps> = ({ balance, symbol }) => {
 
-    const { classes } = useStyles();
+    const { classes } = useStyles({
+      isLoading: !balance && !symbol
+    });
     const { t } = useTranslation("components",{ keyPrefix: 'walletBalance' });
 
     return(
@@ -54,8 +56,8 @@ export const WalletERC20Balance: FC<WalletERC20BalanceProps> = ({ balance, symbo
           <div className={classes.container}>
               <div className={classes.wallet}><IconWallet color={"white"} size={24}/></div>
               <div className={classes.balanceContainer}>
-                <Text fw={700} mr={5}>{`${symbol}`}</Text>
-                <Text className={classes.balance}>{balance}</Text>
+                <Text fw={700}>{ symbol ? `${symbol}` : <Skeleton width={"100%"} height={20} color={"brand"}/>}</Text>
+                <Text className={classes.balance}>{balance ? balance : <Skeleton width={"100%"} height={15} color={"brand"}/>}</Text>
               </div>
           </div>
       </Flex>

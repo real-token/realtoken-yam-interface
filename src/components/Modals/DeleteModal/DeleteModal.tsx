@@ -1,9 +1,6 @@
 import {
-  Dispatch,
   FC,
-  SetStateAction,
   useCallback,
-  useEffect,
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,39 +11,38 @@ import { showNotification, updateNotification } from '@mantine/notifications';
 import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { useActiveChain, useContract } from 'src/hooks';
 import { useWeb3React } from '@web3-react/core';
-import { selectPublicOffers } from 'src/store/features/interface/interfaceSelector';
-import { useAppSelector } from 'src/hooks/react-hooks';
+import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 
 type DeleteModalProps = {
-  offerId: string;
-  triggerTableRefresh: Dispatch<SetStateAction<boolean>>;
+  offerIds: string[];
+  onSuccess: () => unknown;
+  isAdminDelete?: boolean;
 };
 
 type DeleteFormValues = {
-  offerId: string;
+  offerIds: string[];
 };
 
 export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
   context,
   id,
-  innerProps: { offerId, triggerTableRefresh },
+  innerProps: { offerIds, onSuccess, isAdminDelete = false },
 }) => {
   const { account, provider } = useWeb3React();
-  const { onSubmit, reset, setFieldValue, values } = useForm<DeleteFormValues>({
+  const { onSubmit, reset } = useForm<DeleteFormValues>({
     initialValues: {
-      offerId: offerId,
+      offerIds,
     },
   });
 
   const [isSubmitting, setSubmitting] = useState<boolean>(false);
-  const [amountMax, setAmountMax] = useState<number>();
+  
+  const { refreshOffers } = useRefreshOffers(false);
 
   const activeChain = useActiveChain();
   const realTokenYamUpgradeable = useContract(
     ContractsID.realTokenYamUpgradeable
   );
-
-  const offers = useAppSelector(selectPublicOffers);
 
   const { t } = useTranslation('modals', { keyPrefix: 'delete' });
 
@@ -55,28 +51,13 @@ export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
     context.closeModal(id);
   }, [context, id, reset]);
 
-  useEffect(() => {
-    setAmountMax(
-      Number(
-        offers.find((offer) => offer.offerId === values.offerId)
-          ?.amount as string
-      )
-    );
-  }, [values]);
-
-  useEffect(() => {
-    if (!amountMax) return;
-    setFieldValue('amount', amountMax);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [amountMax]);
-
   const onHandleSubmit = useCallback(
     async (formValues: DeleteFormValues) => {
       try {
         if (
           !account ||
           !provider ||
-          !formValues.offerId ||
+          !formValues.offerIds ||
           !realTokenYamUpgradeable
         ) {
           return;
@@ -84,10 +65,13 @@ export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
 
         setSubmitting(true);
 
-        const transaction = await realTokenYamUpgradeable.deleteOffer(
-          formValues.offerId
-        );
-
+        let transaction;
+        if(isAdminDelete){
+          transaction = await realTokenYamUpgradeable.deleteOfferByAdmin([...formValues.offerIds]);
+        }else{
+          transaction = await realTokenYamUpgradeable.deleteOffer(formValues.offerIds[0]);
+        }
+          
         const notificationPayload = {
           key: transaction.hash,
           href: `${activeChain?.blockExplorerUrl}tx/${transaction.hash}`,
@@ -100,31 +84,30 @@ export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
 
         transaction
           .wait()
-          .then(({ status }) =>
+          .then(({ status }) => {
             updateNotification(
               NOTIFICATIONS[
                 status === 1
                   ? NotificationsID.deleteOfferSuccess
                   : NotificationsID.deleteOfferError
               ](notificationPayload)
-            )
+            );
+
+            if(status == 1){
+              setSubmitting(false);
+              refreshOffers();
+              onSuccess();
+              onClose();
+            }
+          }
+            
           );
       } catch (e) {
         console.error('Error in DeleteModal', e);
-      } finally {
         setSubmitting(false);
-        triggerTableRefresh(true);
-        onClose();
       }
     },
-    [
-      account,
-      activeChain,
-      realTokenYamUpgradeable,
-      onClose,
-      provider,
-      triggerTableRefresh,
-    ]
+    [account, provider, realTokenYamUpgradeable, isAdminDelete, activeChain?.blockExplorerUrl, refreshOffers, onSuccess, onClose]
   );
 
   return (
@@ -132,7 +115,15 @@ export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
       <Stack justify={'center'} align={'stretch'}>
         <Box>
           <Input.Label>{t('deletedOffer')}</Input.Label>
-          <Container>{offerId ? offerId : 'Offer not found'}</Container>
+          <Container>
+          { offerIds?.length == 1 ?
+              offerIds ? offerIds : 'Offer not found'
+            :
+              offerIds.reduce((x,y) => {
+                return `${x}, ${y}`
+              })
+          }
+          </Container>
         </Box>
         <Group grow={true}>
           <Button color={'red'} onClick={onClose} aria-label={t('cancel')}>

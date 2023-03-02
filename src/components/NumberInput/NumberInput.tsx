@@ -14,19 +14,33 @@ import {
 import { FRC } from 'src/types';
 import { SetFieldValue } from '@mantine/form/lib/types';
 
+const truncDigits = (inputNumber: number, digits: number): number => {
+  const fact = 10 ** digits;
+  return Math.floor(inputNumber * fact) / fact;
+}
+
 type NumberInputProps = {
   showMax?: boolean | undefined;
   showMin?: boolean | undefined;
   controlsProps?: ButtonProps;
   groupMarginBottom?: MantineNumberSize;
-  setFieldValue?: SetFieldValue<any>
+  setFieldValue?: SetFieldValue<any>;
+  width?: string;
 } & MantineNumberInputProps;
 
 export const NumberInput: FRC<NumberInputProps, HTMLInputElement> = forwardRef(
-  ({ disabled, showMin, showMax, controlsProps, groupMarginBottom, setFieldValue, ...props }, ref) => {
+  ({ disabled, showMin, showMax, controlsProps, groupMarginBottom, setFieldValue, width, ...props }, ref) => {
     const handlers = useRef<NumberInputHandlers>();
+
+    const setMax = () => {
+      console.log(props.max)
+      if(!props.max) return;
+      const max = truncDigits(props.max,6);
+      if(setFieldValue) setFieldValue("amount",max);
+    }
+
     return (
-      <Flex gap={5} align={'flex-end'} mb={groupMarginBottom ?? 0}>
+      <Flex gap={5} align={'flex-end'} mb={groupMarginBottom ?? 0} style={{ width: width ? width : "auto" }}>
         <MantineInput
           hideControls={true}
           handlersRef={handlers}
@@ -51,7 +65,7 @@ export const NumberInput: FRC<NumberInputProps, HTMLInputElement> = forwardRef(
             aria-label={'Max'}
             variant={'light'}
             disabled={disabled}
-            onClick={() => { if(setFieldValue) setFieldValue("amount",Number(props.max)) }}
+            onClick={() => setMax()}
             {...controlsProps}
           >
             {props.max == undefined ? <Loader size={"xs"}/> : 'Max'}

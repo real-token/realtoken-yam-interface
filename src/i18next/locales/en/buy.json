@@ -10,11 +10,19 @@
     "sellerAddress": "Seller Address",
     "price": "Price/token",
     "amount": "Available quantity",
+    "allowance": "Allowance",
+    "walletBalance": "Wallet balance",
     "address": "Address",
     "actionEdit": "Edit",
     "actionDelete": "Delete",
     "buy": "Buy",
-    "privateTexte": "private"
+    "privateTexte": "private",
+    "onMarketSince": "On market since"
+  },
+  "grid": {
+    "buy": "Buy",
+    "sell": "Sell",
+    "exchange": "Exchange"
   },
   "subRow": {
     "offerId": "Offer ID",

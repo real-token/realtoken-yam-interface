@@ -10,11 +10,19 @@
     "sellerAddress": "Adresse du vendeur",
     "price": "Prix/Jeton",
     "amount": "Quantité disponible",
+    "allowance": "Allowance",
+    "walletBalance": "Wallet balance",
     "address": "Adresse",
     "actionEdit": "Editer",
     "actionDelete": "Supprimer",
     "buy": "Acheter",
-    "privateTexte": "privé"
+    "privateTexte": "privée",
+    "onMarketSince": "Date de création"
+  },
+  "grid": {
+    "buy": "Achat",
+    "sell": "Vente",
+    "exchange": "Echange"
   },
   "subRow": {
     "offerId": "ID de l'offre",

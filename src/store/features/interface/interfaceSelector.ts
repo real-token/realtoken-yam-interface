@@ -2,6 +2,7 @@ import BigNumber from 'bignumber.js';
 import { Offer, OFFER_LOADING } from 'src/types/offer/Offer';
 import { RootState } from 'src/store/store';
 import { selectAddress } from '../settings/settingsSelector';
+import { Price } from 'src/types/price';
 
 export const selectOffersIsLoading = (state: RootState) =>
   state.interface.offers.isLoading;
@@ -9,8 +10,6 @@ export const selectProperties = (state: RootState) =>
   state.interface.properties.properties;
 export const selectPropertiesIsLoading = (state: RootState) =>
   state.interface.properties.isloading;
-export const selectChainProperties = (state: RootState) =>
-  state.interface.chainProperties;
 
 export const selectOffers = (state: RootState): Offer[] =>
   state.interface.offers.offers;
@@ -36,7 +35,6 @@ export const selectPublicOffers = (state: RootState) => {
       BigNumber(offer.amount).isPositive() &&
       !BigNumber(offer.amount).isZero()
   );
-  return offers;
 };
 
 export const selectPrivateOffers = (state: RootState) => {
@@ -50,28 +48,10 @@ export const selectPrivateOffers = (state: RootState) => {
   );
 };
 
-export const selectSellRealTOffers = (state: RootState) => {
-  return OFFER_LOADING;
-};
+export const selectPricesIsLoading = (state: RootState): boolean => {
+  return state.interface.prices.isLoading;
+}
 
-// const condFiltreZeroAmount = filterZeroAmount ? !bnAmount.isZero() : true;
-//         if(condFiltreZeroAmount){
-//           if (filterSeller) {
-//             //console.log("is seller", account, sellerAddress,buyerAddress)
-//             if (offerData.sellerAddress === account) {
-//               offersData.push(offerData);
-//             }
-//           } else if (filterBuyer) {
-//             // Filter offer by buyer
-//             //console.log("is buyer", account, buyerAddress,sellerAddress);
-//             if (offerData.buyerAddress === account) {
-//               offersData.push(offerData);
-//             }
-//           } else {
-//             // No filter, show public offers
-//             // console.log("is public", account, sellerAddress, buyerAddress);
-//             if (offerData.buyerAddress === ZERO_ADDRESS) {
-//               offersData.push(offerData);
-//             }
-//           }
-//         }
+export const selectPrices = (state: RootState): Price => {
+  return state.interface.prices.prices;
+}

@@ -1,17 +1,4 @@
-import BigNumber from 'bignumber.js';
-
-export enum OFFER_TYPE{
-  BUY = "BUY",
-  SELL = "SELL",
-  EXCHANGE = "EXCHANGE"
-}
-
-export type CreatedOffer = {
-  offerToken: string;
-  buyerToken: string;
-  price: BigNumber;
-  offerId: BigNumber;
-};
+import { OFFER_TYPE } from "./OfferType";
 
 export type Offer = {
   offerId: string;
@@ -32,7 +19,15 @@ export type Offer = {
   availableAmount: string;
   balanceWallet?: string;
   allowanceToken?: string;
-  type?: OFFER_TYPE|undefined
+  type?: OFFER_TYPE|undefined;
+  createdAtTimestamp: number;
+  officialPrice: number|undefined;
+  offerPrice: number|undefined;
+  priceDelta: number|undefined;
+  officialYield: number|undefined;
+  offerYield: number|undefined;
+  yieldDelta: number|undefined,
+  buyCurrency: string;
 };
 
 export const DEFAULT_OFFER: Offer = {
@@ -53,7 +48,15 @@ export const DEFAULT_OFFER: Offer = {
   removed: false,
   availableAmount: "",
   balanceWallet: "",
-  type: undefined
+  type: undefined,
+  createdAtTimestamp: 0,
+  officialPrice: undefined,
+  offerPrice: undefined,
+  priceDelta: undefined,
+  officialYield: undefined,
+  offerYield: undefined,
+  yieldDelta: undefined,
+  buyCurrency: ""
 }
 
 export const OFFER_LOADING = [DEFAULT_OFFER, DEFAULT_OFFER, DEFAULT_OFFER]

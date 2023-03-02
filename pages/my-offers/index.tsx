@@ -1,19 +1,18 @@
 import { useTranslation } from 'react-i18next';
 import { Flex, Tabs } from '@mantine/core';
 import { IconFingerprint, IconList, IconPlus } from '@tabler/icons';
-import { SellActions } from 'src/components/Market';
 import {
   MarketTablePrivate,
   MarketTableUser,
 } from 'src/components/Market/MarketTable';
+import { CreateOffer } from 'src/components/CreateOffer/CreateOffers';
 
 const TransfersPage = () => {
   const menu = useTranslation('menu', { keyPrefix: 'subMenuMyOffer' });
   return (
     <Flex
       direction={"column"}
-      p={"xl"}
-      style={{ flexGrow: 1 }}
+      my={"xl"}
     >
       <Tabs color={"brand"} variant={"pills"} defaultValue={'myOffers'}>
         <Tabs.List>
@@ -40,7 +39,7 @@ const TransfersPage = () => {
         </Tabs.Panel>
 
         <Tabs.Panel value={'addOffer'} pt={'xs'}>
-          <SellActions />
+          <CreateOffer />
         </Tabs.Panel>
       </Tabs>
     </Flex>

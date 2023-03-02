@@ -19,6 +19,8 @@ import { GnosisSafe, MetaMask, WalletConnect } from 'src/assets';
 import { gnosisSafe, metaMask, walletConnect } from 'src/connectors';
 
 import { styles } from './WalletModal.styles';
+import { useSetAtom } from 'jotai';
+import { providerAtom } from 'src/states';
 
 type WalletModalButtonProps = {
   connector: Connector;
@@ -28,6 +30,7 @@ type WalletModalButtonProps = {
   onSuccess: () => void;
   disabled?: boolean;
   disabledError?: string;
+  cookieValue?: string;
 };
 
 const WalletModalButton: FC<WalletModalButtonProps> = ({
@@ -37,20 +40,26 @@ const WalletModalButton: FC<WalletModalButtonProps> = ({
   buttonProps,
   onSuccess,
   disabled = false,
-  disabledError
+  disabledError,
+  cookieValue
 }) => {
   const [isActivating, setIsActivating] = useState<boolean>(false);
 
+  const setProviderCookie = useSetAtom(providerAtom);
+
   const onActivating = useCallback(async () => {
+
     try{
       setIsActivating(true);
       await connector.activate();
       setIsActivating(false);
       onSuccess();
+
+      if(cookieValue) setProviderCookie(cookieValue)
     }catch(err){
       console.log(err)
     }
-  }, [connector, onSuccess]);
+  }, [connector, cookieValue, onSuccess, setProviderCookie]);
 
   const blur = disabled ? 2 : 0;
   return (
@@ -62,7 +71,7 @@ const WalletModalButton: FC<WalletModalButtonProps> = ({
       position={"bottom"} 
       width={300} 
       withArrow={true} 
-      arrowSize	={12}    
+      arrowSize	={12}
     >
     <Button
       aria-label={title}
@@ -119,6 +128,7 @@ export const WalletModal: FC<ContextModalProps> = ({ context, id }) => {
         src={MetaMask.src}
         buttonProps={{ gradient: { from: '#CD6116', to: '#F6851B' } }}
         onSuccess={onClose}
+        cookieValue={"metamask"}
       />
       <WalletModalButton
         connector={walletConnect}
@@ -126,6 +136,7 @@ export const WalletModal: FC<ContextModalProps> = ({ context, id }) => {
         src={WalletConnect.src}
         buttonProps={{ gradient: { from: '#006FFF', to: '#5C9DF5' } }}
         onSuccess={onClose}
+        cookieValue={"wallet-connect"}
       />
       <WalletModalButton
         connector={gnosisSafe}
@@ -135,6 +146,7 @@ export const WalletModal: FC<ContextModalProps> = ({ context, id }) => {
         onSuccess={onClose}
         disabled={gnosisDisabled}
         disabledError={t2.t('DisabledGnosisSafe')}
+        cookieValue={"gnosis-safe"}
       />
       <Anchor component={NextLink} href={t('href')} target={'_blank'}>
         {t('text')}

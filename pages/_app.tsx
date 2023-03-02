@@ -12,6 +12,7 @@ import { Head } from '../src/components';
 import InitStoreProvider from 'src/providers/InitStoreProvider';
 import { Provider as JotaiProvider} from 'jotai';
 import { Provider } from 'react-redux';
+import { QueryClient, QueryClientProvider } from "react-query";
 
 type TestProps = {
   initialLocale: string;
@@ -32,23 +33,27 @@ const LanguageInit: FC<TestProps> = ({ initialLocale }) => {
 
 type AppProps = NextAppProps & { colorScheme: ColorScheme; locale: string };
 
+const queryClient = new QueryClient({});
+
 const App = ({ Component, pageProps, colorScheme, locale }: AppProps) => {
   return (
-    <Web3Providers>
-      <Provider store={store}>
-        <InitStoreProvider>
-          <Head title={'Realtoken YAM'} />
-          <JotaiProvider>
-              <MantineProviders initialColorScheme={colorScheme}>
-                  <LanguageInit initialLocale={locale} />
-                  <Layout>
-                    <Component {...pageProps} />
-                  </Layout>
-              </MantineProviders>
-          </JotaiProvider>
-        </InitStoreProvider>
-      </Provider>
-    </Web3Providers>
+    <QueryClientProvider client={queryClient}>
+      <JotaiProvider>
+        <Web3Providers>
+          <Provider store={store}>
+            <InitStoreProvider>
+              <Head title={'Realtoken YAM'} />
+                <MantineProviders initialColorScheme={colorScheme}>
+                    <LanguageInit initialLocale={locale} />
+                    <Layout>
+                      <Component {...pageProps} />
+                    </Layout>
+                </MantineProviders>
+            </InitStoreProvider>
+          </Provider>
+        </Web3Providers>
+      </JotaiProvider>
+    </QueryClientProvider>
   );
 };
 

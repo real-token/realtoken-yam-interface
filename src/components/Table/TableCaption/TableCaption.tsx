@@ -105,8 +105,7 @@ export const TableCaption = <T,>({
             creatable={true}
             getCreateLabel={(value) =>
               Number.isInteger(Number(value)) &&
-              Number(value) > 0 &&
-              Number(value) <= 500
+              Number(value) > 0
                 ? value
                 : null
             }
@@ -114,7 +113,6 @@ export const TableCaption = <T,>({
               setData((current) => [...current, newData]);
               return { value: newData };
             }}
-            nothingFound={t('noOption')}
             value={table.getState().pagination.pageSize.toString()}
             onChange={(value) => table.setPageSize(Number(value))}
             data={data}
@@ -139,7 +137,6 @@ export const TableCaption = <T,>({
               onChange={(event) => setIsAutoRefresh(Boolean(event.currentTarget.checked))}
             />
           </Grid>
-          
         </Menu.Dropdown>
       </Menu>
     </Group>

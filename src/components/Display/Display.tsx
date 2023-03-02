@@ -1,54 +1,55 @@
-import { ActionIcon, Flex } from "@mantine/core";
-import { IconGridDots, IconLayoutGrid, IconLayoutList, IconRefresh } from "@tabler/icons";
-import React, { FC } from "react";
-import { useState } from "react";
-import { useRefreshOffers } from "src/hooks/offers/useRefreshOffers";
+import { Flex, Select } from "@mantine/core";
+import { useAtom } from "jotai";
+import React, { FC, useMemo } from "react";
+import { displayChoosedAtom } from "src/states";
 import { Displays } from "src/types/Displays";
+import { MarketTable } from "../Market";
+import { MarketGrid } from "../Market/MarketGrid/MarketGrid";
+import { MarketSort } from "../Market/MarketSort/MarketSort";
 
-interface DisplayProps{
-  table?: JSX.Element,
-  smallGrid?: JSX.Element,
-  grid?: JSX.Element
+interface Display{
+  display: Displays
+  title: string;
+  component: React.ReactElement;
 }
-const Display: FC<DisplayProps> = ({ table: Table, smallGrid: SmallGrid, grid: Grid } : DisplayProps) => {
+const Display: FC = () => {
 
-  const [choosenDisplay,setChoosenDisplay] = useState<Displays>(Displays.TABLE);
-  // const { refreshOffers, offersIsLoading } = useRefreshOffers(false);
+  const [choosenDisplay,setChoosenDisplay] = useAtom(displayChoosedAtom);
 
-  const getDisplay = () => {
-    switch(choosenDisplay){
-        case Displays.TABLE:
-            return Table ? Table : undefined;
-        case Displays.SMALL_GRID:
-            return SmallGrid ? SmallGrid : undefined;
-        case Displays.GRID:
-            return Grid ? Grid : undefined;
-    }
+  const availableDisplays = useMemo(() => {
+    return new Map<Displays,Display>([
+      [Displays.TABLE, {
+        display: Displays.TABLE,
+        title: "Table",
+        component: <MarketTable key={"table"}/> 
+      }],
+      [Displays.GRID,{
+        display: Displays.GRID,
+        title: "Grid",
+        component: <MarketGrid key={"grid"}/> 
+      }]
+    ]);
+  },[])
+
+  const datas = useMemo(() => {
+    return [...availableDisplays].map(([, value]) => ({ value: value.display, label: value.title  }))
+  },[availableDisplays]);
+
+  const getDisplay = (): Display|undefined => {
+    return [...availableDisplays.values()].find(display => display.display == choosenDisplay)
   }
 
   return(
     <>
       <Flex justify={"space-between"} mb={16}>
-        {/* <Flex gap={"xs"}>
-            <ActionIcon
-              size={32}
-              color={'brand'}
-              variant={"outline"}
-              loading={offersIsLoading}
-              loaderProps={{ size: 'xs', color: "brand" }}
-              onClick={() => refreshOffers()}
-            >
-              <IconRefresh size={16}/>
-            </ActionIcon>
-        </Flex> */}
-        {/* TODO: Add display switcher */}
-        {/* <Flex gap={"xs"} >
-          <ActionIcon color={"brand"} size={"lg"} variant={choosenDisplay == Displays.TABLE ? "filled" : "outline"} onClick={() => setChoosenDisplay(Displays.TABLE)}><IconLayoutList size={20}/></ActionIcon>
-          <ActionIcon color={"brand"} size={"lg"} variant={choosenDisplay == Displays.GRID ? "filled" :"outline"} onClick={() => setChoosenDisplay(Displays.GRID)}><IconLayoutGrid size={20}/></ActionIcon>
-          <ActionIcon color={"brand"} size={"lg"} variant={choosenDisplay == Displays.SMALL_GRID ? "filled" :"outline"} onClick={() => setChoosenDisplay(Displays.SMALL_GRID)}><IconGridDots size={20}/></ActionIcon>
-        </Flex>  */}
+        <MarketSort />
+        <Select
+          data={datas}
+          value={choosenDisplay}
+          onChange={(value) => { if(value) setChoosenDisplay(value) }}
+        />
       </Flex>
-      {getDisplay()}
+      {getDisplay() ? getDisplay()?.component : undefined}
     </>
   )
 }

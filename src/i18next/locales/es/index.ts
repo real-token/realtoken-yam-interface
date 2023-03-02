@@ -7,7 +7,9 @@ import { default as notifications } from './notifications.json';
 import { default as table } from './table.json';
 import { default as components } from './components.json';
 import { default as faq } from './faq.json';
+import { default as admin } from './admin.json';
 
-const lng = { common, links, buy, menu, modals, notifications, table, components, faq };
+
+const lng = { common, links, buy, menu, modals, notifications, table, components, faq, admin };
 
 export default lng;

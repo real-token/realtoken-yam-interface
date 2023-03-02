@@ -1,6 +1,5 @@
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { PropertiesToken } from 'src/types';
-import { useAsync } from './useAsync';
 import { usePropertiesToken } from './usePropertiesToken';
 
 export type TokenInfo = {
@@ -14,7 +13,7 @@ type UseTokenInfo = (sellerTokenAddress: string, buyerTokenAddress: string) => {
 };
 export const useTokenInfo: UseTokenInfo = (sellerTokenAddress,buyerTokenAddress) => {
   // const { api } = useAPIGoerli(tokenAddress);
-  const { propertiesToken } = usePropertiesToken(false);
+  const { propertiesToken } = usePropertiesToken();
   const [isRefreshing, triggerRefresh] = useState<boolean>(true);
 
   const [tokenInfo, setTokenInfo] = useState<TokenInfo>({

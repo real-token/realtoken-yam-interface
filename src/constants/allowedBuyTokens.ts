@@ -1,6 +1,6 @@
-import { AllowedBuyToken } from 'src/types/allowedBuyTokens';
+import { AllowedToken } from 'src/types/allowedTokens';
 
-export const goerliAllowedBuyTokens: AllowedBuyToken[] = [
+export const goerliAllowedTokens: AllowedToken[] = [
   {
     name: 'USDCRealT',
     symbol: 'USDCRealT',
@@ -17,7 +17,7 @@ export const goerliAllowedBuyTokens: AllowedBuyToken[] = [
     contractAddress: '0x803029DB36f37D130d8A005A62c55D17383f6f15',
   },
 ];
-export const ethereumAllowedBuyTokens: AllowedBuyToken[] = [
+export const ethereumAllowedTokens: AllowedToken[] = [
   {
     name: 'USD Coin',
     symbol: 'USDC',
@@ -39,7 +39,7 @@ export const ethereumAllowedBuyTokens: AllowedBuyToken[] = [
     contractAddress: '0x5f98805a4e8be255a32880fdec7f6728c6568ba0',
   },
 ];
-export const gnosisAllowedBuyTokens: AllowedBuyToken[] = [
+export const gnosisAllowedTokens: AllowedToken[] = [
   {
     name: 'USD Coin',
     symbol: 'USDC',
