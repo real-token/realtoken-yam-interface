@@ -115,7 +115,9 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
 
         if(!values.amount) return;
 
-        const amountInWei = new BigNumber(values.amount.toString()).shiftedBy(Number(offerTokenDecimals));
+        const amountInWei = new BigNumber(total).shiftedBy(Number(offerTokenDecimals));
+
+        console.log(amountInWei)
 
         if( !amountInWei) return;
 
