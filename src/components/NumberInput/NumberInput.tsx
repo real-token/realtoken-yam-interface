@@ -14,7 +14,7 @@ import {
 import { FRC } from 'src/types';
 import { SetFieldValue } from '@mantine/form/lib/types';
 
-const truncDigits = (inputNumber: number, digits: number): number => {
+export const truncDigits = (inputNumber: number, digits: number): number => {
   const fact = 10 ** digits;
   return Math.floor(inputNumber * fact) / fact;
 }
@@ -33,7 +33,6 @@ export const NumberInput: FRC<NumberInputProps, HTMLInputElement> = forwardRef(
     const handlers = useRef<NumberInputHandlers>();
 
     const setMax = () => {
-      console.log(props.max)
       if(!props.max) return;
       const max = truncDigits(props.max,6);
       if(setFieldValue) setFieldValue("amount",max);

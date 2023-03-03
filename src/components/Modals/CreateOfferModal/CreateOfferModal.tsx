@@ -11,7 +11,7 @@ import { ZERO_ADDRESS } from 'src/constants';
 import { useActiveChain } from 'src/hooks';
 import { useContract } from 'src/hooks/useContract';
 import { getContract } from 'src/utils';
-import { NumberInput } from '../../NumberInput';
+import { NumberInput, truncDigits } from '../../NumberInput';
 import { cleanNumber } from 'src/utils/number';
 import { useWeb3React } from '@web3-react/core';
 import { ContextModalProps } from '@mantine/modals';
@@ -122,7 +122,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         if( !amountInWei) return;
 
         const oldAllowance = await offerToken.allowance(account,realTokenYamUpgradeable.address);
-        const amountInWeiToPermit = amountInWei?.plus(new BigNumber(oldAllowance.toString()));
+        const amountInWeiToPermit = new BigNumber(parseInt(amountInWei?.plus(new BigNumber(oldAllowance.toString())).toString()));
 
         console.log("amountInWei: ", amountInWei.toString())
         console.log("oldAllowance: ", oldAllowance.toString())
@@ -593,6 +593,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
           placeholder={t('placeholderPrice')}
           value={priceInDollar}
           onChange={setPriceInDollar}
+          precision={6}
           required={true}
           disabled={false}
           min={0.000001}
@@ -715,7 +716,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
 
     const setPrice = () => {
       if(price && priceInDollar){
-        setFieldValue("price",parseFloat(new BigNumber(priceInDollar).dividedBy(price).toString().toString()))
+        setFieldValue("price",truncDigits(parseFloat(new BigNumber(priceInDollar).dividedBy(price).toString()),6))
       }
     }
 
@@ -773,6 +774,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
           label={offer.offerType == OFFER_TYPE.EXCHANGE ? t('exchangeAmount') : t('amount')}
           placeholder={t('placeholderAmount')}
           required={true}
+          precision={6}
           min={0.000001}
           setFieldValue={setFieldValue}
           showMax={false}
