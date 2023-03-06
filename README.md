@@ -77,7 +77,7 @@ NEXT_PUBLIC_ENV=XX
 To get a `COMMUNITY_API_KEY`, join the dedicated [telegram dev channel](https://t.me/+XQyoaFfmN61yk7X0) then ask for.
 
 The var `NEXT_PUBLIC_ENV` is used to hide/show some features depending the environement.
-Only those values are allowed: `dev`, `stating` or `production`.
+Only those values are allowed: `dev`, `staging` or `production`.
 The default value is `dev`;
 
 ### Node.js version
