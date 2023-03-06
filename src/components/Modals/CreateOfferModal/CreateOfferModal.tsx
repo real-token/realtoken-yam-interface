@@ -115,9 +115,14 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
 
         if(!values.amount) return;
 
-        const amountInWei = new BigNumber(total).shiftedBy(Number(offerTokenDecimals));
+        let amountInWei;
+        if(offer.offerType != OFFER_TYPE.SELL){
+          amountInWei = new BigNumber(total).shiftedBy(Number(offerTokenDecimals));
+        }else{
+          amountInWei = new BigNumber(values?.amount).shiftedBy(Number(offerTokenDecimals));
+        }
 
-        console.log(amountInWei)
+        console.log("amountInWei: ", amountInWei.toString())
 
         if( !amountInWei) return;
 
