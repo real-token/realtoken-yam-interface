@@ -7,12 +7,12 @@
   },
   "footer": {
     "copyright": "© {{year}} RealT. All rights reserved.",
-    "faq": "FAQ"
+    "faq": "HELP"
   },
   "general": {
     "loading": "loading...",
     "comingSoon": "Coming soon...",
-    "noConnectedWallet": "Please connect a wallet to load the application",
+    "noConnectedWallet": "Please connect a wallet to load the application (Help : at the botton right)",
     "nextButton": "Next",
     "noAdminError": "You are not an admin."
   },
