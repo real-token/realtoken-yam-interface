@@ -26,23 +26,13 @@ const useStyles = createStyles((theme) => ({
 export const Layout: FC<LayoutProps> = ({ children }) => {
 
   const { classes } = useStyles();
-  const { account } = useWeb3React();
 
-  const { t } = useTranslation("common", { keyPrefix: "general" });
 
   return (
     <div className={classes.container}>
       <Header />
       <div className={classes.main}>
-        {/* {children} */}
-        { account ? 
-            children 
-          : 
-            <Flex style={{ width: "100%", height: "100%" }} justify={"center"} align={"center"} gap={"sm"}>
-                <IconWalletOff size={36}/>
-                <Text fw={700} fz={"xl"}>{t("noConnectedWallet")}</Text>
-            </Flex>
-        }
+        {children}
       </div>
       <Footer />
     </div>

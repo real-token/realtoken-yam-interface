@@ -16,6 +16,7 @@ import { PropertyImage } from "src/components/Offer/Image/PropertyImage";
 import { openInNewTab } from "src/utils/window";
 import { OfferDeltaTable } from "src/components/Table/OfferDeltaTable/OfferDeltaTable";
 import { PropertyCard } from "src/components/Offer/PropertyCard";
+import { ConnectedProvider } from "src/providers/ConnectProvider";
 
 const useStyle = createStyles((theme) => ({
     container: {
@@ -127,74 +128,76 @@ const ShowOfferPage: FC = () => {
     },[modals, refreshOffers, t2]);
 
     return(
-        <Flex direction={"column"} mt={"xl"}>
-        { 
-            isLoading || offer !== undefined ? (
-                <Flex gap={"md"}>
-                    <Flex className={classes.container} direction={"column"} gap={"md"}>
-                        <div className={classes.offerId}>
-                            {offerId}
-                        </div>
-                        <Flex direction={"column"} gap={"md"}>
-                            <OfferText
-                                title={t("offerTokenName")}
-                                value={offer?.offerTokenName}
-                            />
-                            <OfferText
-                                title={t("buyerTokenName")}
-                                value={offer?.buyerTokenName}
-                            />
-                            <OfferText
-                                title={t("sellerAddress")}
-                                value={offer?.sellerAddress}
-                            />
-                            <OfferText
-                                title={t("amount")}
-                                value={offer?.amount}
-                            />
-                            <Flex direction={"column"} gap={3}>
-                                <Text fw={700}>{"Price"}</Text>
-                                {   offer?.offerTokenName &&  offer.buyerTokenName && offer?.price ? 
-                                        <Text>{`1 "${offer?.offerTokenName}" = ${offer?.price} "${offer.buyerTokenName}"`}</Text>
-                                    : 
-                                        <Skeleton height={25} width={400}/> 
-                                }
-                                {   offer?.offerTokenName &&  offer.buyerTokenName && offer?.price ? 
-                                        <Text>{`1 "${offer.buyerTokenName}" = ${new BigNumber(1).dividedBy(offer?.price).toFixed(5)} ${offer?.offerTokenName}`}</Text>
-                                    : 
-                                        <Skeleton height={25} width={400}/> 
-                                }
+        <ConnectedProvider>
+            <Flex direction={"column"} mt={"xl"}>
+            { 
+                isLoading || offer !== undefined ? (
+                    <Flex gap={"md"}>
+                        <Flex className={classes.container} direction={"column"} gap={"md"}>
+                            <div className={classes.offerId}>
+                                {offerId}
+                            </div>
+                            <Flex direction={"column"} gap={"md"}>
+                                <OfferText
+                                    title={t("offerTokenName")}
+                                    value={offer?.offerTokenName}
+                                />
+                                <OfferText
+                                    title={t("buyerTokenName")}
+                                    value={offer?.buyerTokenName}
+                                />
+                                <OfferText
+                                    title={t("sellerAddress")}
+                                    value={offer?.sellerAddress}
+                                />
+                                <OfferText
+                                    title={t("amount")}
+                                    value={offer?.amount}
+                                />
+                                <Flex direction={"column"} gap={3}>
+                                    <Text fw={700}>{"Price"}</Text>
+                                    {   offer?.offerTokenName &&  offer.buyerTokenName && offer?.price ? 
+                                            <Text>{`1 "${offer?.offerTokenName}" = ${offer?.price} "${offer.buyerTokenName}"`}</Text>
+                                        : 
+                                            <Skeleton height={25} width={400}/> 
+                                    }
+                                    {   offer?.offerTokenName &&  offer.buyerTokenName && offer?.price ? 
+                                            <Text>{`1 "${offer.buyerTokenName}" = ${new BigNumber(1).dividedBy(offer?.price).toFixed(5)} ${offer?.offerTokenName}`}</Text>
+                                        : 
+                                            <Skeleton height={25} width={400}/> 
+                                    }
+                                </Flex>
                             </Flex>
+                            <Divider />
+                            <ActionIcon
+                                color={'green'}
+                                disabled={isAccountOffer}
+                                className={classes.buyButton}
+                                onClick={() => account && offer ? onOpenBuyModal(offer) : onOpenWalletModal() }
+                            >
+                                { isAccountOffer ? 
+                                    <Text fz={"sm"} align={"center"} p={6}>{"Cannot buy your own offer"}</Text> 
+                                    : 
+                                    <IconShoppingCart size={24} aria-label={'Buy'} /> 
+                                }
+                            </ActionIcon>
                         </Flex>
-                        <Divider />
-                        <ActionIcon
-                            color={'green'}
-                            disabled={isAccountOffer}
-                            className={classes.buyButton}
-                            onClick={() => account && offer ? onOpenBuyModal(offer) : onOpenWalletModal() }
-                        >
-                            { isAccountOffer ? 
-                                <Text fz={"sm"} align={"center"} p={6}>{"Cannot buy your own offer"}</Text> 
-                                : 
-                                <IconShoppingCart size={24} aria-label={'Buy'} /> 
-                            }
-                        </ActionIcon>
+                        <Flex direction={"column"} gap={"md"} align={"center"}>
+                        { propertyTokens && offer && propertyTokens.length > 0 ? 
+                            propertyTokens.map(token => <PropertyCard key={token.contractAddress} propertyToken={token} offer={offer}/>)
+                            :
+                            undefined
+                        }
+                        </Flex>
                     </Flex>
-                    <Flex direction={"column"} gap={"md"} align={"center"}>
-                    { propertyTokens && offer && propertyTokens.length > 0 ? 
-                        propertyTokens.map(token => <PropertyCard key={token.contractAddress} propertyToken={token} offer={offer}/>)
-                        :
-                        undefined
-                    }
-                    </Flex>
-                </Flex>
-            )
-            :
-            (
-                <div>{"Offer doesn't exist :/"}</div>
-            )
-        }
-        </Flex>
+                )
+                :
+                (
+                    <div>{"Offer doesn't exist :/"}</div>
+                )
+            }
+            </Flex>
+        </ConnectedProvider>
     )
 }
 
