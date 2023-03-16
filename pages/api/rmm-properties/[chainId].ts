@@ -181,14 +181,11 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[]): 
                 propertiesNonFiltered.push({
                     uuid: propertyToken.uuid,
                     shortName: propertyToken.shortName,
+                    symbol: propertyToken.symbol,
                     fullName: propertyToken.fullName,
                     contractAddress: contractAddress.toLowerCase(),
-                    officialPrice: propertyToken.tokenPrice,
-                    currency: propertyToken.currency,
                     marketplaceLink: propertyToken.marketplaceLink,
                     imageLink: propertyToken.imageLink,
-                    netRentYearPerToken: propertyToken.netRentYearPerToken ?? 0,
-                    annualYield: propertyToken.netRentYearPerToken && propertyToken.tokenPrice ? propertyToken.netRentYearPerToken/propertyToken.tokenPrice : 0,
                     tokenIdRules: propertyToken.tokenIdRules
                 });
             }
