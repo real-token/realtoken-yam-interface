@@ -1,6 +1,5 @@
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
-import { APIPropertiesToken, PropertiesToken, ShortProperty } from "src/types";
-import { getWhitelistedProperties } from "src/utils/properties";
+import { APIPropertiesToken, PropertiesToken } from "../../../src/types/PropertiesToken";
 
 const getTokenFromCommunityAPI = new Promise<APIPropertiesToken[]>( async (resolve, reject) => {
     try{
@@ -172,7 +171,7 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[]): 
                 tokenIdRules: 100049
             }
         ]
-        propertiesGoerli.forEach((token) => token.annualYield = token.officialPrice ? token.netRentYearPerToken/token.officialPrice : 0)
+        // propertiesGoerli.forEach((token) => token.annualYield = token.officialPrice ? token.netRentYearPerToken/token.officialPrice : 0)
         propertiesNonFiltered.push(...propertiesGoerli);
     }else{
         communityProperties.forEach((propertyToken: APIPropertiesToken) => {
