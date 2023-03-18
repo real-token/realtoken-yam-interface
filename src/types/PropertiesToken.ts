@@ -22,6 +22,20 @@ export type ShortProperty = {
 
 // USED IN APP
 export type PropertiesToken = {
+    uuid: string
+    shortName: string
+    fullName: string
+    contractAddress: string
+    officialPrice: number
+    currency: string,
+    marketplaceLink: string
+    imageLink: string[]
+    tokenIdRules: number
+    netRentYearPerToken: number
+    annualYield?: number
+}
+
+export type RmmPropertiesToken = {
     uuid?: string
     shortName?: string
     symbol?: string
