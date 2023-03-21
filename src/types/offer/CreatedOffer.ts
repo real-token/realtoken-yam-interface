@@ -1,3 +1,4 @@
+import BigNumber from "bignumber.js";
 import { OFFER_TYPE } from "./OfferType";
 
 export interface CreatedOffer{
