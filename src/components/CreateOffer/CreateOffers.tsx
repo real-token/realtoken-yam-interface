@@ -58,7 +58,7 @@ export const CreateOffer = () => {
 
         try{
 
-            if(!account || !provider || !realTokenYamUpgradeable) return;
+            if(!account || !provider || !realTokenYamUpgradeable) return;
 
             setLoading(true);
 
@@ -85,7 +85,6 @@ export const CreateOffer = () => {
                     account
                     );
 
-                const offerTokenDecimals = await offerToken?.decimals();
                 const buyerTokenDecimals = await buyerToken?.decimals();
 
                 if (!offerToken) {
@@ -95,16 +94,15 @@ export const CreateOffer = () => {
 
                 BigNumber.set({EXPONENTIAL_AT: 25});
 
-                const amountInWei = new BigNumber(parseInt(new BigNumber(createdOffer.amount.toString()).shiftedBy(Number(offerTokenDecimals)).toString()));
-                const priceInWei = new BigNumber(parseInt(new BigNumber(createdOffer.price.toString()).shiftedBy(Number(buyerTokenDecimals)).toString()));
+                const priceInWei = new BigNumber(createdOffer.price.toString()).shiftedBy(Number(buyerTokenDecimals)).toString(10);
 
                 console.log(priceInWei)
 
                 _offerTokens.push(createdOffer.offerTokenAddress);
                 _buyerTokens.push(createdOffer.buyerTokenAddress);
                 _buyers.push(createdOffer.buyerAddress);
-                _prices.push(priceInWei.toString());
-                _amounts.push(amountInWei.toString());
+                _prices.push(priceInWei);
+                _amounts.push(createdOffer.amount.toString(10));
 
             }
 

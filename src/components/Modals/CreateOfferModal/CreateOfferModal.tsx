@@ -106,8 +106,6 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
           account
         );
 
-        const offerTokenDecimals = await offerToken?.decimals();
-
         if (!offerToken) {
           console.log('offerToken not found');
           return;
@@ -115,29 +113,19 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
 
         if(!values.amount) return;
 
-        let amountInWei;
-        if(offer.offerType != OFFER_TYPE.SELL){
-          amountInWei = new BigNumber(total).shiftedBy(Number(offerTokenDecimals));
-        }else{
-          amountInWei = new BigNumber(values?.amount).shiftedBy(Number(offerTokenDecimals));
-        }
-
-        console.log("amountInWei: ", amountInWei.toString())
-
-        if( !amountInWei) return;
-
+        const amount = new BigNumber(createdOffer.amount);
         const oldAllowance = await offerToken.allowance(account,realTokenYamUpgradeable.address);
-        const amountInWeiToPermit = new BigNumber(parseInt(amountInWei?.plus(new BigNumber(oldAllowance.toString())).toString()));
+        const amountInWeiToPermit = amount.plus(new BigNumber(oldAllowance.toString())).toString(10);
 
-        console.log("amountInWei: ", amountInWei.toString())
+        console.log("amountInWei: ", createdOffer.amount.toString())
         console.log("oldAllowance: ", oldAllowance.toString())
-        console.log("amountInWeiToPermit: ", amountInWeiToPermit.toString())
+        console.log("amountInWeiToPermit: ", amountInWeiToPermit)
 
         // TokenType = 3: ERC20 Without Permit, do Approve/CreateOffer
-        BigNumber.set({EXPONENTIAL_AT: 25});
+        BigNumber.set({EXPONENTIAL_AT: 35});
         const approveTx = await offerToken.approve(
           realTokenYamUpgradeable.address,
-          amountInWeiToPermit.toString()
+          amountInWeiToPermit
         );
 
         const notificationApprove = {
@@ -459,7 +447,24 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   const approveAndsaveCreatedOffer = async (formValues: SellFormValues) => {
     try{
 
+      if(!provider || !values.amount) return;
+
       const price = offer.offerType !== OFFER_TYPE.BUY ? formValues.price : formValues.price ? 1/formValues.price : undefined;
+
+      const offerToken = getContract<CoinBridgeToken>(
+        formValues.offerTokenAddress,
+        coinBridgeTokenABI,
+        provider,
+        account
+      );
+      const offerTokenDecimals = await offerToken?.decimals();
+
+      let amountInWei;
+      if(offer.offerType != OFFER_TYPE.SELL){
+        amountInWei = new BigNumber(total).shiftedBy(Number(offerTokenDecimals));
+      }else{
+        amountInWei = new BigNumber(values?.amount).shiftedBy(Number(offerTokenDecimals));
+      }
 
       const createdOffer: CreatedOffer = {
         offerType: offer.offerType,
@@ -467,10 +472,12 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         offerTokenAddress: formValues.offerTokenAddress,
         buyerTokenAddress: formValues.buyerTokenAddress,
         price: price ? parseFloat(price.toFixed(6)) : 0,
-        amount: total,
+        amount: parseInt(amountInWei.toString(10)),
         buyerAddress: formValues.buyerAddress,
         isPrivateOffer: formValues.isPrivateOffer
       }
+
+      console.log(createdOffer);
 
       await approve(createdOffer);
 
