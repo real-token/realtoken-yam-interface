@@ -32,6 +32,7 @@ import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
 import { WalletERC20Balance } from 'src/components/WalletBalance/WalletERC20Balance';
 import { Contract } from 'ethers';
 import { Web3Provider } from '@ethersproject/providers';
+import { MatchedOffers } from './MatchedOffers/MatchedOffers';
 
 export const approveOffer = (
   createdOffer: CreatedOffer, 
@@ -766,67 +767,76 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   }
 
   return (
-    <Flex direction={"column"} mx={'auto'} gap={"md"} style={{ width: calcRem(500) }}>
-      <Flex style={{ justifyContent: "space-between", alignItems: "center", height: "50px" }}>
-        <Flex gap={"sm"} align={"center"}>
-          <OfferTypeBadge offerType={offer.offerType} />
-          <h3 style={{ margin: 0 }}>{t('titleFormCreateOffer')}</h3>
+    <Flex>
+      <Flex direction={"column"} mx={'auto'} gap={"md"} style={{ width: calcRem(500) }}>
+        <Flex style={{ justifyContent: "space-between", alignItems: "center", height: "50px" }}>
+          <Flex gap={"sm"} align={"center"}>
+            <OfferTypeBadge offerType={offer.offerType} />
+            <h3 style={{ margin: 0 }}>{t('titleFormCreateOffer')}</h3>
+          </Flex>
+          { offer.offerType !== OFFER_TYPE.EXCHANGE ? <Shield /> : undefined }        
         </Flex>
-        { offer.offerType !== OFFER_TYPE.EXCHANGE ? <Shield /> : undefined }        
+        <form onSubmit={onSubmit(approveAndsaveCreatedOffer)}>
+          <Stack justify={'center'} align={'stretch'}>
+
+          { offer.offerType == OFFER_TYPE.EXCHANGE ? 
+              GetExchange() 
+            : 
+              getSelect(offerTokens,buyerTokens) 
+          }
+
+          { offer.offerType == OFFER_TYPE.EXCHANGE ?
+              GetExchangePriceNumberInputs()
+            :
+              GetPriceNumberInputs()
+          }
+          
+          <Divider />
+          <WalletERC20Balance balance={balance} symbol={offerTokenSymbol}/>
+
+          <NumberInput
+            label={offer.offerType == OFFER_TYPE.EXCHANGE ? t('exchangeAmount') : t('amount')}
+            placeholder={t('placeholderAmount')}
+            required={true}
+            precision={6}
+            min={0.000001}
+            setFieldValue={setFieldValue}
+            showMax={false}
+            sx={{ flexGrow: 1 }}
+            {...getInputProps('amount')}
+          />
+          
+          <Checkbox
+            mt={'md'}
+            label={t('checkboxLabelPrivateOffre')}
+            {...getInputProps('isPrivateOffer', { type: 'checkbox' })}
+          />
+
+          {privateOffer()}
+
+          <Group position={'left'} mt={'md'}>
+            <>
+              {summary()}
+              <Button
+                type={'submit'}
+                aria-label={'submit'}
+                loading={(bigNumberbalance && bigNumberbalance == undefined) || isSubmitting}
+                disabled={!isValid || shieldError}
+              >
+                {"Approve offer"}
+              </Button>
+            </>
+          </Group>
+          </Stack>
+        </form>
       </Flex>
-      <form onSubmit={onSubmit(approveAndsaveCreatedOffer)}>
-        <Stack justify={'center'} align={'stretch'}>
-
-        { offer.offerType == OFFER_TYPE.EXCHANGE ? 
-            GetExchange() 
-          : 
-            getSelect(offerTokens,buyerTokens) 
-        }
-
-        { offer.offerType == OFFER_TYPE.EXCHANGE ?
-            GetExchangePriceNumberInputs()
-          :
-            GetPriceNumberInputs()
-        }
-        
-        <Divider />
-        <WalletERC20Balance balance={balance} symbol={offerTokenSymbol}/>
-
-        <NumberInput
-          label={offer.offerType == OFFER_TYPE.EXCHANGE ? t('exchangeAmount') : t('amount')}
-          placeholder={t('placeholderAmount')}
-          required={true}
-          precision={6}
-          min={0.000001}
-          setFieldValue={setFieldValue}
-          showMax={false}
-          sx={{ flexGrow: 1 }}
-          {...getInputProps('amount')}
-        />
-        
-        <Checkbox
-          mt={'md'}
-          label={t('checkboxLabelPrivateOffre')}
-          {...getInputProps('isPrivateOffer', { type: 'checkbox' })}
-        />
-
-        {privateOffer()}
-
-        <Group position={'left'} mt={'md'}>
-          <>
-            {summary()}
-            <Button
-              type={'submit'}
-              aria-label={'submit'}
-              loading={(bigNumberbalance && bigNumberbalance == undefined) || isSubmitting}
-              disabled={!isValid || shieldError}
-            >
-              {"Approve offer"}
-            </Button>
-          </>
-        </Group>
-        </Stack>
-      </form>
+      <MatchedOffers 
+          offerType={offer.offerType}
+          offerTokenAddress={values.offerTokenAddress}
+          buyerTokenAddress={values.buyerTokenAddress}
+          price={values.price}
+          amount={values.amount}
+      />
     </Flex>
   );
 };
