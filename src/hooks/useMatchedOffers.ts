@@ -59,14 +59,16 @@ export const useMatchedOffers: UseMatchedOffers = (offerType, offerTokenAddress,
                 .filter((offer) => 
                     offer.offerTokenAddress.toLowerCase() == buyerTokenAddress.toLowerCase() &&
                     offer.buyerTokenAddress.toLowerCase() == offerTokenAddress.toLowerCase() &&
-                    (shieldDisabled && price >= priceMinLimit) && (shieldDisabled && price <= priceMaxLimit)
+                    (shieldDisabled && price >= priceMinLimit) && (shieldDisabled && price <= priceMaxLimit) &&
+                    (amount ? Number(offer.amount) >= amount : true)
                 );
         }else if(offerType == OFFER_TYPE.SELL) {
             return matchedOffersWithType
                 .filter((offer) => 
                     offer.buyerTokenAddress.toLowerCase() == buyerTokenAddress.toLowerCase() &&
                     offer.offerTokenAddress.toLowerCase() == offerTokenAddress.toLowerCase() &&
-                    (shieldDisabled && 1/price >= priceMinLimit) && (shieldDisabled && 1/price <= priceMaxLimit)
+                    (shieldDisabled && 1/price >= priceMinLimit) && (shieldDisabled && 1/price <= priceMaxLimit) &&
+                    (amount ? Number(amount)/price >= amount: true)
                 );
         }else{
             return matchedOffersWithType
@@ -75,7 +77,7 @@ export const useMatchedOffers: UseMatchedOffers = (offerType, offerTokenAddress,
                 offer.offerTokenAddress.toLowerCase() == offerTokenAddress.toLowerCase()
             );
         }
-    },[buyerTokenAddress, matchedOffersWithType, offerTokenAddress, offerType, price, priceMaxLimit, priceMinLimit, shieldDisabled]);
+    },[amount, buyerTokenAddress, matchedOffersWithType, offerTokenAddress, offerType, price, priceMaxLimit, priceMinLimit, shieldDisabled]);
 
     const bestPrice = useMemo(() => {
         const sortedBestPrice = matchedOffers.sort((a,b)=> Number(a.price)-Number(b.price));
@@ -90,6 +92,6 @@ export const useMatchedOffers: UseMatchedOffers = (offerType, offerTokenAddress,
     return {
         bestPrice: bestPrice,
         bestAmount: bestAmount,
-        otherMatching: matchedOffers
+        otherMatching: matchedOffers.filter((offer) => ![bestPrice?.offerId,bestAmount?.offerId].includes(offer.offerId))
     }
 }
