@@ -51,7 +51,7 @@ export const MatchedOffers: FC<MatchedOffersProps> = ({ offerType, offerTokenAdd
                         <Loader size={"sm"}/>
                         {"Matching offers..."}
                     </Flex>
-                ) : otherMatching && otherMatching.length == 0 ? (
+                ) : !bestPrice && !bestAmount && otherMatching && otherMatching.length == 0 ? (
                     <div>{"❌ No matching offers founded "}</div>
                 ) : undefined }
                 { bestPrice && bestAmount && bestPrice.offerId == bestAmount.offerId ? (

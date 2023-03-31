@@ -30,9 +30,6 @@ type UseMatchedOffers = (
 
 export const useMatchedOffers: UseMatchedOffers = (offerType, offerTokenAddress, buyerTokenAddress, price, amount) => {
 
-    // BEST PRICE
-    // BEST AMOUNT
-
     const shieldDisabled = useAtomValue(shieldDisabledAtom);
     const shieldValue = useAtomValue(shieldValueAtom);
 
@@ -44,7 +41,6 @@ export const useMatchedOffers: UseMatchedOffers = (offerType, offerTokenAddress,
         if(!offerType || !offerTokenAddress || !buyerTokenAddress || !price) return undefined;
 
         const offersMatchingType = publicOffers.filter((offer) => offer.type == revesedOfferType);
-        console.log(offersMatchingType)
         return offersMatchingType;
 
     },[buyerTokenAddress, offerTokenAddress, offerType, price, publicOffers, revesedOfferType]);
