@@ -205,7 +205,7 @@ const getPriceDelta = (prices: Price, offer: Offer): number|undefined => {
     //   console.log("ratio: ", ratio)
     // }
 
-    return tokenPriceInDollar ? 1-ratio : undefined
+    return 1-ratio;
   }
 
 }
