@@ -302,7 +302,7 @@ export const CreateOffer = () => {
                 const _amounts = [];
 
                 // approve 
-                createApproves();
+                await createApproves();
                 
                 for await(const createdOffer of offers){
 
