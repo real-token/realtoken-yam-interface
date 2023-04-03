@@ -30,82 +30,6 @@ import { useWalletERC20Balance } from 'src/hooks/useWalletERC20Balance';
 import { useShield } from 'src/hooks/useShield';
 import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
 import { WalletERC20Balance } from 'src/components/WalletBalance/WalletERC20Balance';
-import { Contract } from 'ethers';
-import { Web3Provider } from '@ethersproject/providers';
-
-export const approveOffer = (
-  createdOffer: CreatedOffer, 
-  provider: Web3Provider|undefined, 
-  account: string|undefined, 
-  realTokenYamUpgradeable: Contract|undefined, 
-  setSubmitting: (status: boolean) => void, 
-  activeChain: Chain|undefined
-): Promise<void> => {
-  return new Promise<void>(async (resolve,reject) => {
-    if(!provider || !realTokenYamUpgradeable || !account || !createdOffer.amount) return;
-    try{
-      setSubmitting(true);
-      const offerToken = getContract<CoinBridgeToken>(
-        createdOffer.offerTokenAddress,
-        coinBridgeTokenABI,
-        provider,
-        account
-      );
-
-      if (!offerToken) {
-        console.log('offerToken not found');
-        return;
-      }
-
-      const amount = new BigNumber(createdOffer.amount);
-      const oldAllowance = await offerToken.allowance(account,realTokenYamUpgradeable.address);
-      const amountInWeiToPermit = amount.plus(new BigNumber(oldAllowance.toString())).toString(10);
-
-      console.log("amountInWei: ", createdOffer.amount.toString())
-      console.log("oldAllowance: ", oldAllowance.toString())
-      console.log("amountInWeiToPermit: ", amountInWeiToPermit)
-
-      // TokenType = 3: ERC20 Without Permit, do Approve/CreateOffer
-      BigNumber.set({EXPONENTIAL_AT: 35});
-      const approveTx = await offerToken.approve(
-        realTokenYamUpgradeable.address,
-        amountInWeiToPermit
-      );
-
-      const notificationApprove = {
-        key: approveTx.hash,
-        href: `${activeChain?.blockExplorerUrl}tx/${approveTx.hash}`,
-        hash: approveTx.hash,
-      };
-
-      showNotification(
-        NOTIFICATIONS[NotificationsID.approveOfferLoading](
-          notificationApprove
-        )
-      );
-
-      approveTx
-        .wait()
-        .then(({ status }) =>
-          updateNotification(
-            NOTIFICATIONS[
-              status === 1
-                ? NotificationsID.approveOfferSuccess
-                : NotificationsID.approveOfferError
-            ](notificationApprove)
-          )
-        );
-
-      await approveTx.wait(1);
-
-      resolve();
-
-    }catch(err){
-      setSubmitting(false);
-      reject(err)
-    }
-  });
-}
 
 interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
   label: string;
@@ -146,7 +70,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         offerTokenAddress: offer?.offerTokenAddress ?? '',
         buyerTokenAddress: offer?.buyerTokenAddress ?? '',
         price: offer?.price ?? undefined,
-        amount: isModification && offer.amount && offer.price ? offer.amount/offer.price : undefined,
+        amount: isModification && offer.amount && offer.price ? parseInt(offer.amount.toString())/offer.price : undefined,
         buyerAddress: offer?.buyerAddress ?? ZERO_ADDRESS,
         isPrivateOffer: offer?.isPrivateOffer ?? false,
       },
@@ -159,17 +83,11 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
     const others = t("otherTokenType");
     const data = [{ value: realT, label: realT },{ value: others, label: others }];
 
-  // const [isPrivateOffer, setIsPrivateOffer] = useState(false);
-  const [isSubmitting, setSubmitting] = useState<boolean>(false);
-  const activeChain = useActiveChain();
-
   const dispatch = useAppDispatch();
-  const realTokenYamUpgradeable = useContract(ContractsID.realTokenYamUpgradeable);
 
   const offers = useAppSelector(selectCreateOffers);
   const [exchangeType,setExchangeType] = useState<string|null>(null);
 
-  const createdOffers = useAppSelector(selectCreateOffers);
 
   // const onHandleSubmit = useCallback(
   //   async (formValues: SellFormValues) => {
@@ -452,7 +370,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
 
   const { bigNumberbalance, balance } = useWalletERC20Balance(values.offerTokenAddress);
 
-  const approveAndsaveCreatedOffer = async (formValues: SellFormValues) => {
+  const createdOffer = async (formValues: SellFormValues) => {
     try{
 
       if(!provider || !values.amount) return;
@@ -480,15 +398,9 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         offerTokenAddress: formValues.offerTokenAddress,
         buyerTokenAddress: formValues.buyerTokenAddress,
         price: price ? parseFloat(price.toFixed(6)) : 0,
-        amount: parseInt(amountInWei.toString(10)),
+        amount: amountInWei,
         buyerAddress: formValues.buyerAddress,
         isPrivateOffer: formValues.isPrivateOffer
-      }
-
-      console.log(createdOffer);
-
-      if(createdOffers.length > 0){
-        await approveOffer(createdOffer,provider,account,realTokenYamUpgradeable,setSubmitting,activeChain);
       }
 
       dispatch({ type: createOfferAddedDispatchType, payload: createdOffer });
@@ -774,7 +686,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         </Flex>
         { offer.offerType !== OFFER_TYPE.EXCHANGE ? <Shield /> : undefined }        
       </Flex>
-      <form onSubmit={onSubmit(approveAndsaveCreatedOffer)}>
+      <form onSubmit={onSubmit(createdOffer)}>
         <Stack justify={'center'} align={'stretch'}>
 
         { offer.offerType == OFFER_TYPE.EXCHANGE ? 
@@ -818,10 +730,10 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
             <Button
               type={'submit'}
               aria-label={'submit'}
-              loading={(bigNumberbalance && bigNumberbalance == undefined) || isSubmitting}
+              loading={(bigNumberbalance && bigNumberbalance == undefined)}
               disabled={!isValid || shieldError}
             >
-              {"Approve offer"}
+              {t("buttonCreateOffer")}
             </Button>
           </>
         </Group>
