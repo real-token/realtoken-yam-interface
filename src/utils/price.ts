@@ -49,6 +49,14 @@ export const getPrice = (provider: Web3Provider, allowedToken: AllowedToken) => 
     });
 }
 
+// if(offer.type == OFFER_TYPE.SELL){
+//   const buyTokenPriceInDollar = parseFloat(prices[offer.buyerTokenAddress.toLowerCase()]);
+//   return buyTokenPriceInDollar*parseFloat(offer.price);
+// }
+// if(offer.type == OFFER_TYPE.BUY && offer.officialPrice){
+//   return offer.officialPrice;
+// }
+
 export const getPriceInDollar = (prices: P, offer: Offer): number|undefined => {
 
   let buyTokenPriceInDollar;

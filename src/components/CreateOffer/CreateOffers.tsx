@@ -198,18 +198,6 @@ export const CreateOffer = () => {
                     );
                 }else if(offerTokenType == 2){
                     // TokenType = 2: ERC20 With Permit
-                    console.log('HERE1')
-
-                    console.log("amount: ", offer.amount.toString(10))
-
-                    console.log(
-                        account,
-                        realTokenYamUpgradeable.address,
-                        offer.amount.toString(10),
-                        transactionDeadline,
-                        offerToken,
-                        provider
-                    )
 
                     permitAnswer = await erc20PermitSignature(
                         account,
@@ -220,7 +208,6 @@ export const CreateOffer = () => {
                         provider
                     );
                 }else if(offerTokenType == 3){
-                    console.log('HERE2')
                     await approveOffer(offer.offerTokenAddress, offer.amount,provider,account,realTokenYamUpgradeable,setLoading,activeChain);
                 }
 
@@ -231,7 +218,6 @@ export const CreateOffer = () => {
 
                 let createOfferTx;
                 if(offerTokenType == 1 || offerTokenType == 2){
-                    console.log("HERE3")
                     const { r, s, v} = permitAnswer;
                     createOfferTx = await realTokenYamUpgradeable.createOfferWithPermit(
                         offer.offerTokenAddress,
