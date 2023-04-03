@@ -2,6 +2,7 @@ import type { Web3Provider } from '@ethersproject/providers';
 
 import type { Contract } from 'ethers';
 import { utils } from 'ethers';
+import { gnosisAllowedTokens } from '../constants/allowedBuyTokens';
 
 // This function is used for general tokens with permit function
 const erc20PermitSignature = async (
@@ -14,8 +15,15 @@ const erc20PermitSignature = async (
 ) => {
   try {
     // const transactionDeadline = Date.now() + 3600; // permit valable during 1h
-    const nonce = await contract.nonces(owner);
+    let nonce;
+    if(contract.address == gnosisAllowedTokens[2].contractAddress){
+      nonce = await contract._nonces(owner);
+    }else{
+      nonce = await contract.nonces(owner);
+    }
+
     const contractName = await contract.name();
+
     const EIP712Domain = [
       { name: 'name', type: 'string' },
       { name: 'version', type: 'string' },
@@ -43,6 +51,9 @@ const erc20PermitSignature = async (
       nonce: nonce.toHexString(),
       deadline: transactionDeadline,
     };
+
+    console.log(message)
+
     // eslint-disable-next-line object-shorthand
     const data = JSON.stringify({
       types: {
