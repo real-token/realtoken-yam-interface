@@ -52,7 +52,7 @@ export const useMatchedOffers: UseMatchedOffers = (offerType, offerTokenAddress,
     const priceMaxLimit = price ? price*(1+shieldValue) : 0;
 
     const matchedOffers = useMemo(() => {
-        if(!matchedOffersWithType || !price) return [];
+        if(!matchedOffersWithType || !price) return undefined;
         if(offerType == OFFER_TYPE.BUY){
             return matchedOffersWithType
                 .filter((offer) => 
@@ -90,16 +90,19 @@ export const useMatchedOffers: UseMatchedOffers = (offerType, offerTokenAddress,
     },[buyerTokenAddress, matchedOffersWithType, offerTokenAddress, offerType, price]);
 
     const bestPrice = useMemo(() => {
+        if(!matchedOffers) return undefined;
         const sortedBestPrice = matchedOffers.sort((a,b)=> Number(a.price)-Number(b.price));
         return sortedBestPrice.length > 0 ? sortedBestPrice[0] : undefined
     },[matchedOffers]);
 
     const sortedAmount = useMemo(() => {
+        if(!matchedOffers) return undefined;
         const offers = useMultiCurrencies ? matchedRawOffers : matchedOffers;
         return offers.sort((a,b)=> Number(b.amount)-Number(a.amount));
     },[matchedOffers, matchedRawOffers, useMultiCurrencies]);
 
     const multiPath = useMemo(() => {
+        if(!sortedAmount) return undefined;
         if(!amount) return;
         const path: Offer[] = [];
         sortedAmount.forEach((offer) => {
@@ -127,6 +130,6 @@ export const useMatchedOffers: UseMatchedOffers = (offerType, offerTokenAddress,
         multiPath: multiPath,
         multiPathAmountFilled: 0,
         multiPathAmountFilledPercentage: multiPathAmountFilledPercentage,
-        otherMatching: matchedOffers.filter((offer) => ![bestPrice?.offerId].includes(offer.offerId))
+        otherMatching: matchedOffers ? matchedOffers.filter((offer) => ![bestPrice?.offerId].includes(offer.offerId)) : undefined
     }
 }
