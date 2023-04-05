@@ -94,7 +94,7 @@ export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage }: M
             <Text mb={5} weight={700}>{"Best path:"}</Text>
             <Flex gap={"xs"} mb={12} wrap={"wrap"}>
             {offers && offers.map((offer,index) => (
-                <Flex key={`multi-path-${offer.offerId}`} gap={"xs"}>
+                <Flex key={`multi-path-${offer.offerId}`} gap={"xs"} align={"center"}>
                     <Text
                         sx={(theme) => ({
                             display: "flex",
