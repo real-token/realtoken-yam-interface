@@ -52,6 +52,15 @@ export const MatchedOffers: FC<MatchedOffersProps> = ({ offerType, offerTokenAdd
                 {"Offers matching"}
             </Flex>
             <Flex direction={"column"} className={classes.body} gap={"sm"}>
+                { !bestPrice && !multiPath && otherMatching && otherMatching.length == 0 ? (
+                    <div>{"❌ No matching offers founded "}</div>
+                ): undefined}
+                {!bestPrice && !multiPath && !otherMatching ? (
+                    <Flex align={"center"} gap={"sm"}>
+                        <Loader size={"sm"}/>
+                        {"Waiting for matching..."}
+                    </Flex>
+                ): undefined}
                 { multiPath ? 
                     <MultiPath 
                         offers={multiPath} 
@@ -60,20 +69,14 @@ export const MatchedOffers: FC<MatchedOffersProps> = ({ offerType, offerTokenAdd
                         multiPathAmountFilledPercentage={multiPathAmountFilledPercentage}
                     /> 
                 : (
-                    <>
-                    {!otherMatching ? (
-                        <Flex align={"center"} gap={"sm"}>
-                            <Loader size={"sm"}/>
-                            {"Matching offers..."}
-                        </Flex>
-                    ) : !bestPrice && otherMatching && otherMatching.length == 0 ? (
-                        <div>{"❌ No matching offers founded "}</div>
-                    ) : undefined }
-                    { bestPrice ? <MatchedOffer offer={bestPrice} offerBestType={OFFER_BEST_TYPE.BEST_PRICE} /> : undefined }
-                    </>
+                    <>{ bestPrice ? <MatchedOffer offer={bestPrice} offerBestType={OFFER_BEST_TYPE.BEST_PRICE} /> : undefined }</>
                 )}
-                <Divider color={"brand"}/>
-                {otherMatching && otherMatching.map((offer) => <MatchedOffer key={offer.createdAtTimestamp} offer={offer} />)}
+                {otherMatching && otherMatching.length> 1 ? (
+                    <>
+                    <Divider color={"brand"}/>
+                    {otherMatching.map((offer) => <MatchedOffer key={offer.createdAtTimestamp} offer={offer} />)}
+                    </>
+                ): undefined}
             </Flex>
         </Flex>
     )

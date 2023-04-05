@@ -5,6 +5,9 @@ import { useMemo } from "react";
 import { MultiPathDetailsPopover } from "./MultiPathDetailsPopover";
 import { multiPathMultiCurrencyAtom } from "../../../../states";
 import { useAtom } from "jotai";
+import { getRightAllowBuyTokens } from "../../../../hooks/useAllowedTokens";
+import { useWeb3React } from "@web3-react/core";
+import React from "react";
 
 const useStyle = createStyles((theme: MantineTheme) => ({
     container: {
@@ -20,6 +23,12 @@ const useStyle = createStyles((theme: MantineTheme) => ({
         marginBottom: '10px',
         marginRight: '10px'
     },
+    currencyLogo: {
+        position: 'absolute',
+        bottom: 0,
+        right: 0,
+        transform: 'translate(40%,40%)'
+    }
 }));
 
 export interface AveragePrice{
@@ -35,6 +44,7 @@ interface MultiPathProps{
 }
 export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage }: MultiPathProps) => {
 
+    const { chainId } = useWeb3React();
     const { classes } = useStyle();
 
     const [multiCurrencies,setMultiCurrencies] = useAtom(multiPathMultiCurrencyAtom);
@@ -70,6 +80,11 @@ export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage }: M
 
     },[amount, offers]);
 
+    const buy = () => {
+        //TODO: finish BUY
+        return;
+    }
+
     return(
         <Flex direction={"column"} className={classes.container}>
             <Flex 
@@ -91,13 +106,19 @@ export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage }: M
                 checked={multiCurrencies} 
                 onChange={(event) => setMultiCurrencies(event.currentTarget.checked)}
             />
-            <Text mb={5} weight={700}>{"Best path:"}</Text>
+            <Text mb={5} weight={700}>{"Best path (offer id):"}</Text>
             <Flex gap={"xs"} mb={12} wrap={"wrap"}>
-            {offers && offers.map((offer,index) => (
+            {offers && offers.map((offer,index) => {
+
+                console.log(offer.buyerTokenAddress.toLowerCase())
+                const Logo = getRightAllowBuyTokens(chainId).find((allowedToken) => allowedToken.contractAddress.toLowerCase() == offer.buyerTokenAddress.toLowerCase())?.logo;
+
+                return(
                 <Flex key={`multi-path-${offer.offerId}`} gap={"xs"} align={"center"}>
-                    <Text
+                    <Flex
                         sx={(theme) => ({
                             display: "flex",
+                            position: "relative",
                             alignItems: "center",
                             justifyContent: "center",
                             backgroundColor: theme.colors.brand,
@@ -107,12 +128,15 @@ export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage }: M
                             fontWeight: 700,
                             fontSize: theme.fontSizes.xl
                         })}
+                        gap={4}
                     >
-                        {offer.offerId}
-                    </Text>
+                        <Flex className={classes.currencyLogo}>{ Logo ? React.cloneElement(<Logo/>, { width: '18' }) : undefined}</Flex>
+                        <Text>{offer.offerId}</Text>
+                    </Flex>
                     {index != offers.length-1 ? <IconArrowRight/> : undefined}
                 </Flex>
-            ))}
+                );
+            })}
             </Flex>
             <Flex direction={"column"} gap={5} mb={12}>
                 <Text weight={700}>{"Total:"}</Text>
@@ -128,7 +152,7 @@ export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage }: M
                 <Text weight={700}>{"Average buy price/token:"}</Text>
                 <Text>{`$ ${amount ? averagePrice?.totalPriceInDollar/amount : 0}`}</Text>
             </Flex>
-            <Button className={classes.floatingButton}>{"Buy"}</Button>
+            <Button className={classes.floatingButton} onClick={() => buy()}>{"Buy"}</Button>
         </Flex>
     )
 }
