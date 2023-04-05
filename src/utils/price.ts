@@ -49,27 +49,23 @@ export const getPrice = (provider: Web3Provider, allowedToken: AllowedToken) => 
     });
 }
 
-export const getPriceInDollar = (prices: P, offer: Offer): number|undefined => {
+// if(offer.type == OFFER_TYPE.SELL){
+//   const buyTokenPriceInDollar = parseFloat(prices[offer.buyerTokenAddress.toLowerCase()]);
+//   return buyTokenPriceInDollar*parseFloat(offer.price);
+// }
+// if(offer.type == OFFER_TYPE.BUY && offer.officialPrice){
+//   return offer.officialPrice;
+// }
 
-  let buyTokenPriceInDollar;
+export const getPriceInDollar = (prices: P, offer: Offer): number|undefined => {
   if(offer.type == OFFER_TYPE.SELL){
-    buyTokenPriceInDollar = parseFloat(prices[offer.buyerTokenAddress.toLowerCase()]);
+    const buyTokenPriceInDollar = parseFloat(prices[offer.buyerTokenAddress.toLowerCase()]);
+    return buyTokenPriceInDollar*parseFloat(offer.price);
   }
   if(offer.type == OFFER_TYPE.BUY && offer.officialPrice){
-    buyTokenPriceInDollar = offer.officialPrice;
+    const buyTokenPriceInDollar = 1/parseFloat(offer.price);
+    return buyTokenPriceInDollar;
   }
-
-  if(buyTokenPriceInDollar){
-
-    // const tokenName = offer.buyerTokenName;
-    // const price = buyTokenPriceInDollar*parseFloat(offer.price);
-    // console.log(`${tokenName}: ${buyTokenPriceInDollar}, $${price}`)
-
-    return buyTokenPriceInDollar*parseFloat(offer.price);
-  }else{
-    return undefined;
-  }
-
 }
 
 export const getBuyPriceInDollar = (prices: P, offer: Offer): number|undefined => {

@@ -188,14 +188,24 @@ const getYieldDelta = (offer: Offer): number|undefined => {
 const getPriceDelta = (prices: Price, offer: Offer): number|undefined => {
 
   const tokenPriceInDollar = getPriceInDollar(prices,offer);
-  const buyTokenPriceInDollar = getBuyPriceInDollar(prices, offer);
   const officialPrice = offer.officialPrice;
 
   if(offer.type == OFFER_TYPE.SELL){
     return officialPrice && tokenPriceInDollar ? parseFloat(new BigNumber(tokenPriceInDollar).dividedBy(new BigNumber(officialPrice)).minus(1).toString()) : undefined
   }
-  if(offer.type == OFFER_TYPE.BUY && buyTokenPriceInDollar){
-    return tokenPriceInDollar ? parseFloat(new BigNumber(tokenPriceInDollar).dividedBy(new BigNumber(buyTokenPriceInDollar)).minus(1).toString()) : undefined
+  if(offer.type == OFFER_TYPE.BUY && officialPrice){
+
+    const tokenInDollar = 1/parseFloat(offer.price.toString());
+    const ratio = officialPrice/tokenInDollar;
+
+    // if(offer.offerId == "135"){
+    //   console.log("offer price: ", offer.price.toString())
+    //   console.log("officialPrice: ", officialPrice)
+    //   console.log("tokenInDollar: ", tokenInDollar) 
+    //   console.log("ratio: ", ratio)
+    // }
+
+    return 1-ratio;
   }
 
 }
