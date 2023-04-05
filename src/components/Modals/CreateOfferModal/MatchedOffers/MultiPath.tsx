@@ -107,7 +107,7 @@ export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage }: M
                 onChange={(event) => setMultiCurrencies(event.currentTarget.checked)}
             />
             <Text mb={5} weight={700}>{"Best path (offer id):"}</Text>
-            <Flex gap={"xs"} mb={12} wrap={"wrap"}>
+            <Flex gap={15} mb={12} wrap={"wrap"}>
             {offers && offers.map((offer,index) => {
 
                 console.log(offer.buyerTokenAddress.toLowerCase())
