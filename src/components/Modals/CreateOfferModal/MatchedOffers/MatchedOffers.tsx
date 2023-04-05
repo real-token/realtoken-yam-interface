@@ -1,9 +1,10 @@
-import { createStyles, Flex, Loader, MantineTheme } from "@mantine/core"
+import { createStyles, Divider, Flex, Loader, MantineTheme } from "@mantine/core"
 import { IconSwitchHorizontal } from "@tabler/icons";
 import { FC } from "react";
 import { useMatchedOffers } from "../../../../hooks/useMatchedOffers";
 import { OFFER_TYPE } from "../../../../types/offer";
 import { MatchedOffer, OFFER_BEST_TYPE } from "./MatchedOffer";
+import { MultiPath } from "./MultiPath";
 
 const useStyles = createStyles((theme: MantineTheme) => ({
     container: {
@@ -36,7 +37,13 @@ interface MatchedOffersProps{
 export const MatchedOffers: FC<MatchedOffersProps> = ({ offerType, offerTokenAddress, buyerTokenAddress, price, amount }) => {
 
     const { classes } = useStyles();
-    const { bestPrice, bestAmount, otherMatching } = useMatchedOffers(offerType, offerTokenAddress, buyerTokenAddress, price, amount);
+    const { 
+        bestPrice, 
+        multiPath,
+        multiPathAmountFilled,
+        multiPathAmountFilledPercentage,
+        otherMatching 
+    } = useMatchedOffers(offerType, offerTokenAddress, buyerTokenAddress, price, amount);
 
     return(
         <Flex className={classes.container} direction={"column"}>
@@ -45,23 +52,27 @@ export const MatchedOffers: FC<MatchedOffersProps> = ({ offerType, offerTokenAdd
                 {"Offers matching"}
             </Flex>
             <Flex direction={"column"} className={classes.body} gap={"sm"}>
-                {}
-                {!otherMatching ? (
-                    <Flex align={"center"} gap={"sm"}>
-                        <Loader size={"sm"}/>
-                        {"Matching offers..."}
-                    </Flex>
-                ) : !bestPrice && !bestAmount && otherMatching && otherMatching.length == 0 ? (
-                    <div>{"❌ No matching offers founded "}</div>
-                ) : undefined }
-                { bestPrice && bestAmount && bestPrice.offerId == bestAmount.offerId ? (
-                    <MatchedOffer offer={bestAmount} offerBestType={OFFER_BEST_TYPE.BEST_PRICE_AMOUNT}/>
-                ): (
+                { multiPath ? 
+                    <MultiPath 
+                        offers={multiPath} 
+                        amount={amount}
+                        multiPathAmountFilled={multiPathAmountFilled}
+                        multiPathAmountFilledPercentage={multiPathAmountFilledPercentage}
+                    /> 
+                : (
                     <>
+                    {!otherMatching ? (
+                        <Flex align={"center"} gap={"sm"}>
+                            <Loader size={"sm"}/>
+                            {"Matching offers..."}
+                        </Flex>
+                    ) : !bestPrice && otherMatching && otherMatching.length == 0 ? (
+                        <div>{"❌ No matching offers founded "}</div>
+                    ) : undefined }
                     { bestPrice ? <MatchedOffer offer={bestPrice} offerBestType={OFFER_BEST_TYPE.BEST_PRICE} /> : undefined }
-                    { bestAmount ? <MatchedOffer offer={bestAmount} offerBestType={OFFER_BEST_TYPE.BEST_AMOUNT} /> : undefined }
                     </>
                 )}
+                <Divider color={"brand"}/>
                 {otherMatching && otherMatching.map((offer) => <MatchedOffer key={offer.createdAtTimestamp} offer={offer} />)}
             </Flex>
         </Flex>
