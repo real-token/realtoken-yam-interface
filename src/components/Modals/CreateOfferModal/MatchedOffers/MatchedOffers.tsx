@@ -73,12 +73,12 @@ export const MatchedOffers: FC<MatchedOffersProps> = ({ offerType, offerTokenAdd
                         multiPathAmountFilledPercentage={multiPathAmountFilledPercentage}
                     /> 
                 : (
-                    <>{ bestPrice ? <MatchedOffer offer={bestPrice} offerBestType={OFFER_BEST_TYPE.BEST_PRICE} /> : undefined }</>
+                    <>{ bestPrice ? <MatchedOffer offer={bestPrice} amount={amount} offerBestType={OFFER_BEST_TYPE.BEST_PRICE} /> : undefined }</>
                 )}
                 {otherMatching && otherMatching.length> 1 ? (
                     <>
                     <Divider color={"brand"}/>
-                    {otherMatching.map((offer) => <MatchedOffer key={offer.createdAtTimestamp} offer={offer} />)}
+                    {otherMatching.map((offer) => <MatchedOffer key={offer.createdAtTimestamp} offer={offer} amount={amount}/>)}
                     </>
                 ): undefined}
             </Flex>

@@ -4,6 +4,13 @@ import { useOfferInfos } from "../../../../hooks/useOfferInfos";
 import { Offer, OFFER_TYPE } from "../../../../types/offer";
 import { OfferTypeBadge } from "../../../Offer/OfferTypeBadge";
 import { OFFER_BEST_TYPE, useMatchedOfferBestType } from "../../../../hooks/useMatchedOfferBestType";
+import { buy } from "../../../../utils/tx/buy";
+import { useWeb3React } from "@web3-react/core";
+import { useActiveChain, useContract } from "../../../../hooks";
+import { ContractsID } from "../../../../constants";
+import { useAtomValue } from "jotai";
+import { providerAtom } from "../../../../states";
+import { useState } from "react";
 
 const useStyle = createStyles((theme: MantineTheme) => ({
     container: {
@@ -35,14 +42,51 @@ const useStyle = createStyles((theme: MantineTheme) => ({
 
 interface MatchedOfferProps{
     offerBestType?: OFFER_BEST_TYPE,
-    offer: Offer
+    offer: Offer,
+    amount: number|undefined
 }
-export const MatchedOffer = ({ offerBestType, offer } : MatchedOfferProps) => {
+export const MatchedOffer = ({ offerBestType, offer, amount } : MatchedOfferProps) => {
+
+    const { account, provider } = useWeb3React();
+    const activeChain = useActiveChain();
+    const realTokenYamUpgradeable = useContract(ContractsID.realTokenYamUpgradeable);
+    const connector = useAtomValue(providerAtom);
 
     const { classes } = useStyle();
     const { buyerTokenName, offerTokenName } = useOfferInfos(offer);
 
     const { getOfferBestTypeTranslation } = useMatchedOfferBestType();
+
+    const [isSubmitting, setSubmitting] = useState<boolean>(false);
+
+    const buyOffer = () => {
+        if(!amount) return;
+        try{
+
+            setSubmitting(true);
+
+            const offerAmount = parseFloat(offer.amount);
+            const amountToBuy = offerAmount >= amount ? amount : offerAmount;
+            
+            buy(
+                account,
+                provider,
+                activeChain,
+                realTokenYamUpgradeable,
+                offer,
+                amountToBuy,
+                connector,
+                setSubmitting,
+                () => {
+                    setSubmitting(false);
+                }
+            );
+
+        }catch(err){
+            console.log(err);
+            setSubmitting(false);
+        }
+    }
 
     return(
         <Flex direction={"column"} className={classes.container}>
@@ -82,7 +126,13 @@ export const MatchedOffer = ({ offerBestType, offer } : MatchedOfferProps) => {
                 <IconScale/>
                 <Text>{offer.amount}</Text>
             </Flex>
-            <Button className={classes.floatingButton}>{"Buy"}</Button>
+            <Button 
+                className={classes.floatingButton} 
+                onClick={() => buyOffer()} 
+                loading={isSubmitting}
+            >
+                {"Buy"}
+            </Button>
         </Flex>
     )
 }
