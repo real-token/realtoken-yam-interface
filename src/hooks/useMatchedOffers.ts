@@ -122,13 +122,13 @@ export const useMatchedOffers: UseMatchedOffers = (offerType, offerTokenAddress,
 
     const multiPathAmountFilledPercentage = useMemo(() => {
         const perc = amount ? parseFloat((multiPathAmountFilled/amount).toFixed(4)) : 0;
-        return perc > 1 ? 1 : 0
+        return perc >= 1 ? 1 : 0
     },[amount, multiPathAmountFilled]);
 
     return {
         bestPrice: bestPrice,
         multiPath: multiPath,
-        multiPathAmountFilled: 0,
+        multiPathAmountFilled: multiPathAmountFilled,
         multiPathAmountFilledPercentage: multiPathAmountFilledPercentage,
         otherMatching: matchedOffers ? matchedOffers.filter((offer) => ![bestPrice?.offerId].includes(offer.offerId)) : undefined
     }
