@@ -2,12 +2,14 @@ import { Text, Popover, Flex } from "@mantine/core"
 import { AveragePrice } from "./MultiPath"
 import { IconInfoCircle } from "@tabler/icons";
 import { useDisclosure } from "@mantine/hooks";
+import { useTranslation } from "react-i18next";
 
 interface MultiPathDetailsPopoverProps{
     averagePrice: AveragePrice
 }
 export const MultiPathDetailsPopover = ({ averagePrice }: MultiPathDetailsPopoverProps) => {
 
+    const { t } = useTranslation('modals', { keyPrefix: "offerMatching" });
     const [opened, { open, close }] = useDisclosure(false);
     
     return(
@@ -29,7 +31,7 @@ export const MultiPathDetailsPopover = ({ averagePrice }: MultiPathDetailsPopove
                 </Flex>
             </Popover.Target>
             <Popover.Dropdown>
-                <Text>{"Buy assets repartition: "}</Text>
+                <Text>{t("buyTokenRepartition")}</Text>
                 <ul>
                 {Object.keys(averagePrice.details).map((key,index) => {
                     const detailValue = averagePrice.details[key];

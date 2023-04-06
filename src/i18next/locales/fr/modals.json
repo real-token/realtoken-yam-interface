@@ -115,7 +115,8 @@
     "averagePricePerToken": "Prix moyen d'achat par token",
     "bestPrice": "Meilleur prix",
     "bestAmount": "Meilleur montant",
-    "multiPath": "Meilleur chemin d'achat"
+    "multiPath": "Meilleur chemin d'achat",
+    "buyTokenRepartition": "Répartion des jetons d'achat:"
   },
   "chooseOfferType": {
     "title": "Quel type d'offre voulez-vous créer ?",
