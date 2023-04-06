@@ -3,8 +3,10 @@ import { IconSwitchHorizontal } from "@tabler/icons";
 import { FC } from "react";
 import { useMatchedOffers } from "../../../../hooks/useMatchedOffers";
 import { OFFER_TYPE } from "../../../../types/offer";
-import { MatchedOffer, OFFER_BEST_TYPE } from "./MatchedOffer";
+import { MatchedOffer } from "./MatchedOffer";
 import { MultiPath } from "./MultiPath";
+import { useTranslation } from "react-i18next";
+import { OFFER_BEST_TYPE } from "../../../../hooks/useMatchedOfferBestType";
 
 const useStyles = createStyles((theme: MantineTheme) => ({
     container: {
@@ -36,6 +38,8 @@ interface MatchedOffersProps{
 }
 export const MatchedOffers: FC<MatchedOffersProps> = ({ offerType, offerTokenAddress, buyerTokenAddress, price, amount }) => {
 
+    const { t } = useTranslation('modals', { keyPrefix: "offerMatching" })
+
     const { classes } = useStyles();
     const { 
         bestPrice, 
@@ -49,16 +53,16 @@ export const MatchedOffers: FC<MatchedOffersProps> = ({ offerType, offerTokenAdd
         <Flex className={classes.container} direction={"column"}>
             <Flex gap={"sm"} className={classes.header}>
                 <IconSwitchHorizontal/>
-                {"Offers matching"}
+                {t("title")}
             </Flex>
             <Flex direction={"column"} className={classes.body} gap={"sm"}>
                 { !bestPrice && !multiPath && otherMatching && otherMatching.length == 0 ? (
-                    <div>{"❌ No matching offers founded "}</div>
+                    <div>{t("noMatchingFound")}</div>
                 ): undefined}
                 {!bestPrice && !multiPath && !otherMatching ? (
                     <Flex align={"center"} gap={"sm"}>
                         <Loader size={"sm"}/>
-                        {"Waiting for matching..."}
+                        {t("waitingMatching")}
                     </Flex>
                 ): undefined}
                 { multiPath ? 

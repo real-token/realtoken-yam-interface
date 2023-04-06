@@ -8,6 +8,7 @@ import { useAtom } from "jotai";
 import { getRightAllowBuyTokens } from "../../../../hooks/useAllowedTokens";
 import { useWeb3React } from "@web3-react/core";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const useStyle = createStyles((theme: MantineTheme) => ({
     container: {
@@ -17,7 +18,6 @@ const useStyle = createStyles((theme: MantineTheme) => ({
         borderRadius: theme.spacing.md
     },
     floatingButton: {
-        position: 'absolute',
         bottom: 0,
         right: 0,
         marginBottom: '10px',
@@ -43,6 +43,9 @@ interface MultiPathProps{
     multiPathAmountFilledPercentage: number;
 }
 export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage }: MultiPathProps) => {
+
+    const { t } = useTranslation('modals', { keyPrefix: "offerMatching" });
+    const { t: t1 } = useTranslation('modals', { keyPrefix: "buy" });
 
     const { chainId } = useWeb3React();
     const { classes } = useStyle();
@@ -98,21 +101,18 @@ export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage }: M
                 })}
                 mb={12}
             >
-                {"Multi path"}
+                {t("multiPath")}
             </Flex>
             <Checkbox 
-                label={"Allow multi currencies"} 
+                label={t("multiCurrency")} 
                 mb={10}
                 checked={multiCurrencies} 
                 onChange={(event) => setMultiCurrencies(event.currentTarget.checked)}
             />
-            <Text mb={5} weight={700}>{"Best path (offer id):"}</Text>
+            <Text mb={5} weight={700}>{t('bestPath')}</Text>
             <Flex gap={15} mb={12} wrap={"wrap"}>
             {offers && offers.map((offer,index) => {
-
-                console.log(offer.buyerTokenAddress.toLowerCase())
                 const Logo = getRightAllowBuyTokens(chainId).find((allowedToken) => allowedToken.contractAddress.toLowerCase() == offer.buyerTokenAddress.toLowerCase())?.logo;
-
                 return(
                 <Flex key={`multi-path-${offer.offerId}`} gap={"xs"} align={"center"}>
                     <Flex
@@ -139,20 +139,20 @@ export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage }: M
             })}
             </Flex>
             <Flex direction={"column"} gap={5} mb={12}>
-                <Text weight={700}>{"Total:"}</Text>
+                <Text weight={700}>{t("total")}</Text>
                 <MultiPathDetailsPopover averagePrice={averagePrice} />
             </Flex>
             <Flex direction={"column"} gap={5} mb={12}>
-                <Text weight={700}>{"Amount filled:"}</Text>
+                <Text weight={700}>{t('amountFilled')}</Text>
                 <Flex>
                     {`${multiPathAmountFilledPercentage*100}%`}
                 </Flex>
             </Flex>
-            <Flex direction={"column"} gap={5}>
-                <Text weight={700}>{"Average buy price/token:"}</Text>
+            <Flex direction={"column"} gap={5} mb={16}>
+                <Text weight={700}>{t('averagePricePerToken')}</Text>
                 <Text>{`$ ${amount ? averagePrice?.totalPriceInDollar/amount : 0}`}</Text>
             </Flex>
-            <Button className={classes.floatingButton} onClick={() => buy()}>{"Buy"}</Button>
+            <Button className={classes.floatingButton} onClick={() => buy()}>{t1("buy")}</Button>
         </Flex>
     )
 }

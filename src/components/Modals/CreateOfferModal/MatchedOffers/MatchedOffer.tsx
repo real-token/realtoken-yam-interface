@@ -3,12 +3,7 @@ import { IconArrowDownLeft, IconArrowUpRight, IconCash, IconScale } from "@table
 import { useOfferInfos } from "../../../../hooks/useOfferInfos";
 import { Offer, OFFER_TYPE } from "../../../../types/offer";
 import { OfferTypeBadge } from "../../../Offer/OfferTypeBadge";
-
-export enum OFFER_BEST_TYPE{
-    BEST_PRICE = 'Best price',
-    BEST_AMOUNT = 'Best amount',
-    BEST_PRICE_AMOUNT = 'Best price and amount'
-}
+import { OFFER_BEST_TYPE, useMatchedOfferBestType } from "../../../../hooks/useMatchedOfferBestType";
 
 const useStyle = createStyles((theme: MantineTheme) => ({
     container: {
@@ -47,13 +42,15 @@ export const MatchedOffer = ({ offerBestType, offer } : MatchedOfferProps) => {
     const { classes } = useStyle();
     const { buyerTokenName, offerTokenName } = useOfferInfos(offer);
 
+    const { getOfferBestTypeTranslation } = useMatchedOfferBestType();
+
     return(
         <Flex direction={"column"} className={classes.container}>
             <Flex gap={"xs"} direction={"column"} mb={10}>
                 { offerBestType ? (
                     <Flex 
                         sx={(theme) => ({ 
-                            backgroundColor: offerBestType == OFFER_BEST_TYPE.BEST_PRICE_AMOUNT ? theme.colors.indigo : OFFER_BEST_TYPE.BEST_PRICE ? theme.colors.blue : theme.colors.grape,
+                            backgroundColor: offerBestType == OFFER_BEST_TYPE.BEST_AMOUNT ? theme.colors.blue : theme.colors.grape,
                             borderRadius: theme.radius.md,
                             fontWeight: 700,
                             padding: `0 ${theme.spacing.sm}px`,
@@ -61,7 +58,7 @@ export const MatchedOffer = ({ offerBestType, offer } : MatchedOfferProps) => {
                             justifyContent: 'center'
                         })}
                     >
-                        {String(offerBestType).toUpperCase()}
+                        {getOfferBestTypeTranslation(offerBestType)}
                     </Flex>
                 ): undefined}
                 <Flex gap={"xs"}>

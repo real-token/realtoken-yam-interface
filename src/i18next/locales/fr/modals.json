@@ -104,6 +104,19 @@
     "summaryText2": "et le montant de",
     "summaryText3": "à"
   },
+  "offerMatching": {
+    "title": "Offres correspondantes",
+    "noMatchingFound": "❌ Aucunes correspondances trouvées",
+    "waitingMatching": "En attente de correspondances",
+    "multiCurrency": "Autoriser plusieurs tokens d'achat",
+    "bestPath": "Meilleur chemin (id de l'offre):",
+    "total": "Total:",
+    "amountFilled": "Quantité remplie",
+    "averagePricePerToken": "Prix moyen d'achat par token",
+    "bestPrice": "Meilleur prix",
+    "bestAmount": "Meilleur montant",
+    "multiPath": "Meilleur chemin d'achat"
+  },
   "chooseOfferType": {
     "title": "Quel type d'offre voulez-vous créer ?",
     "buyTypeExplain": "Choisissez le type d'offre \"{{ offerType }}\" si vous souhaitez acheter un token de propriété RealT avec un autre token non RealT (WXDAI, WETH, USDC etc...)",
