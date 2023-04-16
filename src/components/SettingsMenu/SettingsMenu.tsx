@@ -75,7 +75,6 @@ const LanguageSelect: FC = () => {
         data={[
           { value: 'fr', label: t('french') },
           { value: 'en', label: t('english') },
-          { value: 'es', label: t('spanish') },
         ]}
         icon={<IconLanguage size={16} />}
       />

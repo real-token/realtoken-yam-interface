@@ -1,12 +1,12 @@
 {
   "header": {
     "title": "YAM",
-    "titleCat1": "Explore",
-    "titleCat2": "Your Offers",
+    "titleCat1": "MarketPlace",
+    "titleCat2": "My Offers",
     "titleAdmin": "Admin"
   },
   "footer": {
-    "copyright": "© {{year}} RealT. All rights reserved.",
+    "copyright": "© {{year}} CleanSatMining. All rights reserved.",
     "faq": "HELP"
   },
   "general": {

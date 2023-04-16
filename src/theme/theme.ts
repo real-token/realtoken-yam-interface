@@ -4,28 +4,28 @@ export const modalStyles: ModalProps['styles'] = {
   header: { justifyContent: 'center' },
   modal: {
     // margin: '100px auto',
-    width: "auto",
-    maxWidth: "700px"
-  }
+    width: 'auto',
+    maxWidth: '700px',
+  },
 };
 
 export const theme: MantineThemeOverride = {
   colors: {
     brand: [
-      '#F6CA79',
+      '#606e0c',
       '#F5BC51',
       '#F4B43E',
       '#F3AD2B',
       '#F2A91E',
-      '#E79B0D',
-      '#D48E0C',
-      '#C1810B',
-      '#AE740A',
-      '#9A6709',
+      '#B7CC41',
+      '#606e0c',
+      '#333',
+      '#606e0c',
+      '#B7CC41',
     ],
   },
   primaryColor: 'brand',
-  defaultGradient: { deg: 90, from: '#F6CA79', to: '#E79B0D' },
+  defaultGradient: { deg: 90, from: '#BBCB40', to: '#88992A' },
   defaultRadius: 'md',
   cursorType: 'pointer',
   components: {

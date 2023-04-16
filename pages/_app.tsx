@@ -42,7 +42,7 @@ const App = ({ Component, pageProps, colorScheme, locale }: AppProps) => {
         <Web3Providers>
           <Provider store={store}>
             <InitStoreProvider>
-              <Head title={'Realtoken YAM'} />
+              <Head title={'CleanSatMining YAM'} />
                 <MantineProviders initialColorScheme={colorScheme}>
                     <LanguageInit initialLocale={locale} />
                     <Layout>

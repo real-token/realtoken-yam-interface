@@ -1,7 +1,7 @@
 {
   "table": {
     "market": "Marché",
-    "title": "RealToken YAM (You And Me)",
+    "title": "CleanSatMining YAM (You And Me)",
     "offerId": "ID de l'offre",
     "offerTokenAddress": "Adresse du jeton en vente",
     "offerTokenName": "En vente",
@@ -32,7 +32,7 @@
     "buyerTokenName": "Jeton d'achat",
     "sellerAddress": "Adresse du vendeur",
     "price": "Prix/Jeton",
-    "officialPrice": "Prix officiel (RealT)",
+    "officialPrice": "Prix officiel (CSM)",
     "offerPrice": "Prix proposé",
     "priceDifference": "Différence de prix",
     "amount": "Quantité disponible",

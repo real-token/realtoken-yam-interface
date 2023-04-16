@@ -51,7 +51,7 @@ export const gnosisAllowedTokens: AllowedToken[] = [
     contractAddress: '0xe91d153e0b41518a2ce8dd3d7944fa863463a97d',
   },
   {
-    name: 'RMM Xdai',
+    name: 'RMM xDai',
     symbol: 'armmWXDAI',
     contractAddress: '0x7349C9eaA538e118725a6130e0f8341509b9f8A0',
   },

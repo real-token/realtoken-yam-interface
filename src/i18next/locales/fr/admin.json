@@ -1,25 +1,25 @@
 {
-    "addWL": {
-        "invalidTokenType": "Type de jeton invalide",
-        "invalidAddress": "Format d'adresse invalide",
-        "tokenAlreadyWL": "Le jeton est déjà whitelisté",
-        "tokenType": {
-            "0": "Supprimer",
-            "1": "Jeton Realt",
-            "2": "ERC20 avec permit",
-            "3": "ERC20 sans permit"
-        }
-    },
-    "addWlActions": {
-        "title": "Whitelister un jeton",
-        "tokenAddress": "Addresse du jeton",
-        "wlToken": "Whitelisté un jeton(s)"
-    },
-    "checkAddress": {
-        "title": "Vérifier le rôle d'une adresse",
-        "getAddressButton": "Obtenir le rôle d'une adresse"
-    },
-    "grantRole":{
-        "title": "Définir un rôle"
+  "addWL": {
+    "invalidTokenType": "Type de jeton invalide",
+    "invalidAddress": "Format d'adresse invalide",
+    "tokenAlreadyWL": "Le jeton est déjà whitelisté",
+    "tokenType": {
+      "0": "Supprimer",
+      "1": "Jeton CSM",
+      "2": "ERC20 avec permit",
+      "3": "ERC20 sans permit"
     }
+  },
+  "addWlActions": {
+    "title": "Whitelister un jeton",
+    "tokenAddress": "Addresse du jeton",
+    "wlToken": "Whitelisté un jeton(s)"
+  },
+  "checkAddress": {
+    "title": "Vérifier le rôle d'une adresse",
+    "getAddressButton": "Obtenir le rôle d'une adresse"
+  },
+  "grantRole": {
+    "title": "Définir un rôle"
+  }
 }

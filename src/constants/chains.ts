@@ -5,7 +5,7 @@ import { Contracts, ContractsID } from './contracts';
 import { Currency, DAI, ETH } from './currencies';
 
 export enum ChainsID {
-  Ethereum = 0x01,
+  // Ethereum = 0x01,
   Gnosis = 0x64,
   Goerli = 0x05,
 }
@@ -31,26 +31,26 @@ export const CHAINS: Record<ChainsID, Chain> = {
     contracts: {
       [ContractsID.realTokenYamUpgradeable]: {
         abi: realTokenYamUpgradeableABI,
-        address: '0xc759aa7f9dd9720a1502c104dae4f9852bb17c14',
+        address: '0xc759aa7f9dd9720a1502c104dae4f9852bb17c14', //TODO CSM a changer
         metadata: { fromBlock: 25530390 },
       },
     },
   },
-  [ChainsID.Ethereum]: {
-    chainId: ChainsID.Ethereum,
-    chainName: 'Ethereum',
-    logo: EthereumSVG.src,
-    nativeCurrency: ETH,
-    rpcUrl: 'https://rpc.ankr.com/eth',
-    blockExplorerUrl: 'https://etherscan.io/',
-    contracts: {
-      [ContractsID.realTokenYamUpgradeable]: {
-        abi: realTokenYamUpgradeableABI,
-        address: '0xc759aa7f9dd9720a1502c104dae4f9852bb17c14',
-        metadata: { fromBlock: 16220000 },
-      },
-    },
-  },
+  // [ChainsID.Ethereum]: {
+  //   chainId: ChainsID.Ethereum,
+  //   chainName: 'Ethereum',
+  //   logo: EthereumSVG.src,
+  //   nativeCurrency: ETH,
+  //   rpcUrl: 'https://rpc.ankr.com/eth',
+  //   blockExplorerUrl: 'https://etherscan.io/',
+  //   contracts: {
+  //     [ContractsID.realTokenYamUpgradeable]: {
+  //       abi: realTokenYamUpgradeableABI,
+  //       address: '0xc759aa7f9dd9720a1502c104dae4f9852bb17c14',
+  //       metadata: { fromBlock: 16220000 },
+  //     },
+  //   },
+  // },
 
   [ChainsID.Goerli]: {
     chainId: ChainsID.Goerli,

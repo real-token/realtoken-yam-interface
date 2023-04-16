@@ -13,7 +13,7 @@
     "priceComputing": "Indiquez combien de token \"{{exchangeBuyerTokenSymbol}}\" vous souhaitez recevoir en échange d'un 1 token \"{{exchangeOfferTokenSymbol}}\".",
     "priceComputingTitle": "Calcul du ratio d'échange",
     "chooseExchangeTokenType": "Choisissez le type de token à échanger",
-    "realtTokenType": "Jeton de propriété RealT",
+    "realtTokenType": "Jeton CSM",
     "otherTokenType": "Autres (USDC, XDAI, etc...)",
     "in": "en",
     "sellPriceInDollar": "Prix de vente en $",
@@ -55,8 +55,8 @@
     "buyerTokenAddress": "Jeton d'achat",
     "buyerTokenName": "Jeton d'achat",
     "sellerAddress": "Adresse du vendeur",
-    "buyOfferTypePrice": "Prix/Jeton (Nb de jeton d'achat par jeton RealT)",
-    "sellOfferTypePrice": "Prix/Jeton (Nb de jeton RealT par jeton en vente)",
+    "buyOfferTypePrice": "Prix/Jeton (Nb de jeton d'achat par jeton CSM)",
+    "sellOfferTypePrice": "Prix/Jeton (Nb de jeton CSM par jeton en vente)",
     "exchangeOfferTypePrice": "Prix/Jeton (Nb de jeton d'achat par jeton en vente)",
     "amount": "Quantité",
     "buyOfferTypeAmount": "Quantité (de jeton en achat)",
@@ -106,8 +106,8 @@
   },
   "chooseOfferType": {
     "title": "Quel type d'offre voulez-vous créer ?",
-    "buyTypeExplain": "Choisissez le type d'offre \"{{ offerType }}\" si vous souhaitez acheter un token de propriété RealT avec un autre token non RealT (WXDAI, WETH, USDC etc...)",
-    "sellTypeExplain": "Choisissez le type d'offre \"{{ offerType }}\" si vous souhaitez vendre un token de propriété RealT contre un autre token non RealT (WXDAI, WETH, USDC etc...)",
-    "exchangeTypeExplain": "Choisissez le type d'offre \"{{ offerType }}\" si vous souhaitez échanger un token de propriété RealT contre un autre token non RealT (WXDAI, WETH, USDC etc...) ou un autre token de propriété RealT ou deux non RealT token entre eux."
+    "buyTypeExplain": "Choisissez le type d'offre \"{{ offerType }}\" si vous souhaitez acheter un token CSM avec un autre token non CSM (WXDAI, USDC etc...)",
+    "sellTypeExplain": "Choisissez le type d'offre \"{{ offerType }}\" si vous souhaitez vendre un token CSM contre un autre token non CSM (WXDAI, USDC etc...)",
+    "exchangeTypeExplain": "Choisissez le type d'offre \"{{ offerType }}\" si vous souhaitez échanger deux tokens CSM entre eux ou des tokens non CSM (WXDAI, USDC etc...) entre eux."
   }
 }

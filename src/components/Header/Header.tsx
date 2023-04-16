@@ -26,7 +26,7 @@ const LogoWithName: FC = () => {
 
   return (
     <Group align={'center'} spacing={'xs'}>
-      <Image src={Logo.src} alt={'RealT Logo'} width={36} />
+      <Image src={Logo.src} alt={'CSM Logo'} width={36} />
       <MediaQuery smallerThan={'xs'} styles={{ display: 'none' }}>
         <Title order={3}>{t('title')}</Title>
       </MediaQuery>
@@ -67,7 +67,7 @@ const HeaderButtons: FC = () => {
 export const Header: FC = () => {
   const { t } = useTranslation('common', { keyPrefix: 'header' });
   const router = useRouter()
-  const colorSelected = '#cfaa70';
+  const colorSelected = '#B7CC41';
 
   const { role } = useRole();
 

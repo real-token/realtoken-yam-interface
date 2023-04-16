@@ -13,11 +13,7 @@ import {
 } from '@mantine/core';
 import { NextLink } from '@mantine/next';
 import {
-  IconBrandDiscord,
   IconBrandGithub,
-  IconBrandMedium,
-  IconBrandTelegram,
-  IconBrandTwitter,
 } from '@tabler/icons';
 
 import { Logo } from 'src/assets';
@@ -29,8 +25,8 @@ import { styles } from './Footer.styles';
 const LogoWithName: FC = () => {
   return (
     <Group align={'center'} spacing={'xs'}>
-      <Image src={Logo.src} alt={'RealT Logo'} width={30} />
-      <Title order={3}>{'RealT'}</Title>
+      <Image src={Logo.src} alt={'CSM Logo'} width={30} />
+      <Title order={3}>{'CSM'}</Title>
     </Group>
   );
 };
@@ -48,12 +44,12 @@ Copyright.displayName = 'Copyright';
 
 export const Footer: FC = () => {
 
-  const { t } = useTranslation("common");
+  //const { t } = useTranslation("common");
 
   const FooterButtons: FC = () => {
     return (
       <Group>
-        <ActionIcon 
+        {/* <ActionIcon 
           variant={'subtle'}
           component={NextLink}
           href={"/faq"}
@@ -98,11 +94,11 @@ export const Footer: FC = () => {
           target={'_blank'}
         >
           <IconBrandMedium />
-        </ActionIcon>
+        </ActionIcon> */}
         <ActionIcon
           variant={'subtle'}
           component={NextLink}
-          href={'https://github.com/real-token'}
+          href={'https://github.com/real-token/realtoken-yam-interface/tree/CSM-prod'}
           aria-label={'GitHub'}
           target={'_blank'}
         >

@@ -24,7 +24,7 @@ export const OfferPrices : FC<OfferPricesProps> = ({ offer }) => {
         <Flex direction={"column"}>
             <Flex gap={2} mb={6}>
                 <IconMoneybag />
-                <Text>Prices</Text>
+                <Text>{"Prices"}</Text>
             </Flex>
             <Flex direction={"column"} className={classes.container}>
                 <Flex>
