@@ -28,6 +28,10 @@ export type Offer = {
   offerYield: number|undefined;
   yieldDelta: number|undefined,
   buyCurrency: string;
+  //
+  electricityPrice: number
+  sellDate: string
+  miningSite: string
 };
 
 export const DEFAULT_OFFER: Offer = {
@@ -56,7 +60,11 @@ export const DEFAULT_OFFER: Offer = {
   officialYield: undefined,
   offerYield: undefined,
   yieldDelta: undefined,
-  buyCurrency: ""
+  buyCurrency: "",
+  //
+  electricityPrice: 0,
+  sellDate: "",
+  miningSite: ""
 }
 
 export const OFFER_LOADING = [DEFAULT_OFFER, DEFAULT_OFFER, DEFAULT_OFFER]

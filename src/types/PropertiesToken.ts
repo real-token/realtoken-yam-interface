@@ -33,6 +33,10 @@ export type PropertiesToken = {
     tokenIdRules: number
     netRentYearPerToken: number
     annualYield?: number
+    //
+    electricityPrice: number
+    sellDate: string
+    miningSite: string
 }
 
 export type RmmPropertiesToken = {

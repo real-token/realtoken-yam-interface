@@ -357,8 +357,8 @@ export const officialPriceColumn: ColumnFn<number|undefined> = (t,span) => {
 export const officialYieldColumn: ColumnFn<number|undefined> = (t,span) => {
     return{
         id: 'official-yield',
-        header: "Official Yield",
-        accessorKey: "officialYield",
+        header: "Sell date",
+        accessorFn: (offer) => offer.sellDate,
         cell: ({ getValue }) => (
           getValue() !== undefined ?
             <Text
@@ -369,7 +369,7 @@ export const officialYieldColumn: ColumnFn<number|undefined> = (t,span) => {
                 overflow: 'hidden',
               }}
             >
-              {`${getValue()?.toFixed(2)}%`}
+              {getValue()}
             </Text>
           :
             <Skeleton height={15} />
@@ -383,9 +383,23 @@ export const officialYieldColumn: ColumnFn<number|undefined> = (t,span) => {
 export const offerYieldColumn: ColumnFn<number> = (t,span) => {
     return{
         id: 'offer-yield',
-        header: "Offer Yield",
-        accessorFn: (offer) => offer.offerYield ? `${offer.offerYield.toFixed(2)}` : "",
-        cell: ({ row }) => <OfferYield offer={row.original} />,
+        header: "Mining site",
+        accessorFn: (offer) => offer.miningSite,
+        cell: ({ getValue }) => (
+          getValue() !== undefined ?
+            <Text
+              size={'sm'}
+              sx={{
+                textAlign: 'center',
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+              }}
+            >
+              {getValue()}
+            </Text>
+          :
+            <Skeleton height={15} />
+        ),
         enableSorting: true,
         enableGlobalFilter: true,
         meta: { colSpan: span },
@@ -395,12 +409,26 @@ export const offerYieldColumn: ColumnFn<number> = (t,span) => {
 export const yieldDeltaColumn: ColumnFn<number> = (t,span) => {
   return{
     id: 'yield-delta',
-        header: "Yield delta",
-        accessorFn: (offer) => offer.yieldDelta !== undefined ? `${offer.yieldDelta.toFixed(2)}` : "",
-        cell: ({ row }) => <OfferYieldDelta offer={row.original} />,
-        enableSorting: true,
-        enableGlobalFilter: true,
-        meta: { colSpan: span },
+    header: "Electricity price",
+    accessorFn: (offer) => offer.electricityPrice,
+    cell: ({ getValue }) => (
+      getValue() !== undefined ?
+        <Text
+          size={'sm'}
+          sx={{
+            textAlign: 'center',
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+          }}
+        >
+          {getValue()}
+        </Text>
+      :
+        <Skeleton height={15} />
+    ),
+    enableSorting: true,
+    enableGlobalFilter: true,
+    meta: { colSpan: span },
   }
 }
 

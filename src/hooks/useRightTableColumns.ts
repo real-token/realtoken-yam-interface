@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { tableOfferTypeAtom } from "src/states";
 import { Offer, OFFER_TYPE } from "src/types/offer";
-import { accountOfferActionsColumn, amountColumn, buyerTokenNameColumn, buyShortTokenNameColumn, deleteOfferActionColumn, exchangeBuyShortTokenNameColumn, exchangeOfferShortTokenNameColumn, header, idColumn, modifyOfferActionColumn, offerShortTokenNameColumn, offerTokenNameColumn, offerYieldColumn, officialPriceColumn, officialYieldColumn, priceColumn, priceDeltaColumn, publicActionsColumn, simplePriceColumn, viewActionColumn, yieldDeltaColumn } from "./column";
+import { accountOfferActionsColumn, amountColumn, buyerTokenNameColumn, buyShortTokenNameColumn, exchangeBuyShortTokenNameColumn, exchangeOfferShortTokenNameColumn, header, idColumn, offerShortTokenNameColumn, offerTokenNameColumn, offerYieldColumn, officialPriceColumn, officialYieldColumn, priceColumn, priceDeltaColumn, publicActionsColumn, simplePriceColumn, yieldDeltaColumn } from "./column";
 
 export enum OFFERS_TYPE{
     PUBLIC,

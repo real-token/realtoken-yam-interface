@@ -6,7 +6,7 @@ import { Offer } from 'src/types/offer/Offer';
 import { OFFER_TYPE } from 'src/types/offer/OfferType';
 import { Price } from 'src/types/price';
 import { Offer as OfferGraphQl } from '../../../.graphclient/index';
-import { getBuyPriceInDollar, getPriceInDollar } from '../price';
+import { getPriceInDollar } from '../price';
 
 // TOKEN TYPE
 // 1 = RealToken
@@ -130,6 +130,9 @@ export const parseOffer = (
         o.offerYield = getOfferYield(prices,o,propertyToken);
         o.yieldDelta = getYieldDelta(o);
         o.priceDelta = getPriceDelta(prices,o);
+        o.sellDate = propertyToken?.sellDate ?? "";
+        o.electricityPrice = propertyToken?.electricityPrice ?? 0;
+        o.miningSite = propertyToken?.miningSite ?? "";
 
         // console.log(offer.availableAmount, balanceWallet, allowance)
         resolve(o);

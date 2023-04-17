@@ -105,7 +105,15 @@ export function fetchOffers(
 export function fetchProperties(chainId: number) {
   return async function fetchPropertiesThunk(dispatch: AppDispatch) {
     try {
-      const response = await fetch(`/api/properties/${chainId}`);
+      const response = await fetch(
+        `/tokens.json`,
+        {
+          method: 'GET',
+          headers: {
+              'Accept': 'application/json',
+          },
+        }
+      );
 
       if (response.ok) {
         const responseJson: PropertiesToken[] = await response.json();
