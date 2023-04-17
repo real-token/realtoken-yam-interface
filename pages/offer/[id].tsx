@@ -40,7 +40,7 @@ const useStyle = createStyles((theme) => ({
         borderRadius: theme.radius.md,
         height: "40px",
         padding: `0 ${10}px`,
-        // color: theme.colors.brand,
+        color: 'black',
         fontWeight: 700,
         fontSize: theme.fontSizes.xl
     },
@@ -86,10 +86,8 @@ const ShowOfferPage: FC = () => {
     const [propertyTokens,setPropertyTokens] = useState<PropertiesToken[]>([]);
     const { getPropertyToken, propertiesIsloading } = usePropertiesToken();
 
-    console.log(propertyTokens)
-
     useEffect(() => {
-        if(!offer || propertiesIsloading || propertyTokens.length > 0) return undefined;
+        if(!offer || propertiesIsloading || propertyTokens.length > 0) return undefined;
 
         if(offer.buyerTokenType == 1){
             const token = getPropertyToken(offer.buyerTokenAddress);

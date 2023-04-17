@@ -3,7 +3,6 @@ import { IconExternalLink } from "@tabler/icons"
 import { PropertiesToken } from "src/types"
 import { Offer } from "src/types/offer"
 import { openInNewTab } from "src/utils/window"
-import { OfferDeltaTable } from "../Table/OfferDeltaTable/OfferDeltaTable"
 import { PropertyImage } from "./Image/PropertyImage"
 
 const useStyle = createStyles((theme) => ({
@@ -13,6 +12,7 @@ const useStyle = createStyles((theme) => ({
     },
     propertyInfosContainer: {
         display: "flex",
+        flexDirection: "column",
         borderStyle: "solid",
         borderWidth: "3px",
         borderColor: theme.colors.brand,
@@ -23,7 +23,6 @@ const useStyle = createStyles((theme) => ({
     propertyNameContainer: {
         display: "flex",
         justifyContent: "start",
-        marginBottom: theme.spacing.sm
     },
     propertyName: {
         borderBottomStyle: "solid",
@@ -49,7 +48,6 @@ export const PropertyCard = ({ propertyToken, offer }: PropertyCardProps) => {
     return(
         <Flex className={classes.container}>
             <Flex className={classes.propertyInfosContainer}>
-                <PropertyImage property={propertyToken}/>
                 <Flex direction={"column"}>
                     <div className={classes.propertyNameContainer}>
                     {   propertyToken ?
@@ -61,7 +59,7 @@ export const PropertyCard = ({ propertyToken, offer }: PropertyCardProps) => {
                             <Skeleton height={25} width={200}/> 
                     }
                     </div>
-                    <Flex direction={"column"} gap={"sm"}>
+                    {/* <Flex direction={"column"} gap={"sm"}>
                         { offer ?
                             <OfferDeltaTable 
                                 offer={offer}
@@ -73,8 +71,9 @@ export const PropertyCard = ({ propertyToken, offer }: PropertyCardProps) => {
                             :
                             <Skeleton height={15}/>
                         }
-                    </Flex>
+                    </Flex> */}
                 </Flex>
+                <PropertyImage property={propertyToken}/>
             </Flex>
         </Flex>
     )
