@@ -8,6 +8,8 @@ import {
   MediaQuery,
   Text,
   Title,
+  useMantineColorScheme,
+  useMantineTheme,
 } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { NextLink } from '@mantine/next';
@@ -67,7 +69,11 @@ const HeaderButtons: FC = () => {
 export const Header: FC = () => {
   const { t } = useTranslation('common', { keyPrefix: 'header' });
   const router = useRouter()
-  const colorSelected = '#B7CC41';
+
+  const { colors } = useMantineTheme();
+  const { colorScheme } = useMantineColorScheme();
+
+  const colorSelected = colorScheme == 'dark' ?  colors.brand[9] : colors.brand[0];
 
   const { role } = useRole();
 
