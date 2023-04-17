@@ -112,7 +112,10 @@ export const parseOffer = (
           priceDelta: undefined,
           officialYield: undefined,
           offerYield: undefined,
-          yieldDelta: undefined
+          yieldDelta: undefined,
+          electricityPrice: 0,
+          sellDate: "",
+          miningSite: ""
         };
 
         o.type = getOfferType(o.offerTokenType,o.buyerTokenType);
