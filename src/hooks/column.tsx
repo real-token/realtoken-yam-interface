@@ -338,7 +338,7 @@ export const publicActionsColumn: ColumnFn<unknown> = (t,span) => {
 export const officialPriceColumn: ColumnFn<number|undefined> = (t,span) => {
     return{
         id: 'official-price',
-        header: "Official price",
+        header: "Prix de vente officiel",
         accessorKey: "officialPrice",
         cell: ({ row }) => (
             row.original.officialPrice ?
