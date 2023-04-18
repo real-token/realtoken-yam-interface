@@ -34,6 +34,9 @@ export const buy = async (
         const amountInWei = new BigNumber(parseInt(new BigNumber(amount.toString()).shiftedBy(Number(offer.offerTokenDecimals)).toString()));
         const priceInWei = new BigNumber(price.toString()).shiftedBy(Number(offer.buyerTokenDecimals));
 
+        console.log("amountInWei: ", amountInWei.toString())
+        console.log("priceInWei: ", priceInWei.toString())
+
         const buyerToken = getContract<CoinBridgeToken>(
             offer.buyerTokenAddress,
             coinBridgeTokenABI,
@@ -46,6 +49,8 @@ export const buy = async (
         const buyerTokenAmount = new BigNumber(parseInt(amountInWei.multipliedBy(priceInWei).shiftedBy(-offer.offerTokenDecimals).toString()));
         const transactionDeadline = Math.floor(Date.now() / 1000) + 3600; // permit valable during 1h
 
+        console.log("buyerTokenAmount: ", buyerTokenAmount.toString())
+
         const buyerTokenType = await realTokenYamUpgradeable.getTokenType(
           offer.buyerTokenAddress
         );
@@ -55,7 +60,7 @@ export const buy = async (
           // TokenType = 3: ERC20 Without Permit, do Approve/buy
           const approveTx = await buyerToken.approve(
             realTokenYamUpgradeable.address,
-            buyerTokenAmount.toString()
+            buyerTokenAmount.toString(10)
           );
 
           const notificationApprove = {

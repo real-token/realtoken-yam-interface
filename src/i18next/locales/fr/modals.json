@@ -116,7 +116,9 @@
     "bestPrice": "Meilleur prix",
     "bestAmount": "Meilleur montant",
     "multiPath": "Meilleur chemin d'achat",
-    "buyTokenRepartition": "Répartion des jetons d'achat:"
+    "buyTokenRepartition": "Répartion des jetons d'achat:",
+    "missingTokenBalance": "Jeton d'achat manquant",
+    "missingToken": "{{missingTokenAmount}} de {{missingTokenSymbol}}"
   },
   "chooseOfferType": {
     "title": "Quel type d'offre voulez-vous créer ?",

@@ -35,8 +35,9 @@ interface MatchedOffersProps{
     buyerTokenAddress: string;
     price: number|undefined;
     amount: number|undefined;
+    closeModal: () => void;
 }
-export const MatchedOffers: FC<MatchedOffersProps> = ({ offerType, offerTokenAddress, buyerTokenAddress, price, amount }) => {
+export const MatchedOffers: FC<MatchedOffersProps> = ({ offerType, offerTokenAddress, buyerTokenAddress, price, amount, closeModal }) => {
 
     const { t } = useTranslation('modals', { keyPrefix: "offerMatching" })
 
@@ -71,6 +72,7 @@ export const MatchedOffers: FC<MatchedOffersProps> = ({ offerType, offerTokenAdd
                         amount={amount}
                         multiPathAmountFilled={multiPathAmountFilled}
                         multiPathAmountFilledPercentage={multiPathAmountFilledPercentage}
+                        closeModal={closeModal}
                     /> 
                 : (
                     <>{ bestPrice ? <MatchedOffer offer={bestPrice} amount={amount} offerBestType={OFFER_BEST_TYPE.BEST_PRICE} /> : undefined }</>

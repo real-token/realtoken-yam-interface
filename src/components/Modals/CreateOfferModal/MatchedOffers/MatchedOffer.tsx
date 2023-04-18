@@ -128,10 +128,11 @@ export const MatchedOffer = ({ offerBestType, offer, amount } : MatchedOfferProp
             </Flex>
             <Button 
                 className={classes.floatingButton} 
-                onClick={() => buyOffer()} 
+                onClick={() => buyOffer()}
+                disabled={!amount}
                 loading={isSubmitting}
             >
-                {"Buy"}
+                {!amount ? "Please provide amount" : "Buy"}
             </Button>
         </Flex>
     )

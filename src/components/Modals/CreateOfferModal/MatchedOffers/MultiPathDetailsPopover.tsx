@@ -35,7 +35,7 @@ export const MultiPathDetailsPopover = ({ averagePrice }: MultiPathDetailsPopove
                 <ul>
                 {Object.keys(averagePrice.details).map((key,index) => {
                     const detailValue = averagePrice.details[key];
-                    return <li key={`detail-${index}`}>{`${detailValue} of ${key}`}</li>
+                    return <li key={`detail-${index}`}>{`$ ${detailValue} of ${key}`}</li>
                 })}
                 </ul>
             </Popover.Dropdown>

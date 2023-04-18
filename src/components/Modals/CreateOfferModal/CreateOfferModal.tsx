@@ -501,6 +501,10 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
     }
   }
 
+  const closeModal = () => {
+    context.closeModal(id);
+  }
+
   const summary = () => {
     if(total && buyTokenSymbol && offerTokenSymbol){
 
@@ -836,6 +840,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
           buyerTokenAddress={values.buyerTokenAddress}
           price={values.price}
           amount={values.amount}
+          closeModal={closeModal}
       />
     </Flex>
   );

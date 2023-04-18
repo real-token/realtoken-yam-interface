@@ -1,7 +1,7 @@
 import { Flex, MantineTheme, createStyles, Text, Button, Checkbox } from "@mantine/core"
 import { Offer } from "../../../../types/offer"
 import { IconArrowRight } from "@tabler/icons"
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MultiPathDetailsPopover } from "./MultiPathDetailsPopover";
 import { multiPathMultiCurrencyAtom } from "../../../../states";
 import { useAtom } from "jotai";
@@ -9,6 +9,13 @@ import { getRightAllowBuyTokens } from "../../../../hooks/useAllowedTokens";
 import { useWeb3React } from "@web3-react/core";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { useActiveChain, useContract } from "../../../../hooks";
+import { ContractsID, NOTIFICATIONS, NotificationsID } from "../../../../constants";
+import BigNumber from "bignumber.js";
+import { CoinBridgeToken, coinBridgeTokenABI } from "../../../../abis";
+import { getContract } from "../../../../utils";
+import { Web3Provider } from "@ethersproject/providers";
+import { showNotification, updateNotification } from "@mantine/notifications";
 
 const useStyle = createStyles((theme: MantineTheme) => ({
     container: {
@@ -28,6 +35,10 @@ const useStyle = createStyles((theme: MantineTheme) => ({
         bottom: 0,
         right: 0,
         transform: 'translate(40%,40%)'
+    },
+    missingTokens: {
+        border: `2px solid ${theme.colors.red[9]}`,
+        borderRadius: theme.spacing.md
     }
 }));
 
@@ -36,13 +47,36 @@ export interface AveragePrice{
     details: { [symbol: string] : number }
 }
 
+interface MissingTokenBalance{
+    symbol: string;
+    amount: number;
+    contractAddress: string;
+}
+
+interface AmountToApprove{
+    amount: BigNumber;
+    contractAddress: string;
+}
+
+interface BuyDatas{
+    prices: string[];
+    amountsToBuy: string[];
+    amountsToApprove: AmountToApprove[];
+    missingTokenBalance: MissingTokenBalance[]
+}
+
 interface MultiPathProps{
     offers: Offer[]
     amount: number|undefined;
     multiPathAmountFilled: number;
     multiPathAmountFilledPercentage: number;
+    closeModal: () => void;
 }
-export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage }: MultiPathProps) => {
+export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage, closeModal }: MultiPathProps) => {
+
+    const { account, provider } = useWeb3React();
+    const activeChain = useActiveChain();
+    const realTokenYamUpgradeable = useContract(ContractsID.realTokenYamUpgradeable);
 
     const { t } = useTranslation('modals', { keyPrefix: "offerMatching" });
     const { t: t1 } = useTranslation('modals', { keyPrefix: "buy" });
@@ -83,9 +117,207 @@ export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage }: M
 
     },[amount, offers]);
 
-    const buy = () => {
-        //TODO: finish BUY
-        return;
+    const [buyDatas,setBuyDatas] = useState<BuyDatas|undefined>(undefined);
+    useEffect(() => {
+        const fetchBuyDatas = async () => {
+            if(!realTokenYamUpgradeable || !amount || !account) return;
+
+            const prices: string[] = [];
+            const amountsToBuy: string[] = [];
+            const amountsToApprove: AmountToApprove[] = [];
+            const missingTokenBalance: MissingTokenBalance[] = [];
+    
+            let totalBuy = 0;
+            let i = 0;
+            for await (const offer of offers){
+    
+                const buyerToken = getContract<CoinBridgeToken>(
+                    offer.buyerTokenAddress,
+                    coinBridgeTokenABI,
+                    provider as Web3Provider,
+                    account
+                );
+    
+                if(!buyerToken) return;
+    
+                // Price
+                const priceInWei = new BigNumber(offer.price.toString()).shiftedBy(Number(offer.buyerTokenDecimals));
+                prices.push(priceInWei.toString());
+    
+                // console.log("offer decimals: ", Number(offer.offerTokenDecimals), offer.offerTokenName)
+                // console.log("buyer decimals: ", Number(offer.buyerTokenDecimals), offer.buyerTokenName)
+    
+                // Amount
+                let amountToApprove;
+                if(i != offers.length-1){
+                    const amountInWei = new BigNumber(parseInt(new BigNumber(offer.amount.toString()).shiftedBy(Number(offer.offerTokenDecimals)).toString()));
+    
+                    // console.log("amountInWei: ", amountInWei.toString())
+    
+                    const buyerTokenAmount = new BigNumber(parseInt(amountInWei.multipliedBy(priceInWei).shiftedBy(-offer.offerTokenDecimals).toString()));
+    
+                    // console.log("buyerTokenAmount: ", buyerTokenAmount.toString())
+    
+                    amountToApprove = buyerTokenAmount;
+                    totalBuy = totalBuy+parseFloat(offer.amount);
+                    amountsToBuy.push(amountInWei.toString(10));
+                }else{
+    
+                    // This is the last offer, we need to check it we need to take a % of this offer's quantity or the whole amount
+                    const amountPartial = amount-totalBuy;
+    
+                    console.log(amount,totalBuy)
+                    console.log(amountPartial.toString())
+    
+                    const partialAmountInWei = new BigNumber(parseInt(new BigNumber(amountPartial).shiftedBy(Number(offer.offerTokenDecimals)).toString()));
+    
+                    // console.log("partialAmountInWei: ", partialAmountInWei.toString())
+    
+                    const partialTokenAmount = new BigNumber(parseInt(partialAmountInWei.multipliedBy(priceInWei).shiftedBy(-offer.offerTokenDecimals).toString()));
+    
+                    // console.log('partialTokenAmount: ', partialTokenAmount.toString(10))
+    
+                    amountToApprove = partialTokenAmount;
+                    amountsToBuy.push(partialAmountInWei.toString(10));
+                }
+
+                amountsToApprove.push({
+                    amount: amountToApprove,
+                    contractAddress: offer.buyerTokenAddress
+                });
+
+                const userBalance = new BigNumber((await buyerToken.balanceOf(account)).toString());
+                // console.log("userBalance: ", userBalance.toString());
+                // console.log("amountToApprove: ", amountToApprove.toString());
+
+                if(userBalance.lt(amountToApprove)){
+                    missingTokenBalance.push({
+                        symbol: offer.buyerTokenName,
+                        amount: parseFloat(amountToApprove.minus(userBalance).shiftedBy(-Number(offer.buyerTokenDecimals)).toString()),
+                        contractAddress: offer.buyerTokenAddress
+                    })
+                }
+    
+                i=i+1;
+            }
+            setBuyDatas({ prices, amountsToBuy, missingTokenBalance, amountsToApprove });
+        };
+        if(realTokenYamUpgradeable && amount && account) fetchBuyDatas();
+    },[account, activeChain, amount, offers, provider, realTokenYamUpgradeable]);
+
+    // console.log(buyDatas)
+
+    const buy = async () => {
+        try{
+
+            if(!realTokenYamUpgradeable || !amount || !account || !buyDatas) return;
+
+            const ids = offers.map((offer) => parseFloat(offer.offerId));
+            const { prices, amountsToBuy, amountsToApprove } = buyDatas;
+
+            const allowances: { [key: string]: BigNumber } = {};
+            //Group allowance
+            for(const amountToApprove of amountsToApprove){
+                if(allowances[amountToApprove.contractAddress]){
+                    allowances[amountToApprove.contractAddress] = allowances[amountToApprove.contractAddress].plus(amountToApprove.amount);
+                }else{
+                    allowances[amountToApprove.contractAddress] = amountToApprove.amount;
+                }
+            }
+
+            for await (const contractAddress of Object.keys(allowances)){
+
+                const amountToApprove = allowances[contractAddress];
+    
+                const buyerToken = getContract<CoinBridgeToken>(
+                    contractAddress,
+                    coinBridgeTokenABI,
+                    provider as Web3Provider,
+                    account
+                );
+
+                if(!buyerToken) return;
+    
+                // get current allowance
+                const oldAllowance = new BigNumber((await buyerToken.allowance(account,realTokenYamUpgradeable.address)).toString());
+
+                console.log(oldAllowance.toString(),amountToApprove.toString())
+    
+                if(oldAllowance.lt(amountToApprove)){
+                    const approveTx = await buyerToken.approve(
+                        realTokenYamUpgradeable.address,
+                        amountToApprove.toString(10)
+                    );
+            
+                    const notificationApprove = {
+                        key: approveTx.hash,
+                        href: `${activeChain?.blockExplorerUrl}tx/${approveTx.hash}`,
+                        hash: approveTx.hash,
+                    };
+    
+                    showNotification(
+                        NOTIFICATIONS[NotificationsID.approveOfferLoading](
+                            notificationApprove
+                        )
+                    );
+    
+                    approveTx
+                    .wait()
+                    .then(({ status }) =>
+                        updateNotification(
+                        NOTIFICATIONS[
+                            status === 1
+                            ? NotificationsID.approveOfferSuccess
+                            : NotificationsID.approveOfferError
+                        ](notificationApprove)
+                        )
+                    );
+    
+                    await approveTx.wait(1);
+                }
+            }
+
+            console.log(
+                ids,
+                prices,
+                amountsToBuy
+            )
+
+            // Buy with buyBatch
+            const buyBatchTx = await realTokenYamUpgradeable.buyOfferBatch(
+                ids,
+                prices,
+                amountsToBuy
+            )
+
+            const notificationBuy = {
+                key: buyBatchTx.hash,
+                href: `${activeChain?.blockExplorerUrl}tx/${buyBatchTx.hash}`,
+                hash: buyBatchTx.hash,
+            };
+
+            showNotification(
+                NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationBuy)
+            );
+
+            buyBatchTx
+                .wait()
+                .then(({ status }) => {
+                    updateNotification(
+                        NOTIFICATIONS[
+                        status === 1
+                            ? NotificationsID.buyOfferSuccess
+                            : NotificationsID.buyOfferError
+                        ](notificationBuy)
+                    );
+                    if(status == 1) closeModal();
+                }
+                );
+
+        }catch(err){
+            console.log("Error when trying to buy with multipath: ", err);
+            showNotification(NOTIFICATIONS[NotificationsID.buyOfferInvalid]());
+        }
     }
 
     return(
@@ -152,7 +384,31 @@ export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage }: M
                 <Text weight={700}>{t('averagePricePerToken')}</Text>
                 <Text>{`$ ${amount ? averagePrice?.totalPriceInDollar/amount : 0}`}</Text>
             </Flex>
-            <Button className={classes.floatingButton} onClick={() => buy()}>{t1("buy")}</Button>
+            {buyDatas && buyDatas.missingTokenBalance.length > 0 ? (
+                <Flex direction={"column"} className={classes.missingTokens} mb={16} p={"xs"}>
+                    <Text fw={700}>{t("missingTokenBalance")}</Text>
+                    <ul>
+                    {buyDatas.missingTokenBalance.map((missingToken) => {
+                        const Logo = getRightAllowBuyTokens(chainId).find((allowedToken) => allowedToken.contractAddress.toLowerCase() == missingToken.contractAddress.toLowerCase())?.logo;
+                        return (
+                            <li key={`missing-token-${missingToken.symbol}`}>
+                                <Flex gap={"xs"}>
+                                    <Text>{t("missingToken", { missingTokenAmount: missingToken.amount, missingTokenSymbol: missingToken.symbol })}</Text>
+                                    { Logo ? React.cloneElement(<Logo/>, { width: '14' }) : undefined}
+                                </Flex>
+                            </li>
+                        )
+                    })}
+                    </ul>
+                </Flex>
+            ): undefined}
+            <Button 
+                className={classes.floatingButton} 
+                onClick={() => buy()}
+                disabled={buyDatas && buyDatas.missingTokenBalance.length > 0}
+            >
+                {t1("buy")}
+            </Button>
         </Flex>
     )
 }

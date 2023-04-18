@@ -114,7 +114,9 @@
     "bestPrice": "Best price",
     "bestAmount": "Best amount",
     "multiPath": "Best path",
-    "buyTokenRepartition": "Buy assets repartition:"
+    "buyTokenRepartition": "Buy assets repartition:",
+    "missingTokenBalance": "Missing token",
+    "missingToken": "{{missingTokenAmount}} of {{missingTokenSymbol}}"
   },
   "chooseOfferType": {
     "title": "Which type of offer do you want to create ?",
