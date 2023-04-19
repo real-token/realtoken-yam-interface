@@ -30,6 +30,83 @@ import { useWalletERC20Balance } from 'src/hooks/useWalletERC20Balance';
 import { useShield } from 'src/hooks/useShield';
 import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
 import { WalletERC20Balance } from 'src/components/WalletBalance/WalletERC20Balance';
+import { Contract } from 'ethers';
+import { Web3Provider } from '@ethersproject/providers';
+import { MatchedOffers } from './MatchedOffers/MatchedOffers';
+
+export const approveOffer = (
+  createdOffer: CreatedOffer, 
+  provider: Web3Provider|undefined, 
+  account: string|undefined, 
+  realTokenYamUpgradeable: Contract|undefined, 
+  setSubmitting: (status: boolean) => void, 
+  activeChain: Chain|undefined
+): Promise<void> => {
+  return new Promise<void>(async (resolve,reject) => {
+    if(!provider || !realTokenYamUpgradeable || !account || !createdOffer.amount) return;
+    try{
+      setSubmitting(true);
+      const offerToken = getContract<CoinBridgeToken>(
+        createdOffer.offerTokenAddress,
+        coinBridgeTokenABI,
+        provider,
+        account
+      );
+
+      if (!offerToken) {
+        console.log('offerToken not found');
+        return;
+      }
+
+      const amount = new BigNumber(createdOffer.amount);
+      const oldAllowance = await offerToken.allowance(account,realTokenYamUpgradeable.address);
+      const amountInWeiToPermit = amount.plus(new BigNumber(oldAllowance.toString())).toString(10);
+
+      console.log("amountInWei: ", createdOffer.amount.toString())
+      console.log("oldAllowance: ", oldAllowance.toString())
+      console.log("amountInWeiToPermit: ", amountInWeiToPermit)
+
+      // TokenType = 3: ERC20 Without Permit, do Approve/CreateOffer
+      BigNumber.set({EXPONENTIAL_AT: 35});
+      const approveTx = await offerToken.approve(
+        realTokenYamUpgradeable.address,
+        amountInWeiToPermit
+      );
+
+      const notificationApprove = {
+        key: approveTx.hash,
+        href: `${activeChain?.blockExplorerUrl}tx/${approveTx.hash}`,
+        hash: approveTx.hash,
+      };
+
+      showNotification(
+        NOTIFICATIONS[NotificationsID.approveOfferLoading](
+          notificationApprove
+        )
+      );
+
+      approveTx
+        .wait()
+        .then(({ status }) =>
+          updateNotification(
+            NOTIFICATIONS[
+              status === 1
+                ? NotificationsID.approveOfferSuccess
+                : NotificationsID.approveOfferError
+            ](notificationApprove)
+          )
+        );
+
+      await approveTx.wait(1);
+
+      resolve();
+
+    }catch(err){
+      setSubmitting(false);
+      reject(err)
+    }
+  });
+}
 
 interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
   label: string;
@@ -412,6 +489,10 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
     }
   }
 
+  const closeModal = () => {
+    context.closeModal(id);
+  }
+
   const summary = () => {
     if(total && buyTokenSymbol && offerTokenSymbol){
 
@@ -679,13 +760,14 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
 
   return (
     <Flex direction={"column"} mx={'auto'} gap={"md"} style={{ width: calcRem(500) }}>
-      <Flex style={{ justifyContent: "space-between", alignItems: "center", height: "50px" }}>
-        <Flex gap={"sm"} align={"center"}>
-          <OfferTypeBadge offerType={offer.offerType} />
-          <h3 style={{ margin: 0 }}>{t('titleFormCreateOffer')}</h3>
+        <Flex style={{ justifyContent: "space-between", alignItems: "center", height: "50px" }}>
+          <Flex gap={"sm"} align={"center"}>
+            <OfferTypeBadge offerType={offer.offerType} />
+            <h3 style={{ margin: 0 }}>{t('titleFormCreateOffer')}</h3>
+          </Flex>
+          { offer.offerType !== OFFER_TYPE.EXCHANGE ? <Shield /> : undefined }        
         </Flex>
-        { offer.offerType !== OFFER_TYPE.EXCHANGE ? <Shield /> : undefined }        
-      </Flex>
+        
       <form onSubmit={onSubmit(createdOffer)}>
         <Stack justify={'center'} align={'stretch'}>
 
@@ -739,6 +821,14 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         </Group>
         </Stack>
       </form>
+      <MatchedOffers 
+          offerType={offer.offerType}
+          offerTokenAddress={values.offerTokenAddress}
+          buyerTokenAddress={values.buyerTokenAddress}
+          price={values.price}
+          amount={values.amount}
+          closeModal={closeModal}
+      />
     </Flex>
   );
 };
