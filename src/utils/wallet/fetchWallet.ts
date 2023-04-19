@@ -1,6 +1,6 @@
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
 
-import { CHAINS, ChainsID } from 'src/constants';
+import { CHAINS, ChainsID, UrlTheGraphToken } from 'src/constants';
 import { Account } from 'src/types/Account';
 
 import { Account as AccountGraphQL } from '../../../.graphclient/index';
@@ -8,11 +8,11 @@ import { Account as AccountGraphQL } from '../../../.graphclient/index';
 const getTheGraphURL = (chainId: number): string => {
   switch (chainId) {
     case 1:
-      return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/realtoken-eth';
+      return UrlTheGraphToken.Eth;
     case 5:
-      return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/realtoken-goerli';
+      return UrlTheGraphToken.Goerli;
     case 100:
-      return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/realtoken-xdai';
+      return UrlTheGraphToken.Gnosis;
     default:
       return '';
   }

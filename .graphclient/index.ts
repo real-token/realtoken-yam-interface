@@ -33,6 +33,8 @@ import {
   SelectionSetNode,
 } from 'graphql';
 
+import { UrlTheGraphToken, UrlTheGraphYam } from 'src/constants';
+
 import type { WalletGoerliTypes } from './sources/wallet-goerli/types';
 import type { YamEthTypes } from './sources/yam-eth/types';
 import type { YamGnosisTypes } from './sources/yam-gnosis/types';
@@ -3726,8 +3728,7 @@ export async function getMeshOptions(): Promise<GetMeshOptions> {
   const yamGnosisHandler = new GraphqlHandler({
     name: 'yam-gnosis',
     config: {
-      endpoint:
-        'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-gnosis',
+      endpoint: UrlTheGraphYam.Gnosis,
     },
     baseDir,
     cache,
@@ -3739,8 +3740,7 @@ export async function getMeshOptions(): Promise<GetMeshOptions> {
   const yamEthHandler = new GraphqlHandler({
     name: 'yam-eth',
     config: {
-      endpoint:
-        'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph',
+      endpoint: UrlTheGraphYam.Gnosis,
     },
     baseDir,
     cache,
@@ -3752,8 +3752,7 @@ export async function getMeshOptions(): Promise<GetMeshOptions> {
   const walletGoerliHandler = new GraphqlHandler({
     name: 'wallet-goerli',
     config: {
-      endpoint:
-        'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/realtoken-goerli',
+      endpoint: UrlTheGraphToken.Goerli,
     },
     baseDir,
     cache,
