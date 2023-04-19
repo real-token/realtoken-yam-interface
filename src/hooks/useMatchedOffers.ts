@@ -1,9 +1,17 @@
 import { useAtomValue } from "jotai";
-import { useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { multiPathMultiCurrencyAtom, shieldDisabledAtom, shieldValueAtom } from "../states";
 import { selectPublicOffers } from "../store/features/interface/interfaceSelector";
 import { Offer, OFFER_TYPE } from "../types/offer";
 import { useAppSelector } from "./react-hooks";
+import BigNumber from "bignumber.js";
+import { getContract } from "../utils";
+import { CoinBridgeToken, coinBridgeTokenABI } from "../abis";
+import { Web3Provider } from "@ethersproject/providers";
+import { useWeb3React } from "@web3-react/core";
+import { useContract } from "./useContract";
+import { ContractsID } from "../constants";
+import { MultiPathOffer } from "../types/offer/MultiPathOffer";
 
 const getReverseOfferType = (offerType: OFFER_TYPE) => {
     switch(offerType){
@@ -24,7 +32,7 @@ type UseMatchedOffers = (
     amount: number|undefined
 ) => {
     bestPrice: Offer|undefined,
-    multiPath: Offer[]|undefined,
+    multiPath: MultiPathOffer[]|undefined,
     multiPathAmountFilled: number;
     multiPathAmountFilledPercentage: number;
     otherMatching: Offer[]|undefined;
@@ -38,6 +46,9 @@ export const useMatchedOffers: UseMatchedOffers = (offerType, offerTokenAddress,
 
     const publicOffers = useAppSelector(selectPublicOffers);
     const revesedOfferType = getReverseOfferType(offerType);
+
+    const { account, provider } = useWeb3React();
+    const realTokenYamUpgradeable = useContract(ContractsID.realTokenYamUpgradeable);
 
     const matchedOffersWithType = useMemo(() => {
         if(publicOffers.length == 0) return [];
@@ -101,21 +112,103 @@ export const useMatchedOffers: UseMatchedOffers = (offerType, offerTokenAddress,
         return offers.sort((a,b)=> Number(b.amount)-Number(a.amount));
     },[matchedOffers, matchedRawOffers, useMultiCurrencies]);
 
-    const multiPath = useMemo(() => {
-        if(!sortedAmount) return undefined;
-        if(!amount) return;
-        const path: Offer[] = [];
-        sortedAmount.forEach((offer) => {
-            const currentAmount = path.reduce((accumulator,offer) => { return accumulator + parseFloat(offer.amount)},0);
-            if(currentAmount < amount) path.push(offer);
+    const checkVirtualAllowance = async (virtualAllowances: Map<string,BigNumber>, offer: MultiPathOffer): Promise<boolean> => {
+        return new Promise<boolean>(async (resolve,reject) => {
+            try{
+                if(!realTokenYamUpgradeable) return;
+
+                if(!virtualAllowances.get(offer.sellerAddress)){
+                    // We never get the allowance
+                    const buyerToken = getContract<CoinBridgeToken>(
+                        offer.offerTokenAddress,
+                        coinBridgeTokenABI,
+                        provider as Web3Provider,
+                        account
+                    );
+                    if(!buyerToken) return;
+            
+                    const allowance = new BigNumber((await buyerToken.allowance(offer.sellerAddress,realTokenYamUpgradeable.address)).toString());
+                    virtualAllowances.set(offer.sellerAddress,allowance.minus(offer.multiPathAmount));
+                    resolve(true);
+        
+                }else{
+                    // allowance already exist in virtualAllowances Map
+                    const oldVirtualAllowance = virtualAllowances.get(offer.sellerAddress);
+                    if(!oldVirtualAllowance) reject();
+
+                    const newAllowance = oldVirtualAllowance?.minus(offer.multiPathAmount);
+                    resolve(!newAllowance?.lt(0))
+        
+                }
+            }catch(err){
+                console.log(err);
+                reject(err);
+            }
         });
-        return path;
-    },[amount, sortedAmount]);
+    }
+
+    const [multiPath,setMultiPath] = useState<MultiPathOffer[]|undefined>(undefined);
+    const getBestMultiPath = useCallback(async () => {
+        if(!sortedAmount || !amount || !realTokenYamUpgradeable) return;
+
+        // This map stored seller address -> current allowance
+        const virtualAllowances: Map<string,BigNumber> = new Map<string,BigNumber>([]); 
+
+        // const currentBuyAmount = path.reduce((accumulator,offer) => { return accumulator + parseFloat(offer.amount) },0);
+
+        const path: MultiPathOffer[] = [];
+        let currentBuyAmount = new BigNumber(0);
+
+        for await (const offer of sortedAmount){
+
+            const amountWanted = new BigNumber(parseInt(new BigNumber(amount).shiftedBy(Number(offer.offerTokenDecimals)).toString()));
+            const offerAmount: BigNumber = new BigNumber(parseInt(new BigNumber(offer.amount.toString()).shiftedBy(Number(offer.offerTokenDecimals)).toString()));
+            const priceInWei = new BigNumber(offer.price.toString()).shiftedBy(Number(offer.buyerTokenDecimals));
+
+            // console.log("offerAmount: ", offerAmount.toString());
+            // console.log("amountWanted: ", amountWanted.toString());
+
+            let amountInWei: BigNumber;
+            let amountToApprove: BigNumber;
+            let hitLastOffer = false;
+            if(currentBuyAmount.plus(offerAmount).lt(amountWanted)){
+                // Take the entire offer's amount
+                amountInWei = new BigNumber(parseInt(new BigNumber(offer.amount.toString()).shiftedBy(Number(offer.offerTokenDecimals)).toString()));
+                amountToApprove = new BigNumber(parseInt(amountInWei.multipliedBy(priceInWei).shiftedBy(-offer.offerTokenDecimals).toString()));
+            }else{
+                // Take a part of the offer's amount
+                const partialAmountInWei = amountWanted.minus(currentBuyAmount);
+                amountInWei = partialAmountInWei;
+                amountToApprove = new BigNumber(parseInt(partialAmountInWei.multipliedBy(priceInWei).shiftedBy(-offer.offerTokenDecimals).toString()));
+                hitLastOffer = true;
+            }
+
+            const o: MultiPathOffer = {
+                ...offer,
+                multiPathAmount: amountInWei.toString(10),
+                multiPathAmountToApprove: amountToApprove.toString(10)
+            };
+
+            if(await checkVirtualAllowance(virtualAllowances,o)){
+                currentBuyAmount = currentBuyAmount.plus(amountInWei);
+                path.push(o);
+            }
+
+            if(hitLastOffer) break;
+
+        }
+        setMultiPath(path)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[amount, realTokenYamUpgradeable, sortedAmount]);
+    useEffect(() => {
+        if(sortedAmount && amount) getBestMultiPath();
+    },[amount, getBestMultiPath, sortedAmount]);
 
     const multiPathAmountFilled = useMemo(() => {
         if(!multiPath) return 0;
         const sum = multiPath.reduce((accumulator,offer) => {
-            return accumulator+parseFloat(offer.amount)
+            const amount = parseFloat(new BigNumber(offer.multiPathAmount).shiftedBy(-offer.offerTokenDecimals).toString(10))
+            return accumulator+amount
         },0)
         return sum;
     },[multiPath]);

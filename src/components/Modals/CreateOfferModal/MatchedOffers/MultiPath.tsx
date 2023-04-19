@@ -16,6 +16,7 @@ import { CoinBridgeToken, coinBridgeTokenABI } from "../../../../abis";
 import { getContract } from "../../../../utils";
 import { Web3Provider } from "@ethersproject/providers";
 import { showNotification, updateNotification } from "@mantine/notifications";
+import { MultiPathOffer } from "../../../../types/offer/MultiPathOffer";
 
 const useStyle = createStyles((theme: MantineTheme) => ({
     container: {
@@ -66,13 +67,13 @@ interface BuyDatas{
 }
 
 interface MultiPathProps{
-    offers: Offer[]
+    offers: MultiPathOffer[]
     amount: number|undefined;
     multiPathAmountFilled: number;
     multiPathAmountFilledPercentage: number;
     closeModal: () => void;
 }
-export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage, closeModal }: MultiPathProps) => {
+export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage, multiPathAmountFilled, closeModal }: MultiPathProps) => {
 
     const { account, provider } = useWeb3React();
     const activeChain = useActiveChain();
@@ -94,15 +95,8 @@ export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage, clo
 
         if(!amount) return averagePrice;
 
-        let totalAmount = 0;
-        offers.forEach((offer,index) => {
-            let numberOfTokenToBuyInOffer = 0;
-            if(index != offers.length-1){
-                numberOfTokenToBuyInOffer = parseFloat(offer.amount);
-            }else{
-                // ici on doit calculer combien on prend sur le total vu que c'est le dernier c'est forcément celui dont on prend une partie
-                numberOfTokenToBuyInOffer = amount-totalAmount;
-            }
+        offers.forEach((offer) => {
+            const numberOfTokenToBuyInOffer = parseFloat(new BigNumber(offer.multiPathAmount).shiftedBy(-offer.offerTokenDecimals).toString());
             const total = offer.offerPrice ? offer.offerPrice*numberOfTokenToBuyInOffer : 0;
             averagePrice.totalPriceInDollar = averagePrice.totalPriceInDollar+total;
             if(averagePrice.details[offer.buyerTokenName]){
@@ -110,8 +104,6 @@ export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage, clo
             }else{
                 averagePrice.details[offer.buyerTokenName] = total;
             }
-            
-            totalAmount+=parseFloat(offer.amount);
         });
         return averagePrice;
 
@@ -127,7 +119,6 @@ export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage, clo
             const amountsToApprove: AmountToApprove[] = [];
             const missingTokenBalance: MissingTokenBalance[] = [];
     
-            let totalBuy = 0;
             let i = 0;
             for await (const offer of offers){
     
@@ -143,57 +134,26 @@ export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage, clo
                 // Price
                 const priceInWei = new BigNumber(offer.price.toString()).shiftedBy(Number(offer.buyerTokenDecimals));
                 prices.push(priceInWei.toString());
+
+                const offerAmountToApprove = new BigNumber(offer.multiPathAmountToApprove);
     
                 // console.log("offer decimals: ", Number(offer.offerTokenDecimals), offer.offerTokenName)
                 // console.log("buyer decimals: ", Number(offer.buyerTokenDecimals), offer.buyerTokenName)
-    
-                // Amount
-                let amountToApprove;
-                if(i != offers.length-1){
-                    const amountInWei = new BigNumber(parseInt(new BigNumber(offer.amount.toString()).shiftedBy(Number(offer.offerTokenDecimals)).toString()));
-    
-                    // console.log("amountInWei: ", amountInWei.toString())
-    
-                    const buyerTokenAmount = new BigNumber(parseInt(amountInWei.multipliedBy(priceInWei).shiftedBy(-offer.offerTokenDecimals).toString()));
-    
-                    // console.log("buyerTokenAmount: ", buyerTokenAmount.toString())
-    
-                    amountToApprove = buyerTokenAmount;
-                    totalBuy = totalBuy+parseFloat(offer.amount);
-                    amountsToBuy.push(amountInWei.toString(10));
-                }else{
-    
-                    // This is the last offer, we need to check it we need to take a % of this offer's quantity or the whole amount
-                    const amountPartial = amount-totalBuy;
-    
-                    console.log(amount,totalBuy)
-                    console.log(amountPartial.toString())
-    
-                    const partialAmountInWei = new BigNumber(parseInt(new BigNumber(amountPartial).shiftedBy(Number(offer.offerTokenDecimals)).toString()));
-    
-                    // console.log("partialAmountInWei: ", partialAmountInWei.toString())
-    
-                    const partialTokenAmount = new BigNumber(parseInt(partialAmountInWei.multipliedBy(priceInWei).shiftedBy(-offer.offerTokenDecimals).toString()));
-    
-                    // console.log('partialTokenAmount: ', partialTokenAmount.toString(10))
-    
-                    amountToApprove = partialTokenAmount;
-                    amountsToBuy.push(partialAmountInWei.toString(10));
-                }
-
+                
                 amountsToApprove.push({
-                    amount: amountToApprove,
+                    amount: offerAmountToApprove,
                     contractAddress: offer.buyerTokenAddress
                 });
+                amountsToBuy.push(offer.multiPathAmount);
 
                 const userBalance = new BigNumber((await buyerToken.balanceOf(account)).toString());
                 // console.log("userBalance: ", userBalance.toString());
                 // console.log("amountToApprove: ", amountToApprove.toString());
 
-                if(userBalance.lt(amountToApprove)){
+                if(userBalance.lt(offerAmountToApprove)){
                     missingTokenBalance.push({
                         symbol: offer.buyerTokenName,
-                        amount: parseFloat(amountToApprove.minus(userBalance).shiftedBy(-Number(offer.buyerTokenDecimals)).toString()),
+                        amount: parseFloat(offerAmountToApprove.minus(userBalance).shiftedBy(-Number(offer.buyerTokenDecimals)).toString()),
                         contractAddress: offer.buyerTokenAddress
                     })
                 }
@@ -216,7 +176,7 @@ export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage, clo
             const { prices, amountsToBuy, amountsToApprove } = buyDatas;
 
             const allowances: { [key: string]: BigNumber } = {};
-            //Group allowance
+            //Group allowance for same tokens
             for(const amountToApprove of amountsToApprove){
                 if(allowances[amountToApprove.contractAddress]){
                     allowances[amountToApprove.contractAddress] = allowances[amountToApprove.contractAddress].plus(amountToApprove.amount);
@@ -276,7 +236,7 @@ export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage, clo
                     await approveTx.wait(1);
                 }
             }
-
+ 
             console.log(
                 ids,
                 prices,
@@ -377,12 +337,12 @@ export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage, clo
             <Flex direction={"column"} gap={5} mb={12}>
                 <Text weight={700}>{t('amountFilled')}</Text>
                 <Flex>
-                    {`${multiPathAmountFilledPercentage*100}%`}
+                    {`${multiPathAmountFilledPercentage*100}% (${multiPathAmountFilled})`}
                 </Flex>
             </Flex>
             <Flex direction={"column"} gap={5} mb={16}>
                 <Text weight={700}>{t('averagePricePerToken')}</Text>
-                <Text>{`$ ${amount ? averagePrice?.totalPriceInDollar/amount : 0}`}</Text>
+                <Text>{`$ ${multiPathAmountFilled ? averagePrice?.totalPriceInDollar/multiPathAmountFilled : 0}`}</Text>
             </Flex>
             {buyDatas && buyDatas.missingTokenBalance.length > 0 ? (
                 <Flex direction={"column"} className={classes.missingTokens} mb={16} p={"xs"}>
