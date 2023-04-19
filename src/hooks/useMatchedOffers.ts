@@ -192,10 +192,8 @@ export const useMatchedOffers: UseMatchedOffers = (offerType, offerTokenAddress,
             if(await checkVirtualAllowance(virtualAllowances,o)){
                 currentBuyAmount = currentBuyAmount.plus(amountInWei);
                 path.push(o);
+                if(hitLastOffer) break;
             }
-
-            if(hitLastOffer) break;
-
         }
         setMultiPath(path)
     // eslint-disable-next-line react-hooks/exhaustive-deps
