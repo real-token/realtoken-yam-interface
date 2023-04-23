@@ -63,8 +63,10 @@ export const MarketTable: FC = () => {
     },
     //Trick to convert every value to string. Needed for comparison
     globalFilterFn: (row, columnId, filterValue) => {
+      const value = row.getValue(columnId);
+      if(value == undefined) return false;
       const safeValue: string = (() => {
-        const value = row.getValue(columnId);
+        
         return typeof value === 'number' ? String(value) : value as string;
       })();
       return safeValue.toLowerCase().includes(filterValue.toLowerCase());
