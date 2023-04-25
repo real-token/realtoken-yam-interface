@@ -58,6 +58,11 @@ export const gnosisAllowedTokens: AllowedToken[] = [
   {
     name: 'Mai stablecoin',
     symbol: 'MAI',
-    contractAddress: '0x3f56e0c36d275367b8c502090edf38289b3dea0d',
+    contractAddress: '0x3f56e0c36d275367b8c502090edf38289b3dea0d'.toLowerCase(),
   },
+  {
+    name: 'Tether USD on xDai (USDT)',
+    symbol: 'USDT',
+    contractAddress: "0x4ECaBa5870353805a9F068101A40E0f32ed605C6".toLowerCase()
+  }
 ];
