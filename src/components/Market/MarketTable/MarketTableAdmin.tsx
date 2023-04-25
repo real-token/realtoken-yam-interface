@@ -122,8 +122,8 @@ export const MarketTableAdmin: FC = () => {
           columns: [
             checkboxColumn,
             idColumn(t,1),
-            offerTokenNameColumn(t,2),
-            buyShortTokenNameColumn(t,2),
+            offerShortTokenNameColumn(t,2),
+            buyerTokenNameColumn(t,2),
             yieldDeltaColumn(t,1),
             sellerAddressColumn(t,1),
             priceColumn(t,1),
@@ -142,8 +142,8 @@ export const MarketTableAdmin: FC = () => {
         columns: [
           checkboxColumn,
           idColumn(t,1),
-          offerShortTokenNameColumn(t,2),
-          buyerTokenNameColumn(t,2),
+          offerTokenNameColumn(t,2),
+          buyShortTokenNameColumn(t,2),
           yieldDeltaColumn(t,1),
           sellerAddressColumn(t,1),
           priceColumn(t,1),
