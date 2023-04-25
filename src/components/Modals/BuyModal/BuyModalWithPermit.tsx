@@ -274,7 +274,7 @@ export const BuyModalWithPermit: FC<
               buyerToken,
               provider
             );
-  
+
             const buyWithPermitTx = await realTokenYamUpgradeable.buyWithPermit(
               formValues.offerId,
               priceInWei.toString(),
