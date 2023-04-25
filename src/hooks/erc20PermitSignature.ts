@@ -16,7 +16,7 @@ const erc20PermitSignature = async (
   try {
     // const transactionDeadline = Date.now() + 3600; // permit valable during 1h
     let nonce;
-    if(contract.address == gnosisAllowedTokens[2].contractAddress){
+    if(contract.address.toLowerCase() == gnosisAllowedTokens[2].contractAddress.toLowerCase()){
       nonce = await contract._nonces(owner);
     }else{
       nonce = await contract.nonces(owner);
