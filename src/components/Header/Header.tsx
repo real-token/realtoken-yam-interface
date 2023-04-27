@@ -16,6 +16,8 @@ import { Logo } from 'src/assets';
 import { Divider } from '../Divider';
 import { SettingsMenu } from '../SettingsMenu';
 import { WalletMenu } from '../WalletMenu';
+import { NetworkMenu } from '../NetworkMenu';
+import { MessageNetwork } from '../ChainSelect'
 import { styles } from './Header.styles';
 import { useRouter } from 'next/router';
 import { useRole } from 'src/hooks/useRole';
@@ -58,6 +60,7 @@ const HeaderButtons: FC = () => {
 
   return (
     <Group spacing={10}>
+      <NetworkMenu />
       {account ? <WalletMenu /> : <ConnectButton />}
       <SettingsMenu />
     </Group>
@@ -73,6 +76,7 @@ export const Header: FC = () => {
 
   return (
     <div>
+      <MessageNetwork classeName={styles.message}></MessageNetwork>
       <Box sx={styles.container}>
         <Group position={'apart'} align={'center'}>
           <LogoWithName />
@@ -94,8 +98,8 @@ export const Header: FC = () => {
           >
             {t('titleCat2')}
           </Text>
-          { isRole(role,[USER_ROLE.MODERATOR,USER_ROLE.ADMIN]) ? 
-              <Text
+          {isRole(role, [USER_ROLE.MODERATOR, USER_ROLE.ADMIN]) ?
+            <Text
               size={'xl'}
               weight={700}
               component={NextLink}
@@ -104,8 +108,8 @@ export const Header: FC = () => {
             >
               {t('titleAdmin')}
             </Text>
-              :
-              undefined
+            :
+            undefined
           }
           <HeaderButtons />
         </Group>

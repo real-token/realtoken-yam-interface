@@ -1,65 +1,52 @@
-import { FC, forwardRef, useCallback } from 'react';
-
+import { FC, useCallback, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
-  Group,
   Image,
-  Select,
   SelectItem,
-  SelectProps,
-  Text,
+  Menu,
+  Box,
+  Sx
 } from '@mantine/core';
 import { useWeb3React } from '@web3-react/core';
-
+import { IconAlertTriangle } from '@tabler/icons';
 import { ALLOWED_CHAINS, CHAINS, ChainsID } from 'src/constants';
 import { useActiveChain } from 'src/hooks';
-import { FRC } from 'src/types';
+import { t } from 'i18next';
 
-type ChainSelectItemsProps = {
-  label: string;
+
+type SelectNetworkItem = SelectItem & {
   logo: string;
 };
 
-console.log('env',process.env.NEXT_PUBLIC_ENV);
+console.log('env', process.env.NEXT_PUBLIC_ENV);
 
 const data = ALLOWED_CHAINS
   .filter((chain) => (chain.toString() !== "5" && process.env.NEXT_PUBLIC_ENV === "production") || process.env.NEXT_PUBLIC_ENV !== "production")
-  .map<SelectItem>((chain) => ( {
+  .map<SelectNetworkItem>((chain) => ({
     value: chain.toString(),
     label: CHAINS[chain as ChainsID].chainName,
     logo: CHAINS[chain as ChainsID].logo,
   }));
 
-const ChainSelectItems: FRC<ChainSelectItemsProps, HTMLDivElement> = forwardRef(
-  ({ label, logo, ...props }, ref) => {
-    return (
-      <Group {...props} ref={ref} spacing={'xs'}>
-        <Image src={logo} alt={label} width={18} height={18} fit={'contain'} />
-        <Text>{label}</Text>
-      </Group>
-    );
-  }
-);
-ChainSelectItems.displayName = 'ChainSelectItems';
 
-const ChainSelectedIcon: FC = () => {
-  const activeChain = useActiveChain();
+
+export const ChainList: FC = () => {
 
   return (
-    <Image
-      src={activeChain?.logo}
-      alt={activeChain?.chainName}
-      width={18}
-      height={18}
-      fit={'contain'}
-    />
+    <>{
+      data.map(({ logo, label, value }) => (
+        <ChainMenuItem chainValue={value} label={label ? label : ""} logo={logo}></ChainMenuItem>
+      ))
+    }
+    </>
   );
 };
 
-export const ChainSelect: FC<Partial<SelectProps>> = (props) => {
+const ChainMenuItem: FC<{ logo: string; label: string; chainValue: string }> = ({ logo, label, chainValue }) => {
   const { chainId, connector } = useWeb3React();
 
   const switchChain = useCallback(
-    async (chainValue: string) => {
+    async () => {
       const desiredChainId = Number(chainValue);
       if (desiredChainId === chainId) return;
 
@@ -69,14 +56,48 @@ export const ChainSelect: FC<Partial<SelectProps>> = (props) => {
   );
 
   return (
-    <Select
-      data={data}
-      icon={<ChainSelectedIcon />}
-      disabled={!chainId}
-      value={chainId?.toString()}
-      onChange={switchChain}
-      itemComponent={ChainSelectItems}
-      {...props}
-    />
+    <Menu.Item
+      onClick={switchChain}
+      icon={<Image src={logo} alt={label} width={18} height={18} fit={'contain'} />}
+      color={chainId === Number(chainValue) ? 'brand' : ''}>
+      {label}
+    </Menu.Item>
+  );
+};
+
+
+
+
+
+
+
+
+
+export const MessageNetwork: FC<{ classeName: Sx }> = ({ classeName }) => {
+  const { t } = useTranslation('menu', { keyPrefix: 'messages' });
+  const { connector } = useWeb3React();
+  const activeChain = useActiveChain();
+  const [chain, setChain] = useState(activeChain);
+
+  useEffect(() => {
+    setChain(activeChain)
+  }, [activeChain]);
+
+  const switchChain = useCallback(
+    async () => {
+      const desiredChainId = Number(1);
+      await connector.activate(desiredChainId);
+    },
+    [connector]
+  );
+
+  return (
+    <>{
+      !chain &&
+      <Box sx={classeName}>
+        <IconAlertTriangle size={20} aria-label={'Network'} style={{ marginRight: '8px' }} />
+        <div>{t('notAllowedNetwork')}<span onClick={switchChain} style={{ cursor: 'pointer', textDecoration: 'underline'}}>{t('switchNetwork')}</span></div>
+      </Box>}
+    </>
   );
 };

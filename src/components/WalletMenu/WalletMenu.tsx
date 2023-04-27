@@ -19,8 +19,6 @@ import { useActiveChain } from 'src/hooks';
 import { FRC } from 'src/types';
 import { shortenString } from 'src/utils';
 
-import { ChainSelect } from '../ChainSelect';
-
 const WalletUser: FRC<ButtonProps, HTMLButtonElement> = forwardRef(
   (props, ref) => {
     const { account } = useWeb3React();
@@ -34,16 +32,7 @@ const WalletUser: FRC<ButtonProps, HTMLButtonElement> = forwardRef(
 );
 WalletUser.displayName = 'WalletUser';
 
-const NetworkMenuItem: FC = () => {
-  const { t } = useTranslation('menu', { keyPrefix: 'wallet' });
 
-  return (
-    <>
-      <Menu.Label pb={0}>{t('network')}</Menu.Label>
-      <ChainSelect p={5} />
-    </>
-  );
-};
 
 const CopyToClipboardMenuItem: FC = () => {
   const { account } = useWeb3React();
@@ -125,8 +114,6 @@ export const WalletMenu: FC = () => {
         />
       </Menu.Target>
       <Menu.Dropdown>
-        <NetworkMenuItem />
-        <Menu.Divider />
         <CopyToClipboardMenuItem />
         <ViewOnExplorerMenuItem />
         <DisconnectMenuItem />

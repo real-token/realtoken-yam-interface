@@ -13,6 +13,7 @@
     "loading": "Chargement...",
     "comingSoon": "Bientôt disponible...",
     "noConnectedWallet": "S'il-vous-plaît connecter un portefeuille pour continuer (Aide : en bas à droite)",
+    "notAllowedNetwork": "S'il-vous-plaît changer de réseau pour continuer",
     "nextButton": "Suivant",
     "noAdminError": "Vous n'êtes pas un admininistrateur"
   },

@@ -13,6 +13,7 @@
     "loading": "loading...",
     "comingSoon": "Coming soon...",
     "noConnectedWallet": "Please connect a wallet to load the application (Help : at the botton right)",
+    "notAllowedNetwork": "Please switch to an allowed network to load the application",
     "nextButton": "Next",
     "noAdminError": "You are not an admin."
   },
