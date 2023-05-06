@@ -83,8 +83,6 @@ const ShowOfferPage: FC = () => {
     const [propertyTokens,setPropertyTokens] = useState<PropertiesToken[]>([]);
     const { getPropertyToken, propertiesIsloading } = usePropertiesToken();
 
-    console.log(propertyTokens)
-
     useEffect(() => {
         if(!offer || propertiesIsloading || propertyTokens.length > 0) return undefined;
 
