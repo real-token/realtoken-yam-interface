@@ -58,7 +58,7 @@ export const useMatchedOffers: UseMatchedOffers = (offerType, offerTokenAddress,
         return offersMatchingType;
 
     },[buyerTokenAddress, offerTokenAddress, offerType, price, publicOffers, revesedOfferType]);
-    
+
     const priceMinLimit = price ? price*(1-shieldValue) : 0;
     const priceMaxLimit = price ? price*(1+shieldValue) : 0;
 
@@ -69,14 +69,15 @@ export const useMatchedOffers: UseMatchedOffers = (offerType, offerTokenAddress,
                 .filter((offer) => 
                     offer.offerTokenAddress.toLowerCase() == buyerTokenAddress.toLowerCase() &&
                     offer.buyerTokenAddress.toLowerCase() == offerTokenAddress.toLowerCase() &&
-                    (shieldDisabled && price >= priceMinLimit) && (shieldDisabled && price <= priceMaxLimit)
+                    !(shieldDisabled && 1/price >= priceMinLimit && 1/price <= priceMaxLimit)
                 );
         }else if(offerType == OFFER_TYPE.SELL) {
+            console.log('HERE')
             return matchedOffersWithType
                 .filter((offer) => 
-                    offer.buyerTokenAddress.toLowerCase() == buyerTokenAddress.toLowerCase() &&
-                    offer.offerTokenAddress.toLowerCase() == offerTokenAddress.toLowerCase() &&
-                    (shieldDisabled && 1/price >= priceMinLimit) && (shieldDisabled && 1/price <= priceMaxLimit)
+                    offer.offerTokenAddress.toLowerCase() == buyerTokenAddress.toLowerCase() &&
+                    offer.buyerTokenAddress.toLowerCase() == offerTokenAddress.toLowerCase() &&
+                    !(shieldDisabled && 1/price >= priceMinLimit && 1/price <= priceMaxLimit)
                 );
         }else{
             return matchedOffersWithType
@@ -86,6 +87,8 @@ export const useMatchedOffers: UseMatchedOffers = (offerType, offerTokenAddress,
             );
         }
     },[buyerTokenAddress, matchedOffersWithType, offerTokenAddress, offerType, price, priceMaxLimit, priceMinLimit, shieldDisabled]);
+
+    console.log(matchedOffers)
 
     // Those are only filter by offerToken
     const matchedRawOffers = useMemo(() => {
@@ -195,12 +198,14 @@ export const useMatchedOffers: UseMatchedOffers = (offerType, offerTokenAddress,
                 if(hitLastOffer) break;
             }
         }
-        setMultiPath(path)
+        path.length > 0 ? setMultiPath(path) : setMultiPath(undefined)
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[amount, realTokenYamUpgradeable, sortedAmount]);
     useEffect(() => {
         if(sortedAmount && amount) getBestMultiPath();
     },[amount, getBestMultiPath, sortedAmount]);
+
+    console.log(multiPath)
 
     const multiPathAmountFilled = useMemo(() => {
         if(!multiPath) return 0;
