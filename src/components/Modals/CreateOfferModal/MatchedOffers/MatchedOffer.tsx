@@ -125,7 +125,7 @@ export const MatchedOffer = ({ offerBestType, offer, amount } : MatchedOfferProp
             </Flex>
             <Flex gap={"sm"}>
                 <IconCash/>
-                <Text>{offer.price}</Text>
+                <Text>{offer.offerPrice}</Text>
             </Flex>
             <Flex gap={"sm"}>
                 <IconScale/>
