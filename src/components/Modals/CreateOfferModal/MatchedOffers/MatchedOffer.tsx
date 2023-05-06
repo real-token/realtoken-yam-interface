@@ -21,11 +21,12 @@ const useStyle = createStyles((theme: MantineTheme) => ({
         borderRadius: theme.spacing.md
     },
     floatingButton: {
-        position: 'absolute',
-        bottom: 0,
-        right: 0,
+        display: 'flex',
+        justifySelf: 'right',
+        justifyContent: 'center',
         marginBottom: '10px',
-        marginRight: '10px'
+        marginRight: '10px',
+        marginTop: theme.spacing.md
     },
     offerId: {
         display: "flex",
