@@ -43,12 +43,12 @@ const App = ({ Component, pageProps, colorScheme, locale }: AppProps) => {
           <Provider store={store}>
             <InitStoreProvider>
               <Head title={'Realtoken YAM'} />
-                <MantineProviders initialColorScheme={colorScheme}>
-                    <LanguageInit initialLocale={locale} />
-                    <Layout>
-                      <Component {...pageProps} />
-                    </Layout>
-                </MantineProviders>
+              <MantineProviders initialColorScheme={colorScheme}>
+                  <LanguageInit initialLocale={locale} />
+                  <Layout>
+                    <Component {...pageProps} />
+                  </Layout>
+              </MantineProviders>
             </InitStoreProvider>
           </Provider>
         </Web3Providers>
