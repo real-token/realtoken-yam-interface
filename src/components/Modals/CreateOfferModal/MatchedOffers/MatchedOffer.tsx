@@ -1,5 +1,5 @@
-import { Button, createStyles, Flex, MantineTheme, Text } from "@mantine/core";
-import { IconArrowDownLeft, IconArrowUpRight, IconCash, IconScale } from "@tabler/icons";
+import { ActionIcon, Button, createStyles, Flex, MantineTheme, Text } from "@mantine/core";
+import { IconArrowDownLeft, IconArrowUpRight, IconCash, IconExternalLink, IconScale } from "@tabler/icons";
 import { useOfferInfos } from "../../../../hooks/useOfferInfos";
 import { Offer, OFFER_TYPE } from "../../../../types/offer";
 import { OfferTypeBadge } from "../../../Offer/OfferTypeBadge";
@@ -11,6 +11,7 @@ import { ContractsID } from "../../../../constants";
 import { useAtomValue } from "jotai";
 import { providerAtom } from "../../../../states";
 import { useState } from "react";
+import { openInNewTab } from "../../../../utils/window";
 
 const useStyle = createStyles((theme: MantineTheme) => ({
     container: {
@@ -108,6 +109,9 @@ export const MatchedOffer = ({ offerBestType, offer, amount } : MatchedOfferProp
                 <Flex gap={"xs"}>
                     <div className={classes.offerId}>{offer.offerId}</div>
                     <OfferTypeBadge offerType={offer.type ?? OFFER_TYPE.EXCHANGE} sx={{ flexGrow: 1 }}/>
+                    <ActionIcon color={"brand"} onClick={() => openInNewTab(`/offer/${offer.offerId}`)} style={{ height: '40px', width: '2.4rem' }} variant={"outline"}>
+                        <IconExternalLink size={24}/>
+                    </ActionIcon>
                 </Flex>
             </Flex>
             <Flex gap={"sm"} mt={6}>
