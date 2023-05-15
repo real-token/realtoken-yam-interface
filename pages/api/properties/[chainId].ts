@@ -205,6 +205,8 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
 
 const handler: NextApiHandler = async (req: NextApiRequest,res: NextApiResponse) => {
 
+    res.setHeader('Cache-Control', 's-maxage=0');
+
     try{
 
         const { chainId: id } = req.query;
@@ -225,5 +227,12 @@ const handler: NextApiHandler = async (req: NextApiRequest,res: NextApiResponse)
         res.status(500).json({error: "Failed to fetch properties"});
       }
 }
-
 export default handler;
+
+export async function getStaticProps() {
+    return {
+      props: {
+        revalidate: true
+      },
+    };
+  }

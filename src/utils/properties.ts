@@ -12,16 +12,20 @@ export const getWhitelistedProperties = async (chainId: number): Promise<ShortPr
             const { data } = await client.query({ query: gql`
                 query GetWLProperties {
                     tokens(first: 1000, where: {tokenType: 1, name_not: null}) {
-                    name
-                    tokenType
-                    address
+                        name
+                        tokenType
+                        address
                     }
                 }
             `});
 
             if(data.tokens){
-                const propertiesToken: ShortProperty[] = []; 
+                const propertiesToken: ShortProperty[] = [];
+                // console.log("lenght: ", data.tokens.length);
                 data.tokens.forEach((token: Token) => {
+                    // if(token.name?.toLowerCase().includes('19003')){
+                    //     console.log(token)
+                    // }
                     propertiesToken.push({
                         contractAddress: token.address,
                         name: token.name ?? ""
