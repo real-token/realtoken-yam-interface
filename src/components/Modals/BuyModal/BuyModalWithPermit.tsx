@@ -12,13 +12,9 @@ import { Web3Provider } from '@ethersproject/providers';
 import { Button, Divider, Flex, Group, Stack, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { ContextModalProps } from '@mantine/modals';
-import { showNotification, updateNotification } from '@mantine/notifications';
 import BigNumber from 'bignumber.js';
-import { CoinBridgeToken, coinBridgeTokenABI, Erc20, Erc20ABI } from 'src/abis';
-import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
+import { ContractsID } from 'src/constants';
 import { useActiveChain, useContract } from 'src/hooks';
-import coinBridgeTokenPermitSignature from 'src/hooks/coinBridgeTokenPermitSignature';
-import erc20PermitSignature from 'src/hooks/erc20PermitSignature';
 import { getContract } from 'src/utils';
 import { NumberInput } from '../../NumberInput';
 import { useWalletERC20Balance } from 'src/hooks/useWalletERC20Balance';
@@ -30,6 +26,7 @@ import { Offer, OFFER_TYPE } from 'src/types/offer';
 import { useAtomValue } from 'jotai';
 import { providerAtom } from 'src/states';
 import { buy } from '../../../utils/tx/buy';
+import { Erc20, Erc20ABI } from '../../../abis';
 
 type BuyModalWithPermitProps = {
   offer: Offer,
@@ -205,7 +202,7 @@ export const BuyModalWithPermit: FC<
             <NumberInput
               label={t('amount')}
               required={true}
-              disabled={maxTokenBuy == 0 || maxTokenBuy == undefined}
+              // disabled={maxTokenBuy == 0 || maxTokenBuy == undefined}
               min={0}
               max={maxTokenBuy}
               showMax={true}
@@ -229,7 +226,7 @@ export const BuyModalWithPermit: FC<
                 type={'submit'}
                 loading={isSubmitting}
                 aria-label={t('confirm')}
-                disabled={values?.amount == 0 || !values.amount}
+                // disabled={values?.amount == 0 || !values.amount}
               >
                 {t('confirm')}
               </Button>

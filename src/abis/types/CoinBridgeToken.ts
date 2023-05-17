@@ -29,6 +29,7 @@ export interface CoinBridgeTokenInterface extends ethers.utils.Interface {
     "PERMIT_TYPEHASH()": FunctionFragment;
     "TRANSFER_WITH_AUTHORIZATION_TYPEHASH()": FunctionFragment;
     "VERSION()": FunctionFragment;
+    "version()": FunctionFragment;
     "addAdministrator(address)": FunctionFragment;
     "addRealmAdministrator(address)": FunctionFragment;
     "addSeizer(address)": FunctionFragment;
@@ -116,6 +117,7 @@ export interface CoinBridgeTokenInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "VERSION", values?: undefined): string;
+  encodeFunctionData(functionFragment: "version", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "addAdministrator",
     values: [string]
@@ -367,6 +369,7 @@ export interface CoinBridgeTokenInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "VERSION", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "version", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "addAdministrator",
     data: BytesLike
@@ -653,7 +656,7 @@ export interface CoinBridgeToken extends BaseContract {
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  listeners<EventArgsArray extends Array<any>, EventArgsObject>(
+  listeners<EventArgsArray extends Array<any>, EventArgsObject>(  
     eventFilter?: TypedEventFilter<EventArgsArray, EventArgsObject>
   ): Array<TypedListener<EventArgsArray, EventArgsObject>>;
   off<EventArgsArray extends Array<any>, EventArgsObject>(
@@ -715,6 +718,7 @@ export interface CoinBridgeToken extends BaseContract {
     ): Promise<[string]>;
 
     VERSION(overrides?: CallOverrides): Promise<[BigNumber]>;
+    version(overrides?: CallOverrides): Promise<[string]>;
 
     addAdministrator(
       _administrator: string,
@@ -1048,6 +1052,7 @@ export interface CoinBridgeToken extends BaseContract {
   ): Promise<string>;
 
   VERSION(overrides?: CallOverrides): Promise<BigNumber>;
+  version(overrides?: CallOverrides): Promise<string>;
 
   addAdministrator(
     _administrator: string,
@@ -1378,6 +1383,7 @@ export interface CoinBridgeToken extends BaseContract {
     ): Promise<string>;
 
     VERSION(overrides?: CallOverrides): Promise<BigNumber>;
+    version(overrides?: CallOverrides): Promise<string>;
 
     addAdministrator(
       _administrator: string,
@@ -1935,6 +1941,7 @@ export interface CoinBridgeToken extends BaseContract {
     ): Promise<BigNumber>;
 
     VERSION(overrides?: CallOverrides): Promise<BigNumber>;
+    // version(overrides?: CallOverrides & { from?: string | Promise<string> }): Promise<string>;
 
     addAdministrator(
       _administrator: string,
@@ -2268,7 +2275,8 @@ export interface CoinBridgeToken extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    VERSION(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    VERSION(overrides?: CallOverrides): Promise<PopulatedTransaction>
+    version(overrides?: CallOverrides): Promise<PopulatedTransaction>
 
     addAdministrator(
       _administrator: string,

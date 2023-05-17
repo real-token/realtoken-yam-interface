@@ -1,7 +1,5 @@
 import type { Web3Provider } from '@ethersproject/providers';
-
-import type { Contract } from 'ethers';
-import { utils } from 'ethers';
+import { Contract, utils } from 'ethers';
 import { gnosisAllowedTokens } from '../constants/allowedBuyTokens';
 
 // This function is used for general tokens with permit function
@@ -22,8 +20,23 @@ const erc20PermitSignature = async (
     }else{
       nonce = await contract.nonces(owner);
     }
+    
+    let version = undefined;
+    try{
+      version = await contract.version();
+    }catch(e){
+      console.log('No version function in contract.')
+    }
+
+    let VERSION = undefined;
+    try{
+      VERSION = await contract.VERSION();
+    }catch(e){
+      console.log('No VERSION function in contract.')
+    }
 
     const contractName = await contract.name();
+    const rightVersion = version ?? VERSION;
 
     const EIP712Domain = [
       { name: 'name', type: 'string' },
@@ -33,10 +46,11 @@ const erc20PermitSignature = async (
     ];
     const domain = {
       name: contractName,
-      version: '1',
+      version: rightVersion.toString(),
       chainId: library.network.chainId,
       verifyingContract: contract.address,
     };
+    console.log(domain)
     const Permit = [
       { name: 'owner', type: 'address' },
       { name: 'spender', type: 'address' },
