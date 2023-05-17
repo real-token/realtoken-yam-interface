@@ -102,6 +102,22 @@
     "confirm": "Confirm",
     "summary": "Summary"
   },
+  "offerMatching": {
+    "title": "Offers matching",
+    "noMatchingFound": "❌ No matching offers founded ",
+    "waitingMatching": "Waiting for matching...",
+    "multiCurrency": "Allow multi buy currencies",
+    "bestPath": "Best path (offer id):",
+    "total": "Total:",
+    "amountFilled": "Amount filled:",
+    "averagePricePerToken": "Average buy price/token:",
+    "bestPrice": "Best price",
+    "bestAmount": "Best amount",
+    "multiPath": "Best path",
+    "buyTokenRepartition": "Buy assets repartition:",
+    "missingTokenBalance": "Missing token",
+    "missingToken": "{{missingTokenAmount}} of {{missingTokenSymbol}}"
+  },
   "chooseOfferType": {
     "title": "Which type of offer do you want to create ?",
     "buyTypeExplain": "Choose \"{{ offerType }}\" offer's type when you want to buy a RealT property token with other non Realt tokens (WXDAI, WETH, USDC etc...)",

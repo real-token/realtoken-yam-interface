@@ -12,9 +12,6 @@ import { useWeb3React } from "@web3-react/core";
 import { Offer } from "src/types/offer";
 import { useRefreshOffers } from "src/hooks/offers/useRefreshOffers";
 import BigNumber from "bignumber.js";
-import { PropertyImage } from "src/components/Offer/Image/PropertyImage";
-import { openInNewTab } from "src/utils/window";
-import { OfferDeltaTable } from "src/components/Table/OfferDeltaTable/OfferDeltaTable";
 import { PropertyCard } from "src/components/Offer/PropertyCard";
 import { ConnectedProvider } from "src/providers/ConnectProvider";
 
@@ -85,8 +82,6 @@ const ShowOfferPage: FC = () => {
 
     const [propertyTokens,setPropertyTokens] = useState<PropertiesToken[]>([]);
     const { getPropertyToken, propertiesIsloading } = usePropertiesToken();
-
-    console.log(propertyTokens)
 
     useEffect(() => {
         if(!offer || propertiesIsloading || propertyTokens.length > 0) return undefined;

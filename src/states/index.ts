@@ -15,3 +15,4 @@ export const shieldDisabledAtom = atomWithStorage<boolean>("shieldDisabled",fals
 export const shieldValueAtom = atomWithStorage<number>("shieldValue",0.05);
 export const wlTokensAtom = atom<WLToken[]>([DEFAULT_WL_TOKEN]);
 export const providerAtom = atomWithStorage<string>("provider","");
+export const multiPathMultiCurrencyAtom = atom<boolean>(true);
