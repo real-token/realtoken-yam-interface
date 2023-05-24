@@ -185,7 +185,7 @@ export const BuyModalWithPermit: FC<
               <Flex direction={"column"}>
                   <Text fw={700}>{offer.type ? priceTranslation.get(offer.type) : ""}</Text>
                   <Text>{`${offer.price} ${buyTokenSymbol}`}</Text>
-                </Flex>
+              </Flex>
           </Flex>
         </Flex>
 
