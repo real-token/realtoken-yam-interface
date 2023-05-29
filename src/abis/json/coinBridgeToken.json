@@ -476,6 +476,19 @@
 	},
 	{
 		"inputs": [],
+		"name": "EIP712_REVISION",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "version",
 		"outputs": [
 			{

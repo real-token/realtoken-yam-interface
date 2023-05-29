@@ -20,23 +20,34 @@ const erc20PermitSignature = async (
     }else{
       nonce = await contract.nonces(owner);
     }
+
+    console.log(contract.address)
     
     let version = undefined;
     try{
       version = await contract.version();
     }catch(e){
-      console.log('No version function in contract.')
+      console.log('No version function in contract.', e)
     }
 
     let VERSION = undefined;
     try{
       VERSION = await contract.VERSION();
     }catch(e){
-      console.log('No VERSION function in contract.')
+      console.log('No VERSION function in contract.', e)
     }
 
+    let revision = undefined;
+    try{
+      revision = await contract.EIP712_REVISION();
+    }catch(e){
+      console.log('No EIP712_REVISION function in contract.', e)
+    }
+
+    if(!version && !VERSION && !revision) throw Error("Cannot get permit version from contract.");
+
     const contractName = await contract.name();
-    const rightVersion = version ?? VERSION;
+    const rightVersion = version ?? VERSION ?? revision;
 
     const EIP712Domain = [
       { name: 'name', type: 'string' },
