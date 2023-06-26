@@ -226,7 +226,7 @@ export const BuyModalWithPermit: FC<
                 type={'submit'}
                 loading={isSubmitting}
                 aria-label={t('confirm')}
-                disabled={process.env.NEXT_PUBLIC_ENV == "dev" ? false : (values?.amount == 0 || !values.amount)}
+                disabled={process.env.NEXT_PUBLIC_ENV == "development" ? false : (values?.amount == 0 || !values.amount)}
               >
                 {t('confirm')}
               </Button>

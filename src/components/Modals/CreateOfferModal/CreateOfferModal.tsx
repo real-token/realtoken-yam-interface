@@ -6,10 +6,8 @@ import { useForm } from '@mantine/form';
 import { showNotification, updateNotification } from '@mantine/notifications';
 import BigNumber from 'bignumber.js';
 import { CoinBridgeToken, coinBridgeTokenABI } from 'src/abis';
-import { Chain, ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
+import { Chain, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { ZERO_ADDRESS } from 'src/constants';
-import { useActiveChain } from 'src/hooks';
-import { useContract } from 'src/hooks/useContract';
 import { getContract } from 'src/utils';
 import { NumberInput, truncDigits } from '../../NumberInput';
 import { cleanNumber } from 'src/utils/number';
@@ -23,7 +21,6 @@ import { useCreateOfferTokens } from 'src/hooks/useCreateOfferTokens';
 import { OfferTypeBadge } from 'src/components/Offer/OfferTypeBadge';
 import { OFFER_TYPE } from 'src/types/offer';
 import { useOraclePriceFeed } from 'src/hooks/useOraclePriceFeed';
-import { calcRem } from 'src/utils/style';
 import { IconArrowRight, IconArrowsHorizontal } from '@tabler/icons';
 import { Shield } from 'src/components/Shield/Shield';
 import { useWalletERC20Balance } from 'src/hooks/useWalletERC20Balance';
@@ -164,246 +161,6 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
 
   const offers = useAppSelector(selectCreateOffers);
   const [exchangeType,setExchangeType] = useState<string|null>(null);
-
-
-  // const onHandleSubmit = useCallback(
-  //   async (formValues: SellFormValues) => {
-  //     try {
-  //       if (
-  //         !account ||
-  //         !provider ||
-  //         !realTokenYamUpgradeable ||
-  //         !formValues.offerTokenAddress ||
-  //         !formValues.buyerTokenAddress ||
-  //         !formValues.price ||
-  //         !formValues.amount
-  //       ) {
-  //         return;
-  //       }
-
-  //       if (!provider || !account) {
-  //         return;
-  //       }
-
-  //       setSubmitting(true);
-  //       const offerToken = getContract<CoinBridgeToken>(
-  //         formValues.offerTokenAddress,
-  //         coinBridgeTokenABI,
-  //         provider,
-  //         account
-  //       );
-  //       const buyerToken = getContract<Erc20>(
-  //         formValues.buyerTokenAddress,
-  //         Erc20ABI,
-  //         provider,
-  //         account
-  //       );
-
-  //       if (!offerToken || !buyerToken) {
-  //         console.log('offerToken or buyerToken not found');
-  //         return;
-  //       }
-  //       const offerTokenDecimals = await offerToken.decimals();
-  //       const buyerTokenDecimals = await buyerToken.decimals();
-
-  //       const amountInWei = new BigNumber(
-  //         formValues.amount.toString()
-  //       ).shiftedBy(Number(offerTokenDecimals));
-  //       const oldAllowance = await offerToken.allowance(
-  //         account,
-  //         realTokenYamUpgradeable.address
-  //       );
-  //       const amountInWeiToPermit = amountInWei.plus(
-  //         new BigNumber(oldAllowance.toString())
-  //       );
-
-  //       const priceInWei = new BigNumber(formValues.price.toString()).shiftedBy(
-  //         Number(buyerTokenDecimals)
-  //       );
-
-  //       const transactionDeadline = Math.floor(Date.now() / 1000) + 3600; // permit valable during 1h
-
-  //       const offerTokenType = await realTokenYamUpgradeable.getTokenType(
-  //         formValues.offerTokenAddress
-  //       );
-
-  //       if (offerTokenType === 1) {
-  //         // TokenType = 1: RealToken
-  //         const { r, s, v }: any = await coinBridgeTokenPermitSignature(
-  //           account,
-  //           realTokenYamUpgradeable.address,
-  //           amountInWeiToPermit.toString(),
-  //           transactionDeadline,
-  //           offerToken,
-  //           provider
-  //         );
-
-  //         const createOfferWithPermitTx =
-  //           await realTokenYamUpgradeable.createOfferWithPermit(
-  //             formValues.offerTokenAddress,
-  //             formValues.buyerTokenAddress,
-  //             formValues.isPrivateOffer === false
-  //               ? ZERO_ADDRESS
-  //               : formValues.buyerAddress,
-  //             priceInWei.toString(),
-  //             amountInWei.toString(),
-  //             amountInWeiToPermit.toString(10),
-  //             transactionDeadline.toString(),
-  //             v,
-  //             r,
-  //             s
-  //           );
-  //         const notificationPayload = {
-  //           key: createOfferWithPermitTx.hash,
-  //           href: `${activeChain?.blockExplorerUrl}tx/${createOfferWithPermitTx.hash}`,
-  //           hash: createOfferWithPermitTx.hash,
-  //         };
-
-  //         showNotification(
-  //           NOTIFICATIONS[NotificationsID.createOfferLoading](
-  //             notificationPayload
-  //           )
-  //         );
-
-  //         createOfferWithPermitTx
-  //           .wait()
-  //           .then(({ status }) =>
-  //             updateNotification(
-  //               NOTIFICATIONS[
-  //                 status === 1
-  //                   ? NotificationsID.createOfferSuccess
-  //                   : NotificationsID.createOfferError
-  //               ](notificationPayload)
-  //             )
-  //           );
-  //       } else if (offerTokenType === 2) {
-  //         // TokenType = 2: ERC20 With Permit
-  //         const { r, s, v }: any = await erc20PermitSignature(
-  //           account,
-  //           realTokenYamUpgradeable.address,
-  //           amountInWeiToPermit.toString(),
-  //           transactionDeadline,
-  //           offerToken,
-  //           provider
-  //         );
-
-  //         const createOfferWithPermitTx =
-  //           await realTokenYamUpgradeable.createOfferWithPermit(
-  //             formValues.offerTokenAddress,
-  //             formValues.buyerTokenAddress,
-  //             formValues.isPrivateOffer === false
-  //               ? ZERO_ADDRESS
-  //               : formValues.buyerAddress,
-  //             priceInWei.toString(),
-  //             amountInWei.toString(),
-  //             amountInWeiToPermit.toString(10),
-  //             transactionDeadline.toString(),
-  //             v,
-  //             r,
-  //             s
-  //           );
-  //         const notificationPayload = {
-  //           key: createOfferWithPermitTx.hash,
-  //           href: `${activeChain?.blockExplorerUrl}tx/${createOfferWithPermitTx.hash}`,
-  //           hash: createOfferWithPermitTx.hash,
-  //         };
-
-  //         showNotification(
-  //           NOTIFICATIONS[NotificationsID.createOfferLoading](
-  //             notificationPayload
-  //           )
-  //         );
-
-  //         createOfferWithPermitTx
-  //           .wait()
-  //           .then(({ status }) =>
-  //             updateNotification(
-  //               NOTIFICATIONS[
-  //                 status === 1
-  //                   ? NotificationsID.createOfferSuccess
-  //                   : NotificationsID.createOfferError
-  //               ](notificationPayload)
-  //             )
-  //           );
-  //       } else if (offerTokenType === 3) {
-  //         // TokenType = 3: ERC20 Without Permit, do Approve/CreateOffer
-  //         const approveTx = await offerToken.approve(
-  //           realTokenYamUpgradeable.address,
-  //           amountInWeiToPermit.toString()
-  //         );
-
-  //         const notificationApprove = {
-  //           key: approveTx.hash,
-  //           href: `${activeChain?.blockExplorerUrl}tx/${approveTx.hash}`,
-  //           hash: approveTx.hash,
-  //         };
-
-  //         showNotification(
-  //           NOTIFICATIONS[NotificationsID.approveOfferLoading](
-  //             notificationApprove
-  //           )
-  //         );
-
-  //         approveTx
-  //           .wait()
-  //           .then(({ status }) =>
-  //             updateNotification(
-  //               NOTIFICATIONS[
-  //                 status === 1
-  //                   ? NotificationsID.approveOfferSuccess
-  //                   : NotificationsID.approveOfferError
-  //               ](notificationApprove)
-  //             )
-  //           );
-
-  //         await approveTx.wait(1);
-
-  //         const createOfferTx = await realTokenYamUpgradeable.createOffer(
-  //           formValues.offerTokenAddress,
-  //           formValues.buyerTokenAddress,
-  //           formValues.isPrivateOffer === false
-  //             ? ZERO_ADDRESS
-  //             : formValues.buyerAddress,
-  //           priceInWei.toString(),
-  //           amountInWei.toString()
-  //         );
-
-  //         const notificationCreateOffer = {
-  //           key: createOfferTx.hash,
-  //           href: `${activeChain?.blockExplorerUrl}tx/${createOfferTx.hash}`,
-  //           hash: createOfferTx.hash,
-  //         };
-
-  //         showNotification(
-  //           NOTIFICATIONS[NotificationsID.createOfferLoading](
-  //             notificationCreateOffer
-  //           )
-  //         );
-
-  //         createOfferTx
-  //           .wait()
-  //           .then(({ status }) =>
-  //             updateNotification(
-  //               NOTIFICATIONS[
-  //                 status === 1
-  //                   ? NotificationsID.createOfferSuccess
-  //                   : NotificationsID.createOfferError
-  //               ](notificationCreateOffer)
-  //             )
-  //           );
-  //       } else {
-  //         console.log('Token is not whitelisted');
-  //         showNotification(NOTIFICATIONS[NotificationsID.createOfferInvalid]());
-  //       }
-  //     } catch (error) {
-  //       console.log('ERROR WHEN SELLING WITH PERMIT', error);
-  //       showNotification(NOTIFICATIONS[NotificationsID.createOfferInvalid]());
-  //     } finally {
-  //       setSubmitting(false);
-  //     }
-  //   },
-  //   [account, provider, realTokenYamUpgradeable, activeChain?.blockExplorerUrl]
-  // );
 
   const privateOffer = () => {
     if (getInputProps('isPrivateOffer', { type: 'checkbox' }).checked) {
@@ -552,7 +309,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
     )
   );
 
-  const [priceInDollar,setPriceInDollar] = useState<number|undefined>(undefined);
+  const [priceInDollar,setPriceInDollar] = useState<number|''>('');
 
   // COMPONENTS
   const getSelect = (offerTokenSelectData: SelectItem[], buyerTokenSelectData: SelectItem[]) => {
@@ -607,7 +364,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
           label={label}
           placeholder={t('placeholderPrice')}
           value={priceInDollar}
-          onChange={setPriceInDollar}
+          onChange={(value) => setPriceInDollar(value)}
           precision={6}
           required={true}
           disabled={false}
@@ -701,7 +458,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
                   precision={6}
                   value={price ?? 0}
                   style={{ width: "100%" }}
-                  onChange={(price) => setPrice(price ?? 0)}
+                  onChange={(price) => setPrice(price ? price : 1)}
                 />
               </Flex>
             </Flex>
@@ -759,7 +516,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   }
 
   return (
-    <Flex direction={"column"} mx={'auto'} gap={"md"} style={{ width: calcRem(500) }}>
+    <Flex direction={"column"} mx={'auto'} gap={"md"} sx={{ padding: '1rem' }}>
         <Flex style={{ justifyContent: "space-between", alignItems: "center", height: "50px" }}>
           <Flex gap={"sm"} align={"center"}>
             <OfferTypeBadge offerType={offer.offerType} />
@@ -771,54 +528,96 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
       <form onSubmit={onSubmit(createdOffer)}>
         <Stack justify={'center'} align={'stretch'}>
 
-        { offer.offerType == OFFER_TYPE.EXCHANGE ? 
-            GetExchange() 
-          : 
-            getSelect(offerTokens,buyerTokens) 
-        }
+          { offer.offerType == OFFER_TYPE.EXCHANGE ? 
+              GetExchange() 
+            : 
+              getSelect(offerTokens,buyerTokens) 
+          }
 
-        { offer.offerType == OFFER_TYPE.EXCHANGE ?
-            GetExchangePriceNumberInputs()
-          :
-            GetPriceNumberInputs()
-        }
-        
-        <Divider />
-        <WalletERC20Balance balance={balance} symbol={offerTokenSymbol}/>
+          { offer.offerType == OFFER_TYPE.EXCHANGE ?
+              GetExchangePriceNumberInputs()
+            :
+              GetPriceNumberInputs()
+          }
+          
+          <Divider />
+          <WalletERC20Balance balance={balance} symbol={offerTokenSymbol}/>
 
-        <NumberInput
-          label={offer.offerType == OFFER_TYPE.EXCHANGE ? t('exchangeAmount') : t('amount')}
-          placeholder={t('placeholderAmount')}
-          required={true}
-          precision={6}
-          min={0.000001}
-          setFieldValue={setFieldValue}
-          showMax={false}
-          sx={{ flexGrow: 1 }}
-          {...getInputProps('amount')}
-        />
-        
-        <Checkbox
-          mt={'md'}
-          label={t('checkboxLabelPrivateOffre')}
-          {...getInputProps('isPrivateOffer', { type: 'checkbox' })}
-        />
+          <NumberInput
+            label={offer.offerType == OFFER_TYPE.EXCHANGE ? t('exchangeAmount') : t('amount')}
+            placeholder={t('placeholderAmount')}
+            required={true}
+            precision={6}
+            min={0.000001}
+            setFieldValue={setFieldValue}
+            showMax={false}
+            sx={{ flexGrow: 1 }}
+            {...getInputProps('amount')}
+          />
+          
+          <Checkbox
+            mt={'md'}
+            label={t('checkboxLabelPrivateOffre')}
+            {...getInputProps('isPrivateOffer', { type: 'checkbox' })}
+          />
 
-        {privateOffer()}
+          {privateOffer()}
 
-        <Group position={'left'} mt={'md'}>
-          <>
-            {summary()}
-            <Button
-              type={'submit'}
-              aria-label={'submit'}
-              loading={(bigNumberbalance && bigNumberbalance == undefined)}
-              disabled={!isValid || shieldError}
-            >
-              {t("buttonCreateOffer")}
-            </Button>
-          </>
-        </Group>
+          <Group position={'left'} mt={'md'}>
+            <>
+              {summary()}
+              <Button
+                type={'submit'}
+                aria-label={'submit'}
+                loading={(bigNumberbalance && bigNumberbalance == undefined)}
+                disabled={!isValid || shieldError}
+              >
+                {t("buttonCreateOffer")}
+              </Button>
+            </>
+          </Group>
+
+
+          <Group position={'left'} mt={'md'}>
+            <>
+              {summary()}
+              <Button
+                type={'submit'}
+                aria-label={'submit'}
+                loading={(bigNumberbalance && bigNumberbalance == undefined)}
+                disabled={!isValid || shieldError}
+              >
+                {t("buttonCreateOffer")}
+              </Button>
+            </>
+          </Group><Group position={'left'} mt={'md'}>
+            <>
+              {summary()}
+              <Button
+                type={'submit'}
+                aria-label={'submit'}
+                loading={(bigNumberbalance && bigNumberbalance == undefined)}
+                disabled={!isValid || shieldError}
+              >
+                {t("buttonCreateOffer")}
+              </Button>
+            </>
+          </Group><Group position={'left'} mt={'md'}>
+            <>
+              {summary()}
+              <Button
+                type={'submit'}
+                aria-label={'submit'}
+                loading={(bigNumberbalance && bigNumberbalance == undefined)}
+                disabled={!isValid || shieldError}
+              >
+                {t("buttonCreateOffer")}
+              </Button>
+            </>
+          </Group>
+
+
+
         </Stack>
       </form>
       <MatchedOffers 

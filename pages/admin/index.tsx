@@ -13,7 +13,7 @@ export const Admin = () => {
         <ConnectedProvider>
             <Flex
                 direction={"column"}
-                p={"xl"}
+                py={"xl"}
                 style={{ flexGrow: 1 }}
                 >
                 <Tabs color={"brand"} variant={"pills"} defaultValue={'adminMarketTable'}>

@@ -28,13 +28,13 @@ export const MarketGrid: FC = () => {
     const [page, setPage] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(parseInt(data[2]));
 
-    const paginationProps: PaginationProps = {
+    const paginationProps = {
         total: Math.ceil(offers.length/pageSize),
         page: page,
         radius: 'md',
         size: 'md',
         siblings: 0,
-        onChange: (page) => setPage(page),
+        onChange: (page: number) => setPage(page),
     };
 
     const [isOpen, handlers] = useDisclosure(false);
