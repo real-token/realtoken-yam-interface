@@ -576,48 +576,6 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
               </Button>
             </>
           </Group>
-
-
-          <Group position={'left'} mt={'md'}>
-            <>
-              {summary()}
-              <Button
-                type={'submit'}
-                aria-label={'submit'}
-                loading={(bigNumberbalance && bigNumberbalance == undefined)}
-                disabled={!isValid || shieldError}
-              >
-                {t("buttonCreateOffer")}
-              </Button>
-            </>
-          </Group><Group position={'left'} mt={'md'}>
-            <>
-              {summary()}
-              <Button
-                type={'submit'}
-                aria-label={'submit'}
-                loading={(bigNumberbalance && bigNumberbalance == undefined)}
-                disabled={!isValid || shieldError}
-              >
-                {t("buttonCreateOffer")}
-              </Button>
-            </>
-          </Group><Group position={'left'} mt={'md'}>
-            <>
-              {summary()}
-              <Button
-                type={'submit'}
-                aria-label={'submit'}
-                loading={(bigNumberbalance && bigNumberbalance == undefined)}
-                disabled={!isValid || shieldError}
-              >
-                {t("buttonCreateOffer")}
-              </Button>
-            </>
-          </Group>
-
-
-
         </Stack>
       </form>
       <MatchedOffers 
