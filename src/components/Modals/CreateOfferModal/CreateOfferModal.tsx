@@ -517,14 +517,13 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
 
   return (
     <Flex direction={"column"} mx={'auto'} gap={"md"} sx={{ padding: '1rem' }}>
-        <Flex style={{ justifyContent: "space-between", alignItems: "center", height: "50px" }}>
-          <Flex gap={"sm"} align={"center"}>
-            <OfferTypeBadge offerType={offer.offerType} />
-            <h3 style={{ margin: 0 }}>{t('titleFormCreateOffer')}</h3>
-          </Flex>
-          { offer.offerType !== OFFER_TYPE.EXCHANGE ? <Shield /> : undefined }        
+      <Flex style={{ justifyContent: "space-between", alignItems: "center", height: "50px" }}>
+        <Flex gap={"sm"} align={"center"}>
+          <OfferTypeBadge offerType={offer.offerType} />
+          <h3 style={{ margin: 0 }}>{t('titleFormCreateOffer')}</h3>
         </Flex>
-        
+        { offer.offerType !== OFFER_TYPE.EXCHANGE ? <Shield /> : undefined }        
+      </Flex>
       <form onSubmit={onSubmit(createdOffer)}>
         <Stack justify={'center'} align={'stretch'}>
 
