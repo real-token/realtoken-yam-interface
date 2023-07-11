@@ -45,7 +45,7 @@ export const TableCaption = <T,>({
   ]);
   const [isAutoRefresh,setIsAutoRefresh] = useAtom(isRefreshedAutoAtom);
 
-  const paginationProps: PaginationProps = {
+  const paginationProps: PaginationProps & { page: number } = {
     total: table.getPageCount(),
     page: table.getState().pagination.pageIndex + 1,
     radius: 'md',

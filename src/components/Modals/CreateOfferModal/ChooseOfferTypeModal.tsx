@@ -107,7 +107,7 @@ export const ChooseOfferTypeModal: FC<ContextModalProps> = ({
 
   const { t: commonT } = useTranslation("common", { keyPrefix: "general" });
   const { t } = useTranslation("modals", { keyPrefix: "chooseOfferType" });
-  
+   
   return (
     <Flex direction={"column"} gap={"xl"} style={{ width: calcRem(400) }}>
       <Text>{t("title")}</Text>

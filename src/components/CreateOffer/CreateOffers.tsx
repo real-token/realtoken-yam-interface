@@ -18,6 +18,8 @@ import erc20PermitSignature from "../../hooks/erc20PermitSignature";
 import coinBridgeTokenPermitSignature from "../../hooks/coinBridgeTokenPermitSignature";
 import { Web3Provider } from "@ethersproject/providers";
 import { Contract } from "ethers";
+import { useAtomValue } from "jotai";
+import { providerAtom } from "../../states";
 
 const approveOffer = (
     offerTokenAddress: string, 
@@ -131,6 +133,8 @@ export const CreateOffer = () => {
 
     const dispatch = useAppDispatch();
 
+    const connector = useAtomValue(providerAtom);
+    
     // Group approves for same token in unique approve tx to reduce gas consumption
     const createApproves = async () => {
         const approves: { [key: string]: BigNumber } = {}
@@ -185,9 +189,13 @@ export const CreateOffer = () => {
                 const priceInWei = new BigNumber(offer.price.toString()).shiftedBy(Number(buyerTokenDecimals)).toString(10);
                 const transactionDeadline = Math.floor(Date.now() / 1000) + 3600;
 
-                let permitAnswer: any;
-                if(offerTokenType == 1){
+                const isSafe = connector == "gnosis-safe";
+
+                let permitAnswer: any|undefined = undefined;
+                let needPermit = false;
+                if(offerTokenType == 1 && !isSafe){
                     // TokenType = 1: RealToken
+                    needPermit = true;
                     permitAnswer = await coinBridgeTokenPermitSignature(
                         account,
                         realTokenYamUpgradeable.address,
@@ -196,9 +204,9 @@ export const CreateOffer = () => {
                         offerToken,
                         provider
                     );
-                }else if(offerTokenType == 2){
+                }else if(offerTokenType == 2 && !isSafe){
                     // TokenType = 2: ERC20 With Permit
-
+                    needPermit = true;
                     permitAnswer = await erc20PermitSignature(
                         account,
                         realTokenYamUpgradeable.address,
@@ -207,17 +215,17 @@ export const CreateOffer = () => {
                         offerToken,
                         provider
                     );
-                }else if(offerTokenType == 3){
+                }else if(offerTokenType == 3 || isSafe){
                     await approveOffer(offer.offerTokenAddress, offer.amount,provider,account,realTokenYamUpgradeable,setLoading,activeChain);
                 }
 
-                if(!permitAnswer.r || !permitAnswer.s || !permitAnswer.v){
+                if(needPermit && !permitAnswer){
                     setLoading(false);
                     return;
                 };
 
                 let createOfferTx;
-                if(offerTokenType == 1 || offerTokenType == 2){
+                if((offerTokenType == 1 || offerTokenType == 2) && !isSafe){
                     const { r, s, v} = permitAnswer;
                     createOfferTx = await realTokenYamUpgradeable.createOfferWithPermit(
                         offer.offerTokenAddress,
@@ -232,6 +240,7 @@ export const CreateOffer = () => {
                         s,
                     )
                 }else{
+                    console.log('TEST 1')
                     createOfferTx = await realTokenYamUpgradeable.createOffer(
                         offer.offerTokenAddress,
                         offer.buyerTokenAddress,

@@ -104,6 +104,22 @@
     "summaryText2": "et le montant de",
     "summaryText3": "à"
   },
+  "offerMatching": {
+    "title": "Offres correspondantes",
+    "noMatchingFound": "❌ Aucunes correspondances trouvées",
+    "waitingMatching": "En attente de correspondances",
+    "multiCurrency": "Autoriser plusieurs tokens d'achat",
+    "bestPath": "Meilleur chemin (id de l'offre):",
+    "total": "Total:",
+    "amountFilled": "Quantité remplie",
+    "averagePricePerToken": "Prix moyen d'achat par token",
+    "bestPrice": "Meilleur prix",
+    "bestAmount": "Meilleur montant",
+    "multiPath": "Meilleur chemin d'achat",
+    "buyTokenRepartition": "Répartion des jetons d'achat:",
+    "missingTokenBalance": "Jeton d'achat manquant",
+    "missingToken": "{{missingTokenAmount}} de {{missingTokenSymbol}}"
+  },
   "chooseOfferType": {
     "title": "Quel type d'offre voulez-vous créer ?",
     "buyTypeExplain": "Choisissez le type d'offre \"{{ offerType }}\" si vous souhaitez acheter un token CSM avec un autre token non CSM (WXDAI, USDC etc...)",

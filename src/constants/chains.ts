@@ -1,8 +1,8 @@
 import { realTokenYamUpgradeableABI } from 'src/abis';
-import { EthereumSVG, GnosisSVG } from 'src/assets';
-
 import { Contracts, ContractsID } from './contracts';
 import { Currency, DAI, ETH } from './currencies';
+import { Chain as RealtChains, EthereumLogo, GnosisLogo } from '@realtoken/realt-commons';
+import { FC } from 'react';
 
 export enum ChainsID {
   // Ethereum = 0x01,
@@ -10,10 +10,10 @@ export enum ChainsID {
   Goerli = 0x05,
 }
 
-export type Chain = {
+export type Chain = Omit<RealtChains,'blockExplorerUrl'> & {
   chainId: ChainsID;
   chainName: string;
-  logo: string;
+  logo: FC;
   nativeCurrency: Currency;
   rpcUrl: string;
   blockExplorerUrl: string;
@@ -24,10 +24,11 @@ export const CHAINS: Record<ChainsID, Chain> = {
   [ChainsID.Gnosis]: {
     chainId: ChainsID.Gnosis,
     chainName: 'Gnosis Chain',
-    logo: GnosisSVG.src,
+    logo: GnosisLogo,
     nativeCurrency: DAI,
     rpcUrl: 'https://rpc.ankr.com/gnosis',
     blockExplorerUrl: 'https://gnosisscan.io/',
+    isTestnet: false,
     contracts: {
       [ContractsID.realTokenYamUpgradeable]: {
         abi: realTokenYamUpgradeableABI,
@@ -36,29 +37,14 @@ export const CHAINS: Record<ChainsID, Chain> = {
       },
     },
   },
-  // [ChainsID.Ethereum]: {
-  //   chainId: ChainsID.Ethereum,
-  //   chainName: 'Ethereum',
-  //   logo: EthereumSVG.src,
-  //   nativeCurrency: ETH,
-  //   rpcUrl: 'https://rpc.ankr.com/eth',
-  //   blockExplorerUrl: 'https://etherscan.io/',
-  //   contracts: {
-  //     [ContractsID.realTokenYamUpgradeable]: {
-  //       abi: realTokenYamUpgradeableABI,
-  //       address: '0xc759aa7f9dd9720a1502c104dae4f9852bb17c14',
-  //       metadata: { fromBlock: 16220000 },
-  //     },
-  //   },
-  // },
-
   [ChainsID.Goerli]: {
     chainId: ChainsID.Goerli,
     chainName: 'Goerli',
-    logo: EthereumSVG.src,
+    logo: EthereumLogo,
     nativeCurrency: ETH,
     rpcUrl: 'https://rpc.ankr.com/eth_goerli',
     blockExplorerUrl: 'https://goerli.etherscan.io/',
+    isTestnet: true,
     contracts: {
       [ContractsID.realTokenYamUpgradeable]: {
         abi: realTokenYamUpgradeableABI,
