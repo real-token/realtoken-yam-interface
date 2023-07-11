@@ -2530,10 +2530,10 @@
   dependencies:
     "@babel/runtime" "^7.13.10"
 
-"@realtoken/realt-commons@^1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@realtoken/realt-commons/-/realt-commons-1.2.1.tgz#f60fac3a0cb729a19aec52a9cbe9e6a9a25b8f1d"
-  integrity sha512-nkqqPXFE/2YfsVnZhKgBs85gZS7H5e9S00p+wH1mkhOx8DlS+2ai5nxAXtxxyz0z748M+L0yXSWTqXLvN+jmbg==
+"@realtoken/realt-commons@^1.2.2":
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@realtoken/realt-commons/-/realt-commons-1.2.2.tgz#7a11e603a59664a2faacad557b0cc7d6e5927352"
+  integrity sha512-2AG8vbrsQL/3Vg+hu6kBScBDs9CgEMz00/r/eK7JdSS/YT5DsYGjReqXg1pKu9aZG2cGshdJ3hS2i0RsXetq4g==
   dependencies:
     "@coinbase/wallet-sdk" "^3.6.5"
     "@emotion/react" "^11.10.6"

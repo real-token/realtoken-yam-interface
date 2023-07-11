@@ -8,6 +8,7 @@ import { Provider as ReduxProvide } from 'react-redux';
 import { QueryClient, QueryClientProvider } from "react-query";
 import { 
   ChainSelectConfig, 
+  Head, 
   LanguageInit, 
   Layout, 
   MantineProviders, 
@@ -68,6 +69,7 @@ const App = ({ Component, pageProps }: AppProps) => {
                     <Layout
                       currentWebsite={Websites.YAM}
                       chains={customChains}
+                      head={<Head title='Realtoken YAM (You And Me)' description='Realtoken YAM (You And Me)'/>}
                       headerNav={<HeaderNav/>}
                     >
                       <Component {...pageProps} />
