@@ -5,17 +5,15 @@ export type UrlTheGraph = {
 };
 
 export const UrlTheGraphToken: UrlTheGraph = {
-  Eth: 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/realtoken-eth',
+  Eth: '',
   Gnosis:
-    'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/realtoken-xdai',
-  Goerli:
-    'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/realtoken-goerli',
+    'https://api.thegraph.com/subgraphs/name/clean-sat-mining-thegraph/csm-tokens',
+  Goerli: '',
 };
 
 export const UrlTheGraphYam: UrlTheGraph = {
-  Eth: 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph',
+  Eth: '',
   Gnosis:
-    'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-gnosis',
-  Goerli:
-    'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-goerli',
+    'https://api.thegraph.com/subgraphs/name/clean-sat-mining-thegraph/yam-csm',
+  Goerli: '',
 };
