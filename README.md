@@ -68,10 +68,13 @@
 ## Requirements
 
 ### <a name="env">Environement</a>
+
 To run the project you will need to set-up a `.env` file in the root folder:
+
 ```
 COMMUNITY_API_KEY=XXXXXXXXXXXX
 NEXT_PUBLIC_ENV=XX
+NEXT_PUBLIC_WALLET_CONNECT_KEY=xxxxxxxxxxxx
 ```
 
 To get a `COMMUNITY_API_KEY`, join the dedicated [telegram dev channel](https://t.me/+XQyoaFfmN61yk7X0) then ask for.
@@ -81,6 +84,7 @@ Only those values are allowed: `dev`, `staging` or `production`.
 The default value is `dev`;
 
 ### Node.js version
+
 <strong>📣 Node.js needed version is `v18.12.1`</strong>
 
 ## Installation
@@ -93,7 +97,7 @@ The default value is `dev`;
    ```sh
    yarn
    ```
-3. Create the env file (instructions [here](#env)) 
+3. Create the env file (instructions [here](#env))
 4. Start the application in dev mode
    ```sh
    yarn dev
@@ -104,9 +108,11 @@ The default value is `dev`;
 <!-- CONTRIBUTING -->
 
 # Contributing
+
 The community is welcome to participate in the development of the YAM.
 
 ## Introduction
+
 All commit's name must follows the [conventional commit](https://www.conventionalcommits.org/en/v1.0.0/) convention.
 
 <strong>⚠️ ALL PR need to be created from `staging` branch and should requested to be merge into `staging` branch. Otherwise PR will be refused.</strong>
@@ -125,47 +131,59 @@ Don't forget to give the project a star! Thanks again!
 6. Open a Pull Request
 
 ## Operation
+
 If you want to improve the YAM there is few things you need to know.
 
 ### Technologies stack
 
 #### [Node.js](https://nodejs.org/)
+
 Node.js is a backend technology providing Javascript runtime environment outside server side.
 
 #### [Nextjs](https://nextjs.org/)
+
 Next.js is a framework used to create full-stack modern web application.
 
 #### [React](https://reactjs.org/)
+
 React is used to create dynamic interface.
 
 #### [Typescript](https://www.typescriptlang.org/)
+
 Typescript is a top-layer technology used to typed (add boolean, number etc...) types to javascript. It also significantly reduces errors during development.
 
 #### [Mantine](https://mantine.dev/)
+
 Mantine is the UI development kit we choosed to create the YAM interface.
 We choose it because Mantine is under intensive developmenent and is opensource.
 It also perfectly match with React, our front-end framework.
 
 #### [web3-react](https://github.com/Uniswap/web3-react)
+
 Web3-react is a typescript/javascript library used to connect YAM to blockchain through different wallet: Injected (Metamask, Frame, etc...), Coinbase, Wallet-connect, etc...
 
 #### [Redux](https://redux.js.org)
+
 Redux is a state manager used to store datas to store data accessible throughout the app.
 </br>
 See [state management](#state) for more informations.
 
 #### [Jotai](https://jotai.org/)
+
 Jotai is a small state manager.
 </br>
 See [state management](#state) for more informations.
 
 #### [Eslint](https://eslint.org/) and [Prettier](https://github.com/prettier/prettier)
+
 EsLint and Prettier are too software used to check and clean code, and check for synthax errors into the code.
 
 #### [dotenv](https://www.npmjs.com/package/dotenv)
+
 DotEnv is a library used to read environement variable from `.env` file.
 
 ### <a name="state">State management</a>
+
 Two state managers are working together inside YAM app: [Redux](https://redux.js.org/) and [Jotai](https://jotai.org/).
 </br>
 </br>
@@ -174,14 +192,16 @@ Redux stores the most heavy datas (offers, properties,etc...) while Jotai will b
 You can visualize the redux store with the [redux dev tool](https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd?hl=en).
 
 ### Add a new display
+
 At the moment only two displays are available: Table and Grid. But as a community driven projet you are encouraged to add new ones.
 </br>
 </br>
 If you want to one more you will need:
+
 1. Modify the enum file `src/types/Displays.ts`, to add a new display declaration.
 2. Goto `src/components/Display/Display.tsx` file:
 3. Add your brand new display in `availableDisplays` Map.
-   ```ts
+   ````ts
     const availableDisplays = useMemo(() => {
       return new Map<Displays,Display>([
         [Displays.TABLE, {
@@ -191,6 +211,7 @@ If you want to one more you will need:
         }]
       ]);
     },[])```
+   ````
 
 Then everything is ready to works !
 
