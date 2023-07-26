@@ -8,7 +8,8 @@ const getTokenFromCommunityAPI = new Promise<APIPropertiesToken[]>( async (resol
             method: "GET",
             headers: {
                 "X-AUTH-REALT-TOKEN": process.env.COMMUNITY_API_KEY ?? ""
-            }
+            },
+            cache: "no-cache"
         });
 
         if(response.ok){
@@ -203,7 +204,7 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
     return onlyWLProperties;
 }
 
-const handler: NextApiHandler = async (req: NextApiRequest,res: NextApiResponse) => {
+const handler: NextApiHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     res.setHeader('Cache-Control', 's-maxage=0');
 
@@ -228,6 +229,9 @@ const handler: NextApiHandler = async (req: NextApiRequest,res: NextApiResponse)
       }
 }
 export default handler;
+
+// 14400 = 4h
+export const revalidate = 14400;
 
 export async function getStaticProps() {
     return {
