@@ -135,13 +135,35 @@ export const fetchOffersTheGraph = (
       const q = Math.floor(offersToFetch / nbrFirst)
       const r = offersToFetch % nbrFirst
 
-      const formatQuery = (first: number, skip: number) => (gql`
-      query getOffers {
-        offers(first: ${first}, skip: ${skip}, where: { removedAtBlock: null }) {
-          ${getOfferQuery()}
-        }
+      const myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+
+
+
+      const formatRequest = (first: number, skip: number) => {
+        const query =  `{\n    offers (first: ${first}, skip: ${skip}, where: { removedAtBlock: null}) {${getOfferQuery()}}}`;
+
+        const graphql = JSON.stringify({
+          query: query,
+          variables: {}
+        })
+        const requestOptions = {
+          method: 'POST',
+          headers: myHeaders,
+          body: graphql,
+          redirect: 'follow'
+        };
+        return requestOptions;
       }
-    `)
+
+      
+      const formatQuery = (first: number, skip: number) => (
+        fetch(getTheGraphUrlYAM(chainId), formatRequest(first, skip) as any)
+            .then(response => response.text())
+            .then(result => JSON.parse(result))
+            .catch(error => console.log('error', error))
+      )
       //console.log('Debug Query usersDataYAM', usersDataYAM);
 
       //TODO: tmp supprimer la partie false quant déploiement ok sur Eth et Gnosis, remettre en const a la place de let try = new graph, catch = old graph
@@ -150,16 +172,12 @@ export const fetchOffersTheGraph = (
       let skip = 0;
       for (let i = 0; i < q; i++) {
         prom.push(
-          clientYAM.query({
-            query: formatQuery(nbrFirst, skip),
-          })
+          formatQuery(nbrFirst, skip),
         )
         skip += nbrFirst
       } 
 
-      prom.push(clientYAM.query({
-        query: formatQuery(r, skip),
-      }))
+      prom.push(formatQuery(r, skip))
 
       const offers: OfferGraphQl[] = (await Promise.all(prom)).map(val => val.data).reduce((prev, curent, i, arr) => [...prev, ...arr[i].offers], []) as OfferGraphQl[];
 
