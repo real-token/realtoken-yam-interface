@@ -19,7 +19,7 @@ import { getTheGraphUrlRealtoken, getTheGraphUrlYAM } from './getClientURL';
 import { getOfferQuery } from './getOfferQuery';
 import { parseOffer } from './parseOffer';
 
-const nbrFirst = 600;
+const nbrFirst = 300;
 
 export const getBigDataGraphRealtoken = async (
   chainId: number,
