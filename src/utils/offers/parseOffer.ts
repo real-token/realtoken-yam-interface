@@ -79,7 +79,7 @@ export const parseOffer = (
             'YAM autorisé': offer.availableAmount,
           }); */
         }
-  
+
         const o: Offer = {
           offerId: BigNumber(offer.id).toString(),
           offerTokenAddress: (offer.offerToken.address as string)?.toLowerCase(),
@@ -95,9 +95,9 @@ export const parseOffer = (
           price: offer.price.price.toString(),
           amount:
             BigNumber.minimum(
-              offer.availableAmount,
-              balanceWallet,
-              allowance
+              offer.availableAmount, //5.4
+              balanceWallet, // 0
+              allowance //0
             ).toString(10) ?? '0',
           availableAmount: offer.availableAmount.toString(),
           balanceWallet: balanceWallet ?? '0',
@@ -114,6 +114,14 @@ export const parseOffer = (
           offerYield: undefined,
           yieldDelta: undefined
         };
+
+        if(o.offerId == "13773"){
+          console.log(
+            offer.availableAmount,
+            balanceWallet,
+            allowance
+          )
+        }
 
         o.type = getOfferType(o.offerTokenType,o.buyerTokenType);
 
@@ -149,7 +157,7 @@ const getOfficialPrice = (propertyToken: PropertiesToken|undefined): number|unde
     const buyPrice = propertyToken.officialPrice;
     return buyPrice;
   }else{
-    return undefined;
+    return 0;
   }
 }
 
@@ -159,7 +167,7 @@ const getOfficialYield = (propertyToken: PropertiesToken|undefined): number|unde
     const originalYield = propertyToken.annualYield ? propertyToken.annualYield*100 : 0;
     return originalYield;
   }else{
-    return undefined;
+    return 0;
   }
 }
 
@@ -169,7 +177,7 @@ const getOfferYield = (prices: Price, offer: Offer, propertyToken: PropertiesTok
     const offerAdjusted = new BigNumber(propertyToken.netRentYearPerToken).dividedBy(tokenPriceInDollar);
     return parseFloat(offerAdjusted.multipliedBy(100).toString());
   }else{
-    return undefined;
+    return 0;
   }
 }
 
@@ -181,7 +189,7 @@ const getYieldDelta = (offer: Offer): number|undefined => {
   return offerYield && officialYield ? 
     parseFloat(new BigNumber(offerYield).multipliedBy(new BigNumber(1)).dividedBy(new BigNumber(officialYield)).minus(1).toString()) 
     : 
-    undefined;
+    0;
 
 }
 

@@ -248,7 +248,6 @@ export const fetchOffersTheGraph = (
       resolve(offersData);
     } catch (err) {
       console.log('Error while fetching offers from TheGraph', err);
-      reject(err);
     }
   });
 };

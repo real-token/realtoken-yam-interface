@@ -375,6 +375,7 @@ export const officialYieldColumn: ColumnFn<number|undefined> = (t,span) => {
             <Skeleton height={15} />
         ),
         enableSorting: true,
+        sortingFn: "alphanumeric",
         enableGlobalFilter: true,
         meta: { colSpan: span },
       }
@@ -387,6 +388,7 @@ export const offerYieldColumn: ColumnFn<number> = (t,span) => {
         accessorFn: (offer) => offer.offerYield ? `${offer.offerYield.toFixed(2)}` : "",
         cell: ({ row }) => <OfferYield offer={row.original} />,
         enableSorting: true,
+        sortingFn: "alphanumeric",
         enableGlobalFilter: true,
         meta: { colSpan: span },
       }
@@ -396,9 +398,10 @@ export const yieldDeltaColumn: ColumnFn<number> = (t,span) => {
   return{
     id: 'yield-delta',
         header: "Yield delta",
-        accessorFn: (offer) => offer.yieldDelta !== undefined ? `${offer.yieldDelta.toFixed(2)}` : "",
+        accessorFn: (offer) => offer.yieldDelta,
         cell: ({ row }) => <OfferYieldDelta offer={row.original} />,
         enableSorting: true,
+        sortingFn: "alphanumeric",
         enableGlobalFilter: true,
         meta: { colSpan: span },
   }
