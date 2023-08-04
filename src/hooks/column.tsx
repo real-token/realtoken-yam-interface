@@ -247,6 +247,7 @@ export const priceDeltaColumn: ColumnFn<number> = (t,span) => {
     header: "Price delta",
     cell: ({ row }) => <OfferPriceDelta offer={row.original}/>,
     enableSorting: true,
+    sortingFn: "alphanumeric",
     enableGlobalFilter: true,
     meta: { colSpan: span },
   } 
