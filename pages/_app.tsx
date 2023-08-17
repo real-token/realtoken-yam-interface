@@ -77,6 +77,11 @@ const App = ({ Component, pageProps }: AppProps) => {
                         comingSoon: false
                       }}
                       disableHeaderMultisite={true}
+                      footerParam={{
+                        name: "CleanSatMining",
+                        copyright: "CleanSatMining, All rights reserved @2023",
+                        logo: () => <Image src={Logo.src} alt={'CSM Logo'} width={36}/>
+                      }}
                     >
                       <Component {...pageProps} />
                     </Layout>
