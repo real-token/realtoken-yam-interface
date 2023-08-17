@@ -206,8 +206,6 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
 
 const handler: NextApiHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
-    res.setHeader('Cache-Control', 's-maxage=0');
-
     try{
 
         const { chainId: id } = req.query;
@@ -221,7 +219,9 @@ const handler: NextApiHandler = async (req: NextApiRequest, res: NextApiResponse
 
         const tokens = getTokens(parseInt(chainId), communityApiToken, wlTokens);
 
-        return res.status(200).json(tokens);
+        return res.status(200)
+            .setHeader('cache-control', 'public, s-maxage=1200, stale-while-revalidate=600')
+            .json(tokens);
   
       }catch(err){
         console.log(err);
@@ -229,14 +229,3 @@ const handler: NextApiHandler = async (req: NextApiRequest, res: NextApiResponse
       }
 }
 export default handler;
-
-// 14400 = 4h
-export const revalidate = 14400;
-
-export async function getStaticProps() {
-    return {
-      props: {
-        revalidate: true
-      },
-    };
-  }
