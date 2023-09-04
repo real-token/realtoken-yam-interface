@@ -1,21 +1,33 @@
-import { ModalProps, MantineThemeOverride, MantineTheme } from '@mantine/core';
+import { MantineTheme, MantineThemeOverride, ModalProps } from '@mantine/core';
 
 export const modalStyles: ModalProps['styles'] = {
-  header: { justifyContent: 'center' },
+  header: { justifyContent: 'center', borderRadius: '25px' },
   body: {
     padding: '1rem',
-    width: "auto",
-    maxWidth: "700px",
-    maxHeight: 'calc(100vh - (3vh * 2))',
-    overflowY: "scroll"
+    width: 'auto',
+    maxWidth: '800px',
+    //minWidth: '700px',
+    //maxHeight: 'calc(100vh - (3vh * 2))',
+    //overflow: 'auto',
+    borderRadius: '25px',
   },
-  root: { zIndex: 10 },
-  overlay: { zIndex: 10 },
-  inner: { zIndex: 10 },
+  root: {
+    //zIndex: 10,
+    borderRadius: '25px',
+  },
+  overlay: {
+    //zIndex: 10,
+  },
+  inner: {
+    //zIndex: 10,
+    borderRadius: '25px',
+  },
   content: {
-    overflowY: "unset !important" as "unset",
-    maxHeight: 'calc(100vh - (3vh * 2)) !important',
-  }
+    minWidth: '650px',
+    //overflowY: 'unset !important' as 'unset',
+    //maxHeight: 'calc(100vh - (3vh * 2)) !important',
+    borderRadius: '25px',
+  },
 };
 
 export const theme: MantineThemeOverride = {

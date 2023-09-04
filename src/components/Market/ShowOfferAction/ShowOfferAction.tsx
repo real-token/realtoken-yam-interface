@@ -1,4 +1,4 @@
-import { FC, useCallback } from 'react';
+import React, { FC, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
@@ -37,6 +37,8 @@ export const ShowOfferAction: FC<ShowOfferActionProps> = ({
   const modals = useModals();
   const { classes } = useStyle();
 
+  const ref = React.useRef(null);
+
   const onOpenOfferModal = useCallback(
     (offer: Offer) => {
       modals.openContextModal('offer', {
@@ -50,9 +52,10 @@ export const ShowOfferAction: FC<ShowOfferActionProps> = ({
         innerProps: {
           offerId: Number(offer.offerId),
         },
+        withCloseButton: true,
       });
     },
-    [modals, t]
+    [modals, t, classes.offerId]
   );
 
   return (
