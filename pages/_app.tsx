@@ -71,6 +71,7 @@ const App = ({ Component, pageProps }: AppProps) => {
                       head={<Head title='Realtoken YAM (You And Me)' description='Realtoken YAM (You And Me)'/>}
                       headerNav={<HeaderNav/>}
                     >
+                      
                       <Component {...pageProps} />
                     </Layout>
                 </MantineProviders>
