@@ -1,11 +1,11 @@
 import { Dispatch, FC, SetStateAction, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ActionIcon, Group, Title } from '@mantine/core';
-import { useModals } from '@mantine/modals';
+import { ActionIcon, Group } from '@mantine/core';
 import { IconEdit } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
 
+import { useContextModals } from 'src/hooks/useModals';
 import { Offer } from 'src/types/offer/Offer';
 
 type UpdateActions = {
@@ -18,35 +18,18 @@ export const UpdateActions: FC<UpdateActions> = ({
   triggerRefresh,
 }) => {
   const { account } = useWeb3React();
-  const modals = useModals();
-
-  const { t } = useTranslation('modals');
+  const modals = useContextModals();
 
   const onOpenUpdateModal = useCallback(
     (offer: Offer) => {
-      modals.openContextModal('update', {
-        title: <Title order={3}>{t('update.title')}</Title>,
-        innerProps: {
-          offerId: offer.offerId,
-          price: offer.price,
-          amount: offer.amount,
-          offerTokenAddress: offer.offerTokenAddress,
-          offerTokenDecimals: offer.offerTokenDecimals,
-          buyerTokenAddress: offer.buyerTokenAddress,
-          buyerTokenDecimals: offer.buyerTokenDecimals,
-          triggerTableRefresh: triggerRefresh,
-        },
-      });
+      modals.openUpdateModal(offer, triggerRefresh);
     },
-    [modals, triggerRefresh, t]
+    [modals, triggerRefresh]
   );
 
   const onOpenWalletModal = useCallback(() => {
-    modals.openContextModal('wallet', {
-      title: <Title order={3}>{t('wallet.title')}</Title>,
-      innerProps: {},
-    });
-  }, [modals, t]);
+    modals.openWalletModal();
+  }, [modals]);
 
   return (
     <Group position={'center'}>

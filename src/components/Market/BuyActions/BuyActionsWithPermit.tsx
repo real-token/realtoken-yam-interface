@@ -1,20 +1,12 @@
-import {
-  Dispatch,
-  FC,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useMemo,
-} from 'react';
-import { useTranslation } from 'react-i18next';
+import { FC, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
-import { ActionIcon, Group, Title } from '@mantine/core';
-import { useModals } from '@mantine/modals';
+import { ActionIcon, Group } from '@mantine/core';
 import { IconShoppingCart } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
 
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
+import { useContextModals } from 'src/hooks/useModals';
 import { selectOffersIsLoading } from 'src/store/features/interface/interfaceSelector';
 import { Offer } from 'src/types/offer/Offer';
 
@@ -30,35 +22,22 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
   groupClassName,
 }) => {
   const { account } = useWeb3React();
-  const modals = useModals();
+  const modals = useContextModals();
 
-  const { t } = useTranslation('modals');
   const offersIsLoading = useSelector(selectOffersIsLoading);
 
   const { refreshOffers } = useRefreshOffers(false);
 
   const onOpenBuyModal = useCallback(
     (offer: Offer) => {
-      modals.openContextModal('buyPermit', {
-        title: <Title order={3}>{t('buy.title')}</Title>,
-        size: 'lg',
-        innerProps: {
-          offer: offer,
-          triggerTableRefresh: refreshOffers,
-        },
-        withCloseButton: true,
-      });
+      modals.openBuyModal(offer, refreshOffers);
     },
-    [modals, refreshOffers, t]
+    [modals, refreshOffers]
   );
 
   const onOpenWalletModal = useCallback(() => {
-    modals.openContextModal('wallet', {
-      title: <Title order={3}>{t('wallet.title')}</Title>,
-      innerProps: {},
-      withCloseButton: true,
-    });
-  }, [modals, t]);
+    modals.openWalletModal();
+  }, [modals]);
 
   const isAccountOffer: boolean = useMemo(() => {
     if (!buyOffer || !account) return false;

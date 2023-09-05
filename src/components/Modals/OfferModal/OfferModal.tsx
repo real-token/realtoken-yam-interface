@@ -19,9 +19,9 @@ import { useWeb3React } from '@web3-react/core';
 import BigNumber from 'bignumber.js';
 
 import { OfferText } from 'src/components/Offer/OfferText';
-import { PropertyCard } from 'src/components/Offer/PropertyCard';
 import { useOffer } from 'src/hooks/offers/useOffer';
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
+import { useContextModals } from 'src/hooks/useModals';
 import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
 import { PropertiesToken } from 'src/types';
 import { Offer } from 'src/types/offer';
@@ -29,7 +29,6 @@ import { Offer } from 'src/types/offer';
 const useStyle = createStyles((theme) => ({
   container: {
     alignItems: 'start',
-    width: '50%',
   },
   propertyInfosContainer: {
     display: 'flex',
@@ -91,7 +90,7 @@ export const OfferModal: FC<ContextModalProps<OfferModalProps>> = ({
   const { t } = useTranslation('modals', { keyPrefix: 'buy' });
   const { t: t2 } = useTranslation('modals');
 
-  const modals = useModals();
+  const modals = useContextModals(); // useModals();
 
   const [propertyTokens, setPropertyTokens] = useState<PropertiesToken[]>([]);
   const { getPropertyToken, propertiesIsloading } = usePropertiesToken();
@@ -112,11 +111,8 @@ export const OfferModal: FC<ContextModalProps<OfferModalProps>> = ({
   }, [getPropertyToken, offer, propertiesIsloading, propertyTokens.length]);
 
   const onOpenWalletModal = useCallback(() => {
-    modals.openContextModal('wallet', {
-      title: <Title order={3}>{t2('wallet.title')}</Title>,
-      innerProps: {},
-    });
-  }, [modals, t2]);
+    modals.openWalletModal();
+  }, [modals]);
 
   const isAccountOffer: boolean = useMemo(() => {
     if (!offer || !account) return false;
@@ -125,21 +121,9 @@ export const OfferModal: FC<ContextModalProps<OfferModalProps>> = ({
 
   const onOpenBuyModal = useCallback(
     (offer: Offer) => {
-      modals.openContextModal('buyPermit', {
-        title: (
-          <Flex direction={'row'} gap={'md'}>
-            <div className={classes.offerId}>{offerId}</div>
-            <Title order={3}>{t2('buy.title')}</Title>
-          </Flex>
-        ),
-        size: 'lg',
-        innerProps: {
-          offer: offer,
-          triggerTableRefresh: refreshOffers,
-        },
-      });
+      modals.openBuyModal(offer, refreshOffers);
     },
-    [modals, refreshOffers, t2, offerId, classes.offerId]
+    [modals, refreshOffers]
   );
 
   const onClose = useCallback(() => {
@@ -147,75 +131,69 @@ export const OfferModal: FC<ContextModalProps<OfferModalProps>> = ({
   }, [context, id]);
 
   return (
-    <Flex direction={'column'} mt={'xl'}>
+    <>
       {isLoading || offer !== undefined ? (
-        <Flex gap={'md'}>
-          <Flex className={classes.container} direction={'column'} gap={'md'}>
-            {/* <div className={classes.offerId}>{offerId}</div> */}
-            <Flex direction={'column'} gap={'md'}>
-              <OfferText
-                title={t('offerTokenName')}
-                value={offer?.offerTokenName}
-              />
-              <OfferText
-                title={t('buyerTokenName')}
-                value={offer?.buyerTokenName}
-              />
-              <OfferText
-                title={t('sellerAddress')}
-                value={offer?.sellerAddress}
-              />
-              <OfferText title={t('amount')} value={offer?.amount} />
-              <Flex direction={'column'} gap={3}>
-                <Text fw={700}>{'Price'}</Text>
-                {offer?.offerTokenName &&
-                offer.buyerTokenName &&
-                offer?.price ? (
-                  <Text>{`1 "${offer?.offerTokenName}" = ${offer?.price} "${offer.buyerTokenName}"`}</Text>
-                ) : (
-                  <Skeleton height={25} width={400} />
-                )}
-                {offer?.offerTokenName &&
-                offer.buyerTokenName &&
-                offer?.price ? (
-                  <Text>{`1 "${offer.buyerTokenName}" = ${new BigNumber(1)
-                    .dividedBy(offer?.price)
-                    .toFixed(5)} ${offer?.offerTokenName}`}</Text>
-                ) : (
-                  <Skeleton height={25} width={400} />
-                )}
-              </Flex>
+        <Flex className={classes.container} direction={'column'} gap={'md'}>
+          {/* <div className={classes.offerId}>{offerId}</div> */}
+          <Flex direction={'column'} gap={'md'}>
+            <OfferText
+              title={t('offerTokenName')}
+              value={offer?.offerTokenName}
+            />
+            <OfferText
+              title={t('buyerTokenName')}
+              value={offer?.buyerTokenName}
+            />
+            <OfferText
+              title={t('sellerAddress')}
+              value={offer?.sellerAddress}
+            />
+            <OfferText title={t('amount')} value={offer?.amount} />
+            <Flex direction={'column'} gap={3}>
+              <Text fw={700}>{'Price'}</Text>
+              {offer?.offerTokenName && offer.buyerTokenName && offer?.price ? (
+                <Text>{`1 "${offer?.offerTokenName}" = ${offer?.price} "${offer.buyerTokenName}"`}</Text>
+              ) : (
+                <Skeleton height={25} width={400} />
+              )}
+              {offer?.offerTokenName && offer.buyerTokenName && offer?.price ? (
+                <Text>{`1 "${offer.buyerTokenName}" = ${new BigNumber(1)
+                  .dividedBy(offer?.price)
+                  .toFixed(5)} ${offer?.offerTokenName}`}</Text>
+              ) : (
+                <Skeleton height={25} width={400} />
+              )}
             </Flex>
-            <Divider />
-
-            <Group position={'center'}>
-              <ActionIcon
-                color={'red'}
-                disabled={isAccountOffer}
-                className={classes.buyButton}
-                onClick={onClose}
-              >
-                {t2('offer.close')}
-              </ActionIcon>
-              <ActionIcon
-                color={'green'}
-                disabled={isAccountOffer}
-                className={classes.buyButton}
-                onClick={() =>
-                  account && offer ? onOpenBuyModal(offer) : onOpenWalletModal()
-                }
-              >
-                {isAccountOffer ? (
-                  <Text fz={'sm'} align={'center'} p={6}>
-                    {'Cannot buy your own offer'}
-                  </Text>
-                ) : (
-                  <IconShoppingCart size={24} aria-label={'Buy'} />
-                )}
-              </ActionIcon>
-            </Group>
           </Flex>
-          <Flex direction={'column'} gap={'md'} align={'center'}>
+          <Divider />
+
+          <Group position={'center'}>
+            <ActionIcon
+              color={'red'}
+              disabled={isAccountOffer}
+              className={classes.buyButton}
+              onClick={onClose}
+            >
+              {t2('offer.close')}
+            </ActionIcon>
+            <ActionIcon
+              color={'green'}
+              disabled={isAccountOffer}
+              className={classes.buyButton}
+              onClick={() =>
+                account && offer ? onOpenBuyModal(offer) : onOpenWalletModal()
+              }
+            >
+              {isAccountOffer ? (
+                <Text fz={'sm'} align={'center'} p={6}>
+                  {'Cannot buy your own offer'}
+                </Text>
+              ) : (
+                <IconShoppingCart size={24} aria-label={'Buy'} />
+              )}
+            </ActionIcon>
+          </Group>
+          {/*  <Flex direction={'column'} gap={'md'} align={'center'}>
             {propertyTokens && offer && propertyTokens.length > 0
               ? propertyTokens.map((token) => (
                   <PropertyCard
@@ -225,11 +203,11 @@ export const OfferModal: FC<ContextModalProps<OfferModalProps>> = ({
                   />
                 ))
               : undefined}
-          </Flex>
+          </Flex> */}
         </Flex>
       ) : (
         <div>{"Offer doesn't exist :/"}</div>
       )}
-    </Flex>
+    </>
   );
 };
