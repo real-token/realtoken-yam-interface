@@ -24,7 +24,7 @@ const useStyles = createStyles((theme) => ({
     position: 'sticky',
     top: 0,
     backgroundColor:
-      theme.colorScheme == 'dark' ? theme.colors.dark[7] : theme.colors.gray[2],
+      theme.colorScheme == 'dark' ? theme.colors.dark[6] : theme.colors.gray[2],
     zIndex: 1,
   },
 }));

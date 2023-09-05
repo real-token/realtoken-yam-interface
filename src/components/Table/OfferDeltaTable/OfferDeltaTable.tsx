@@ -8,17 +8,27 @@ const useStyle = createStyles((theme) => ({
     width: '100%',
     borderWidth: '1px',
     borderStyle: 'solid',
-    borderColor: theme.colors.brand,
+    borderColor:
+      theme.colorScheme === 'dark'
+        ? theme.colors.dark[3]
+        : theme.colors.gray[4],
     borderRadius: theme.radius.md,
     overflow: 'hidden',
     padding: 0,
     borderSpacing: 0,
+    fontSize: '12px',
   },
   tableHead: {
-    backgroundColor: theme.colors.brand,
+    backgroundColor:
+      theme.colorScheme === 'dark'
+        ? theme.colors.dark[3]
+        : theme.colors.gray[4],
     borderWidth: '1px',
     borderStyle: 'solid',
-    borderColor: theme.colors.brand,
+    borderColor:
+      theme.colorScheme === 'dark'
+        ? theme.colors.dark[3]
+        : theme.colors.gray[4],
     color: 'black',
   },
   tableCell: {
@@ -26,7 +36,10 @@ const useStyle = createStyles((theme) => ({
     textAlign: 'center',
     borderWidth: '1px',
     borderStyle: 'solid',
-    borderColor: theme.colors.brand,
+    borderColor:
+      theme.colorScheme === 'dark'
+        ? theme.colors.dark[3]
+        : theme.colors.gray[4],
   },
 }));
 
@@ -51,15 +64,15 @@ export const OfferDeltaTable = ({
       <thead className={classes.tableHead}>
         <tr>
           <th className={classes.tableCell}></th>
-          <th className={classes.tableCell}>Original</th>
+          <th className={classes.tableCell}>{'Original'}</th>
           {offer.type !== OFFER_TYPE.EXCHANGE ? (
-            <th className={classes.tableCell}>Offer</th>
+            <th className={classes.tableCell}>{'Offer'}</th>
           ) : undefined}
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td className={classes.tableCell}>Yield</td>
+          <td className={classes.tableCell}>{'Yield'}</td>
           <td className={classes.tableCell}>
             {officialYield ? (
               `${officialYield.toFixed(2)}%`
@@ -78,7 +91,7 @@ export const OfferDeltaTable = ({
           ) : undefined}
         </tr>
         <tr>
-          <td className={classes.tableCell}>Price</td>
+          <td className={classes.tableCell}>{'Price'}</td>
           <td className={classes.tableCell}>
             {officialPrice ? officialPrice : <Skeleton height={15} />}
           </td>

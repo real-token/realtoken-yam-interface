@@ -1,7 +1,15 @@
 import { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Flex, Skeleton, Text, createStyles } from '@mantine/core';
+import {
+  Badge,
+  Flex,
+  Group,
+  Skeleton,
+  Text,
+  createStyles,
+} from '@mantine/core';
+import { useColorScheme } from '@mantine/hooks';
 
 import { OfferTypeBadge } from 'src/components/Offer/OfferTypeBadge';
 import { OfferDeltaTable } from 'src/components/Table/OfferDeltaTable/OfferDeltaTable';
@@ -17,12 +25,19 @@ const useStyle = createStyles((theme) => ({
   container: {
     display: 'flex',
     flexDirection: 'column',
-    borderWidth: '1px',
-    borderStyle: 'solid',
-    borderColor: theme.colors.brand,
+    //borderWidth: '1px',
+    //borderStyle: 'solid',
+    //borderColor: theme.colors.brand,
     borderRadius: theme.radius.md,
     overflow: 'hidden',
     height: '100%',
+    boxShadow: `2px 2px 2px ${
+      theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[4]
+    }`,
+    backgroundColor:
+      theme.colorScheme === 'dark'
+        ? theme.colors.dark[5]
+        : theme.colors.gray[2],
   },
   header: {
     backgroundSize: '600px 200px',
@@ -40,13 +55,14 @@ const useStyle = createStyles((theme) => ({
   },
   offerTokenName: {
     color: 'white',
-    fontSize: theme.fontSizes.lg,
-    fontWeight: 700,
+    //fontSize: theme.fontSizes.lg,
+    //fontWeight: 700,
   },
   buyerTokenName: {
     fontStyle: 'italic',
     fontWeight: 500,
-    color: theme.colors.gray[3],
+    marginTop: '10px',
+    //color: theme.colors.gray[3],
   },
   buyButtonGroup: {
     width: '50%',
@@ -67,12 +83,13 @@ const useStyle = createStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: `0 ${theme.spacing.xl}px`,
+    padding: `4px 6px 4px 4px`,
     borderRadius: theme.radius.md,
-    backgroundColor: theme.colors.brand,
-    fontSize: theme.fontSizes.lg,
+    backgroundColor: theme.colors.green[9],
+    fontSize: theme.fontSizes.md,
     fontWeight: 700,
     color: 'white',
+    maxHeight: '30px',
   },
 }));
 
@@ -82,6 +99,7 @@ interface GridPaneProps {
 export const GridPane: FC<GridPaneProps> = ({ offer }) => {
   const { t } = useTranslation('buy', { keyPrefix: 'table' });
   const { classes } = useStyle();
+  const colorScheme = useColorScheme();
 
   const [url, setURL] = useState('');
   const [propertyTokens, setPropertyTokens] = useState<PropertiesToken[]>([]);
@@ -123,18 +141,47 @@ export const GridPane: FC<GridPaneProps> = ({ offer }) => {
               backgroundImage: url,
             }}
           >
-            <Flex gap={'sm'} pb={12}>
-              <Flex className={classes.offerId} mb={10}>
-                {offer.offerId}
-              </Flex>
-              <OfferTypeBadge offerType={offer.type ?? OFFER_TYPE.SELL} />
-            </Flex>
-            <Text className={classes.offerTokenName}>
+            <Group
+              position={'apart'}
+              sx={{ width: '100%', alignItems: 'center' }}
+            >
+              <OfferTypeBadge
+                offerType={offer.type ?? OFFER_TYPE.SELL}
+                sx={{ fontSize: '16px', maxHeight: '30px', padding: `10px` }}
+              />
+
+              <Badge color={'gray'} size={'md'} variant={'filled'}>
+                {offer.buyerTokenName}
+              </Badge>
+
+              {/* <Flex className={classes.offerId} mb={10}>
+                {'n° ' + offer.offerId}
+              </Flex> */}
+            </Group>
+            <Badge
+              color={'dark'}
+              size={'xs'}
+              variant={colorScheme === 'dark' ? 'outline' : 'transparent'}
+              sx={{ marginTop: '3px' }}
+            >
+              {'n° ' + offer.offerId}
+            </Badge>
+            <Badge
+              color={'green'}
+              variant={'filled'}
+              size={'md'}
+              radius={'md'}
+              sx={{ marginTop: '10px' }}
+            >
+              {'$ ' + offer.offerTokenName + ' $'}
+            </Badge>
+
+            {/* <Text className={classes.offerTokenName}>
               {offer.offerTokenName}
-            </Text>
-            <Text className={classes.buyerTokenName}>
+            </Text> */}
+            {/* <Text className={classes.buyerTokenName}>
               {offer.buyerTokenName}
-            </Text>
+            </Text> */}
           </Flex>
           <Flex
             direction={'column'}
@@ -143,16 +190,22 @@ export const GridPane: FC<GridPaneProps> = ({ offer }) => {
             className={classes.content}
           >
             <Flex direction={'column'} mb={10} className={classes.data}>
-              <Flex direction={'column'}>
-                <Text fw={700}>{t('sellerAddress')}</Text>
+              <Flex direction={'column'} fz={'sm'}>
+                <Text fw={700} fz={'sm'}>
+                  {t('sellerAddress')}
+                </Text>
                 {offer.sellerAddress}
               </Flex>
-              <Flex direction={'column'}>
-                <Text fw={700}>{t('amount')}</Text>
+              <Flex direction={'column'} fz={'sm'}>
+                <Text fw={700} fz={'sm'}>
+                  {t('amount')}
+                </Text>
                 {offer.amount}
               </Flex>
-              <Flex direction={'column'} mb={15}>
-                <Text fw={700}>{t('price')}</Text>
+              <Flex direction={'column'} mb={15} fz={'sm'}>
+                <Text fw={700} fz={'sm'}>
+                  {t('price')}
+                </Text>
                 {offer.price}
               </Flex>
               {offer.type !== OFFER_TYPE.EXCHANGE ? (
@@ -161,7 +214,13 @@ export const GridPane: FC<GridPaneProps> = ({ offer }) => {
                   offerPrice={offer.offerPrice}
                   officialPrice={offer.officialPrice}
                   offerYield={offer.offerYield}
-                  officialYield={offer.officialYield}
+                  officialYield={
+                    offer.officialYield
+                      ? offer.officialYield
+                      : propertyTokens.length > 0
+                      ? propertyTokens[0].officialPrice
+                      : undefined
+                  }
                 />
               ) : undefined}
             </Flex>
