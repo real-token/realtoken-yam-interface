@@ -1,4 +1,9 @@
 {
+  
+  "kycRequired": {
+    "title": "Attention",
+    "message": "Chers utilisateurs, \n \n Conformément aux exigences légales, tous les utilisateurs doivent compléter préalablement le processus KYC sur la plateforme Mt Pelerin avant de pouvoir effectuer des achats au sein de notre application. Nous vous invitons à vous inscrire sur Mt Pelerin et à finaliser votre KYC, puis à contacter l'équipe du support de CleanSat Mining pour la validation. Si vous avez des questions ou rencontrez des difficultés, n'hésitez pas à nous contacter.\n\nNous vous remercions pour votre compréhension et votre coopération.\n\nL'équipe CleanSat Mining"
+  },
   "grantRoleLoading": {
     "title": "Veuillez patienter",
     "message": "Votre transaction est en cours de validation."

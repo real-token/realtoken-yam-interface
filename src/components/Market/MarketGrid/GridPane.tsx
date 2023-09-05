@@ -25,9 +25,6 @@ const useStyle = createStyles((theme) => ({
   container: {
     display: 'flex',
     flexDirection: 'column',
-    //borderWidth: '1px',
-    //borderStyle: 'solid',
-    //borderColor: theme.colors.brand,
     borderRadius: theme.radius.md,
     overflow: 'hidden',
     height: '100%',
@@ -153,10 +150,6 @@ export const GridPane: FC<GridPaneProps> = ({ offer }) => {
               <Badge color={'gray'} size={'md'} variant={'filled'}>
                 {offer.buyerTokenName}
               </Badge>
-
-              {/* <Flex className={classes.offerId} mb={10}>
-                {'n° ' + offer.offerId}
-              </Flex> */}
             </Group>
             <Badge
               color={'dark'}
@@ -175,13 +168,6 @@ export const GridPane: FC<GridPaneProps> = ({ offer }) => {
             >
               {'$ ' + offer.offerTokenName + ' $'}
             </Badge>
-
-            {/* <Text className={classes.offerTokenName}>
-              {offer.offerTokenName}
-            </Text> */}
-            {/* <Text className={classes.buyerTokenName}>
-              {offer.buyerTokenName}
-            </Text> */}
           </Flex>
           <Flex
             direction={'column'}

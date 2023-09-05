@@ -1,4 +1,8 @@
 {
+  "kycRequired": {
+    "title": "Warning",
+    "message": "Dear users,\n\nIn accordance with legal requirements, all users must complete the KYC process on the Mt Pelerin platform before being able to make purchases within our application. We invite you to register on Mt Pelerin and complete your KYC, and then contact the CleanSat Mining support team for validation. If you have any questions or encounter any difficulties, please do not hesitate to contact us.\nWe appreciate your understanding and cooperation.\n\nThe CleanSat Mining Team"
+  },
   "grantRoleLoading": {
     "title": "Waiting",
     "message": "Your transaction is being validated."

@@ -9,7 +9,6 @@ import {
   MediaQuery,
   Menu,
   Pagination,
-  PaginationProps,
   Select,
 } from '@mantine/core';
 import { range, useDisclosure } from '@mantine/hooks';
