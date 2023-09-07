@@ -24,7 +24,11 @@ const useStyle = createStyles((theme) => ({
       theme.colorScheme === 'dark' ? undefined : theme.colors.gray[2],
     fontSize: theme.fontSizes.md,
   },
+  text: {
+    fontSize: theme.fontSizes.md,
+  },
   link: {
+    fontSize: theme.fontSizes.md,
     borderBottomStyle: 'solid',
     borderBottomWidth: '2px',
     borderBottomColor: 'transparent',
@@ -54,7 +58,7 @@ const HomePage: NextPage = () => {
     const subTexts = text.split(UrlMtPelerin.keyword);
 
     return (
-      <p key={'p' + key}>
+      <p key={'p' + key} className={classes.text}>
         {subTexts.map((subText, j) => {
           const baseKey = key * 100 + j;
           return (
