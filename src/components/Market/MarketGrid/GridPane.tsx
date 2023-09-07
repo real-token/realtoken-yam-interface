@@ -28,13 +28,13 @@ const useStyle = createStyles((theme) => ({
     borderRadius: theme.radius.md,
     overflow: 'hidden',
     height: '100%',
-    boxShadow: `2px 2px 2px ${
-      theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[4]
+    boxShadow: `5px 5px 5px ${
+      theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[3]
     }`,
     backgroundColor:
       theme.colorScheme === 'dark'
         ? theme.colors.dark[5]
-        : theme.colors.gray[2],
+        : theme.colors.gray[1],
   },
   header: {
     backgroundSize: '600px 200px',
@@ -201,11 +201,7 @@ export const GridPane: FC<GridPaneProps> = ({ offer }) => {
                   officialPrice={offer.officialPrice}
                   offerYield={offer.offerYield}
                   officialYield={
-                    offer.officialYield
-                      ? offer.officialYield
-                      : propertyTokens.length > 0
-                      ? propertyTokens[0].officialPrice
-                      : undefined
+                    offer.officialYield ? offer.officialYield : undefined
                   }
                 />
               ) : undefined}

@@ -17,6 +17,7 @@ import { useWeb3React } from '@web3-react/core';
 import BigNumber from 'bignumber.js';
 
 import { OfferText } from 'src/components/Offer/OfferText';
+import { TextUrl } from 'src/components/TextUrl/TextUrl';
 import { useOffer } from 'src/hooks/offers/useOffer';
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 import { useContextModals } from 'src/hooks/useModals';
@@ -28,6 +29,14 @@ const useStyle = createStyles((theme) => ({
   container: {
     alignItems: 'start',
   },
+  title: {
+    color:
+      theme.colorScheme === 'dark'
+        ? theme.colors.dark[0]
+        : theme.colors.gray[8],
+    fontWeight: 'bold',
+  },
+
   propertyInfosContainer: {
     display: 'flex',
     borderStyle: 'solid',
@@ -146,6 +155,12 @@ export const OfferModal: FC<ContextModalProps<OfferModalProps>> = ({
         <Flex className={classes.container} direction={'column'} gap={'md'}>
           {/* <div className={classes.offerId}>{offerId}</div> */}
           <Flex direction={'column'} gap={'md'}>
+            <div className={classes.title}>
+              <TextUrl url={propertyTokens[0]?.marketplaceLink}>
+                {propertyTokens[0]?.fullName}
+              </TextUrl>
+            </div>
+
             <OfferText
               title={t('offerTokenName')}
               value={offer?.offerTokenName}

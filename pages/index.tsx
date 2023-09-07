@@ -21,7 +21,7 @@ const useStyle = createStyles((theme) => ({
   notification: {
     marginBottom: '16px',
     backgroundColor:
-      theme.colorScheme === 'dark' ? undefined : theme.colors.gray[2],
+      theme.colorScheme === 'dark' ? undefined : theme.colors.gray[0],
     fontSize: theme.fontSizes.md,
   },
   text: {
