@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { NextPage } from 'next';
@@ -22,6 +22,7 @@ const useStyle = createStyles((theme) => ({
     marginBottom: '16px',
     backgroundColor:
       theme.colorScheme === 'dark' ? undefined : theme.colors.gray[2],
+    fontSize: theme.fontSizes.md,
   },
   link: {
     borderBottomStyle: 'solid',
@@ -52,70 +53,79 @@ const HomePage: NextPage = () => {
   function formatParagraphe(text: string, key: number): JSX.Element {
     const subTexts = text.split(UrlMtPelerin.keyword);
 
-    const link = (
-      <a
-        className={classes.link}
-        target={'_blank'}
-        rel={'noreferrer'}
-        href={UrlMtPelerin.url}
-      >
-        {UrlMtPelerin.keyword}
-        {
-          <IconExternalLink
-            size={14}
-            color={colors.brand[9]}
-            className={classes.imageLink}
-          />
-        }
-      </a>
-    );
-
     return (
-      <p key={key}>
+      <p key={'p' + key}>
         {subTexts.map((subText, j) => {
+          const baseKey = key * 100 + j;
           return (
-            <>
-              {j > 0 && link}
-              {formatContactUs(subText)}
-            </>
+            <React.Fragment key={'F' + baseKey}>
+              {j > 0 && link(baseKey)}
+              {formatContactUs(subText, baseKey)}
+            </React.Fragment>
           );
         })}
 
         {/* {newText} {i == 2 && MtPelerinLink()} */}
       </p>
     );
+
+    function link(key: number) {
+      return (
+        <a
+          className={classes.link}
+          target={'_blank'}
+          rel={'noreferrer'}
+          href={UrlMtPelerin.url}
+          key={'aPelerin' + key}
+        >
+          {UrlMtPelerin.keyword}
+          {
+            <IconExternalLink
+              key={'Pelerin' + key}
+              size={14}
+              color={colors.brand[9]}
+              className={classes.imageLink}
+            />
+          }
+        </a>
+      );
+    }
   }
 
-  function formatContactUs(text: string): JSX.Element {
+  function formatContactUs(text: string, key: number): JSX.Element {
     const subTexts = text.split(t(UrlContactUs.keyword));
 
-    const link = (
-      <a
-        className={classes.link}
-        target={'_blank'}
-        rel={'noreferrer'}
-        href={UrlContactUs.url}
-      >
-        {t(UrlContactUs.keyword)}
-        <IconExternalLink
-          size={14}
-          color={colors.brand[9]}
-          className={classes.imageLink}
-        />
-      </a>
-    );
+    function link(j: number) {
+      return (
+        <a
+          className={classes.link}
+          target={'_blank'}
+          rel={'noreferrer'}
+          href={UrlContactUs.url}
+          key={'aPelerin' + key + 'contact' + j}
+        >
+          {t(UrlContactUs.keyword)}
+          <IconExternalLink
+            key={'Pelerin' + key + 'contact' + j}
+            size={14}
+            color={colors.brand[9]}
+            className={classes.imageLink}
+          />
+        </a>
+      );
+    }
 
     return (
-      <>
+      <React.Fragment key={'FC' + key}>
         {subTexts.map((subText, j) => {
           return (
-            <>
-              {j > 0 && link}
+            <React.Fragment key={'FC' + key + j}>
+              {j > 0 && link(j)}
               {subText}
-            </>
+            </React.Fragment>
           );
         })}
-      </>
+      </React.Fragment>
     );
   }
 

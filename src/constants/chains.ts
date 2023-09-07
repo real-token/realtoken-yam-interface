@@ -1,16 +1,23 @@
+import { FC } from 'react';
+
+import {
+  EthereumLogo,
+  GnosisLogo,
+  Chain as RealtChains,
+} from '@realtoken/realt-commons';
+
 import { realTokenYamUpgradeableABI } from 'src/abis';
+
 import { Contracts, ContractsID } from './contracts';
 import { Currency, DAI, ETH } from './currencies';
-import { Chain as RealtChains, EthereumLogo, GnosisLogo } from '@realtoken/realt-commons';
-import { FC } from 'react';
 
 export enum ChainsID {
   // Ethereum = 0x01,
-  Gnosis = 0x64,
   Goerli = 0x05,
+  Gnosis = 0x64,
 }
 
-export type Chain = Omit<RealtChains,'blockExplorerUrl'> & {
+export type Chain = Omit<RealtChains, 'blockExplorerUrl'> & {
   chainId: ChainsID;
   chainName: string;
   logo: FC;
