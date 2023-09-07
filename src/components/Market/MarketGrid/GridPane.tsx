@@ -176,23 +176,23 @@ export const GridPane: FC<GridPaneProps> = ({ offer }) => {
             className={classes.content}
           >
             <Flex direction={'column'} mb={10} className={classes.data}>
-              <Flex direction={'column'} fz={'sm'}>
-                <Text fw={700} fz={'sm'}>
-                  {t('sellerAddress')}
+              <Flex direction={'column'} fz={'sm'} sx={{ marginBottom: '6px' }}>
+                <Text fz={'sm'}>{t('sellerAddress')}</Text>
+                <Text fw={700} fz={'sm'} truncate={true}>
+                  {offer.sellerAddress}
                 </Text>
-                {offer.sellerAddress}
               </Flex>
-              <Flex direction={'column'} fz={'sm'}>
+              <Flex direction={'column'} fz={'sm'} sx={{ marginBottom: '6px' }}>
+                <Text fz={'sm'}>{t('amount')}</Text>
                 <Text fw={700} fz={'sm'}>
-                  {t('amount')}
+                  {offer.amount}
                 </Text>
-                {offer.amount}
               </Flex>
               <Flex direction={'column'} mb={15} fz={'sm'}>
+                <Text fz={'sm'}>{t('price')}</Text>
                 <Text fw={700} fz={'sm'}>
-                  {t('price')}
+                  {offer.price}
                 </Text>
-                {offer.price}
               </Flex>
               {offer.type !== OFFER_TYPE.EXCHANGE ? (
                 <OfferDeltaTable

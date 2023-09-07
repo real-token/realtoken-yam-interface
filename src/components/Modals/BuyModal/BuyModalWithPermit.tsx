@@ -10,7 +10,15 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import { Web3Provider } from '@ethersproject/providers';
-import { Button, Divider, Flex, Group, Stack, Text } from '@mantine/core';
+import {
+  Button,
+  Divider,
+  Flex,
+  Group,
+  Stack,
+  Text,
+  createStyles,
+} from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { ContextModalProps } from '@mantine/modals';
 import { useWeb3React } from '@web3-react/core';
@@ -32,6 +40,25 @@ import { Erc20, Erc20ABI } from '../../../abis';
 import { buy } from '../../../utils/tx/buy';
 import { NumberInput } from '../../NumberInput';
 
+const useStyle = createStyles((theme) => ({
+  container: {
+    fontSize: theme.fontSizes.sm,
+  },
+
+  textHeader: {
+    fontSize: theme.fontSizes.sm,
+    color:
+      theme.colorScheme === 'dark'
+        ? theme.colors.dark[2]
+        : theme.colors.gray[6],
+  },
+  textValue: {
+    fontWeight: 600,
+    fontSize: theme.fontSizes.sm,
+    color: theme.colorScheme === 'dark' ? undefined : theme.colors.gray[8],
+  },
+}));
+
 type BuyModalWithPermitProps = {
   offer: Offer;
   triggerTableRefresh: Dispatch<SetStateAction<boolean>>;
@@ -50,6 +77,7 @@ type BuyWithPermitFormValues = {
 export const BuyModalWithPermit: FC<
   ContextModalProps<BuyModalWithPermitProps>
 > = ({ context, id, innerProps: { offer, triggerTableRefresh } }) => {
+  const { classes } = useStyle();
   const { account, provider } = useWeb3React();
   const { getInputProps, onSubmit, reset, setFieldValue, values } =
     useForm<BuyWithPermitFormValues>({
@@ -178,39 +206,45 @@ export const BuyModalWithPermit: FC<
   ]);
 
   return (
-    <form onSubmit={onSubmit(onHandleSubmit)} style={{ width: calcRem(500) }}>
+    <form
+      onSubmit={onSubmit(onHandleSubmit)}
+      style={{ width: calcRem(500) }}
+      className={classes.container}
+    >
       <Stack justify={'center'} align={'stretch'}>
         <Flex direction={'column'} gap={'sm'}>
-          <Text size={'xl'}>{t('selectedOffer')}</Text>
+          <Text size={'md'}>{t('selectedOffer')}</Text>
           <Flex direction={'column'} gap={8}>
-            <Flex direction={'column'}>
-              <Text fw={700}>{t('offerId')}</Text>
-              <Text>{offer.offerId}</Text>
+            <Flex direction={'row'} gap={16}>
+              <Text className={classes.textHeader}>{t('offerId')}</Text>
+              <Text className={classes.textValue}>{offer.offerId}</Text>
             </Flex>
-            <Flex direction={'column'}>
-              <Text fw={700}>{t('offerTokenName')}</Text>
-              <Text>{offerTokenName}</Text>
+            <Flex direction={'row'} gap={16}>
+              <Text className={classes.textHeader}>{t('offerTokenName')}</Text>
+              <Text className={classes.textValue}>{offerTokenName}</Text>
             </Flex>
-            <Flex direction={'column'}>
-              <Text fw={700}>{t('sellerAddress')}</Text>
-              <Text>{offer.sellerAddress}</Text>
+            <Flex direction={'row'} gap={16}>
+              <Text className={classes.textHeader}>{t('sellerAddress')}</Text>
+              <Text className={classes.textValue}>{offer.sellerAddress}</Text>
             </Flex>
-            <Flex direction={'column'}>
-              <Text fw={700}>
+            <Flex direction={'row'} gap={16}>
+              <Text className={classes.textHeader}>
                 {offer.type ? amountTranslation.get(offer.type) : ''}
               </Text>
-              <Text>
+              <Text className={classes.textValue}>
                 {BigNumber.minimum(
                   offer.amount,
                   offerTokenSellerBalance!
                 ).toString()}
               </Text>
             </Flex>
-            <Flex direction={'column'}>
-              <Text fw={700}>
+            <Flex direction={'row'} gap={16}>
+              <Text className={classes.textHeader}>
                 {offer.type ? priceTranslation.get(offer.type) : ''}
               </Text>
-              <Text>{`${offer.price} ${buyTokenSymbol}`}</Text>
+              <Text
+                className={classes.textValue}
+              >{`${offer.price} ${buyTokenSymbol}`}</Text>
             </Flex>
           </Flex>
         </Flex>
@@ -223,7 +257,7 @@ export const BuyModalWithPermit: FC<
         />
 
         <Flex direction={'column'} gap={'sm'}>
-          <Text size={'xl'}>{t1('sell')}</Text>
+          <Text size={'md'}>{t1('sell')}</Text>
           <Flex direction={'column'} gap={8}>
             <NumberInput
               label={t('amount')}
@@ -239,8 +273,8 @@ export const BuyModalWithPermit: FC<
               {...getInputProps('amount')}
             />
 
-            <Text size={'xl'}>{t('summary')}</Text>
-            <Text size={'md'} mb={10}>
+            <Text size={'md'}>{t('summary')}</Text>
+            <Text mb={10}>
               {` ${t('summaryText1')} ${values?.amount} ${offerTokenSymbol} ${t(
                 'summaryText2'
               )} ${cleanNumber(values?.price)} ${buyTokenSymbol} ${t(

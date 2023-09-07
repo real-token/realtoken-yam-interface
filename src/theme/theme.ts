@@ -23,6 +23,13 @@ export const theme: MantineThemeOverride = {
   components: {
     ActionIcon: { defaultProps: { variant: 'filled' } },
   },
+  fontSizes: {
+    // xs: '12px',
+    // sm: '13px',
+    // md: '14px',
+    // lg: '16px',
+    // xl: '18px',
+  },
   other: {
     border: (theme: MantineTheme) =>
       `thin solid ${

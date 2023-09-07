@@ -1,6 +1,18 @@
 import { FC } from 'react';
 
-import { Flex, Skeleton, Text } from '@mantine/core';
+import { Flex, Skeleton, Text, createStyles } from '@mantine/core';
+
+const useStyle = createStyles((theme) => ({
+  header: {
+    color:
+      theme.colorScheme === 'dark'
+        ? theme.colors.dark[2]
+        : theme.colors.gray[6],
+  },
+  value: {
+    color: theme.colorScheme === 'dark' ? undefined : theme.colors.gray[8],
+  },
+}));
 
 interface OfferTextProps {
   title?: string;
@@ -9,11 +21,18 @@ interface OfferTextProps {
 }
 
 export const OfferText: FC<OfferTextProps> = ({ title, value, width }) => {
+  const { classes } = useStyle();
   return (
     <Flex direction={'column'}>
-      {title ? <Text fw={700}>{title}</Text> : undefined}
+      {title ? (
+        <Text fz={'sm'} className={classes.header}>
+          {title}
+        </Text>
+      ) : undefined}
       {value ? (
-        <Text>{value}</Text>
+        <Text fz={'sm'} fw={600} className={classes.value}>
+          {value}
+        </Text>
       ) : (
         <Skeleton height={25} width={width ? width : 500} />
       )}

@@ -8,10 +8,8 @@ import {
   Group,
   Skeleton,
   Text,
-  Title,
   createStyles,
 } from '@mantine/core';
-import { useModals } from '@mantine/modals';
 import { ContextModalProps } from '@mantine/modals';
 import { IconShoppingCart } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
@@ -68,6 +66,18 @@ const useStyle = createStyles((theme) => ({
       borderBottomColor: theme.colors.brand,
       cursor: 'pointer',
     },
+  },
+  textHeader: {
+    fontSize: theme.fontSizes.sm,
+    color:
+      theme.colorScheme === 'dark'
+        ? theme.colors.dark[2]
+        : theme.colors.gray[6],
+  },
+  textValue: {
+    fontWeight: 600,
+    fontSize: theme.fontSizes.sm,
+    color: theme.colorScheme === 'dark' ? undefined : theme.colors.gray[8],
   },
 }));
 
@@ -150,16 +160,20 @@ export const OfferModal: FC<ContextModalProps<OfferModalProps>> = ({
             />
             <OfferText title={t('amount')} value={offer?.amount} />
             <Flex direction={'column'} gap={3}>
-              <Text fw={700}>{'Price'}</Text>
+              <Text className={classes.textHeader}>{'Price'}</Text>
               {offer?.offerTokenName && offer.buyerTokenName && offer?.price ? (
-                <Text>{`1 "${offer?.offerTokenName}" = ${offer?.price} "${offer.buyerTokenName}"`}</Text>
+                <Text
+                  className={classes.textValue}
+                >{`1 "${offer?.offerTokenName}" = ${offer?.price} "${offer.buyerTokenName}"`}</Text>
               ) : (
                 <Skeleton height={25} width={400} />
               )}
               {offer?.offerTokenName && offer.buyerTokenName && offer?.price ? (
-                <Text>{`1 "${offer.buyerTokenName}" = ${new BigNumber(1)
-                  .dividedBy(offer?.price)
-                  .toFixed(5)} ${offer?.offerTokenName}`}</Text>
+                <Text className={classes.textValue}>{`1 "${
+                  offer.buyerTokenName
+                }" = ${new BigNumber(1).dividedBy(offer?.price).toFixed(5)} ${
+                  offer?.offerTokenName
+                }`}</Text>
               ) : (
                 <Skeleton height={25} width={400} />
               )}
