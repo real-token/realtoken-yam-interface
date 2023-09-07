@@ -67,6 +67,14 @@ export const MarketGrid: FC = () => {
             ))
           : // TODO: add message when no offers
             undefined}
+        {offers.length > 0
+          ? paginationOffers.map((offer: Offer, index: number) => (
+              <Grid.Col sm={6} md={4} lg={3} key={`grid-${index}`}>
+                <GridPane offer={offer} />
+              </Grid.Col>
+            ))
+          : // TODO: add message when no offers
+            undefined}
       </Grid>
       <Group
         position={'center'}

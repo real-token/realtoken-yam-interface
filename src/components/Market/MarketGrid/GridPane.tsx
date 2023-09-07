@@ -21,6 +21,8 @@ import { Offer } from 'src/types/offer/Offer';
 import { BuyActionsWithPermit } from '../BuyActions';
 import { ShowOfferAction } from '../ShowOfferAction/ShowOfferAction';
 
+//box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px; theme.colors.gray[5]
+//box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;;
 const useStyle = createStyles((theme) => ({
   container: {
     display: 'flex',
@@ -28,9 +30,10 @@ const useStyle = createStyles((theme) => ({
     borderRadius: theme.radius.md,
     overflow: 'hidden',
     height: '100%',
-    boxShadow: `5px 5px 5px ${
-      theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[3]
-    }`,
+    boxShadow:
+      theme.colorScheme === 'dark'
+        ? `2px 7px 12px 2px  #000000`
+        : `0px 7px 16px 0px ${theme.colors.gray[6]}`,
     backgroundColor:
       theme.colorScheme === 'dark'
         ? theme.colors.dark[5]
