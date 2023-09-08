@@ -2530,10 +2530,10 @@
   dependencies:
     "@babel/runtime" "^7.13.10"
 
-"@realtoken/realt-commons@^1.2.4":
-  version "1.2.4"
-  resolved "https://registry.yarnpkg.com/@realtoken/realt-commons/-/realt-commons-1.2.4.tgz#fc88673fb6ea38e2047b5a4d0e8d24e363879915"
-  integrity sha512-KVh/CEevCNh7Myg30W3hjSoYNphyyu05sCc+VGQqr+Ah9k+Cmsr/F3nwXfCH/gV7wq7pLq424Rawin9IqkyYlw==
+"@realtoken/realt-commons@^1.2.5":
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/@realtoken/realt-commons/-/realt-commons-1.2.5.tgz#b24f17b660068a2e4a6afa60e89bcac6a6377962"
+  integrity sha512-NiWMJtCYirJkfpKW5Uc2p2ADQHTbLtHc/XBdFgmHvcC9S4rmfkcPgw4LxWZrccpPBLU38k+gPe6aTZZXZ8EJIA==
   dependencies:
     "@coinbase/wallet-sdk" "^3.6.5"
     "@emotion/react" "^11.10.6"
@@ -4301,9 +4301,9 @@ camelcase@^5.0.0:
   integrity sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg==
 
 caniuse-lite@^1.0.30001283, caniuse-lite@^1.0.30001449:
-  version "1.0.30001457"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001457.tgz#6af34bb5d720074e2099432aa522c21555a18301"
-  integrity sha512-SDIV6bgE1aVbK6XyxdURbUE89zY7+k1BBBaOwYwkNCglXlel/E7mELiHC64HQ+W0xSKlqWhV9Wh7iHxUjMs4fA==
+  version "1.0.30001521"
+  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001521.tgz"
+  integrity sha512-fnx1grfpEOvDGH+V17eccmNjucGUnCbP6KL+l5KqBIerp26WK/+RQ7CIDE37KGJjaPyqWXXlFUyKiWmvdNNKmQ==
 
 capital-case@^1.0.4:
   version "1.0.4"

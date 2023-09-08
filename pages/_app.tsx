@@ -35,7 +35,8 @@ export const i18n = initLanguage(resources);
 
 const customChains: ChainSelectConfig<CustomChain> = {
   allowedChains: parseAllowedChain(ChainsID),
-  chainsConfig: CHAINS
+  chainsConfig: CHAINS,
+  defaultChainId: 100
 }
 
 const showAllNetworks = false;
@@ -68,7 +69,7 @@ const App = ({ Component, pageProps }: AppProps) => {
                     <LanguageInit i={i18n} />
                     <Layout
                       chains={customChains}
-                      head={<Head title={'CleanSatMining YAM'} description='CleanSatMining YAM'/>}
+                      head={<Head title={'CleanSatMining YAM'} description={"CleanSatMining YAM"}/>}
                       headerNav={<HeaderNav/>}
                       newWebsite={{
                         name: "CleanSatMining YAM",
@@ -79,8 +80,9 @@ const App = ({ Component, pageProps }: AppProps) => {
                       disableHeaderMultisite={true}
                       footerParam={{
                         name: "CleanSatMining",
-                        copyright: "CleanSatMining, All rights reserved @2023",
-                        logo: () => <Image src={Logo.src} alt={'CSM Logo'} width={36}/>
+                        copyright: `CleanSatMining SA, All rights reserved @${new Date().getFullYear()}, power by Realt.co`,
+                        logo: () => <Image src={Logo.src} alt={'CSM Logo'} width={36}/>, 
+                        links: {}
                       }}
                     >
                       <Component {...pageProps} />
