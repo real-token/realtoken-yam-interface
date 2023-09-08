@@ -11,7 +11,6 @@ import {
   Text,
   Title,
   createStyles,
-  useMantineTheme,
 } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { IconExternalLink, IconShoppingCart } from '@tabler/icons';
@@ -80,7 +79,12 @@ const ShowOfferPage: FC = () => {
   const router = useRouter();
   const { id } = router.query;
 
-  const offerId: number = parseInt(id as string);
+  useEffect(() => {
+    console.log(router.query);
+  }, [router.query]);
+
+  //const offerId: number = parseInt(id as string);
+  const offerId = 11;
 
   const { account } = useWeb3React();
   const { offer, isLoading } = useOffer(offerId);

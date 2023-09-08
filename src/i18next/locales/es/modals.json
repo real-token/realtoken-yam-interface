@@ -123,5 +123,9 @@
     "buyTypeExplain": "Choose \"{{ offerType }}\" offer's type when you want to buy a RealT property token with other non Realt tokens (WXDAI, WETH, USDC etc...)",
     "sellTypeExplain": "Choose \"{{ offerType }}\" offer's type when you want to sell a RealT property token against other non Realt tokens (WXDAI, WETH, USDC etc...)",
     "exchangeTypeExplain": "Choose \"{{ offerType }}\" offer's type when you want to exchange a RealT property token against other tokens (WXDAI, WETH, USDC etc...) or against another RealT property token, or two non RealT token between them."
+  },
+  "offer":{
+    "title": "Offer",
+    "close": "Close"
   }
 }

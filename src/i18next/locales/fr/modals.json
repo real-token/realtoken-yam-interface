@@ -125,5 +125,9 @@
     "buyTypeExplain": "Choisissez le type d'offre \"{{ offerType }}\" si vous souhaitez acheter un token CSM avec un autre token non CSM (WXDAI, USDC etc...)",
     "sellTypeExplain": "Choisissez le type d'offre \"{{ offerType }}\" si vous souhaitez vendre un token CSM contre un autre token non CSM (WXDAI, USDC etc...)",
     "exchangeTypeExplain": "Choisissez le type d'offre \"{{ offerType }}\" si vous souhaitez échanger deux tokens CSM entre eux ou des tokens non CSM (WXDAI, USDC etc...) entre eux."
+  },
+  "offer":{
+    "title": "Offre",
+    "close": "Fermer"
   }
 }

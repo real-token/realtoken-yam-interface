@@ -1,28 +1,32 @@
 import { FC, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
+
 import {
-  Skeleton,
-  createStyles,
   Table as MantineTable,
   TableProps as MantineTableProps,
+  Skeleton,
+  createStyles,
 } from '@mantine/core';
 import { Table as ReactTable, Row, flexRender } from '@tanstack/react-table';
+
+import { ENV, isEnvs } from 'src/utils/isEnv';
+
 import { TableCaption, TableCaptionOptions } from '../TableCaption';
 import { TableHeader } from '../TableHeader';
-import { ENV, isEnvs } from 'src/utils/isEnv';
 
 export type TableSubRowProps<T> = { row: Row<T> };
 
 const useStyles = createStyles((theme) => ({
   table: {
-    overflow: "clip"
+    overflow: 'clip',
   },
   thead: {
-    position: "sticky", 
-    top: 0, 
-    backgroundColor: theme.colorScheme == "dark" ? "#1A1B1E" : "#FFFF", 
+    position: 'sticky',
+    top: 0,
+    backgroundColor:
+      theme.colorScheme == 'dark' ? theme.colors.dark[6] : theme.colors.gray[2],
     zIndex: 1,
-  }
+  },
 }));
 
 type TableProps<T> = {
@@ -42,57 +46,66 @@ export const Table = <T,>({
   const { classes } = useStyles();
 
   return (
-      <MantineTable {...tableProps} className={classes.table}>
-        <thead className={classes.thead}>
-          {table.getHeaderGroups().map(({ id, headers }) => (
-            <tr key={id}>
-              {headers.map((header) => (
-                <th
-                  key={header.id}
-                  colSpan={header.column.columnDef.meta?.colSpan}
-                  style={{ textAlign: 'center', width: header.getSize() }}
-                >
-                  <TableHeader header={header} />
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.length ? (
-            table.getRowModel().rows.map((row) => (
-              <Fragment key={row.id}>
-                <tr>
-                  {row.getVisibleCells().map(({ id, column, getContext, getValue }) => (
+    <MantineTable {...tableProps} className={classes.table}>
+      <thead className={classes.thead}>
+        {table.getHeaderGroups().map(({ id, headers }) => (
+          <tr key={id}>
+            {headers.map((header) => (
+              <th
+                key={header.id}
+                colSpan={header.column.columnDef.meta?.colSpan}
+                style={{ textAlign: 'center', width: header.getSize() }}
+              >
+                <TableHeader header={header} />
+              </th>
+            ))}
+          </tr>
+        ))}
+      </thead>
+      <tbody>
+        {table.getRowModel().rows.length ? (
+          table.getRowModel().rows.map((row) => (
+            <Fragment key={row.id}>
+              <tr>
+                {row
+                  .getVisibleCells()
+                  .map(({ id, column, getContext, getValue }) => (
                     <td key={id} colSpan={column.columnDef.meta?.colSpan}>
-                      { String(getValue()) ? flexRender(column.columnDef.cell, getContext()) : <Skeleton height={15}/>}
+                      {String(getValue()) ? (
+                        flexRender(column.columnDef.cell, getContext())
+                      ) : (
+                        <Skeleton height={15} />
+                      )}
                     </td>
                   ))}
+              </tr>
+              {TableSubRow &&
+              row.original &&
+              row.getIsExpanded() &&
+              isEnvs([ENV.DEV]) ? (
+                <tr>
+                  <td
+                    colSpan={table.options.meta?.colSpan}
+                    style={{ padding: 0 }}
+                  >
+                    <TableSubRow row={row} />
+                  </td>
                 </tr>
-                {TableSubRow && row.original && row.getIsExpanded() && isEnvs([ENV.DEV]) ? (
-                  <tr>
-                    <td
-                      colSpan={table.options.meta?.colSpan}
-                      style={{ padding: 0}}
-                    >
-                      <TableSubRow row={row} />
-                    </td>
-                  </tr>
-                ) : undefined}
-              </Fragment>
-            ))
-          ) : (
-            <tr>
-              <td
-                colSpan={table.options.meta?.colSpan}
-                style={{ textAlign: 'center' }}
-              >
-                {t('noData')}
-              </td>
-            </tr>
-          )}
-        </tbody>
-        {tablecaptionOptions?.visible && (
+              ) : undefined}
+            </Fragment>
+          ))
+        ) : (
+          <tr>
+            <td
+              colSpan={table.options.meta?.colSpan}
+              style={{ textAlign: 'center' }}
+            >
+              {t('noData')}
+            </td>
+          </tr>
+        )}
+      </tbody>
+      {tablecaptionOptions?.visible && (
         <tfoot>
           <tr>
             <td colSpan={table.options.meta?.colSpan}>
@@ -103,7 +116,7 @@ export const Table = <T,>({
             </td>
           </tr>
         </tfoot>
-        )}
-      </MantineTable>
+      )}
+    </MantineTable>
   );
 };

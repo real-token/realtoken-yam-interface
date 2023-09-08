@@ -1,20 +1,16 @@
 import { FC } from 'react';
 
-import {
-  EthereumLogo,
-  GnosisLogo,
-  Chain as RealtChains,
-} from '@realtoken/realt-commons';
+import { GnosisLogo, Chain as RealtChains } from '@realtoken/realt-commons';
 
 import { realTokenYamUpgradeableABI } from 'src/abis';
 
 import { Contracts, ContractsID } from './contracts';
-import { Currency, DAI, ETH } from './currencies';
+import { Currency, DAI } from './currencies';
 
 export enum ChainsID {
   // Ethereum = 0x01,
+  // Goerli = 0x05,
   Gnosis = 0x64,
-  Goerli = 0x05,
 }
 
 export type Chain = Omit<RealtChains, 'blockExplorerUrl'> & {
@@ -44,23 +40,23 @@ export const CHAINS: Record<ChainsID, Chain> = {
       },
     },
   },
-  [ChainsID.Goerli]: {
-    chainId: ChainsID.Goerli,
-    chainName: 'Goerli',
-    logo: EthereumLogo,
-    nativeCurrency: ETH,
-    rpcUrl: 'https://rpc.ankr.com/eth_goerli',
-    blockExplorerUrl: 'https://goerli.etherscan.io/',
-    isTestnet: true,
-    contracts: {
-      [ContractsID.realTokenYamUpgradeable]: {
-        abi: realTokenYamUpgradeableABI,
-        address: '0xba2e37248804eb636cf4e0b0aba50cf48ab49e2b',
-        //address: "0xBDAa060F27D00b9e135C005Ae5Ad0F51C8ba4FD9",
-        metadata: { fromBlock: 7385668 },
-      },
-    },
-  },
+  // [ChainsID.Goerli]: {
+  //   chainId: ChainsID.Goerli,
+  //   chainName: 'Goerli',
+  //   logo: EthereumLogo,
+  //   nativeCurrency: ETH,
+  //   rpcUrl: 'https://rpc.ankr.com/eth_goerli',
+  //   blockExplorerUrl: 'https://goerli.etherscan.io/',
+  //   isTestnet: true,
+  //   contracts: {
+  //     [ContractsID.realTokenYamUpgradeable]: {
+  //       abi: realTokenYamUpgradeableABI,
+  //       address: '0xba2e37248804eb636cf4e0b0aba50cf48ab49e2b',
+  //       //address: "0xBDAa060F27D00b9e135C005Ae5Ad0F51C8ba4FD9",
+  //       metadata: { fromBlock: 7385668 },
+  //     },
+  //   },
+  // },
 };
 
 export const URLS = Object.keys(CHAINS).reduce<Record<number, string>>(

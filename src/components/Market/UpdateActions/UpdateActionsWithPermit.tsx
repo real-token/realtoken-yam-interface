@@ -6,43 +6,30 @@ import { useModals } from '@mantine/modals';
 import { IconEdit } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
 
-import { Offer } from 'src/types/offer/Offer';
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
+import { useContextModals } from 'src/hooks/useModals';
+import { Offer } from 'src/types/offer/Offer';
 
 type UpdateActions = {
   updateOffer: Offer;
 };
 
-export const UpdateActionsWithPermit: FC<UpdateActions> = ({
-  updateOffer,
-}) => {
+export const UpdateActionsWithPermit: FC<UpdateActions> = ({ updateOffer }) => {
   const { account } = useWeb3React();
-  const modals = useModals();
+  const modals = useContextModals();
 
-  const { refreshOffers } = useRefreshOffers(false); 
-
-  const { t } = useTranslation('modals');
+  const { refreshOffers } = useRefreshOffers(false);
 
   const onOpenUpdateModal = useCallback(
     (offer: Offer) => {
-      modals.openContextModal('updatePermit', {
-        title: <Title order={3}>{t('update.title')}</Title>,
-        size: "lg",
-        innerProps: {
-          offer: offer,
-          triggerTableRefresh: refreshOffers,
-        },
-      });
+      modals.openUpdatePermitModal(offer, refreshOffers);
     },
-    [modals, refreshOffers, t]
+    [modals, refreshOffers]
   );
 
   const onOpenWalletModal = useCallback(() => {
-    modals.openContextModal('wallet', {
-      title: <Title order={3}>{t('wallet.title')}</Title>,
-      innerProps: {},
-    });
-  }, [modals, t]);
+    modals.openWalletModal();
+  }, [modals]);
 
   return (
     <Group position={'center'}>

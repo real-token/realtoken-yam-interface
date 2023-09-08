@@ -1,4 +1,10 @@
 {
+  
+  "kycRequired": {
+    "title": "Attention",
+    "contact": "contacter",
+    "message": "Chers utilisateurs,\n\nConformément aux exigences légales, tous les utilisateurs doivent préalablement compléter le processus KYC sur la plateforme Mt Pelerin avant de pouvoir effectuer des achats au sein de notre application. Veuillez noter que les tokens CSM sont soumis à une liste blanche d'adresses approuvées pour les interactions. Toute transaction de ces tokens vers une adresse non autorisée échouera. Nous vous invitons donc à vous inscrire sur Mt Pelerin et à finaliser votre KYC, puis à contacter l'équipe de support de CleanSat Mining pour la validation. Si vous avez des questions ou rencontrez des difficultés, n'hésitez pas à nous contacter.\n\nNous vous remercions pour votre compréhension et votre coopération.\n\nL'équipe CleanSat Mining"
+  },
   "grantRoleLoading": {
     "title": "Veuillez patienter",
     "message": "Votre transaction est en cours de validation."
