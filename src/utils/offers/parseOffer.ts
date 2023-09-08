@@ -193,25 +193,14 @@ const getOfferYield = (
   offer: Offer,
   propertyToken: PropertiesToken | undefined
 ): number | undefined => {
-  console.log(
-    'getOfferYield',
-    JSON.stringify(prices, null, 4),
-    JSON.stringify(offer, null, 4),
-    JSON.stringify(propertyToken, null, 4)
-  );
   const tokenPriceInDollar = getPriceInDollar(prices, offer);
   if (propertyToken && tokenPriceInDollar) {
     const offerAdjusted = new BigNumber(
       propertyToken.netRentYearPerToken
     ).dividedBy(tokenPriceInDollar);
-    console.log(
-      'getOfferYield |',
-      parseFloat(offerAdjusted.multipliedBy(100).toString())
-    );
+
     return parseFloat(offerAdjusted.multipliedBy(100).toString());
   } else {
-    console.log('getOfferYield -');
-
     return undefined;
   }
 };

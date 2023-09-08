@@ -32,7 +32,7 @@ const useStyle = createStyles((theme) => ({
     height: '100%',
     boxShadow:
       theme.colorScheme === 'dark'
-        ? `2px 7px 12px 2px  #000000`
+        ? `2px 7px 12px 2px  ${theme.colors.dark[8]}`
         : `0px 7px 16px 0px ${theme.colors.gray[6]}`,
     backgroundColor:
       theme.colorScheme === 'dark'
