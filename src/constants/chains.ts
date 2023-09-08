@@ -1,15 +1,11 @@
 import { FC } from 'react';
 
-import {
-  EthereumLogo,
-  GnosisLogo,
-  Chain as RealtChains,
-} from '@realtoken/realt-commons';
+import { GnosisLogo, Chain as RealtChains } from '@realtoken/realt-commons';
 
 import { realTokenYamUpgradeableABI } from 'src/abis';
 
 import { Contracts, ContractsID } from './contracts';
-import { Currency, DAI, ETH } from './currencies';
+import { Currency, DAI } from './currencies';
 
 export enum ChainsID {
   // Ethereum = 0x01,
