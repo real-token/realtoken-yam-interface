@@ -41,7 +41,8 @@ export const i18n = initLanguage(resources);
 const customChains: ChainSelectConfig<CustomChain> = {
   allowedChains: parseAllowedChain(ChainsID),
   chainsConfig: CHAINS,
-};
+  defaultChainId: 100
+}
 
 const showAllNetworks = true;
 
