@@ -43,6 +43,7 @@ const useStyles = createStyles((theme) => ({
     borderStyle: 'solid',
     position: 'relative',
     backgroundColor: theme.colors.brand,
+    color: theme.colorScheme === 'dark' ? 'white' : theme.colors.dark[5],
     '&:hover': {
       cursor: 'pointer',
     },
