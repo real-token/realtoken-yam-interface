@@ -73,7 +73,7 @@ export const MatchedOffers: FC<MatchedOffersProps> = ({
   );
 
   return (
-    <Flex direction={'column'}>
+    <Flex direction={'column'} className={classes.container}>
       <Flex gap={'sm'} className={classes.header}>
         <IconSwitchHorizontal />
         {t('title')}

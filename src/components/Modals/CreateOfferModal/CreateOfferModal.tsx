@@ -710,15 +710,6 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
 
           {privateOffer()}
 
-          <MatchedOffers
-            offerType={offer.offerType}
-            offerTokenAddress={values.offerTokenAddress}
-            buyerTokenAddress={values.buyerTokenAddress}
-            price={values.price}
-            amount={values.amount}
-            closeModal={closeModal}
-          />
-
           <Group position={'left'} mt={'md'}>
             <>
               {summary()}
@@ -734,6 +725,14 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
           </Group>
         </Stack>
       </form>
+      <MatchedOffers
+        offerType={offer.offerType}
+        offerTokenAddress={values.offerTokenAddress}
+        buyerTokenAddress={values.buyerTokenAddress}
+        price={values.price}
+        amount={values.amount}
+        closeModal={closeModal}
+      />
     </Flex>
   );
 };

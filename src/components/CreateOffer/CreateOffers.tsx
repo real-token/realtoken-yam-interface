@@ -200,7 +200,6 @@ export const CreateOffer = () => {
       console.log(offers);
 
       if (offers.length == 1) {
-        console.log('length=1');
         const offer = offers[0];
 
         const offerToken = getContract<CoinBridgeToken>(
@@ -228,21 +227,11 @@ export const CreateOffer = () => {
           .toString(10);
         const transactionDeadline = Math.floor(Date.now() / 1000) + 3600;
 
-        console.log('pass1');
-
         const isSafe = connector == 'gnosis-safe';
 
         let permitAnswer: any | undefined = undefined;
         let needPermit = false;
         if (offerTokenType == 1 && !isSafe) {
-          console.log(
-            'coinBridgeTokenPermitSignature',
-            account,
-            realTokenYamUpgradeable.address,
-            new BigNumber(offer.amount).toString(10),
-            transactionDeadline
-            //JSON.stringify(offerToken, null, 4)
-          );
           // TokenType = 1: RealToken
           needPermit = true;
           permitAnswer = await coinBridgeTokenPermitSignature(
@@ -255,7 +244,6 @@ export const CreateOffer = () => {
           );
         } else if (offerTokenType == 2 && !isSafe) {
           // TokenType = 2: ERC20 With Permit
-          console.log('erc20PermitSignature');
           needPermit = true;
           permitAnswer = await erc20PermitSignature(
             account,
@@ -266,7 +254,6 @@ export const CreateOffer = () => {
             provider
           );
         } else if (offerTokenType == 3 || isSafe) {
-          console.log('approveOffer');
           await approveOffer(
             offer.offerTokenAddress,
             new BigNumber(offer.amount),
@@ -278,21 +265,13 @@ export const CreateOffer = () => {
           );
         }
 
-        console.log('pass2');
-
         if (needPermit && !permitAnswer) {
           setLoading(false);
           return;
         }
 
-        console.log('pass permitAnswer');
-
         let createOfferTx;
         if ((offerTokenType == 1 || offerTokenType == 2) && !isSafe) {
-          console.log(
-            'Type 1 or 2 and is not safe',
-            JSON.stringify(permitAnswer, null, 4)
-          );
           const { r, s, v } = permitAnswer;
           createOfferTx = await realTokenYamUpgradeable.createOfferWithPermit(
             offer.offerTokenAddress,
@@ -307,7 +286,6 @@ export const CreateOffer = () => {
             s
           );
         } else {
-          console.log('TEST 1');
           createOfferTx = await realTokenYamUpgradeable.createOffer(
             offer.offerTokenAddress,
             offer.buyerTokenAddress,
@@ -316,8 +294,6 @@ export const CreateOffer = () => {
             new BigNumber(offer.amount).toString(10)
           );
         }
-
-        console.log('pass3');
 
         if (!createOfferTx) {
           setLoading(false);
@@ -333,8 +309,6 @@ export const CreateOffer = () => {
         showNotification(
           NOTIFICATIONS[NotificationsID.createOfferLoading](notificationPayload)
         );
-
-        console.log('pass4');
 
         createOfferTx.wait().then(({ status }) => {
           updateNotification(
