@@ -144,7 +144,15 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         offerTokenAddress: offer?.offerTokenAddress ?? '',
         buyerTokenAddress: offer?.buyerTokenAddress ?? '',
         price: offer?.price ?? undefined,
-        amount: isModification && offer.amount && offer.price ? parseInt(offer.amount.toString())/offer.price : undefined,
+        amount:
+          isModification &&
+          offer.amount &&
+          offer.price &&
+          offer.offerTokenDecimal
+            ? new BigNumber(offer.amount)
+                .shiftedBy(-offer.offerTokenDecimal)
+                .toNumber() / offer.price
+            : undefined,
         buyerAddress: offer?.buyerAddress ?? ZERO_ADDRESS,
         isPrivateOffer: offer?.isPrivateOffer ?? false,
       },
@@ -229,13 +237,19 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
       const createdOffer: CreatedOffer = {
         offerType: offer.offerType,
         offerId: offers.length,
-        offerTokenAddress: formValues.offerTokenAddress,
-        buyerTokenAddress: formValues.buyerTokenAddress,
+        offerTokenAddress: formValues.offerTokenAddress.toLowerCase(),
+        offerTokenDecimal: offerTokenDecimals,
+        buyerTokenAddress: formValues.buyerTokenAddress.toLowerCase(),
         price: price ? parseFloat(price.toFixed(6)) : 0,
-        amount: amountInWei,
-        buyerAddress: formValues.buyerAddress,
-        isPrivateOffer: formValues.isPrivateOffer
-      }
+        amount: amountInWei.toString(),
+        buyerAddress: formValues.buyerAddress.toLowerCase(),
+        isPrivateOffer: formValues.isPrivateOffer,
+      };
+
+      console.log(
+        'createOffer/createOfferAdded',
+        JSON.stringify(createdOffer, null, 4)
+      );
 
       dispatch({ type: createOfferAddedDispatchType, payload: createdOffer });
 
