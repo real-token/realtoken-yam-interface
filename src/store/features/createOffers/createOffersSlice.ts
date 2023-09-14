@@ -41,7 +41,6 @@ export const createOffersReducers = createReducer(
   (builder) => {
     builder
       .addCase(createOfferAdded, (state, action) => {
-        console.log('createOfferAdded');
         state.offers.push(action.payload);
       })
       .addCase(createOfferRemoved, (state, action) => {

@@ -10,7 +10,7 @@ import {
   createStyles,
 } from '@mantine/core';
 import { showNotification, updateNotification } from '@mantine/notifications';
-import { IconX } from '@tabler/icons';
+import { IconCheck, IconX } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
 
 import BigNumber from 'bignumber.js';
@@ -143,7 +143,7 @@ const useStyles = createStyles((theme) => ({
 
 export const CreateOffer = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [notification, setNotification] = useState<boolean>(false);
+  const [errorNotification, setErrorNotification] = useState<boolean>(false);
 
   const { refreshOffers } = useRefreshOffers(false);
 
@@ -272,6 +272,7 @@ export const CreateOffer = () => {
 
         let createOfferTx;
         if ((offerTokenType == 1 || offerTokenType == 2) && !isSafe) {
+          console.log('createOfferWithPermit');
           const { r, s, v } = permitAnswer;
           createOfferTx = await realTokenYamUpgradeable.createOfferWithPermit(
             offer.offerTokenAddress,
@@ -412,7 +413,7 @@ export const CreateOffer = () => {
     } catch (err) {
       console.log('Error when sending createBatch tx: ', err);
       setLoading(false);
-      setNotification(true);
+      setErrorNotification(true);
     }
   };
 
@@ -441,18 +442,19 @@ export const CreateOffer = () => {
         {offers.length > 0 ? <Divider /> : undefined}
         <CreateOfferPane isCreating={true} />
       </Flex>
-      {notification && (
+      {errorNotification && (
         <Notification
           icon={<IconX size={'1.1rem'} />}
           color={'red'}
           sx={{ position: 'absolute', bottom: '50vh' }}
           onClose={() => {
-            setNotification(() => false);
+            setErrorNotification(() => false);
           }}
         >
           {'Error ! Offer(s) not created. Please retry.'}
         </Notification>
       )}
+
       <Button
         disabled={offers.length == 0 || loading}
         onClick={() => createOffers()}
