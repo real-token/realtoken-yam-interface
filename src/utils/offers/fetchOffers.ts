@@ -138,9 +138,6 @@ export const fetchOffersTheGraph = (
       const myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
 
-
-
-
       const formatRequest = (first: number, skip: number) => {
         const query =  `{\n    offers (first: ${first}, skip: ${skip}, where: { removedAtBlock: null}) {${getOfferQuery()}}}`;
 

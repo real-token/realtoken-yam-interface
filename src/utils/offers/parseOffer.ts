@@ -104,7 +104,7 @@ export const parseOffer = (
           allowanceToken: allowance ?? '0',
           hasPropertyToken: false,
           type: undefined,
-          removed: false,
+          removed: offer.removedAtBlock !== null,
           createdAtTimestamp: offer.createdAtTimestamp,
           buyCurrency: "",
           officialPrice: undefined,
@@ -115,7 +115,7 @@ export const parseOffer = (
           yieldDelta: undefined
         };
 
-        if(o.offerId == "13773"){
+        if(o.offerId == "13805"){
           console.log(
             offer.availableAmount,
             balanceWallet,

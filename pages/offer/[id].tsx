@@ -73,6 +73,11 @@ const ShowOfferPage: FC = () => {
     const { account } = useWeb3React();
     const { offer, isLoading } = useOffer(offerId);
 
+    const offerDeleted = useMemo(() => {
+        if(!offer) return false;
+        return offer.removed
+    },[offer])
+
     const { refreshOffers } = useRefreshOffers(false);
 
     const { t } = useTranslation('modals', { keyPrefix: 'buy' });
@@ -121,6 +126,21 @@ const ShowOfferPage: FC = () => {
             },
         });
     },[modals, refreshOffers, t2]);
+
+    if(offerDeleted){
+        return(
+            <Flex
+                sx={{
+                    width: '100%',
+                    height: '100%',
+                    justifyContent: "center",
+                    alignItems: 'center'
+                }}
+            >
+                <Text>{'This offer has been deleted'}</Text>
+            </Flex>
+        )
+    }
 
     return(
         <ConnectedProvider>
