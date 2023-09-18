@@ -6,7 +6,7 @@ export type UrlExternal = {
 
 export const UrlMtPelerin: UrlExternal = {
   name: 'Mont Pelerin',
-  url: 'https://www.mtpelerin.com/fr/bridge-wallet',
+  url: 'https://www.mtpelerin.com/join?rfr=cleansatmining',
   keyword: 'Mt Pelerin',
 };
 
