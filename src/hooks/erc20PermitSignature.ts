@@ -65,7 +65,7 @@ const erc20PermitSignature = async (
     ];
     const domain = {
       name: contractName,
-      version: rightVersion.toString(), // '1',
+      version: '2', //rightVersion.toString(), // '1',
       chainId: library.network.chainId,
       verifyingContract: contract.address,
     };
