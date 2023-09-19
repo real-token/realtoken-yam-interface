@@ -2,7 +2,7 @@ import { FC } from 'react';
 
 import { GnosisLogo, Chain as RealtChains } from '@realtoken/realt-commons';
 
-import { realTokenYamUpgradeableABI } from 'src/abis';
+import { complianceRegistryABI, realTokenYamUpgradeableABI } from 'src/abis';
 
 import { Contracts, ContractsID } from './contracts';
 import { Currency, DAI } from './currencies';
@@ -37,6 +37,10 @@ export const CHAINS: Record<ChainsID, Chain> = {
         abi: realTokenYamUpgradeableABI,
         address: '0x7ac028f8fe6e7705292dc13e46a609dd95fc84ba',
         metadata: { fromBlock: 27516835 },
+      },
+      [ContractsID.complianceRegistry]: {
+        abi: complianceRegistryABI,
+        address: '0x136abcf7271479d087a8187eb991d2a0701d2890',
       },
     },
   },

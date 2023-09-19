@@ -5,6 +5,7 @@ import { RealTokenYamUpgradeable } from 'src/abis';
 
 export enum ContractsID {
   realTokenYamUpgradeable = 'realTokenYamUpgradeable',
+  complianceRegistry = 'complianceRegistry',
 }
 
 type Metadata<T extends ContractsID> =

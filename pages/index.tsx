@@ -14,7 +14,7 @@ import { IconExternalLink } from '@tabler/icons';
 import Display from 'src/components/Display/Display';
 import 'src/components/Market';
 import { MarketTableFilter } from 'src/components/Market/Filters';
-import { UrlContactUs, UrlMtPelerin } from 'src/constants';
+import { UrlContactUs, UrlForms, UrlMtPelerin } from 'src/constants';
 import { ConnectedProvider } from 'src/providers/ConnectProvider';
 
 const useStyle = createStyles((theme) => ({
@@ -38,6 +38,20 @@ const useStyle = createStyles((theme) => ({
       color: theme.colors.brand,
       borderBottomColor: theme.colors.brand,
       cursor: 'pointer',
+    },
+  },
+  email: {
+    fontSize: theme.fontSizes.md,
+    borderBottomStyle: 'solid',
+    borderBottomWidth: '1px',
+    borderBottomColor: 'transparent',
+    textDecoration: 'underline',
+    color: theme.colors.brand,
+    '&:hover': {
+      textDecoration: 'underline',
+      //fontWeight: 'bold',
+      cursor: 'pointer',
+      color: theme.colors.brand,
     },
   },
   imageLink: {
@@ -103,9 +117,7 @@ const HomePage: NextPage = () => {
       return (
         <a
           className={classes.link}
-          target={'_blank'}
-          rel={'noreferrer'}
-          href={UrlContactUs.url}
+          href={'mailto:' + UrlContactUs.url}
           key={'aPelerin' + key + 'contact' + j}
         >
           {t(UrlContactUs.keyword)}
@@ -120,10 +132,76 @@ const HomePage: NextPage = () => {
     }
 
     return (
-      <React.Fragment key={'FC' + key}>
+      <React.Fragment key={'FCcontact' + key}>
         {subTexts.map((subText, j) => {
           return (
-            <React.Fragment key={'FC' + key + j}>
+            <React.Fragment key={'FCcontact' + key + j}>
+              {j > 0 && link(j)}
+              {formatContactEmail(subText, key + j)}
+            </React.Fragment>
+          );
+        })}
+      </React.Fragment>
+    );
+  }
+
+  function formatContactEmail(text: string, key: number): JSX.Element {
+    const subTexts = text.split(UrlContactUs.url);
+
+    function link(j: number) {
+      return (
+        <a
+          className={classes.email}
+          href={'mailto:' + UrlContactUs.url}
+          key={'aPelerin' + key + 'email' + j}
+        >
+          {UrlContactUs.url}
+        </a>
+      );
+    }
+
+    return (
+      <React.Fragment key={'FC email' + key}>
+        {subTexts.map((subText, j) => {
+          return (
+            <React.Fragment key={'FC email' + key + j}>
+              {j > 0 && link(j)}
+              {formatForms(subText, key + j)}
+            </React.Fragment>
+          );
+        })}
+      </React.Fragment>
+    );
+  }
+
+  function formatForms(text: string, key: number): JSX.Element {
+    const subTexts = text.split(t(UrlForms.keyword));
+
+    function link(j: number) {
+      return (
+        <a
+          className={classes.link}
+          target={'_blank'}
+          rel={'noreferrer'}
+          href={UrlForms.url}
+          key={'aPelerin' + key + 'form' + j}
+        >
+          {t(UrlForms.keyword)}
+          <IconExternalLink
+            key={'Pelerin' + key + 'form' + j}
+            size={14}
+            color={colors.brand[9]}
+            className={classes.imageLink}
+          />
+        </a>
+      );
+    }
+
+    return (
+      <React.Fragment key={'FC form' + key}>
+        {subTexts.map((subText, j) => {
+          return (
+            <React.Fragment key={'FC form' + key + j}>
               {j > 0 && link(j)}
               {subText}
             </React.Fragment>
