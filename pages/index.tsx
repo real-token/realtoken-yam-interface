@@ -22,7 +22,7 @@ const useStyle = createStyles((theme) => ({
     marginBottom: '16px',
     backgroundColor:
       theme.colorScheme === 'dark' ? undefined : theme.colors.gray[0],
-    fontSize: theme.fontSizes.md,
+    fontSize: theme.fontSizes.xl,
   },
   text: {
     fontSize: theme.fontSizes.md,

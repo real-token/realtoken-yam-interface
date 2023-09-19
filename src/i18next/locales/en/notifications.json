@@ -2,7 +2,7 @@
   "kycRequired": {
     "title": "Warning",
     "contact": "contact",
-    "message": "Dear users,\n\nIn accordance with legal requirements, all users are required to complete the KYC process on the Mt Pelerin platform before being able to make purchases within our application. Please note that CSM tokens have a whitelist of approved addresses for interaction. Any transaction of these tokens to a non-whitelisted address will fail. We kindly request you to register on Mt Pelerin and complete your KYC, and then contact the CleanSat Mining support team for validation. If you have any questions or encounter any difficulties, please do not hesitate to reach out to us.\n\nWe appreciate your understanding and cooperation.\n\nThe CleanSat Mining Team"
+    "message": "Dear users,\n\nYou can purchase Clean Sat Mining tokens after completing the following two steps:\n1) In accordance with legal requirements, all users must first complete the KYC process on the Mt Pelerin platform before making purchases within our application. We therefore invite you to register on Mt Pelerin and complete your KYC.\n\n2) Please note that CSM tokens are subject to a whitelist of approved addresses for interactions. Any transaction of these tokens to an unauthorized address will fail. We invite you to contact the CleanSat Mining support team and provide us with the Metamask or Wallet Connect 2 public address you wish to whitelist. If you are using multiple wallets, you can send us multiple addresses to whitelist.\n\nWe thank you for your understanding and cooperation.\n\nThe CleanSat Mining Team"
   },
   "grantRoleLoading": {
     "title": "Copied 🎉",
