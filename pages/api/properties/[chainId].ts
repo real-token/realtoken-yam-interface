@@ -219,13 +219,14 @@ const handler: NextApiHandler = async (req: NextApiRequest, res: NextApiResponse
 
         const tokens = getTokens(parseInt(chainId), communityApiToken, wlTokens);
 
-        return res.status(200)
+        return res
             .setHeader('cache-control', 'public, s-maxage=1200, stale-while-revalidate=600')
+            .status(200)
             .json(tokens);
   
       }catch(err){
         console.log(err);
-        res.status(500).json({error: "Failed to fetch properties"});
+        return res.status(500).json({error: "Failed to fetch properties"});
       }
 }
 export default handler;
