@@ -4,7 +4,7 @@ import { GnosisLogo, Chain as RealtChains } from '@realtoken/realt-commons';
 
 import { complianceRegistryABI, realTokenYamUpgradeableABI } from 'src/abis';
 
-import { Contracts, ContractsID } from './contracts';
+import { ContractCSM, Contracts, ContractsID } from './contracts';
 import { Currency, DAI } from './currencies';
 
 export enum ChainsID {
@@ -21,6 +21,7 @@ export type Chain = Omit<RealtChains, 'blockExplorerUrl'> & {
   rpcUrl: string;
   blockExplorerUrl: string;
   contracts: Contracts;
+  compliance: ContractCSM;
 };
 
 export const CHAINS: Record<ChainsID, Chain> = {
@@ -38,10 +39,14 @@ export const CHAINS: Record<ChainsID, Chain> = {
         address: '0x7ac028f8fe6e7705292dc13e46a609dd95fc84ba',
         metadata: { fromBlock: 27516835 },
       },
-      [ContractsID.complianceRegistry]: {
-        abi: complianceRegistryABI,
-        address: '0x136abcf7271479d087a8187eb991d2a0701d2890',
-      },
+      // [ContractsID.complianceRegistry]: {
+      //   abi: complianceRegistryABI,
+      //   address: '0x136abcf7271479d087a8187eb991d2a0701d2890',
+      // },
+    },
+    compliance: {
+      abi: complianceRegistryABI,
+      address: '0x99759357A9923Bb164A7aE8b85703a6882CB84ea',
     },
   },
   // [ChainsID.Goerli]: {
