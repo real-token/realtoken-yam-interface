@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Badge, Button, Dialog, Notification, rem } from '@mantine/core';
+import { Notification, em, rem } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import { IconCheck, IconX } from '@tabler/icons';
 
 import { useCompliance } from 'src/hooks';
@@ -9,6 +10,7 @@ import { useCompliance } from 'src/hooks';
 import { NotificationCompliance } from './Composents/NotificationCompliance';
 
 export const CheckCompliance = () => {
+  const isMobile = useMediaQuery(`(max-width: ${em(750)})`);
   const { t } = useTranslation('notifications', { keyPrefix: 'kycCheck' });
   const [isCompliant, setIsCompliant] = useState<boolean>(false);
   const [isMessageClosed, setIsMessageClosed] = useState<boolean>(false);
@@ -38,26 +40,27 @@ export const CheckCompliance = () => {
   );
   return (
     <>
-      {
+      {isMessageClosed && (
         <Notification
           icon={icon}
           color={isCompliant ? 'teal' : 'red'}
           title={isCompliant ? t('verified') : t('invalid')}
-          mt={'md'}
+          mt={isMobile ? '-20px' : 0}
           withCloseButton={false}
           sx={{
-            position: 'absolute',
-            top: '100px',
-            right: '40px',
+            position: isMobile ? 'static' : 'absolute',
+            top: isMobile ? '70px' : '110px',
+            right: isMobile ? '10px' : '40px',
             cursor: 'pointer',
+            padding: isMobile ? '7px' : undefined,
           }}
           onClick={() => {
             setIsMessageClosed(false);
           }}
         >
-          {complianceRegistry?.account}
+          {isMobile ? '' : complianceRegistry?.account}
         </Notification>
-      }
+      )}
 
       {!isCompliant && (
         <NotificationCompliance

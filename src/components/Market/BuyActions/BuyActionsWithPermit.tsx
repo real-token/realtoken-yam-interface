@@ -6,7 +6,9 @@ import { IconShoppingCart } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
 
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
+import { useAppDispatch } from 'src/hooks/react-hooks';
 import { useContextModals } from 'src/hooks/useModals';
+import { buyOfferOpen } from 'src/store/features/buyOffer/buyOfferSlice';
 import { selectOffersIsLoading } from 'src/store/features/interface/interfaceSelector';
 import { Offer } from 'src/types/offer/Offer';
 
@@ -21,6 +23,7 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
   buttonClassName,
   groupClassName,
 }) => {
+  const dispatch = useAppDispatch();
   const { account } = useWeb3React();
   const modals = useContextModals();
 
@@ -30,7 +33,8 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
 
   const onOpenBuyModal = useCallback(
     (offer: Offer) => {
-      modals.openBuyModal(offer, refreshOffers);
+      dispatch({ type: buyOfferOpen, payload: offer });
+      //modals.openBuyModal(offer, refreshOffers);
     },
     [modals, refreshOffers]
   );

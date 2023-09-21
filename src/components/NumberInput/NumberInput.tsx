@@ -55,7 +55,7 @@ export const NumberInput: FRC<NumberInputProps, HTMLInputElement> = forwardRef(
         gap={5}
         align={'flex-end'}
         mb={groupMarginBottom ?? 0}
-        style={{ width: width ? width : 'auto' }}
+        style={{ width: width ? width : 'auto', textAlign: 'left' }}
       >
         <MantineInput
           hideControls={true}

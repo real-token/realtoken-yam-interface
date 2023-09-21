@@ -65,11 +65,11 @@ const erc20PermitSignature = async (
     ];
     const domain = {
       name: contractName,
-      version: '2', //rightVersion.toString(), // '1',
+      version: rightVersion.toString(), // '2',
       chainId: library.network.chainId,
       verifyingContract: contract.address,
     };
-    console.log(domain);
+    console.log('erc20PermitSignature domain', domain);
     const Permit = [
       { name: 'owner', type: 'address' },
       { name: 'spender', type: 'address' },
@@ -86,7 +86,7 @@ const erc20PermitSignature = async (
       deadline: transactionDeadline,
     };
 
-    console.log(message);
+    console.log('erc20PermitSignature message', message);
 
     // eslint-disable-next-line object-shorthand
     const data = JSON.stringify({
@@ -99,7 +99,7 @@ const erc20PermitSignature = async (
       message,
     });
 
-    const signature = await library.send('eth_signTypedData_v4', [owner, data]);
+    const signature = await library.send('eth_signTypedData_v2', [owner, data]);
     const signData = utils.splitSignature(signature as string);
     const { r, s, v } = signData;
     return {
@@ -109,7 +109,7 @@ const erc20PermitSignature = async (
     };
   } catch (e) {
     console.log('Error getting permit signature: ', e);
-    return e;
+    throw e;
   }
 };
 
