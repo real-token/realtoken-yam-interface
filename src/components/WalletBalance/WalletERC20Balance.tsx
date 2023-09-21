@@ -39,6 +39,7 @@ const useStyles = createStyles((theme, { isLoading }: Param, getRef) => ({
     flexDirection: 'column',
     rowGap: isLoading ? 5 : 0,
     width: '100%',
+    textAlign: 'left',
   },
 }));
 
