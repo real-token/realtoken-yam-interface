@@ -91,7 +91,7 @@ const coinBridgeTokenPermitSignature = async (
     };
   } catch (e) {
     console.log('Error getting permit signature: ', e);
-    return e;
+    throw e;
   }
 };
 

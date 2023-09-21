@@ -217,9 +217,10 @@ export const CreateOffer = () => {
 
         if (!offer.price || !offer.amount || !offerToken) return;
 
-        const offerTokenType = await realTokenYamUpgradeable.getTokenType(
+        let offerTokenType = await realTokenYamUpgradeable.getTokenType(
           offer.offerTokenAddress
         );
+
         const buyerTokenDecimals = await buyerToken?.decimals();
 
         const priceInWei = new BigNumber(offer.price.toString())
@@ -231,38 +232,68 @@ export const CreateOffer = () => {
 
         let permitAnswer: any | undefined = undefined;
         let needPermit = false;
-        if (offerTokenType == 1 && !isSafe) {
-          // TokenType = 1: RealToken
-          needPermit = true;
-          permitAnswer = await coinBridgeTokenPermitSignature(
-            account,
-            realTokenYamUpgradeable.address,
-            new BigNumber(offer.amount).toString(10),
-            transactionDeadline,
-            offerToken,
-            provider
+        try {
+          if (offerTokenType == 1 && !isSafe) {
+            // TokenType = 1: RealToken
+            needPermit = true;
+            permitAnswer = await coinBridgeTokenPermitSignature(
+              account,
+              realTokenYamUpgradeable.address,
+              new BigNumber(offer.amount).toString(10),
+              transactionDeadline,
+              offerToken,
+              provider
+            );
+          } else if (offerTokenType == 2 && !isSafe) {
+            // TokenType = 2: ERC20 With Permit
+            needPermit = true;
+            permitAnswer = await erc20PermitSignature(
+              account,
+              realTokenYamUpgradeable.address,
+              new BigNumber(offer.amount).toString(10),
+              transactionDeadline,
+              offerToken,
+              provider
+            );
+          } else if (offerTokenType == 3 || isSafe) {
+            await approveOffer(
+              offer.offerTokenAddress,
+              new BigNumber(offer.amount),
+              provider,
+              account,
+              realTokenYamUpgradeable,
+              setLoading,
+              activeChain
+            );
+          }
+        } catch (e) {
+          const error: { code: number; message: string } = JSON.parse(
+            JSON.stringify(e)
           );
-        } else if (offerTokenType == 2 && !isSafe) {
-          // TokenType = 2: ERC20 With Permit
-          needPermit = true;
-          permitAnswer = await erc20PermitSignature(
-            account,
-            realTokenYamUpgradeable.address,
-            new BigNumber(offer.amount).toString(10),
-            transactionDeadline,
-            offerToken,
-            provider
-          );
-        } else if (offerTokenType == 3 || isSafe) {
-          await approveOffer(
-            offer.offerTokenAddress,
-            new BigNumber(offer.amount),
-            provider,
-            account,
-            realTokenYamUpgradeable,
-            setLoading,
-            activeChain
-          );
+          console.log('Error erc20PermitSignature', e, error.code);
+          if (error.code === -32601) {
+            console.log(
+              'Error erc20PermitSignature : BUY WITH PERMIT FAIL, TRY BUY WITHOUT PERMIT',
+              error.code
+            );
+            offerTokenType = 3;
+            needPermit = false;
+            await approveOffer(
+              offer.offerTokenAddress,
+              new BigNumber(offer.amount),
+              provider,
+              account,
+              realTokenYamUpgradeable,
+              setLoading,
+              activeChain
+            );
+          } else {
+            console.log(
+              'Error erc20PermitSignature : BUY WITH PERMIT FAIL',
+              error.code
+            );
+            throw e;
+          }
         }
 
         if (needPermit && !permitAnswer) {
