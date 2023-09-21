@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Notification, em, rem } from '@mantine/core';
+import { Group, Notification, em, rem } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { IconCheck, IconX } from '@tabler/icons';
 
@@ -40,26 +40,32 @@ export const CheckCompliance = () => {
   );
   return (
     <>
-      {isMessageClosed && (
-        <Notification
-          icon={icon}
-          color={isCompliant ? 'teal' : 'red'}
-          title={isCompliant ? t('verified') : t('invalid')}
-          mt={isMobile ? '-20px' : 0}
-          withCloseButton={false}
-          sx={{
-            position: isMobile ? 'static' : 'absolute',
-            top: isMobile ? '70px' : '110px',
-            right: isMobile ? '10px' : '40px',
-            cursor: 'pointer',
-            padding: isMobile ? '7px' : undefined,
-          }}
-          onClick={() => {
-            setIsMessageClosed(false);
-          }}
-        >
-          {isMobile ? '' : complianceRegistry?.account}
-        </Notification>
+      {(isMessageClosed || isCompliant) && (
+        <Group position='center'>
+          <Notification
+            icon={icon}
+            color={isCompliant ? 'teal' : 'red'}
+            title={isCompliant ? t('verified') : t('invalid')}
+            mt={isMobile ? '-140px' : 0}
+            withCloseButton={false}
+            sx={{
+              width: isMobile ? '180px' : 'auto',
+              position: isMobile ? 'relative' : 'absolute',
+              top: isMobile ? '70px' : '110px',
+              right: isMobile ? '10px' : '40px',
+              cursor: 'pointer',
+              padding: isMobile ? '3px' : undefined,
+
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            onClick={() => {
+              setIsMessageClosed(false);
+            }}
+          >
+            {isMobile ? '' : complianceRegistry?.account}
+          </Notification>
+        </Group>
       )}
 
       {!isCompliant && (
