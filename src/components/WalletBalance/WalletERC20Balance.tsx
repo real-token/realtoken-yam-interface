@@ -15,7 +15,7 @@ const useStyles = createStyles((theme, { isLoading }: Param, getRef) => ({
     backgroundColor:
       theme.colorScheme === 'dark'
         ? theme.colors.dark[5]
-        : theme.colors.gray[1],
+        : theme.colors.gray[2],
     display: 'flex',
     width: '100%',
     gap: theme.radius.md,
