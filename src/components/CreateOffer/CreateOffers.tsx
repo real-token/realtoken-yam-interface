@@ -134,6 +134,7 @@ export const CreateOffer = () => {
     const dispatch = useAppDispatch();
 
     const connector = useAtomValue(providerAtom);
+    console.log(connector)
     
     // Group approves for same token in unique approve tx to reduce gas consumption
     const createApproves = async () => {
@@ -156,15 +157,14 @@ export const CreateOffer = () => {
 
     const createOffers = async () => {
 
-        try{
+        if(!account || !provider || !realTokenYamUpgradeable) return;
 
-            if(!account || !provider || !realTokenYamUpgradeable) return;
+        setLoading(true);
 
-            setLoading(true);
+        console.log(offers)
 
-            console.log(offers)
-
-            if(offers.length == 1){
+        if(offers.length == 1){
+            try{
 
                 const offer = offers[0];
 
@@ -190,12 +190,27 @@ export const CreateOffer = () => {
                 const transactionDeadline = Math.floor(Date.now() / 1000) + 3600;
 
                 const isSafe = connector == "gnosis-safe";
+                const isWalletConnect = connector == "walletConnect"; 
+
+                console.log(isWalletConnect)
 
                 let permitAnswer: any|undefined = undefined;
                 let needPermit = false;
-                if(offerTokenType == 1 && !isSafe){
+
+                if(offerTokenType == 1 && !(isSafe || isWalletConnect)){
+                    console.log('TEST3')
                     // TokenType = 1: RealToken
                     needPermit = true;
+
+                    console.log(
+                        account,
+                        realTokenYamUpgradeable.address,
+                        offer.amount.toString(10),
+                        transactionDeadline,
+                        offerToken,
+                        provider
+                    )
+
                     permitAnswer = await coinBridgeTokenPermitSignature(
                         account,
                         realTokenYamUpgradeable.address,
@@ -204,7 +219,11 @@ export const CreateOffer = () => {
                         offerToken,
                         provider
                     );
-                }else if(offerTokenType == 2 && !isSafe){
+
+                    console.log("permitAnswer: ", permitAnswer)
+
+                }else if(offerTokenType == 2 &&  !(isSafe || isWalletConnect)){
+                    console.log('TEST2')
                     // TokenType = 2: ERC20 With Permit
                     needPermit = true;
                     permitAnswer = await erc20PermitSignature(
@@ -215,7 +234,7 @@ export const CreateOffer = () => {
                         offerToken,
                         provider
                     );
-                }else if(offerTokenType == 3 || isSafe){
+                }else if(offerTokenType == 3 || isSafe || isWalletConnect){
                     await approveOffer(offer.offerTokenAddress, offer.amount,provider,account,realTokenYamUpgradeable,setLoading,activeChain);
                 }
 
@@ -225,7 +244,7 @@ export const CreateOffer = () => {
                 };
 
                 let createOfferTx;
-                if((offerTokenType == 1 || offerTokenType == 2) && !isSafe){
+                if((offerTokenType == 1 || offerTokenType == 2) && !(isSafe || isWalletConnect)){
                     const { r, s, v} = permitAnswer;
                     createOfferTx = await realTokenYamUpgradeable.createOfferWithPermit(
                         offer.offerTokenAddress,
@@ -240,7 +259,7 @@ export const CreateOffer = () => {
                         s,
                     )
                 }else{
-                    console.log('TEST 1')
+                    console.log('TEST 4')
                     createOfferTx = await realTokenYamUpgradeable.createOffer(
                         offer.offerTokenAddress,
                         offer.buyerTokenAddress,
@@ -262,9 +281,7 @@ export const CreateOffer = () => {
                 };
 
                 showNotification(
-                    NOTIFICATIONS[NotificationsID.createOfferLoading](
-                    notificationPayload
-                    )
+                    NOTIFICATIONS[NotificationsID.createOfferLoading](notificationPayload)
                 );
 
                 createOfferTx
@@ -284,11 +301,14 @@ export const CreateOffer = () => {
                         } 
                         setLoading(false);
                     }
-                    
                 );
-
-            }else{
-
+            }catch(err){
+                console.log('Error when sending createOffer tx: ', err);
+                setLoading(false);
+            }
+        }else{
+            try{
+            
                 // WANT TO CREATE MULTI OFFERS
                 const _offerTokens = [];
                 const _buyerTokens = [];
@@ -371,12 +391,12 @@ export const CreateOffer = () => {
                     }
                     
                 );
+            }catch(err){
+                console.log('Error when sending createBatch tx: ', err);
+                setLoading(false);
             }
-
-        }catch(err){
-            console.log('Error when sending createBatch tx: ', err);
-            setLoading(false);
         }
+
     }
 
     return(
