@@ -74,8 +74,6 @@ export const buy = async (
       offer.buyerTokenAddress
     );
 
-    const buyerTokenType2 = 3;
-
     if (connector == 'gnosis-safe') {
       // TokenType = 3: ERC20 Without Permit, do Approve/buy
       const approveTx = await buyerToken.approve(
@@ -236,7 +234,11 @@ export const buy = async (
           );
         } else {
           console.log('Token is not whitelisted');
-          showNotification(NOTIFICATIONS[NotificationsID.buyOfferInvalid]());
+          showNotification(
+            NOTIFICATIONS[NotificationsID.buyOfferInvalid](
+              'Token is not whitelisted'
+            )
+          );
         }
       } catch (e) {
         const error: { code: number; message: string } = JSON.parse(
@@ -269,12 +271,9 @@ export const buy = async (
 
     if (onFinished) onFinished();
   } catch (e) {
-    const error: { code: string; message: string } = JSON.parse(
-      JSON.stringify(e)
-    );
-    console.log('Error erc20PermitSignature', e, error.code);
+    const error = JSON.stringify(e);
 
-    showNotification(NOTIFICATIONS[NotificationsID.buyOfferInvalid]());
+    showNotification(NOTIFICATIONS[NotificationsID.buyOfferInvalid](error));
     setSubmitting(false);
   }
 };
