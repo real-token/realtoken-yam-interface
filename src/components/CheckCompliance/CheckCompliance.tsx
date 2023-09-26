@@ -12,8 +12,13 @@ import { NotificationCompliance } from './Composents/NotificationCompliance';
 export const CheckCompliance = () => {
   const isMobile = useMediaQuery(`(max-width: ${em(750)})`);
   const { t } = useTranslation('notifications', { keyPrefix: 'kycCheck' });
+  const { t: tWarning } = useTranslation('notifications', {
+    keyPrefix: 'warning',
+  });
   const [isCompliant, setIsCompliant] = useState<boolean>(false);
   const [isMessageClosed, setIsMessageClosed] = useState<boolean>(false);
+  const [isMessageImportantClosed, setIsMessageImportantClosed] =
+    useState<boolean>(false);
   const complianceRegistry = useCompliance();
 
   useEffect(() => {
@@ -41,7 +46,7 @@ export const CheckCompliance = () => {
   return (
     <>
       {(isMessageClosed || isCompliant) && (
-        <Group position='center'>
+        <Group position={'center'}>
           <Notification
             icon={icon}
             color={isCompliant ? 'teal' : 'red'}
@@ -55,7 +60,6 @@ export const CheckCompliance = () => {
               right: isMobile ? '10px' : '40px',
               cursor: 'pointer',
               padding: isMobile ? '3px' : undefined,
-
               justifyContent: 'center',
               alignItems: 'center',
             }}
@@ -67,7 +71,16 @@ export const CheckCompliance = () => {
           </Notification>
         </Group>
       )}
-
+      {!isMessageImportantClosed && isCompliant && (
+        <Notification
+          title={tWarning('title')}
+          color={'yellow'}
+          onClose={() => setIsMessageImportantClosed(true)}
+          sx={{ marginBottom: '10px' }}
+        >
+          {tWarning('message')}
+        </Notification>
+      )}
       {!isCompliant && (
         <NotificationCompliance
           isNotificationClosed={isMessageClosed}

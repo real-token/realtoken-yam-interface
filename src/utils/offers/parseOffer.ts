@@ -6,6 +6,7 @@ import { PropertiesToken } from 'src/types';
 import { DataRealtokenType } from 'src/types/offer/DataRealTokenType';
 import { Offer } from 'src/types/offer/Offer';
 import { OFFER_TYPE } from 'src/types/offer/OfferType';
+import { OFFER_SELLER } from 'src/types/offer/OfferType';
 import { Price } from 'src/types/price';
 
 import { Offer as OfferGraphQl } from '../../../.graphclient/index';
@@ -26,6 +27,10 @@ export const getOfferType = (
 
   return OFFER_TYPE.EXCHANGE;
 };
+
+const CSM_ADDRESSES = ['0x8b998419e00be0705b3a4c6b873c1bb4e0620874'];
+
+console.log('CSM_ADDRESSES', CSM_ADDRESSES);
 
 export const parseOffer = (
   provider: Web3Provider,
@@ -97,6 +102,11 @@ export const parseOffer = (
         buyerTokenDecimals: offer.buyerToken.decimals?.toString() ?? '',
         buyerTokenType: offer.buyerToken.tokenType ?? 0,
         sellerAddress: (offer.seller.address as string)?.toLowerCase(),
+        sellerName: CSM_ADDRESSES.includes(
+          (offer.seller.address as string)?.toLowerCase()
+        )
+          ? OFFER_SELLER.CSM
+          : OFFER_SELLER.UNKNOWN, //TODO Cyrille
         buyerAddress: (offer.buyer?.address as string)?.toLowerCase(),
         price: offer.price.price.toString(),
         amount:

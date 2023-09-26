@@ -180,6 +180,12 @@ export const GridPane: FC<GridPaneProps> = ({ offer }) => {
           >
             <Flex direction={'column'} mb={10} className={classes.data}>
               <Flex direction={'column'} fz={'sm'} sx={{ marginBottom: '6px' }}>
+                <Text fz={'sm'}>{t('sellerName')}</Text>
+                <Text fw={700} fz={'sm'} truncate={true}>
+                  {t(offer.sellerName)}
+                </Text>
+              </Flex>
+              <Flex direction={'column'} fz={'sm'} sx={{ marginBottom: '6px' }}>
                 <Text fz={'sm'}>{t('sellerAddress')}</Text>
                 <Text fw={700} fz={'sm'} truncate={true}>
                   {offer.sellerAddress}

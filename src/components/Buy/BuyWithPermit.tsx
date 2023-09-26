@@ -43,6 +43,7 @@ import { useWalletERC20Balance } from 'src/hooks/useWalletERC20Balance';
 import { providerAtom } from 'src/states';
 import { buyOfferClose } from 'src/store/features/buyOffer/buyOfferSlice';
 import { OFFER_TYPE, Offer } from 'src/types/offer';
+import { OFFER_SELLER } from 'src/types/offer/OfferType';
 import { getContract } from 'src/utils';
 import { cleanNumber } from 'src/utils/number';
 import { calcRem } from 'src/utils/style';
@@ -148,6 +149,7 @@ export const BuyWithPermit: FC<BuyWithPermitProps> = ({
   const { t } = useTranslation('modals', { keyPrefix: 'buy' });
   const { t: t1 } = useTranslation('modals', { keyPrefix: 'sell' });
   const { t: t2 } = useTranslation('modals', { keyPrefix: 'offer' });
+  const { t: t3 } = useTranslation('buy', { keyPrefix: 'table' });
 
   const { balance, WalletERC20Balance } =
     useWalletERC20Balance(buyerTokenAddress);
@@ -298,10 +300,24 @@ export const BuyWithPermit: FC<BuyWithPermitProps> = ({
                 </Text>
                 <Text className={classes.textValue}>{offerTokenName}</Text>
               </Flex>
-              <Flex direction={'row'} gap={16}>
-                <Text className={classes.textHeader}>{t('sellerAddress')}</Text>
-                <Text className={classes.textValue}>{offer.sellerAddress}</Text>
-              </Flex>
+              {
+                <Flex direction={'row'} gap={16}>
+                  <Text className={classes.textHeader}>{t3('sellerName')}</Text>
+                  <Text className={classes.textValue}>
+                    {t3(offer.sellerName)}
+                  </Text>
+                </Flex>
+              }
+              {
+                <Flex direction={'row'} gap={16}>
+                  <Text className={classes.textHeader}>
+                    {t('sellerAddress')}
+                  </Text>
+                  <Text className={classes.textValue}>
+                    {offer.sellerAddress}
+                  </Text>
+                </Flex>
+              }
               <Flex direction={'row'} gap={16}>
                 <Text className={classes.textHeader}>
                   {offer.type ? amountTranslation.get(offer.type) : ''}

@@ -11,6 +11,7 @@ export type Offer = {
   buyerTokenDecimals: string;
   buyerTokenType: number;
   sellerAddress: string;
+  sellerName: string;
   buyerAddress: string;
   price: string;
   amount: string;
@@ -45,6 +46,7 @@ export const DEFAULT_OFFER: Offer = {
   buyerTokenDecimals: "",
   buyerTokenType: 0,
   sellerAddress: "",
+  sellerName: "",
   buyerAddress: "",
   price: "",
   amount: "",

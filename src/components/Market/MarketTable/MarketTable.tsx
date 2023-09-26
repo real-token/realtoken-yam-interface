@@ -1,4 +1,6 @@
 import { FC, useEffect, useState } from 'react';
+import React from 'react';
+
 import { MantineSize } from '@mantine/core';
 import {
   ExpandedState,
@@ -6,27 +8,31 @@ import {
   SortingState,
   getCoreRowModel,
   getExpandedRowModel,
-  getPaginationRowModel,
   getFilteredRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+
+import { useAtom } from 'jotai';
+
+import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
+import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
+import { useAppSelector } from 'src/hooks/react-hooks';
+import {
+  OFFERS_TYPE,
+  useRightTableColumn,
+} from 'src/hooks/useRightTableColumns';
+import { nameFilterValueAtom } from 'src/states';
+import { selectPublicOffers } from 'src/store/features/interface/interfaceSelector';
+
 import { Table } from '../../Table';
 import { MarketSubRow } from '../MarketSubRow';
-import { useAtom } from 'jotai';
-import { nameFilterValueAtom } from 'src/states';
-import React from 'react';
-import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
-import { OFFERS_TYPE, useRightTableColumn } from 'src/hooks/useRightTableColumns';
-import { selectPublicOffers } from 'src/store/features/interface/interfaceSelector';
-import { useAppSelector } from 'src/hooks/react-hooks';
-import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
 
 export const MarketTable: FC = () => {
-
   const { refreshOffers, offersIsLoading } = useRefreshOffers(false);
-  const [nameFilterValue,setNamefilterValue] = useAtom(nameFilterValueAtom);
-  
+  const [nameFilterValue, setNamefilterValue] = useAtom(nameFilterValueAtom);
+
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'offer-id', desc: false },
   ]);
@@ -38,35 +44,37 @@ export const MarketTable: FC = () => {
 
   // Sort offer by best price
   useEffect(() => {
-    if(nameFilterValue !== ""){
+    if (nameFilterValue !== '') {
       setSorting([
-        { id: "buyerTokenName", desc: true },
-        { id: "price", desc: false }
-      ])
-    }else{
-      setSorting([{ id: 'offer-id', desc: false }])
+        { id: 'buyerTokenName', desc: true },
+        { id: 'price', desc: false },
+      ]);
+    } else {
+      setSorting([{ id: 'offer-id', desc: false }]);
     }
-  },[nameFilterValue])
+  }, [nameFilterValue]);
 
   const publicOffers = useAppSelector(selectPublicOffers);
   const { offers: data } = useTypedOffers(publicOffers);
   const columns = useRightTableColumn(OFFERS_TYPE.PUBLIC);
 
+  console.log('publicOffers', JSON.stringify(publicOffers, null, 4));
+
   const table = useReactTable({
     data: data,
     columns: columns,
-    state: { 
-      sorting: sorting, 
-      pagination: pagination, 
-      expanded: expanded, 
-      globalFilter: nameFilterValue, 
+    state: {
+      sorting: sorting,
+      pagination: pagination,
+      expanded: expanded,
+      globalFilter: nameFilterValue,
     },
     //Trick to convert every value to string. Needed for comparison
     globalFilterFn: (row, columnId, filterValue) => {
       const value = row.getValue(columnId);
-      if(value == undefined) return false;
+      if (value == undefined) return false;
       const safeValue: string = (() => {
-        return typeof value === 'number' ? String(value) : value as string;
+        return typeof value === 'number' ? String(value) : (value as string);
       })();
       return safeValue.toLowerCase().includes(filterValue.toLowerCase());
     },
@@ -96,7 +104,10 @@ export const MarketTable: FC = () => {
         }),
       }}
       table={table}
-      tablecaptionOptions={{ refreshState: [offersIsLoading,refreshOffers], visible: true }}
+      tablecaptionOptions={{
+        refreshState: [offersIsLoading, refreshOffers],
+        visible: true,
+      }}
       TableSubRow={MarketSubRow}
     />
   );
