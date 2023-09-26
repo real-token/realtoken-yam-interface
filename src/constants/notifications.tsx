@@ -1,6 +1,6 @@
 import { Translation } from 'react-i18next';
 
-import { Anchor, Stack, Text } from '@mantine/core';
+import { Accordion, Anchor, Stack, Text } from '@mantine/core';
 import { NextLink } from '@mantine/next';
 import { NotificationProps } from '@mantine/notifications';
 import { IconCheck, IconX } from '@tabler/icons';
@@ -577,7 +577,13 @@ export const NOTIFICATIONS = asConst<
       <Translation ns={'notifications'}>
         {(t) => (
           <Stack spacing={1}>
-            {`${t('buyOfferInvalid.message')}` + ' ' + error}
+            {`${t('buyOfferInvalid.message')}`}
+            <Accordion>
+              <Accordion.Item value={'detail'}>
+                <Accordion.Control>{'Detail'}</Accordion.Control>
+                <Accordion.Panel>{error}</Accordion.Panel>
+              </Accordion.Item>
+            </Accordion>
           </Stack>
         )}
       </Translation>
