@@ -5,7 +5,6 @@ import { ActionIcon, Group } from '@mantine/core';
 import { IconShoppingCart } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
 
-import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 import { useAppDispatch } from 'src/hooks/react-hooks';
 import { useContextModals } from 'src/hooks/useModals';
 import { buyOfferOpen } from 'src/store/features/buyOffer/buyOfferSlice';
@@ -29,14 +28,14 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
 
   const offersIsLoading = useSelector(selectOffersIsLoading);
 
-  const { refreshOffers } = useRefreshOffers(false);
+  //const { refreshOffers } = useRefreshOffers(false);
 
   const onOpenBuyModal = useCallback(
     (offer: Offer) => {
       dispatch({ type: buyOfferOpen, payload: offer });
       //modals.openBuyModal(offer, refreshOffers);
     },
-    [modals, refreshOffers]
+    [dispatch]
   );
 
   const onOpenWalletModal = useCallback(() => {

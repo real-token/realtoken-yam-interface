@@ -58,7 +58,7 @@ export const MarketTable: FC = () => {
   const { offers: data } = useTypedOffers(publicOffers);
   const columns = useRightTableColumn(OFFERS_TYPE.PUBLIC);
 
-  console.log('publicOffers', JSON.stringify(publicOffers, null, 4));
+  //console.log('publicOffers', JSON.stringify(publicOffers, null, 4));
 
   const table = useReactTable({
     data: data,
