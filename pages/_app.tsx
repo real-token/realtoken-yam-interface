@@ -16,6 +16,7 @@ import {
   Web3Providers, 
   Websites, 
   getConnectors, 
+  getReadOnlyConnector, 
   getWalletConnectV2, 
   gnosisHooks, 
   gnosisSafe, 
@@ -44,12 +45,14 @@ const walletConnectKey = process.env.NEXT_PUBLIC_WALLET_CONNECT_KEY ?? "";
 console.log("key: ", walletConnectKey)
 
 const [walletConnectV2, walletConnectV2Hooks] = getWalletConnectV2<CustomChain>(customChains,env, walletConnectKey, showAllNetworks);
+const [readOnly, readOnlyHooks] = getReadOnlyConnector(customChains);
 
-const libraryConnectors = getConnectors(
-  [metaMask, metaMaskHooks],
-  [gnosisSafe, gnosisHooks],
-  [walletConnectV2, walletConnectV2Hooks]
-);
+const libraryConnectors = getConnectors({
+  metamask: [metaMask, metaMaskHooks],
+  gnosisSafe: [gnosisSafe, gnosisHooks],
+  walletConnectV2: [walletConnectV2, walletConnectV2Hooks],
+  readOnly: [readOnly, readOnlyHooks]
+});
 
 type AppProps = NextAppProps & { colorScheme: ColorScheme; locale: string };
 
@@ -71,7 +74,6 @@ const App = ({ Component, pageProps }: AppProps) => {
                       head={<Head title='Realtoken YAM (You And Me)' description='Realtoken YAM (You And Me)'/>}
                       headerNav={<HeaderNav/>}
                     >
-                      
                       <Component {...pageProps} />
                     </Layout>
                 </MantineProviders>
