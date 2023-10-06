@@ -29,6 +29,7 @@
     "@tanstack/react-table": "^8.7.9",
     "@types/react-redux": "^7.1.24",
     "@types/redux": "^3.6.0",
+    "axios": "^1.5.1",
     "bignumber.js": "^9.0.2",
     "clsx": "^1.2.1",
     "cookies-next": "^2.0.5",

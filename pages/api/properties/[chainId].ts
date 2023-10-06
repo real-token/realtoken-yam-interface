@@ -1,24 +1,29 @@
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import { APIPropertiesToken, PropertiesToken, ShortProperty } from "src/types";
 import { getWhitelistedProperties } from "src/utils/properties";
+import axios from "axios";
 
 const getTokenFromCommunityAPI = new Promise<APIPropertiesToken[]>( async (resolve, reject) => {
     try{
-        const response = await fetch("https://api.realt.community/v1/token",{
-            method: "GET",
+        // const response = await fetch("https://api.realt.community/v1/token",{
+        //     method: "GET",
+        //     headers: {
+        //         "X-AUTH-REALT-TOKEN": process.env.COMMUNITY_API_KEY ?? ""
+        //     },
+        //     cache: "no-cache"
+        // });
+
+        const response = await axios.get<APIPropertiesToken[]>("https://api.realt.community/v1/token", {
             headers: {
                 "X-AUTH-REALT-TOKEN": process.env.COMMUNITY_API_KEY ?? ""
-            },
-            cache: "no-cache"
+            }
         });
 
-        if(response.ok){
-            const tokens: APIPropertiesToken[] = await response.json();
-            resolve(tokens);
-        }else{
-            reject("Failed to fetch properties from community")
-        } 
+        const tokens: APIPropertiesToken[] = response.data;
+        resolve(tokens);
+
     }catch(err){
+        console.log("Failed to fetch properties from community")
         reject(err);
     }
 }) 
@@ -220,7 +225,8 @@ const handler: NextApiHandler = async (req: NextApiRequest, res: NextApiResponse
         const tokens = getTokens(parseInt(chainId), communityApiToken, wlTokens);
 
         return res
-            .setHeader('cache-control', 'public, s-maxage=1200, stale-while-revalidate=600')
+            // .setHeader('cache-control', 'public, s-maxage=1200, stale-while-revalidate=600')
+            .setHeader('cache-control', 'no-store, max-age=0')
             .status(200)
             .json(tokens);
   
