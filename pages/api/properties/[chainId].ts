@@ -5,13 +5,6 @@ import axios from "axios";
 
 const getTokenFromCommunityAPI = new Promise<APIPropertiesToken[]>( async (resolve, reject) => {
     try{
-        // const response = await fetch("https://api.realt.community/v1/token",{
-        //     method: "GET",
-        //     headers: {
-        //         "X-AUTH-REALT-TOKEN": process.env.COMMUNITY_API_KEY ?? ""
-        //     },
-        //     cache: "no-cache"
-        // });
 
         const response = await axios.get<APIPropertiesToken[]>("https://api.realt.community/v1/token", {
             headers: {
