@@ -18,6 +18,7 @@ export type Chain = Omit<RealtChains,'blockExplorerUrl'> & {
   rpcUrl: string;
   blockExplorerUrl: string;
   contracts: Contracts;
+  graphPrefix: string;
 };
 
 export const CHAINS: Record<ChainsID, Chain> = {
@@ -29,6 +30,7 @@ export const CHAINS: Record<ChainsID, Chain> = {
     rpcUrl: 'https://rpc.ankr.com/gnosis',
     blockExplorerUrl: 'https://gnosisscan.io/',
     isTestnet: false,
+    graphPrefix: "yamGnosis",
     contracts: {
       [ContractsID.realTokenYamUpgradeable]: {
         abi: realTokenYamUpgradeableABI,
@@ -45,6 +47,7 @@ export const CHAINS: Record<ChainsID, Chain> = {
     rpcUrl: 'https://rpc.ankr.com/eth',
     blockExplorerUrl: 'https://etherscan.io/',
     isTestnet: false,
+    graphPrefix: "yamEth",
     contracts: {
       [ContractsID.realTokenYamUpgradeable]: {
         abi: realTokenYamUpgradeableABI,
@@ -62,6 +65,8 @@ export const CHAINS: Record<ChainsID, Chain> = {
     rpcUrl: 'https://rpc.ankr.com/eth_goerli',
     blockExplorerUrl: 'https://goerli.etherscan.io/',
     isTestnet: true,
+    // TODO: replace
+    graphPrefix: "",
     contracts: {
       [ContractsID.realTokenYamUpgradeable]: {
         abi: realTokenYamUpgradeableABI,
