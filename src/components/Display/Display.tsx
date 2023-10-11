@@ -17,6 +17,7 @@ import { Displays } from 'src/types/Displays';
 import { BuyWithPermit } from '../Buy/BuyWithPermit';
 import { MarketTable } from '../Market';
 import { MarketGrid } from '../Market/MarketGrid/MarketGrid';
+import { OfferList } from '../Market/MarketList/MarketList';
 import { MarketSort } from '../Market/MarketSort/MarketSort';
 
 interface Display {
@@ -87,6 +88,7 @@ const Display: FC = () => {
               />
             )}
           </Flex>
+          <OfferList></OfferList>
           {getDisplay() ? getDisplay()?.component : undefined}
         </>
       )}

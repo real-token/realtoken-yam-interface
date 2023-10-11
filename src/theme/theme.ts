@@ -15,7 +15,7 @@ export const theme: MantineThemeOverride = {
       '#B7CC41',
     ],
   },
-  white: '#F3F3F3',
+  white: '#FAFAFA',
   primaryColor: 'brand',
   defaultGradient: { deg: 90, from: '#BBCB40', to: '#88992A' },
   defaultRadius: 'md',
