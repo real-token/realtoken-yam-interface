@@ -24,26 +24,37 @@
     "onMarketSince": "On market since"
   },
   "list": {
-    "offerId": "Offer ID",
-    "offerTokenAddress": "Sell Token Address",
-    "offerTokenName": "Offer Token",
-    "buyerTokenAddress": "Buyer Token Address",
-    "buyerTokenName": "Buyer Token",
-    "sellerAddress": "Seller Address",
-    "sellerName": "Seller",
-    "sellDate": "Sell Date",
-    "UNKNOWN":"unknown",
+    "offerId": "ID de l'offre",
+    "offerTokenName": "En vente",
+
+    "buyerAddress": "Buyer Token Address",
+    "buyerName": "Acheteur",
+    
+    "sellerAddress": "Adresse du vendeur",
+    "sellerName": "Vendeur",
+
+    "sellDate": "Date de vente",
+    "UNKNOWN":"inconnu",
     "CSM":"✅ CSM",
-    "buyerPrice": "Buyer price",
-    "buyerAmount": "Purchase request",
-    "sellerPrice": "Seller price",
-    "sellerAmount": "For Sale",
-    "purchaseToken": "Sell for",
+
+    "buyerPrice": "Prix acheteur",
+    "buyerAmount": "Achat demandé",
+    "buyForToken": "Achete contre",
+
+    "sellerPrice": "Prix vendeur",
+    "sellerAmount": "En vente",
+    "sellForToken": "Vend contre",
+
+    "exchangePrice": "Prix d'échange",
+    "exchangeAmount": "A échanger",
+    "exchangeForToken": "Echange contre",
+
     "walletBalance": "Wallet balance",
-    "buy": "Buy",
-    "sell": "Sell",
-    "exchange": "Exchange",
-    "onMarketSince": "On market since"
+    "buy": "Achat",
+    "sell": "Vente",
+    "exchange": "Echange",
+
+    "onMarketSince": "Date de création"
   },
   "grid": {
     "buy": "Buy",

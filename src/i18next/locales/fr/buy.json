@@ -26,10 +26,13 @@
   "list": {
     "offerId": "ID de l'offre",
     "offerTokenName": "En vente",
-    "buyerTokenAddress": "Buyer Token Address",
-    "buyerTokenName": "Jeton d'achat",
+
+    "buyerAddress": "Buyer Token Address",
+    "buyerName": "Acheteur",
+    
     "sellerAddress": "Adresse du vendeur",
     "sellerName": "Vendeur",
+
     "sellDate": "Date de vente",
     "UNKNOWN":"inconnu",
     "CSM":"✅ CSM",
@@ -42,10 +45,15 @@
     "sellerAmount": "En vente",
     "sellForToken": "Vend contre",
 
+    "exchangePrice": "Prix d'échange",
+    "exchangeAmount": "A échanger",
+    "exchangeForToken": "Echange contre",
+
     "walletBalance": "Wallet balance",
     "buy": "Achat",
     "sell": "Vente",
     "exchange": "Echange",
+
     "onMarketSince": "Date de création"
   },
   "grid": {
