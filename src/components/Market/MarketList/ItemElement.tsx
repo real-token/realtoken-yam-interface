@@ -1,4 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   Avatar,
@@ -39,7 +40,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`);
   const [image, setImage] = useState<string>('');
   const { getPropertyToken, propertiesIsloading } = usePropertiesToken();
-
+  const { t } = useTranslation('buy', { keyPrefix: 'list' });
   useEffect(() => {
     if (!offer || propertiesIsloading) return undefined;
 
@@ -126,6 +127,27 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
       </Text>
     ));
 
+  const badgeColor =
+    offer.type === OfferType.Buy
+      ? 'green'
+      : offer.type === OfferType.Sell
+      ? 'red'
+      : 'orange';
+
+  const siteToken =
+    offer.type === OfferType.Buy
+      ? offer.purchaseToken
+      : offer.type === OfferType.Sell
+      ? offer.forSaleToken
+      : offer.forSaleToken;
+
+  const tradeToken =
+    offer.type === OfferType.Buy
+      ? offer.forSaleToken
+      : offer.type === OfferType.Sell
+      ? offer.purchaseToken
+      : offer.purchaseToken;
+
   return (
     <Card withBorder={true} radius={0} style={lastCardStyle}>
       <Grid columns={20}>
@@ -138,7 +160,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             }}
           >
             <Badge
-              color={'red'}
+              color={badgeColor}
               radius={0}
               variant={'filled'}
               style={{
@@ -148,7 +170,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
                 borderBottomRightRadius: '10px',
               }}
             >
-              {offer.type}
+              {t(offer.type)}
             </Badge>
           </div>
           <Group
@@ -158,7 +180,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             <Stack spacing={5}>
               <Group sx={{ marginTop: '10px' }}>
                 <Text fz={'md'} fw={'bold'}>
-                  {offer.forSaleToken}
+                  {siteToken}
                 </Text>
               </Group>
               <Group position={'left'}>
@@ -209,7 +231,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             paddingBottom: isMobile ? 0 : undefined,
           }}
         >
-          {!isMobile && stackPurchaseToken()}
+          {!isMobile && stackTradeToken()}
         </Grid.Col>
         <Grid.Col
           xl={3}
@@ -235,7 +257,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             <Stack>
               <Group position={'apart'}>
                 {stackSeller()}
-                {stackPurchaseToken(true)}
+                {stackTradeToken(true)}
               </Group>
               <Group position={'apart'}>
                 {stackTokenPrice()}
@@ -262,7 +284,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             ta={textAlignRight ? 'right' : 'left'}
             color={'dimmed'}
           >
-            {columnLabels[Columns.quantityAvailable]}
+            {t(columnLabels[Columns.quantityAvailable])}
           </Text>
         )}
         <div>
@@ -288,7 +310,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
     );
   }
 
-  function stackPurchaseToken(textAlignRight = false) {
+  function stackTradeToken(textAlignRight = false) {
     return (
       <Stack
         h={'100%'}
@@ -302,7 +324,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             ta={textAlignRight ? 'right' : 'left'}
             color={'dimmed'}
           >
-            {columnLabels[Columns.purchaseToken]}
+            {t(columnLabels[Columns.purchaseToken])}
           </Text>
         )}
         <div>
@@ -311,7 +333,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             ta={isLarge || textAlignRight ? 'right' : 'left'}
             fw={500}
           >
-            {offer.purchaseToken}
+            {tradeToken}
           </Text>
           <Text
             fz={'xs'}
@@ -335,7 +357,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
       >
         {!isLarge && (
           <Text fz={'md'} ta={'left'} color={'dimmed'}>
-            {columnLabels[Columns.requestedSellingPrice]}
+            {t(columnLabels[Columns.requestedSellingPrice])}
           </Text>
         )}
         <div>
@@ -370,12 +392,12 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
       >
         {!isLarge && (
           <Text fz={'md'} ta={'left'} color={'dimmed'}>
-            {columnLabels[Columns.sellerName]}
+            {t(columnLabels[Columns.sellerName])}
           </Text>
         )}
         <div>
           <Text fz={'md'} ta={isLarge ? 'right' : 'left'}>
-            {offer.sellerName}
+            {t(offer.sellerName)}
           </Text>
           <Text
             fz={isLarge ? 'xs' : 'xs'}

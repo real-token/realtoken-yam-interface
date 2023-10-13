@@ -8,7 +8,7 @@
     "buyerTokenAddress": "Adresse du jeton d'achat",
     "buyerTokenName": "Jeton d'achat",
     "sellerAddress": "Adresse du vendeur",
-    "sellerName": "Nom du vendeur",
+    "sellerName": "Vendeur",
     "sellDate": "Date de vente",
     "UNKNOWN":"inconnu",
     "CSM":"✅ CSM",
@@ -21,6 +21,31 @@
     "actionDelete": "Supprimer",
     "buy": "Acheter",
     "privateTexte": "privée",
+    "onMarketSince": "Date de création"
+  },
+  "list": {
+    "offerId": "ID de l'offre",
+    "offerTokenName": "En vente",
+    "buyerTokenAddress": "Buyer Token Address",
+    "buyerTokenName": "Jeton d'achat",
+    "sellerAddress": "Adresse du vendeur",
+    "sellerName": "Vendeur",
+    "sellDate": "Date de vente",
+    "UNKNOWN":"inconnu",
+    "CSM":"✅ CSM",
+
+    "buyerPrice": "Prix acheteur",
+    "buyerAmount": "Achat demandé",
+    "buyForToken": "Achete contre",
+
+    "sellerPrice": "Prix vendeur",
+    "sellerAmount": "En vente",
+    "sellForToken": "Vend contre",
+
+    "walletBalance": "Wallet balance",
+    "buy": "Achat",
+    "sell": "Vente",
+    "exchange": "Echange",
     "onMarketSince": "Date de création"
   },
   "grid": {

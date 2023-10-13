@@ -35,14 +35,6 @@ export enum Arrow {
   Down = 2,
 }
 
-export enum HeaderElementId {
-  Quantity = 'quantity',
-  Seller = 'seller',
-  UnitPrice = 'unit_price',
-  ElectricityCost = 'electricity_cost',
-  BuyWith = 'buy_with',
-}
-
 export function mapOfferToOfferData(offer: Offer): OfferData {
   return {
     id: offer.offerId,
@@ -61,7 +53,12 @@ export function mapOfferToOfferData(offer: Offer): OfferData {
       ? parseFloat(offer.balanceWallet)
       : undefined,
     image: '', // Vous devrez spécifier l'image appropriée ici
-    type: OfferType.Sell,
+    type:
+      offer.offerTokenType === 1
+        ? OfferType.Sell
+        : offer.offerTokenType === 2
+        ? OfferType.Buy
+        : OfferType.Exchange,
   };
 }
 
@@ -79,8 +76,8 @@ export enum Columns {
 }
 
 export const columnLabels: { [key: string]: string } = {
-  sellerName: 'Seller',
-  requestedSellingPrice: 'Unit Price',
-  purchaseToken: 'Buy with',
-  quantityAvailable: 'For Sale',
+  sellerName: 'sellerName',
+  requestedSellingPrice: 'sellerPrice',
+  purchaseToken: 'purchaseToken',
+  quantityAvailable: 'sellerAmount',
 };

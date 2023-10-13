@@ -1,4 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { VariableSizeList as List } from 'react-window';
 
 import {
@@ -20,7 +21,6 @@ import { HeaderElement } from './HeaderElement';
 import { ItemElement } from './ItemElement';
 import {
   Columns,
-  HeaderElementId,
   MaxHeight,
   OfferData,
   SortDirection,
@@ -41,8 +41,9 @@ export const MarketList: FC = () => {
     mapOfferToOfferData(offer)
   );
 
-  console.log('OFFERS', offers.length, offersData.length);
-  console.log('OFFERS', JSON.stringify(offersData, null, 4));
+  console.log('OFFERS', JSON.stringify(offers, null, 4));
+
+  const { t } = useTranslation('buy', { keyPrefix: 'list' });
 
   const [filterText, setFilterText] = useState('');
   const [sortedOffers, setSortedOffers] = useState(
@@ -55,9 +56,7 @@ export const MarketList: FC = () => {
     setSortedOffers(offersData.filter(filterByText(filterText)));
   }, [offers, filterText]);
 
-  const [selectedHeader, setSelectedHeader] = useState<HeaderElementId | null>(
-    null
-  );
+  const [selectedHeader, setSelectedHeader] = useState<Columns | null>(null);
 
   const sortOffersByColumn = (
     column: keyof OfferData,
@@ -99,18 +98,15 @@ export const MarketList: FC = () => {
   const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedColumn = event.target.value;
 
-    // Mettez à jour la valeur de sortedColumn
+    // Update the value of sortedColumn
     setSortedColumn(selectedColumn);
 
-    // Appelez la fonction de tri en fonction de la colonne sélectionnée
-    if (selectedColumn === columnLabels[Columns.sellerName]) {
-      sortOffersByColumn(Columns.sellerName, SortDirection.Asc);
-    } else if (selectedColumn === columnLabels[Columns.requestedSellingPrice]) {
-      sortOffersByColumn(Columns.requestedSellingPrice, SortDirection.Asc);
-    } else if (selectedColumn === columnLabels[Columns.purchaseToken]) {
-      sortOffersByColumn(Columns.purchaseToken, SortDirection.Asc);
-    } else if (selectedColumn === columnLabels[Columns.quantityAvailable]) {
-      sortOffersByColumn(Columns.quantityAvailable, SortDirection.Asc);
+    // Call the sort function based on the selected column
+    for (const key in columnLabels) {
+      if (t(columnLabels[key]) === selectedColumn) {
+        sortOffersByColumn(key as keyof OfferData, SortDirection.Asc);
+        break;
+      }
     }
   };
 
@@ -142,7 +138,7 @@ export const MarketList: FC = () => {
         {!isLarge && (
           <Group position={'apart'}>
             <TextInput
-              placeholder={'Search for offers...'}
+              placeholder={t('Search for offers...')}
               value={filterText}
               onChange={handleFilterChange}
             />
@@ -150,13 +146,13 @@ export const MarketList: FC = () => {
               value={sortedColumn}
               onChange={handleSortChange}
               iconWidth={70}
-              placeholder={'sort'}
-              icon={'Sort by: '}
+              placeholder={t('Sort by: ')}
+              icon={t('Sort by: ')}
               data={[
-                columnLabels[Columns.sellerName],
-                columnLabels[Columns.requestedSellingPrice],
-                columnLabels[Columns.purchaseToken],
-                columnLabels[Columns.quantityAvailable],
+                t(columnLabels[Columns.sellerName]),
+                t(columnLabels[Columns.requestedSellingPrice]),
+                t(columnLabels[Columns.purchaseToken]),
+                t(columnLabels[Columns.quantityAvailable]),
               ]}
             />
           </Group>
@@ -165,7 +161,7 @@ export const MarketList: FC = () => {
           <Grid columns={20}>
             <Grid.Col xl={4} lg={5}>
               <TextInput
-                placeholder={'Search for offers...'}
+                placeholder={t('Search for offers...')}
                 value={filterText}
                 onChange={handleFilterChange}
               />
@@ -173,57 +169,20 @@ export const MarketList: FC = () => {
             <Grid.Col xl={4} lg={4}>
               <div>{''}</div>
             </Grid.Col>
-            <Grid.Col xl={3} lg={2}>
-              <HeaderElement
-                label={columnLabels[Columns.sellerName]}
-                sortOffersByColumn={(sortDirection: SortDirection) =>
-                  sortOffersByColumn(Columns.sellerName, sortDirection)
-                }
-                selected={selectedHeader === HeaderElementId.Seller}
-                setSelectedHeader={() =>
-                  setSelectedHeader(HeaderElementId.Seller)
-                }
-              ></HeaderElement>
-            </Grid.Col>
-            <Grid.Col xl={3} lg={3}>
-              <HeaderElement
-                label={columnLabels[Columns.requestedSellingPrice]}
-                sortOffersByColumn={(sortDirection: SortDirection) =>
-                  sortOffersByColumn(
-                    Columns.requestedSellingPrice,
-                    sortDirection
-                  )
-                }
-                selected={selectedHeader === HeaderElementId.UnitPrice}
-                setSelectedHeader={() =>
-                  setSelectedHeader(HeaderElementId.UnitPrice)
-                }
-              ></HeaderElement>
-            </Grid.Col>
-            <Grid.Col xl={3} lg={3}>
-              <HeaderElement
-                label={columnLabels[Columns.purchaseToken]}
-                sortOffersByColumn={(sortDirection: SortDirection) =>
-                  sortOffersByColumn(Columns.purchaseToken, sortDirection)
-                }
-                selected={selectedHeader === HeaderElementId.BuyWith}
-                setSelectedHeader={() =>
-                  setSelectedHeader(HeaderElementId.BuyWith)
-                }
-              ></HeaderElement>
-            </Grid.Col>
-            <Grid.Col xl={3} lg={3}>
-              <HeaderElement
-                label={columnLabels[Columns.quantityAvailable]}
-                sortOffersByColumn={(sortDirection: SortDirection) =>
-                  sortOffersByColumn(Columns.quantityAvailable, sortDirection)
-                }
-                selected={selectedHeader === HeaderElementId.Quantity}
-                setSelectedHeader={() =>
-                  setSelectedHeader(HeaderElementId.Quantity)
-                }
-              ></HeaderElement>
-            </Grid.Col>
+            {Object.values(Columns).map((column, index) => (
+              <Grid.Col key={index} xl={3} lg={index === 0 ? 2 : 3}>
+                <HeaderElement
+                  label={t(columnLabels[column])}
+                  sortOffersByColumn={(sortDirection: SortDirection) =>
+                    sortOffersByColumn(column, sortDirection)
+                  }
+                  selected={
+                    selectedHeader !== null && selectedHeader === column
+                  }
+                  setSelectedHeader={() => setSelectedHeader(column)}
+                ></HeaderElement>
+              </Grid.Col>
+            ))}
           </Grid>
         )}
       </Card>
