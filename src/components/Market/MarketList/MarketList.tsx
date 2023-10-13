@@ -1,78 +1,87 @@
-import React, { useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { VariableSizeList as List } from 'react-window';
 
 import {
-  Avatar,
-  Badge,
   Card,
   Container,
   Grid,
   Group,
-  Stack,
-  Text,
+  NativeSelect,
   TextInput,
   useMantineTheme,
 } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 
-const offersData = [
-  {
-    id: 1,
-    productName: 'Product A',
-    purchaseToken: 'Token 123',
-    launchDate: '2023-10-10',
-    sellerName: 'Seller 1',
-    offerLocation: 'Location 1',
-    electricityCost: 20,
-    initialSellingPrice: 100,
-    requestedSellingPrice: 80,
-    quantityAvailable: 50,
-    image: 'https://example.com/productA.jpg', // URL de l'image
-  },
-  {
-    id: 2,
-    productName: 'Product B',
-    purchaseToken: 'Token 456',
-    launchDate: '2023-10-11',
-    sellerName: 'Seller 2',
-    offerLocation: 'Location 2',
-    electricityCost: 15,
-    initialSellingPrice: 90,
-    requestedSellingPrice: 70,
-    quantityAvailable: 30,
-    image: 'https://example.com/productB.jpg', // URL de l'image
-  },
-  {
-    id: 3,
-    productName: 'Product C',
-    purchaseToken: 'Token 789',
-    launchDate: '2023-10-12',
-    sellerName: 'Seller 3',
-    offerLocation: 'Location 3',
-    electricityCost: 25,
-    initialSellingPrice: 110,
-    requestedSellingPrice: 95,
-    quantityAvailable: 40,
-    image: 'https://example.com/productC.jpg', // URL de l'image
-  },
-  // Ajoutez plus d'offres si nécessaire
-];
+import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
+import { useAppSelector } from 'src/hooks/react-hooks';
+import { selectPublicOffers } from 'src/store/features/interface/interfaceSelector';
 
-const avatarStyle = {
-  width: '80px',
-  height: '80px',
-  marginRight: '20px',
-};
+import { HeaderElement } from './HeaderElement';
+import { ItemElement } from './ItemElement';
+import {
+  Columns,
+  HeaderElementId,
+  MaxHeight,
+  OfferData,
+  SortDirection,
+  columnLabels,
+  mapOfferToOfferData,
+} from './Types';
 
-// ...
-export const OfferList = () => {
+const ITEM_HEIGHT_MIN = 100;
+
+export const MarketList: FC = () => {
   const theme = useMantineTheme();
-  const [filterText, setFilterText] = useState('');
-  const [sortedOffers, setSortedOffers] = useState(offersData); // State pour les offres triées
+  const [sortedColumn, setSortedColumn] = useState('');
+  const isLarge = !useMediaQuery(`(max-width: ${theme.breakpoints.lg})`);
+  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`);
+  const publicOffers = useAppSelector(selectPublicOffers);
+  const { offers } = useTypedOffers(publicOffers);
+  const offersData: OfferData[] = offers.map((offer) =>
+    mapOfferToOfferData(offer)
+  );
 
-  // Tri des offres en fonction du prix de vente
-  const sortOffersByPrice = () => {
+  console.log('OFFERS', offers.length, offersData.length);
+  console.log('OFFERS', JSON.stringify(offersData, null, 4));
+
+  const [filterText, setFilterText] = useState('');
+  const [sortedOffers, setSortedOffers] = useState(
+    offersData.filter(filterByText(filterText))
+  );
+  useEffect(() => {
+    const offersData: OfferData[] = offers.map((offer) =>
+      mapOfferToOfferData(offer)
+    );
+    setSortedOffers(offersData.filter(filterByText(filterText)));
+  }, [offers, filterText]);
+
+  const [selectedHeader, setSelectedHeader] = useState<HeaderElementId | null>(
+    null
+  );
+
+  const sortOffersByColumn = (
+    column: keyof OfferData,
+    sortDirection: SortDirection
+  ) => {
     const sorted = [...sortedOffers];
-    sorted.sort((a, b) => a.requestedSellingPrice - b.requestedSellingPrice);
+    sorted.sort((a, b) => {
+      const columnA = a[column];
+      const columnB = b[column];
+
+      if (typeof columnA === 'number' && typeof columnB === 'number') {
+        if (sortDirection === SortDirection.Asc) {
+          return columnA - columnB;
+        } else {
+          return columnB - columnA;
+        }
+      }
+
+      if (sortDirection === SortDirection.Asc) {
+        return String(columnA).localeCompare(String(columnB));
+      } else {
+        return String(columnB).localeCompare(String(columnA));
+      }
+    });
     setSortedOffers(sorted);
   };
 
@@ -80,110 +89,36 @@ export const OfferList = () => {
     setFilterText(event.target.value);
   };
 
-  const renderItem = ({
-    index,
-    style,
-  }: {
-    index: number;
-    style: React.CSSProperties;
-  }) => {
-    const offer = sortedOffers[index]; // Utilisez les offres triées
-
-    // Déterminez si c'est la dernière carte
+  const renderItem = ({ index }: { index: number }) => {
+    const offer = sortedOffers[index];
     const isLastItem = index === sortedOffers.length - 1;
 
-    // Style personnalisé pour la dernière carte
-    const lastCardStyle = isLastItem
-      ? {
-          marginTop: '-1px',
-          borderRadius: '0 0 10px 10px', // Applique le radius uniquement en bas
-          backgroundColor:
-            theme.colorScheme === 'dark'
-              ? theme.colors.dark[7]
-              : theme.colors.gray[0], // Couleur de fond en fonction du thème
-        }
-      : {
-          marginTop: '-1px',
-          backgroundColor:
-            theme.colorScheme === 'dark'
-              ? theme.colors.dark[7]
-              : theme.colors.gray[0],
-        };
-
-    return (
-      <Card withBorder={true} radius={0} style={lastCardStyle}>
-        <Grid>
-          <Grid.Col span={4}>
-            {/* Ajoutez le badge ici */}
-            <div
-              style={{
-                position: 'absolute',
-                top: '0px',
-                left: '0px',
-              }}
-            >
-              <Badge
-                color={'red'}
-                radius={0}
-                variant={'filled'}
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  borderBottomRightRadius: '10px',
-                }}
-              >
-                {'Vente'}
-              </Badge>
-            </div>
-            <Group position={'left'}>
-              <Group position={'left'} sx={{ marginTop: '10px' }}>
-                <Avatar
-                  src={offer.image}
-                  alt={offer.productName}
-                  style={avatarStyle}
-                />
-                <div>
-                  <Text>{offer.offerLocation}</Text>
-                  <Text>{offer.productName}</Text>
-                </div>
-              </Group>
-
-              <div style={{ marginLeft: '50px' }}>
-                <Text>{offer.launchDate}</Text>
-                <Text>{offer.initialSellingPrice}</Text>
-              </div>
-            </Group>
-          </Grid.Col>
-          <Grid.Col span={1}>
-            <Stack h={'100%'} align={'stretch'} justify={'center'}>
-              {offer.quantityAvailable}
-            </Stack>
-          </Grid.Col>
-          <Grid.Col span={1}>
-            <Stack h={'100%'} align={'stretch'} justify={'center'}>
-              {offer.sellerName}
-            </Stack>
-          </Grid.Col>
-          <Grid.Col span={1}>
-            <Stack h={'100%'} align={'stretch'} justify={'center'}>
-              {offer.requestedSellingPrice}
-            </Stack>
-          </Grid.Col>
-          <Grid.Col span={1}>
-            <Stack h={'100%'} align={'stretch'} justify={'center'}>
-              {offer.electricityCost}
-            </Stack>
-          </Grid.Col>
-          <Grid.Col span={1}>
-            <Stack h={'100%'} align={'stretch'} justify={'center'}>
-              {offer.purchaseToken}
-            </Stack>
-          </Grid.Col>
-        </Grid>
-      </Card>
-    );
+    return <ItemElement offer={offer} isLastItem={isLastItem}></ItemElement>;
   };
+
+  const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedColumn = event.target.value;
+
+    // Mettez à jour la valeur de sortedColumn
+    setSortedColumn(selectedColumn);
+
+    // Appelez la fonction de tri en fonction de la colonne sélectionnée
+    if (selectedColumn === columnLabels[Columns.sellerName]) {
+      sortOffersByColumn(Columns.sellerName, SortDirection.Asc);
+    } else if (selectedColumn === columnLabels[Columns.requestedSellingPrice]) {
+      sortOffersByColumn(Columns.requestedSellingPrice, SortDirection.Asc);
+    } else if (selectedColumn === columnLabels[Columns.purchaseToken]) {
+      sortOffersByColumn(Columns.purchaseToken, SortDirection.Asc);
+    } else if (selectedColumn === columnLabels[Columns.quantityAvailable]) {
+      sortOffersByColumn(Columns.quantityAvailable, SortDirection.Asc);
+    }
+  };
+
+  const itemHeight = isMobile
+    ? MaxHeight.Mobile
+    : isLarge
+    ? MaxHeight.Large
+    : MaxHeight.Medium;
 
   return (
     <Container
@@ -194,15 +129,6 @@ export const OfferList = () => {
         padding: 0,
       }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <TextInput
-          placeholder={'Search for offers...'}
-          value={filterText}
-          onChange={handleFilterChange}
-        />
-        <button onClick={sortOffersByPrice}>Sort by Price</button>{' '}
-        {/* Ajouter un bouton pour trier par prix */}
-      </div>
       <Card
         withBorder={true}
         radius={0}
@@ -213,36 +139,99 @@ export const OfferList = () => {
             theme.colorScheme === 'dark' ? undefined : theme.colors.gray[1],
         }}
       >
-        <Grid>
-          <Grid.Col span={4}>
+        {!isLarge && (
+          <Group position={'apart'}>
             <TextInput
               placeholder={'Search for offers...'}
               value={filterText}
               onChange={handleFilterChange}
             />
-          </Grid.Col>
-          <Grid.Col span={1}>
-            <div>{'t1'}</div>
-          </Grid.Col>
-          <Grid.Col span={1}>
-            <div>{'t2'}</div>
-          </Grid.Col>
-          <Grid.Col span={1}>
-            <div>{'t3'}</div>
-          </Grid.Col>
-          <Grid.Col span={1}>
-            <div>{'t4'}</div>
-          </Grid.Col>
-          <Grid.Col span={1}>
-            <div>{'t5'}</div>
-          </Grid.Col>
-        </Grid>
+            <NativeSelect
+              value={sortedColumn}
+              onChange={handleSortChange}
+              iconWidth={70}
+              placeholder={'sort'}
+              icon={'Sort by: '}
+              data={[
+                columnLabels[Columns.sellerName],
+                columnLabels[Columns.requestedSellingPrice],
+                columnLabels[Columns.purchaseToken],
+                columnLabels[Columns.quantityAvailable],
+              ]}
+            />
+          </Group>
+        )}
+        {isLarge && (
+          <Grid columns={20}>
+            <Grid.Col xl={4} lg={5}>
+              <TextInput
+                placeholder={'Search for offers...'}
+                value={filterText}
+                onChange={handleFilterChange}
+              />
+            </Grid.Col>
+            <Grid.Col xl={4} lg={4}>
+              <div>{''}</div>
+            </Grid.Col>
+            <Grid.Col xl={3} lg={2}>
+              <HeaderElement
+                label={columnLabels[Columns.sellerName]}
+                sortOffersByColumn={(sortDirection: SortDirection) =>
+                  sortOffersByColumn(Columns.sellerName, sortDirection)
+                }
+                selected={selectedHeader === HeaderElementId.Seller}
+                setSelectedHeader={() =>
+                  setSelectedHeader(HeaderElementId.Seller)
+                }
+              ></HeaderElement>
+            </Grid.Col>
+            <Grid.Col xl={3} lg={3}>
+              <HeaderElement
+                label={columnLabels[Columns.requestedSellingPrice]}
+                sortOffersByColumn={(sortDirection: SortDirection) =>
+                  sortOffersByColumn(
+                    Columns.requestedSellingPrice,
+                    sortDirection
+                  )
+                }
+                selected={selectedHeader === HeaderElementId.UnitPrice}
+                setSelectedHeader={() =>
+                  setSelectedHeader(HeaderElementId.UnitPrice)
+                }
+              ></HeaderElement>
+            </Grid.Col>
+            <Grid.Col xl={3} lg={3}>
+              <HeaderElement
+                label={columnLabels[Columns.purchaseToken]}
+                sortOffersByColumn={(sortDirection: SortDirection) =>
+                  sortOffersByColumn(Columns.purchaseToken, sortDirection)
+                }
+                selected={selectedHeader === HeaderElementId.BuyWith}
+                setSelectedHeader={() =>
+                  setSelectedHeader(HeaderElementId.BuyWith)
+                }
+              ></HeaderElement>
+            </Grid.Col>
+            <Grid.Col xl={3} lg={3}>
+              <HeaderElement
+                label={columnLabels[Columns.quantityAvailable]}
+                sortOffersByColumn={(sortDirection: SortDirection) =>
+                  sortOffersByColumn(Columns.quantityAvailable, sortDirection)
+                }
+                selected={selectedHeader === HeaderElementId.Quantity}
+                setSelectedHeader={() =>
+                  setSelectedHeader(HeaderElementId.Quantity)
+                }
+              ></HeaderElement>
+            </Grid.Col>
+          </Grid>
+        )}
       </Card>
 
       <List
-        height={400}
-        itemCount={sortedOffers.length} // Utilisez les offres triées
-        itemSize={() => 100}
+        height={sortedOffers.length * itemHeight}
+        itemCount={sortedOffers.length}
+        itemSize={() => ITEM_HEIGHT_MIN}
         width={'100%'}
       >
         {renderItem}
@@ -250,3 +239,14 @@ export const OfferList = () => {
     </Container>
   );
 };
+function filterByText(
+  filterText: string
+): (value: OfferData, index: number, array: OfferData[]) => unknown {
+  return (offer) => {
+    const searchTerms = filterText.toLowerCase();
+    return (
+      offer.siteLocation.toLowerCase().includes(searchTerms) ||
+      offer.forSaleToken.toLowerCase().includes(searchTerms)
+    );
+  };
+}
