@@ -42,6 +42,7 @@
     "perToken": "par token",
     "sortBy": "Trier par",
     "search":"Rechercher...",
+    "noData": "Aucune donnée",
 
     "buyerPrice": "Prix acheteur",
     "buyerAmount": "Achat demandé",

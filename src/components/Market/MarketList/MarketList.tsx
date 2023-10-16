@@ -42,8 +42,6 @@ export const MarketList: FC = () => {
   const { t } = useTranslation('buy', { keyPrefix: 'list' });
   const columnLabels = mapColumnLabels(tableOfferType, t);
 
-  console.log('OFFERS', JSON.stringify(offers, null, 4));
-
   const [filterText, setFilterText] = useState('');
   const [sortedOffers, setSortedOffers] = useState(
     offersData.filter(filterByText(filterText))
@@ -233,7 +231,8 @@ function filterByText(
     const searchTerms = filterText.toLowerCase();
     return (
       offer.siteLocation.toLowerCase().includes(searchTerms) ||
-      offer.forSaleToken.toLowerCase().includes(searchTerms)
+      offer.forSaleToken.toLowerCase().includes(searchTerms) ||
+      offer.id.toLowerCase().includes(searchTerms)
     );
   };
 }

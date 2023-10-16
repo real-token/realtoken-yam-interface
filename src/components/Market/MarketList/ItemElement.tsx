@@ -15,6 +15,7 @@ import { useMediaQuery } from '@mantine/hooks';
 
 import { BigNumber } from 'bignumber.js';
 
+import { TextUrl } from 'src/components/TextUrl/TextUrl';
 import { useOffer } from 'src/hooks/offers/useOffer';
 import { useAppDispatch } from 'src/hooks/react-hooks';
 import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
@@ -46,6 +47,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
   const isLarge = !useMediaQuery(`(max-width: ${theme.breakpoints.lg})`);
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`);
   const [image, setImage] = useState<string>('');
+  const [siteUrl, setSiteUrl] = useState<string>('');
   const { offer: offerAction } = useOffer(parseInt(offer.id));
   const { getPropertyToken, propertiesIsloading } = usePropertiesToken();
   const { t } = useTranslation('buy', { keyPrefix: 'list' });
@@ -58,12 +60,14 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
       if (token) {
         offer.image = token.imageLink[0];
         setImage(token.imageLink[0]);
+        setSiteUrl(token.marketplaceLink);
       }
     } else {
       const token = getPropertyToken(offer.forSaleTokenAddress);
       if (token) {
         offer.image = token.imageLink[0];
         setImage(token.imageLink[0]);
+        setSiteUrl(token.marketplaceLink);
       }
     }
   }, [getPropertyToken, offer, propertiesIsloading]);
@@ -197,7 +201,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
                 borderBottomRightRadius: '10px',
               }}
             >
-              {t(offer.type)}
+              {t(offer.type) + ' #' + offer.id}
             </Badge>
           </div>
           <Group
@@ -207,11 +211,16 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             <Stack spacing={5}>
               <Group sx={{ marginTop: '10px' }}>
                 <Text fz={'md'} fw={'bold'}>
-                  {siteToken}
+                  <TextUrl url={siteUrl}>{siteToken}</TextUrl>
                 </Text>
               </Group>
               <Group position={'left'}>
-                <Avatar src={image} alt={offer.id} style={avatarStyle} />
+                <Avatar
+                  src={image}
+                  alt={offer.id}
+                  style={avatarStyle}
+                  radius={37}
+                />
                 <div style={{ padding: 0, margin: 0 }}>{locationInfo}</div>
               </Group>
             </Stack>
@@ -442,7 +451,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
 
 export const ItemEmptyElement: FC = () => {
   const theme = useMantineTheme();
-  console.log('I AM HERE');
+  const { t } = useTranslation('buy', { keyPrefix: 'list' });
   return (
     <Card
       withBorder={true}
@@ -456,7 +465,7 @@ export const ItemEmptyElement: FC = () => {
             : theme.colors.gray[0],
       }}
     >
-      <Text ta={'center'}>{'Aucun élément'}</Text>
+      <Text ta={'center'}>{t('noData')}</Text>
     </Card>
   );
 };
