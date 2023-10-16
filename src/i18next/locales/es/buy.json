@@ -29,6 +29,9 @@
 
     "buyerAddress": "Buyer Token Address",
     "buyerName": "Acheteur",
+
+    "TraderAddress": "Offer Token Address",
+    "TraderName": "Trader name",
     
     "sellerAddress": "Adresse du vendeur",
     "sellerName": "Vendeur",
@@ -36,6 +39,7 @@
     "sellDate": "Date de vente",
     "UNKNOWN":"inconnu",
     "CSM":"✅ CSM",
+    "perToken": "per token",
 
     "buyerPrice": "Prix acheteur",
     "buyerAmount": "Achat demandé",
@@ -50,9 +54,9 @@
     "exchangeForToken": "Echange contre",
 
     "walletBalance": "Wallet balance",
-    "buy": "Achat",
-    "sell": "Vente",
-    "exchange": "Echange",
+    "BUY": "Achat",
+    "SELL": "Vente",
+    "EXCHANGE": "Echange",
 
     "onMarketSince": "Date de création"
   },

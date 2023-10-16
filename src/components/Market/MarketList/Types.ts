@@ -1,4 +1,4 @@
-import { Offer } from 'src/types/offer';
+import { OFFER_TYPE } from 'src/types/offer/OfferType';
 
 export type OfferData = {
   id: string;
@@ -15,14 +15,8 @@ export type OfferData = {
   requestedSellingPrice?: number;
   quantityAvailable?: number;
   image: string;
-  type: OfferType;
+  type: OFFER_TYPE;
 };
-
-export enum OfferType {
-  Sell = 'sell',
-  Buy = 'buy',
-  Exchange = 'exchange',
-}
 
 export enum SortDirection {
   Asc = 'asc',
@@ -33,33 +27,6 @@ export enum Arrow {
   None = 0,
   Up = 1,
   Down = 2,
-}
-
-export function mapOfferToOfferData(offer: Offer): OfferData {
-  return {
-    id: offer.offerId,
-    forSaleToken: offer.offerTokenName,
-    forSaleTokenAddress: offer.offerTokenAddress,
-    purchaseToken: offer.buyerTokenName,
-    purchaseTokenAddress: offer.buyerTokenAddress,
-    launchDate: offer.sellDate,
-    sellerName: offer.sellerName,
-    siteLocation: offer.miningSite,
-    electricityPrice: offer.electricityPrice,
-    initialSellingPrice: offer.officialPrice,
-    requestedSellingPrice: offer.offerPrice,
-    quantityAvailable: parseFloat(offer.amount),
-    balanceWallet: offer.balanceWallet
-      ? parseFloat(offer.balanceWallet)
-      : undefined,
-    image: '', // Vous devrez spécifier l'image appropriée ici
-    type:
-      offer.offerTokenType === 1
-        ? OfferType.Sell
-        : offer.offerTokenType === 2
-        ? OfferType.Buy
-        : OfferType.Exchange,
-  };
 }
 
 export enum MaxHeight {
@@ -74,10 +41,3 @@ export enum Columns {
   purchaseToken = 'purchaseToken',
   quantityAvailable = 'quantityAvailable',
 }
-
-export const columnLabels: { [key: string]: string } = {
-  sellerName: 'sellerName',
-  requestedSellingPrice: 'sellerPrice',
-  purchaseToken: 'purchaseToken',
-  quantityAvailable: 'sellerAmount',
-};

@@ -16,9 +16,11 @@ import { useMediaQuery } from '@mantine/hooks';
 import { BigNumber } from 'bignumber.js';
 
 import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
+import { OFFER_TYPE } from 'src/types/offer/OfferType';
 import { formatPercent, formatToken, formatUsd } from 'src/utils/format';
 
-import { Columns, OfferData, OfferType, columnLabels } from './Types';
+import { Columns, OfferData } from './Types';
+import { mapColumnLabels } from './Utils';
 
 const ThemeColors = {
   grayDarkBackground: 'rgba(255, 255, 255, 0.1)',
@@ -41,10 +43,11 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
   const [image, setImage] = useState<string>('');
   const { getPropertyToken, propertiesIsloading } = usePropertiesToken();
   const { t } = useTranslation('buy', { keyPrefix: 'list' });
+  const columnLabels = mapColumnLabels(offer.type, t);
   useEffect(() => {
     if (!offer || propertiesIsloading) return undefined;
 
-    if (offer.type === OfferType.Buy) {
+    if (offer.type === OFFER_TYPE.BUY) {
       const token = getPropertyToken(offer.purchaseTokenAddress);
       if (token) {
         offer.image = token.imageLink[0];
@@ -63,6 +66,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
     ? {
         marginTop: '-1px',
         borderRadius: '0 0 10px 10px',
+        cursor: 'pointer',
         backgroundColor:
           theme.colorScheme === 'dark'
             ? theme.colors.dark[6]
@@ -70,6 +74,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
       }
     : {
         marginTop: '-1px',
+        cursor: 'pointer',
         backgroundColor:
           theme.colorScheme === 'dark'
             ? theme.colors.dark[6]
@@ -128,28 +133,33 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
     ));
 
   const badgeColor =
-    offer.type === OfferType.Buy
+    offer.type === OFFER_TYPE.BUY
       ? 'green'
-      : offer.type === OfferType.Sell
-      ? 'red'
-      : 'orange';
+      : offer.type === OFFER_TYPE.EXCHANGE
+      ? 'orange'
+      : 'red';
 
   const siteToken =
-    offer.type === OfferType.Buy
+    offer.type === OFFER_TYPE.BUY
       ? offer.purchaseToken
-      : offer.type === OfferType.Sell
+      : offer.type === OFFER_TYPE.SELL
       ? offer.forSaleToken
       : offer.forSaleToken;
 
   const tradeToken =
-    offer.type === OfferType.Buy
+    offer.type === OFFER_TYPE.BUY
       ? offer.forSaleToken
-      : offer.type === OfferType.Sell
+      : offer.type === OFFER_TYPE.SELL
       ? offer.purchaseToken
       : offer.purchaseToken;
 
   return (
-    <Card withBorder={true} radius={0} style={lastCardStyle}>
+    <Card
+      withBorder={true}
+      radius={0}
+      style={lastCardStyle}
+      onClick={() => alert('hh')}
+    >
       <Grid columns={20}>
         <Grid.Col xl={4} lg={5}>
           <div
@@ -284,7 +294,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             ta={textAlignRight ? 'right' : 'left'}
             color={'dimmed'}
           >
-            {t(columnLabels[Columns.quantityAvailable])}
+            {columnLabels[Columns.quantityAvailable]}
           </Text>
         )}
         <div>
@@ -324,7 +334,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             ta={textAlignRight ? 'right' : 'left'}
             color={'dimmed'}
           >
-            {t(columnLabels[Columns.purchaseToken])}
+            {columnLabels[Columns.purchaseToken]}
           </Text>
         )}
         <div>
@@ -357,7 +367,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
       >
         {!isLarge && (
           <Text fz={'md'} ta={'left'} color={'dimmed'}>
-            {t(columnLabels[Columns.requestedSellingPrice])}
+            {columnLabels[Columns.requestedSellingPrice]}
           </Text>
         )}
         <div>
@@ -392,7 +402,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
       >
         {!isLarge && (
           <Text fz={'md'} ta={'left'} color={'dimmed'}>
-            {t(columnLabels[Columns.sellerName])}
+            {columnLabels[Columns.sellerName]}
           </Text>
         )}
         <div>
@@ -411,6 +421,27 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
       </Stack>
     );
   }
+};
+
+export const ItemEmptyElement: FC = () => {
+  const theme = useMantineTheme();
+  console.log('I AM HERE');
+  return (
+    <Card
+      withBorder={true}
+      radius={0}
+      style={{
+        marginTop: '-1px',
+        borderRadius: '0 0 10px 10px',
+        backgroundColor:
+          theme.colorScheme === 'dark'
+            ? theme.colors.dark[6]
+            : theme.colors.gray[0],
+      }}
+    >
+      <Text ta={'center'}>{'Aucun élément'}</Text>
+    </Card>
+  );
 };
 
 function badgeList(

@@ -7,12 +7,14 @@ import { Arrow, SortDirection } from './Types';
 
 interface HeaderElementProps {
   label: string;
+  description?: string;
   sortOffersByColumn: (sortDirection: SortDirection) => void;
   selected: boolean;
   setSelectedHeader: () => void;
 }
 export const HeaderElement: FC<HeaderElementProps> = ({
   label,
+  description,
   sortOffersByColumn,
   selected,
   setSelectedHeader,
@@ -31,9 +33,17 @@ export const HeaderElement: FC<HeaderElementProps> = ({
 
   return (
     <Flex gap={2} justify={'right'} align={'center'} wrap={'wrap'}>
-      <Text ta={'right'} fw={500}>
-        {label}
-      </Text>
+      <div>
+        <Text ta={'right'} fw={500}>
+          {label}
+        </Text>
+        {description && (
+          <Text ta={'center'} fz={'xs'} color={'dimmed'}>
+            {description}
+          </Text>
+        )}
+      </div>
+
       <div>
         {selectedArrow === Arrow.None && (
           <ActionIcon
