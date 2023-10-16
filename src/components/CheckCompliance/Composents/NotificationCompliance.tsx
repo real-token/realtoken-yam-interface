@@ -53,9 +53,11 @@ const useStyle = createStyles((theme) => ({
 export const NotificationCompliance = ({
   isNotificationClosed,
   setIsNotificationClosed,
+  margin,
 }: {
   isNotificationClosed: boolean;
   setIsNotificationClosed: React.Dispatch<React.SetStateAction<boolean>>;
+  margin?: string;
 }) => {
   const { classes } = useStyle();
   const { t } = useTranslation('notifications', { keyPrefix: 'kycRequired' });
@@ -215,6 +217,7 @@ export const NotificationCompliance = ({
           onClose={() => {
             setIsNotificationClosed(() => true);
           }}
+          sx={{ margin }}
         >
           {t('message')
             .split('\n')

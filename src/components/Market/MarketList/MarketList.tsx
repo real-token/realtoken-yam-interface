@@ -90,9 +90,7 @@ export const MarketList: FC = () => {
   const renderItem = ({ index }: { index: number }) => {
     const offer = sortedOffers[index];
     const isLastItem = index === sortedOffers.length - 1;
-    console.log('RENDER', index, sortedOffers.length);
     if (sortedOffers.length === 0) {
-      console.log('RENDER EMPTY');
       return <ItemEmptyElement></ItemEmptyElement>;
     } else {
       return <ItemElement offer={offer} isLastItem={isLastItem}></ItemElement>;
@@ -139,10 +137,32 @@ export const MarketList: FC = () => {
             theme.colorScheme === 'dark' ? undefined : theme.colors.gray[1],
         }}
       >
-        {!isLarge && (
+        {isMobile && (
+          <div>
+            <TextInput
+              placeholder={t('search')}
+              value={filterText}
+              onChange={handleFilterChange}
+              sx={{ marginBottom: '10px' }}
+            />
+            <NativeSelect
+              value={sortedColumn}
+              onChange={handleSortChange}
+              iconWidth={70}
+              icon={t('sortBy')}
+              data={[
+                columnLabels[Columns.sellerName],
+                columnLabels[Columns.requestedSellingPrice],
+                columnLabels[Columns.purchaseToken],
+                columnLabels[Columns.quantityAvailable],
+              ]}
+            />
+          </div>
+        )}
+        {!isLarge && !isMobile && (
           <Group position={'apart'}>
             <TextInput
-              placeholder={t('Search for offers...')}
+              placeholder={t('search')}
               value={filterText}
               onChange={handleFilterChange}
             />
@@ -150,8 +170,7 @@ export const MarketList: FC = () => {
               value={sortedColumn}
               onChange={handleSortChange}
               iconWidth={70}
-              placeholder={t('Sort by: ')}
-              icon={t('Sort by: ')}
+              icon={t('sortBy')}
               data={[
                 columnLabels[Columns.sellerName],
                 columnLabels[Columns.requestedSellingPrice],
@@ -165,7 +184,7 @@ export const MarketList: FC = () => {
           <Grid columns={20}>
             <Grid.Col xl={4} lg={5}>
               <TextInput
-                placeholder={t('Search for offers...')}
+                placeholder={t('search')}
                 value={filterText}
                 onChange={handleFilterChange}
               />

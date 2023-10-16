@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -15,7 +15,11 @@ import { useMediaQuery } from '@mantine/hooks';
 
 import { BigNumber } from 'bignumber.js';
 
+import { useOffer } from 'src/hooks/offers/useOffer';
+import { useAppDispatch } from 'src/hooks/react-hooks';
 import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
+import { buyOfferOpen } from 'src/store/features/buyOffer/buyOfferSlice';
+import { Offer } from 'src/types/offer';
 import { OFFER_TYPE } from 'src/types/offer/OfferType';
 import { formatPercent, formatToken, formatUsd } from 'src/utils/format';
 
@@ -38,9 +42,11 @@ interface ItemElementProps {
 }
 export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
   const theme = useMantineTheme();
+  const dispatch = useAppDispatch();
   const isLarge = !useMediaQuery(`(max-width: ${theme.breakpoints.lg})`);
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`);
   const [image, setImage] = useState<string>('');
+  const { offer: offerAction } = useOffer(parseInt(offer.id));
   const { getPropertyToken, propertiesIsloading } = usePropertiesToken();
   const { t } = useTranslation('buy', { keyPrefix: 'list' });
   const columnLabels = mapColumnLabels(offer.type, t);
@@ -153,12 +159,23 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
       ? offer.purchaseToken
       : offer.purchaseToken;
 
+  const onOpenOffer = useCallback(
+    (offerAction: Offer) => {
+      dispatch({ type: buyOfferOpen, payload: offerAction });
+    },
+    [dispatch]
+  );
+
   return (
     <Card
       withBorder={true}
       radius={0}
       style={lastCardStyle}
-      onClick={() => alert('hh')}
+      onClick={() =>
+        offerAction
+          ? onOpenOffer(offerAction)
+          : console.warn('Offer not loaded ' + offer.id)
+      }
     >
       <Grid columns={20}>
         <Grid.Col xl={4} lg={5}>

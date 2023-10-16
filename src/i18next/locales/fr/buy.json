@@ -40,6 +40,8 @@
     "UNKNOWN":"inconnu",
     "CSM":"✅ CSM",
     "perToken": "par token",
+    "sortBy": "Trier par",
+    "search":"Rechercher...",
 
     "buyerPrice": "Prix acheteur",
     "buyerAmount": "Achat demandé",

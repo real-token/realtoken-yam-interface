@@ -1,4 +1,5 @@
 export enum Displays{
     TABLE = "table",
-    GRID = "grid"
+    GRID = "grid",
+    LIST = "list"
 }

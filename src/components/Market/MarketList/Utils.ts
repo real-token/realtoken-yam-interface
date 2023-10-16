@@ -24,7 +24,7 @@ export function mapOfferToOfferData(offer: Offer): OfferData {
       : undefined,
     image: '', // Vous devrez spécifier l'image appropriée ici
     type:
-      offer.offerTokenType === 1
+      offer.offerTokenType === 1 || offer.offerTokenType === 0
         ? OFFER_TYPE.SELL
         : offer.offerTokenType === 2
         ? OFFER_TYPE.BUY

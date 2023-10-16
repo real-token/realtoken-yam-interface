@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react';
 
-import { Flex, Select, em } from '@mantine/core';
+import { Flex, Group, Select, Text, em } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 
 import { useAtom } from 'jotai';
@@ -15,6 +15,10 @@ import {
 import { Displays } from 'src/types/Displays';
 
 import { BuyWithPermit } from '../Buy/BuyWithPermit';
+import {
+  CheckCompliance,
+  ComplianceStatus,
+} from '../CheckCompliance/CheckCompliance';
 import { MarketTable } from '../Market';
 import { MarketGrid } from '../Market/MarketGrid/MarketGrid';
 import { MarketList } from '../Market/MarketList/MarketList';
@@ -49,6 +53,14 @@ const Display: FC = () => {
           component: <MarketGrid key={'grid'} />,
         },
       ],
+      [
+        Displays.LIST,
+        {
+          display: Displays.LIST,
+          title: 'List',
+          component: <MarketList key={'list'} />,
+        },
+      ],
     ]);
   }, []);
 
@@ -60,10 +72,8 @@ const Display: FC = () => {
   }, [availableDisplays]);
 
   const getDisplay = (): Display | undefined => {
-    let typeOfDisplay = choosenDisplay;
     if (isMobile) {
-      setChoosenDisplay(Displays.GRID);
-      typeOfDisplay = Displays.GRID;
+      setChoosenDisplay(Displays.LIST);
     }
 
     return [...availableDisplays.values()].find(
@@ -75,7 +85,14 @@ const Display: FC = () => {
     <>
       {!shallBuyInterfaceDisplay && (
         <>
-          <MarketTableFilter />
+          <Group>
+            {choosenDisplay !== Displays.LIST ? (
+              <MarketTableFilter />
+            ) : (
+              <div></div>
+            )}
+          </Group>
+
           <Flex justify={'space-between'} mb={16}>
             <MarketSort />
             {!isMobile && (
@@ -88,7 +105,6 @@ const Display: FC = () => {
               />
             )}
           </Flex>
-          <MarketList></MarketList>
           {getDisplay() ? getDisplay()?.component : undefined}
         </>
       )}
