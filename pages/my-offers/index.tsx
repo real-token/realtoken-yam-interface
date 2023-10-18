@@ -3,23 +3,32 @@ import { useTranslation } from 'react-i18next';
 import { Flex, Tabs } from '@mantine/core';
 import { IconFingerprint, IconList, IconPlus } from '@tabler/icons';
 
-import { BuyWithPermit } from 'src/components/Buy/BuyWithPermit';
 import { CreateOffer } from 'src/components/CreateOffer/CreateOffers';
+import { UserMarketList } from 'src/components/Market/MarketList/UserMarketList';
 import {
   MarketTablePrivate,
   MarketTableUser,
 } from 'src/components/Market/MarketTable';
+import { BuyWithPermit } from 'src/components/Offer/Buy/BuyWithPermit';
+import { DisplayOffer } from 'src/components/Offer/DisplayOffer';
+import { EditOffer } from 'src/components/Offer/Edit/EditOffer';
+import { ViewOffer } from 'src/components/Offer/View/ViewOffer';
 import { useAppSelector } from 'src/hooks/react-hooks';
+import { useAppDispatch } from 'src/hooks/react-hooks';
 import { ConnectedProvider } from 'src/providers/ConnectProvider';
 import {
   selectBuyOffer,
   selectIsBuyOfferOpened,
 } from 'src/store/features/buyOffer/buyOfferSelector';
+import { buyOfferReset } from 'src/store/features/buyOffer/buyOfferSlice';
 
 const TransfersPage = () => {
   const shallBuyInterfaceDisplay = useAppSelector(selectIsBuyOfferOpened);
   const offerToBuy = useAppSelector(selectBuyOffer);
   const menu = useTranslation('menu', { keyPrefix: 'subMenuMyOffer' });
+  const dispatch = useAppDispatch();
+  //dispatch({ type: buyOfferReset });
+
   return (
     <ConnectedProvider>
       <Flex direction={'column'} my={'xl'}>
@@ -41,6 +50,7 @@ const TransfersPage = () => {
             </Tabs.List>
 
             <Tabs.Panel value={'myOffers'} pt={'xs'}>
+              <UserMarketList></UserMarketList>
               <MarketTableUser />
             </Tabs.Panel>
 
@@ -54,7 +64,9 @@ const TransfersPage = () => {
           </Tabs>
         )}
         {shallBuyInterfaceDisplay && offerToBuy && (
-          <BuyWithPermit offer={offerToBuy}></BuyWithPermit>
+          <>
+            <DisplayOffer offer={offerToBuy}></DisplayOffer>
+          </>
         )}
       </Flex>
     </ConnectedProvider>

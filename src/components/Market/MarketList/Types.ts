@@ -30,8 +30,9 @@ export enum Arrow {
 }
 
 export enum MaxHeight {
-  Mobile = 411,
-  Medium = 280,
+  Mobile = 413,
+  Small = 319,
+  Medium = 256,
   Large = 155,
 }
 

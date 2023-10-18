@@ -3,7 +3,8 @@ import { Provider as ReduxProvide } from 'react-redux';
 
 import type { AppProps as NextAppProps } from 'next/app';
 
-import { ColorScheme, Image } from '@mantine/core';
+import { ColorScheme, Image, em } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import {
   ChainSelectConfig,
   Head,
@@ -68,6 +69,7 @@ type AppProps = NextAppProps & { colorScheme: ColorScheme; locale: string };
 const queryClient = new QueryClient({});
 
 const App = ({ Component, pageProps }: AppProps) => {
+  const isMobile = useMediaQuery(`(max-width: ${em(750)})`);
   return (
     <QueryClientProvider client={queryClient}>
       <JotaiProvider>
@@ -85,13 +87,15 @@ const App = ({ Component, pageProps }: AppProps) => {
                     chains={customChains}
                     head={
                       <Head
-                        title={'CleanSatMining YAM'}
-                        description={'CleanSatMining YAM'}
+                        title={isMobile ? 'CSM YAM' : 'CleanSatMining YAM'}
+                        description={
+                          isMobile ? 'CSM YAM' : 'CleanSatMining YAM'
+                        }
                       />
                     }
                     headerNav={<HeaderNav />}
                     newWebsite={{
-                      name: 'CleanSatMining YAM',
+                      name: isMobile ? 'CSM YAM' : 'CleanSatMining YAM',
                       url: '/',
                       logo: () => (
                         <Image src={Logo.src} alt={'CSM Logo'} width={36} />
@@ -100,7 +104,7 @@ const App = ({ Component, pageProps }: AppProps) => {
                     }}
                     disableHeaderMultisite={true}
                     footerParam={{
-                      name: 'CleanSatMining',
+                      name: isMobile ? 'CSM YAM' : 'CleanSatMining YAM',
                       copyright: `CleanSatMining SA, All rights reserved @${new Date().getFullYear()}, power by Realt.co`,
                       logo: () => (
                         <Image src={Logo.src} alt={'CSM Logo'} width={36} />

@@ -64,7 +64,7 @@ const OfferTypePane: FC<OfferTypePaneProps> = ({
   selectedOfferType,
   setOfferType,
 }) => {
-  const { getColor, getI18OfferTypeName } = useOfferType();
+  const { getColorCode: getColor, getI18OfferTypeName } = useOfferType();
   const { classes } = offerTypePaneStyle({
     backgroundColor: getColor(offerType) ?? '',
     isSelected: offerType == selectedOfferType,

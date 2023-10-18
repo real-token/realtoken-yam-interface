@@ -7,6 +7,7 @@ import {
   Card,
   Grid,
   Group,
+  MantineTheme,
   Stack,
   Text,
   useMantineTheme,
@@ -15,6 +16,7 @@ import { useMediaQuery } from '@mantine/hooks';
 
 import { BigNumber } from 'bignumber.js';
 
+import { OfferBadge } from 'src/components/Offer/components/OfferTypeBadge';
 import { TextUrl } from 'src/components/TextUrl/TextUrl';
 import { useOffer } from 'src/hooks/offers/useOffer';
 import { useAppDispatch } from 'src/hooks/react-hooks';
@@ -27,10 +29,7 @@ import { formatPercent, formatToken, formatUsd } from 'src/utils/format';
 import { Columns, OfferData } from './Types';
 import { mapColumnLabels } from './Utils';
 
-const ThemeColors = {
-  grayDarkBackground: 'rgba(255, 255, 255, 0.1)',
-  grayLightBackground: 'rgba(200, 200, 200, 0.1)',
-};
+const LINK_ACCESS_KEY = 'TEXT_URL';
 
 const avatarStyle = {
   width: '80px',
@@ -52,6 +51,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
   const { getPropertyToken, propertiesIsloading } = usePropertiesToken();
   const { t } = useTranslation('buy', { keyPrefix: 'list' });
   const columnLabels = mapColumnLabels(offer.type, t);
+
   useEffect(() => {
     if (!offer || propertiesIsloading) return undefined;
 
@@ -90,11 +90,6 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             ? theme.colors.dark[6]
             : theme.colors.gray[0],
       };
-
-  const grayBadgeStyle =
-    theme.colorScheme === 'dark'
-      ? { backgroundColor: ThemeColors.grayDarkBackground }
-      : { backgroundColor: ThemeColors.grayLightBackground };
 
   const priceDelta = new BigNumber(
     offer.requestedSellingPrice ?? offer.initialSellingPrice ?? 0
@@ -142,13 +137,6 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
       </Text>
     ));
 
-  const badgeColor =
-    offer.type === OFFER_TYPE.BUY
-      ? 'green'
-      : offer.type === OFFER_TYPE.EXCHANGE
-      ? 'orange'
-      : 'red';
-
   const siteToken =
     offer.type === OFFER_TYPE.BUY
       ? offer.purchaseToken
@@ -170,16 +158,22 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
     [dispatch]
   );
 
+  const handleClickEvent = (event: React.PointerEvent<HTMLDivElement>) => {
+    const target: HTMLDivElement = event.target as HTMLDivElement;
+    console.log('CLICK EVENT', offer.id);
+    if (target.accessKey !== LINK_ACCESS_KEY) {
+      offerAction
+        ? onOpenOffer(offerAction)
+        : console.warn('Offer not loaded ' + offer.id);
+    }
+  };
+
   return (
     <Card
       withBorder={true}
       radius={0}
       style={lastCardStyle}
-      onClick={() =>
-        offerAction
-          ? onOpenOffer(offerAction)
-          : console.warn('Offer not loaded ' + offer.id)
-      }
+      onClick={handleClickEvent}
     >
       <Grid columns={20}>
         <Grid.Col xl={4} lg={5}>
@@ -190,19 +184,16 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
               left: '0px',
             }}
           >
-            <Badge
-              color={badgeColor}
-              radius={0}
-              variant={'filled'}
+            <OfferBadge
+              offerType={offer.type}
               style={{
                 position: 'absolute',
                 top: 0,
                 left: 0,
                 borderBottomRightRadius: '10px',
               }}
-            >
-              {t(offer.type) + ' #' + offer.id}
-            </Badge>
+              id={offer.id}
+            ></OfferBadge>
           </div>
           <Group
             spacing={isMobile ? 10 : isLarge ? 0 : 30}
@@ -211,7 +202,9 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             <Stack spacing={5}>
               <Group sx={{ marginTop: '10px' }}>
                 <Text fz={'md'} fw={'bold'}>
-                  <TextUrl url={siteUrl}>{siteToken}</TextUrl>
+                  <TextUrl url={siteUrl} accessKey={LINK_ACCESS_KEY}>
+                    {siteToken}
+                  </TextUrl>
                 </Text>
               </Group>
               <Group position={'left'}>
@@ -224,11 +217,11 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
                 <div style={{ padding: 0, margin: 0 }}>{locationInfo}</div>
               </Group>
             </Stack>
-            {!isLarge && badgeList(offer, grayBadgeStyle)}
+            {!isLarge && badgeList(offer, theme)}
           </Group>
         </Grid.Col>
         <Grid.Col xl={4} lg={4} style={{ padding: isMobile ? 0 : undefined }}>
-          {isLarge && badgeList(offer, grayBadgeStyle)}
+          {isLarge && badgeList(offer, theme)}
         </Grid.Col>
         <Grid.Col
           xl={3}
@@ -470,14 +463,25 @@ export const ItemEmptyElement: FC = () => {
   );
 };
 
-function badgeList(
-  offer: OfferData,
-  grayBadgeStyle: { backgroundColor: string }
-) {
+function badgeList(offer: OfferData, theme: MantineTheme) {
   return (
     <Stack spacing={5} h={'100%'} align={'stretch'} justify={'flex-end'}>
       <div>
-        <Badge variant={'light'} color={'lime'} radius={'sm'}>
+        <Badge
+          variant={'light'}
+          color={'lime'}
+          radius={'sm'}
+          style={{
+            backgroundColor:
+              theme.colorScheme === 'dark'
+                ? `${theme.colors.brand[5]}0F`
+                : `${theme.colors.brand[6]}0F`,
+            color:
+              theme.colorScheme === 'dark'
+                ? `${theme.colors.brand[5]}`
+                : `${theme.colors.brand[6]}`,
+          }}
+        >
           <Group>
             <Text>{'Initial Price '}</Text>
             <Text>{formatUsd(offer.initialSellingPrice ?? 0)}</Text>
@@ -485,7 +489,15 @@ function badgeList(
         </Badge>
       </div>
       <div>
-        <Badge variant={'light'} color={'yellow'} radius={'sm'}>
+        <Badge
+          variant={'light'}
+          color={'yellow'}
+          radius={'sm'}
+          style={{
+            backgroundColor: `${theme.colors.yellow[5]}0F`,
+            color: theme.colors.yellow[5],
+          }}
+        >
           <Group>
             <Text>{'Electricity Price'}</Text>
             <Text>{formatUsd(offer.electricityPrice, 4)}</Text>
@@ -493,7 +505,15 @@ function badgeList(
         </Badge>
       </div>
       <div>
-        <Badge variant={'light'} color={'yellow'} radius={'sm'}>
+        <Badge
+          variant={'light'}
+          color={'yellow'}
+          radius={'sm'}
+          style={{
+            backgroundColor: `${theme.colors.yellow[5]}0F`,
+            color: theme.colors.yellow[5],
+          }}
+        >
           <Group>
             <Text>{'Launch Date'}</Text>
             <Text>{offer.launchDate}</Text>

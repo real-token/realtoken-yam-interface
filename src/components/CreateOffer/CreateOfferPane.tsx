@@ -19,7 +19,7 @@ import { createOfferRemovedDispatchType } from 'src/store/features/createOffers/
 import { CreatedOffer } from 'src/types/offer/CreatedOffer';
 import { hexToRgb } from 'src/utils/color';
 
-import { OfferTypeBadge } from '../Offer/OfferTypeBadge';
+import { OfferTypeBadge } from '../Offer/components/OfferTypeBadge';
 
 const useStyles = createStyles((theme) => ({
   offerContainer: {

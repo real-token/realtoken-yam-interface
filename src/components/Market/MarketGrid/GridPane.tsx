@@ -11,7 +11,7 @@ import {
 } from '@mantine/core';
 import { useColorScheme } from '@mantine/hooks';
 
-import { OfferTypeBadge } from 'src/components/Offer/OfferTypeBadge';
+import { OfferTypeBadge } from 'src/components/Offer/components/OfferTypeBadge';
 import { OfferDeltaTable } from 'src/components/Table/OfferDeltaTable/OfferDeltaTable';
 import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
 import { PropertiesToken } from 'src/types';

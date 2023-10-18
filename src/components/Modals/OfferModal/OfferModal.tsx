@@ -16,7 +16,7 @@ import { useWeb3React } from '@web3-react/core';
 
 import BigNumber from 'bignumber.js';
 
-import { OfferText } from 'src/components/Offer/OfferText';
+import { OfferText } from 'src/components/Offer/components/OfferText';
 import { TextUrl } from 'src/components/TextUrl/TextUrl';
 import { useOffer } from 'src/hooks/offers/useOffer';
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
@@ -226,17 +226,6 @@ export const OfferModal: FC<ContextModalProps<OfferModalProps>> = ({
               )}
             </ActionIcon>
           </Group>
-          {/*  <Flex direction={'column'} gap={'md'} align={'center'}>
-            {propertyTokens && offer && propertyTokens.length > 0
-              ? propertyTokens.map((token) => (
-                  <PropertyCard
-                    key={token.contractAddress}
-                    propertyToken={token}
-                    offer={offer}
-                  />
-                ))
-              : undefined}
-          </Flex> */}
         </Flex>
       ) : (
         <div>{"Offer doesn't exist :/"}</div>

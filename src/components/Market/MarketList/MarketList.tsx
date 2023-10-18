@@ -15,10 +15,8 @@ import { useMediaQuery } from '@mantine/hooks';
 
 import { useAtomValue } from 'jotai';
 
-import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
-import { useAppSelector } from 'src/hooks/react-hooks';
 import { tableOfferTypeAtom } from 'src/states';
-import { selectPublicOffers } from 'src/store/features/interface/interfaceSelector';
+import { Offer } from 'src/types/offer/Offer';
 
 import { HeaderElement } from './HeaderElement';
 import { ItemElement, ItemEmptyElement } from './ItemElement';
@@ -27,14 +25,19 @@ import { mapColumnLabels, mapOfferToOfferData } from './Utils';
 
 const ITEM_HEIGHT_MIN = 100;
 
-export const MarketList: FC = () => {
+interface MarketListProps {
+  offers: Offer[];
+}
+//export const HeaderElement: FC<HeaderElementProps> = ({
+
+export const MarketList: FC<MarketListProps> = ({ offers }) => {
   const theme = useMantineTheme();
   const tableOfferType = useAtomValue(tableOfferTypeAtom);
   const [sortedColumn, setSortedColumn] = useState('');
-  const isLarge = !useMediaQuery(`(max-width: ${theme.breakpoints.lg})`);
+  const isLarge = useMediaQuery(`(min-width: ${theme.breakpoints.lg})`);
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`);
-  const publicOffers = useAppSelector(selectPublicOffers);
-  const { offers } = useTypedOffers(publicOffers);
+  const isSmallMobile = useMediaQuery(`(max-width: 510px)`);
+  const isSmall = useMediaQuery(`(min-width: 510px`) && !isLarge;
   const offersData: OfferData[] = offers.map((offer) =>
     mapOfferToOfferData(offer)
   );
@@ -110,8 +113,10 @@ export const MarketList: FC = () => {
     }
   };
 
-  const itemHeight = isMobile
+  const itemHeight = isSmallMobile
     ? MaxHeight.Mobile
+    : isSmall
+    ? MaxHeight.Small
     : isLarge
     ? MaxHeight.Large
     : MaxHeight.Medium;

@@ -63,11 +63,29 @@
 
     "onMarketSince": "Date de création"
   },
+
   "grid": {
     "buy": "Achat",
     "sell": "Vente",
     "exchange": "Echange"
   },
+  "card": {
+    "sellToken": "Jeton en vente",
+    "sellerAddress": "Adresse du vendeur",
+    "sellerName": "Vendeur",
+    "sellAmount": "Quantité de jeton en vente",
+    "sellPrice": "Prix/Jeton (Nb de jeton CSM par jeton en vente)",
+
+    "buyToken": "Jeton d'achat",
+    "buyerAddress": "Adresse du vendeur",
+    "buyerName": "Vendeur",
+    "buyAmount": "Quantité de jeton en achat",
+    "buyPrice": "Prix/Jeton (Nb de jeton d'achat par jeton CSM)",
+
+    "exchangeToken": "Jeton d'échange"
+  },
+
+
   "subRow": {
     "offerId": "ID de l'offre",
     "offerTokenAddress": "Adresse du jeton en vente",

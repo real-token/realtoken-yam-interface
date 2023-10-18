@@ -1,6 +1,7 @@
 import { FC, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Flex, MantineSize} from '@mantine/core';
+import { useSelector } from 'react-redux';
+
+import { Flex, MantineSize } from '@mantine/core';
 import {
   ExpandedState,
   PaginationState,
@@ -11,17 +12,20 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { Table } from '../../Table';
-import { MarketSubRow } from '../MarketSubRow';
+
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
-import { selectAddressOffers } from 'src/store/features/interface/interfaceSelector';
-import { useSelector } from 'react-redux';
-import { MarketSort } from '../MarketSort/MarketSort';
-import { OFFERS_TYPE, useRightTableColumn } from 'src/hooks/useRightTableColumns';
 import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
+import {
+  OFFERS_TYPE,
+  useRightTableColumn,
+} from 'src/hooks/useRightTableColumns';
+import { selectAddressOffers } from 'src/store/features/interface/interfaceSelector';
+
+import { Table } from '../../Table';
+import { MarketSort } from '../MarketSort/MarketSort';
+import { MarketSubRow } from '../MarketSubRow';
 
 export const MarketTableUser: FC = () => {
-
   const { refreshOffers, offersIsLoading } = useRefreshOffers(false);
 
   const [sorting, setSorting] = useState<SortingState>([
@@ -34,7 +38,8 @@ export const MarketTableUser: FC = () => {
   const [expanded, setExpanded] = useState<ExpandedState>({});
 
   const addressOffers = useSelector(selectAddressOffers);
-  const { offers, sellCount, buyCount, exchangeCount } = useTypedOffers(addressOffers);
+  const { offers, sellCount, buyCount, exchangeCount } =
+    useTypedOffers(addressOffers);
   const columns = useRightTableColumn(OFFERS_TYPE.ADDRESS);
 
   const table = useReactTable({
@@ -52,8 +57,8 @@ export const MarketTableUser: FC = () => {
   });
 
   return (
-    <Flex direction={"column"} gap={"sm"} mt={10}>
-      <MarketSort 
+    <Flex direction={'column'} gap={'sm'} mt={10}>
+      <MarketSort
         sellCount={sellCount}
         buyCount={buyCount}
         exchangeCount={exchangeCount}
@@ -71,10 +76,12 @@ export const MarketTableUser: FC = () => {
           }),
         }}
         table={table}
-        tablecaptionOptions={{ refreshState: [offersIsLoading, refreshOffers], visible: true }}
+        tablecaptionOptions={{
+          refreshState: [offersIsLoading, refreshOffers],
+          visible: true,
+        }}
         TableSubRow={MarketSubRow}
       />
     </Flex>
-    
   );
 };

@@ -73,3 +73,11 @@ export function columnLabel(
 
   return columnLabels[key];
 }
+
+export function getOfferColor(offer: OfferData) {
+  return offer.type === OFFER_TYPE.BUY
+    ? 'green'
+    : offer.type === OFFER_TYPE.EXCHANGE
+    ? 'orange'
+    : 'red';
+}

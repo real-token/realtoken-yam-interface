@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react';
 
-import { Flex, Group, Select, Text, em } from '@mantine/core';
+import { Flex, Group, Select, em } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 
 import { useAtom } from 'jotai';
@@ -14,15 +14,11 @@ import {
 } from 'src/store/features/buyOffer/buyOfferSelector';
 import { Displays } from 'src/types/Displays';
 
-import { BuyWithPermit } from '../Buy/BuyWithPermit';
-import {
-  CheckCompliance,
-  ComplianceStatus,
-} from '../CheckCompliance/CheckCompliance';
 import { MarketTable } from '../Market';
 import { MarketGrid } from '../Market/MarketGrid/MarketGrid';
-import { MarketList } from '../Market/MarketList/MarketList';
+import { PublicMarketList } from '../Market/MarketList/PublicMarketList';
 import { MarketSort } from '../Market/MarketSort/MarketSort';
+import { BuyWithPermit } from '../Offer/Buy/BuyWithPermit';
 
 interface Display {
   display: Displays;
@@ -58,7 +54,7 @@ const Display: FC = () => {
         {
           display: Displays.LIST,
           title: 'List',
-          component: <MarketList key={'list'} />,
+          component: <PublicMarketList key={'list'} />,
         },
       ],
     ]);

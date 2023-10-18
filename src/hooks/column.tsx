@@ -26,7 +26,7 @@ import { DeleteActions } from 'src/components/Market/DeleteActions';
 import { DeleteAdminAction } from 'src/components/Market/DeleteActions/DeleteAdminAction';
 import { ShowOfferAction } from 'src/components/Market/ShowOfferAction/ShowOfferAction';
 import { UpdateActionsWithPermit } from 'src/components/Market/UpdateActions';
-import { OfferTypeBadge } from 'src/components/Offer/OfferTypeBadge';
+import { OfferTypeBadge } from 'src/components/Offer/components/OfferTypeBadge';
 import { OFFER_TYPE, Offer } from 'src/types/offer';
 import { getReduceAddress } from 'src/utils/address';
 import { ENV, isEnvs } from 'src/utils/isEnv';

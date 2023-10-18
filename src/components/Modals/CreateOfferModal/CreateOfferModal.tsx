@@ -27,7 +27,7 @@ import BigNumber from 'bignumber.js';
 import { Contract } from 'ethers';
 
 import { CoinBridgeToken, coinBridgeTokenABI } from 'src/abis';
-import { OfferTypeBadge } from 'src/components/Offer/OfferTypeBadge';
+import { OfferTypeBadge } from 'src/components/Offer/components/OfferTypeBadge';
 import { Shield } from 'src/components/Shield/Shield';
 import { WalletERC20Balance } from 'src/components/WalletBalance/WalletERC20Balance';
 import { Chain, NOTIFICATIONS, NotificationsID } from 'src/constants';

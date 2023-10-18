@@ -30,7 +30,7 @@ import { providerAtom } from '../../../../states';
 import { OFFER_TYPE, Offer } from '../../../../types/offer';
 import { buy } from '../../../../utils/tx/buy';
 import { openInNewTab } from '../../../../utils/window';
-import { OfferTypeBadge } from '../../../Offer/OfferTypeBadge';
+import { OfferTypeBadge } from '../../../Offer/components/OfferTypeBadge';
 
 const useStyle = createStyles((theme: MantineTheme) => ({
   container: {
