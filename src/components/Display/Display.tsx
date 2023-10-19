@@ -18,7 +18,7 @@ import { MarketTable } from '../Market';
 import { MarketGrid } from '../Market/MarketGrid/MarketGrid';
 import { PublicMarketList } from '../Market/MarketList/PublicMarketList';
 import { MarketSort } from '../Market/MarketSort/MarketSort';
-import { BuyWithPermit } from '../Offer/Buy/BuyWithPermit';
+import { BuyOffer } from '../Offer/Buy/BuyOffer';
 
 interface Display {
   display: Displays;
@@ -105,7 +105,7 @@ const Display: FC = () => {
         </>
       )}
       {shallBuyInterfaceDisplay && offerToBuy && (
-        <BuyWithPermit offer={offerToBuy}></BuyWithPermit>
+        <BuyOffer offer={offerToBuy}></BuyOffer>
       )}
     </>
   );

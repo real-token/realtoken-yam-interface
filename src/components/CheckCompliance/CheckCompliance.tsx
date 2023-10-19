@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Group, Notification, em, rem } from '@mantine/core';
@@ -18,7 +18,7 @@ interface ComplianceProps {
 
 export const CheckCompliance: FC<ComplianceProps> = ({ margin }) => {
   const isMobile = useMediaQuery(`(max-width: ${em(750)})`);
-  const { t } = useTranslation('notifications', { keyPrefix: 'kycCheck' });
+
   const { t: tWarning } = useTranslation('notifications', {
     keyPrefix: 'warning',
   });
@@ -45,39 +45,9 @@ export const CheckCompliance: FC<ComplianceProps> = ({ margin }) => {
 
     getCompliance();
   }, [setIsCompliant, complianceRegistry]);
-  const icon = isCompliant ? (
-    <IconCheck style={{ width: rem(20), height: rem(20) }} />
-  ) : (
-    <IconX style={{ width: rem(20), height: rem(20) }} />
-  );
+
   return (
     <>
-      {/*  {(isMessageClosed || isCompliant) && (
-        <Group position={'center'}>
-          <Notification
-            icon={icon}
-            color={isCompliant ? 'teal' : 'red'}
-            title={isCompliant ? t('verified') : t('invalid')}
-            mt={isMobile ? '-140px' : 0}
-            withCloseButton={false}
-            sx={{
-              width: isMobile ? '180px' : 'auto',
-              position: isMobile ? 'relative' : 'absolute',
-              top: isMobile ? '70px' : '110px',
-              right: isMobile ? '10px' : '40px',
-              cursor: 'pointer',
-              padding: isMobile ? '3px' : undefined,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-            onClick={() => {
-              setIsMessageClosed(false);
-            }}
-          >
-            {isMobile ? '' : complianceRegistry?.account}
-          </Notification>
-        </Group>
-      )} */}
       {!isMessageImportantClosed && isCompliant && (
         <Notification
           title={tWarning('title')}
@@ -105,10 +75,13 @@ export const CheckCompliance: FC<ComplianceProps> = ({ margin }) => {
 export const ComplianceStatus: FC<ComplianceProps> = ({ margin }) => {
   const isMobile = useMediaQuery(`(max-width: ${em(750)})`);
   const { t } = useTranslation('notifications', { keyPrefix: 'kycCheck' });
-
+  const [isMinimized, setIsMinimised] = useState<boolean>(false);
   const [isCompliant, setIsCompliant] = useState<boolean>(false);
-
   const complianceRegistry = useCompliance();
+
+  const onMinimized = useCallback(() => {
+    setIsMinimised(!isMinimized);
+  }, [setIsMinimised, isMinimized]);
 
   useEffect(() => {
     const getCompliance = async () => {
@@ -128,7 +101,13 @@ export const ComplianceStatus: FC<ComplianceProps> = ({ margin }) => {
     getCompliance();
   }, [setIsCompliant, complianceRegistry]);
   const icon = isCompliant ? (
-    <IconCheck style={{ width: rem(20), height: rem(20) }} />
+    <IconCheck
+      style={
+        isMinimized
+          ? { width: rem(20), height: rem(20) }
+          : { width: rem(20), height: rem(20) }
+      }
+    />
   ) : (
     <IconX style={{ width: rem(20), height: rem(20) }} />
   );
@@ -136,22 +115,22 @@ export const ComplianceStatus: FC<ComplianceProps> = ({ margin }) => {
     <Notification
       icon={icon}
       color={isCompliant ? 'teal' : 'red'}
-      title={isCompliant ? t('verified') : t('invalid')}
-      //mt={isMobile ? '-140px' : 0}
+      title={isMinimized ? '' : isCompliant ? t('verified') : t('invalid')}
       withCloseButton={false}
+      onClick={onMinimized}
       sx={{
-        width: isMobile ? '180px' : 'auto',
-        //position: isMobile ? 'relative' : 'absolute',
-        //top: isMobile ? '70px' : '110px',
-        //right: isMobile ? '10px' : '40px',
+        width: isMinimized ? '60px' : isMobile ? '180px' : 'auto',
+        height: isMinimized ? '30px' : 'auto',
         margin: margin,
         cursor: 'pointer',
         padding: isMobile ? '3px' : undefined,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: isMinimized ? 'rgb(255,255,255,0)' : undefined,
+        boxShadow: isMinimized ? 'none' : undefined,
       }}
     >
-      {isMobile ? '' : complianceRegistry?.account}
+      {isMobile || isMinimized ? '' : complianceRegistry?.account}
     </Notification>
   );
 };

@@ -2,76 +2,39 @@ import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Web3Provider } from '@ethersproject/providers';
-import {
-  Button,
-  Card,
-  Divider,
-  Flex,
-  Group,
-  Stack,
-  Text,
-  createStyles,
-  em,
-} from '@mantine/core';
+import { Button, Divider, Flex, Group, Stack, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { useMediaQuery } from '@mantine/hooks';
 import { useWeb3React } from '@web3-react/core';
 
 import { CoinBridgeToken, Erc20, Erc20ABI, coinBridgeTokenABI } from 'src/abis';
 import { NumberInput } from 'src/components/NumberInput/NumberInput';
-import {
-  getOfferPropertyAddress,
-  getOfferType,
-} from 'src/components/Offer/Utils';
 import { ContractsID } from 'src/constants';
 import { useActiveChain, useContract } from 'src/hooks';
 import { useAppDispatch } from 'src/hooks/react-hooks';
-import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
 import { buyOfferClose } from 'src/store/features/buyOffer/buyOfferSlice';
 import { Offer } from 'src/types/offer/Offer';
 import { getContract } from 'src/utils';
 import { cleanNumber } from 'src/utils/number';
-import { calcRem } from 'src/utils/style';
 
-import { OfferHeader, OfferTitle } from '../components/Header';
+import { OfferContainer } from '../components/OfferContainer';
 import { onHandleEditSubmit } from './SubmitHandler';
 import { UpdateFormValues } from './Types';
 
-const useStyle = createStyles((theme) => ({
-  center: {
-    justifyContent: 'left',
-    alignItems: 'left',
-    textAlign: 'center',
-  },
-  container: {
-    fontSize: theme.fontSizes.sm,
-    display: 'inline-block',
-    justifyContent: 'center',
-    alignItems: 'center',
-    textAlign: 'start',
-    width: calcRem(500),
-  },
-  containerMobile: {
-    width: '100%',
-  },
-  header: {
-    backgroundColor:
-      theme.colorScheme === 'dark'
-        ? theme.colors.dark[6]
-        : theme.colors.gray[2],
-  },
-}));
-
-type UpdateModalProps = {
+type EditOfferProps = {
   offer: Offer;
   onCloseEdit?: () => void;
 };
 
-export const EditOffer: FC<UpdateModalProps> = ({ offer, onCloseEdit }) => {
-  const { classes, cx } = useStyle();
+export const EditOffer: FC<EditOfferProps> = ({ offer, onCloseEdit }) => {
+  return (
+    <OfferContainer offer={offer} action={'Editer Offre'} onClose={onCloseEdit}>
+      <EditOfferForms offer={offer} onCloseEdit={onCloseEdit}></EditOfferForms>
+    </OfferContainer>
+  );
+};
 
+export const EditOfferForms: FC<EditOfferProps> = ({ offer, onCloseEdit }) => {
   const dispatch = useAppDispatch();
-  const isMobile = useMediaQuery(`(max-width: ${em(750)})`);
   const { account, provider } = useWeb3React();
 
   const { getInputProps, onSubmit, reset, setFieldValue, values } =
@@ -87,12 +50,8 @@ export const EditOffer: FC<UpdateModalProps> = ({ offer, onCloseEdit }) => {
       },
     });
 
-  //let isSubmitting = false;
-
   const [amountMax, setAmountMax] = useState<number>();
-  const { getPropertyToken } = usePropertiesToken();
-  const offerProperty = getPropertyToken(getOfferPropertyAddress(offer));
-  const backgroundImage = offerProperty ? offerProperty.imageLink[0] : '';
+
   const activeChain = useActiveChain();
   const realTokenYamUpgradeable = useContract(
     ContractsID.realTokenYamUpgradeable
@@ -187,110 +146,73 @@ export const EditOffer: FC<UpdateModalProps> = ({ offer, onCloseEdit }) => {
   }, [reset, dispatch, offer, onCloseEdit]);
 
   return (
-    <div className={classes.center}>
-      <div
-        className={cx(
-          classes.container,
-          isMobile ? classes.containerMobile : undefined
+    <form onSubmit={onSubmit(onHandleSubmit)}>
+      <Stack justify={'center'} align={'stretch'}>
+        <Flex direction={'column'} gap={'sm'}>
+          <Text size={'xl'}>{t('selectedOffer')}</Text>
+          <Flex direction={'column'} gap={8}>
+            <Flex direction={'column'}>
+              <Text fw={700}>{t('offerId')}</Text>
+              <Text>{offer.offerId ? offer.offerId : 'Offer not found'}</Text>
+            </Flex>
+            <Flex direction={'column'}>
+              <Text fw={700}>{t('price')}</Text>
+              <Text>{offer.price}</Text>
+            </Flex>
+            <Flex direction={'column'}>
+              <Text fw={700}>{t('amount')}</Text>
+              <Text>{offer.amount}</Text>
+            </Flex>
+          </Flex>
+        </Flex>
+
+        <Divider />
+
+        <NumberInput
+          label={t('price')}
+          required={true}
+          min={0}
+          placeholder={t('price')}
+          sx={{ flexGrow: 1 }}
+          {...getInputProps('price')}
+        />
+        <NumberInput
+          label={t('amount')}
+          required={true}
+          min={0}
+          placeholder={t('amount')}
+          sx={{ flexGrow: 1 }}
+          {...getInputProps('amount')}
+        />
+
+        <Text size={'xl'}>{t('summary')}</Text>
+        {values.price > 0 && values.amount > 0 && (
+          <Text size={'md'} mb={10}>
+            {` ${t1('summaryText1')} ${values?.amount} ${offerTokenSymbol} ${t1(
+              'summaryText2'
+            )} ${cleanNumber(values?.price)} ${buyTokenSymbol} ${t1(
+              'summaryText3'
+            )} ${total} ${buyTokenSymbol}`}
+          </Text>
         )}
-      >
-        <OfferTitle
-          offerId={offer.offerId}
-          offerType={getOfferType(offer)}
-          onClose={onClose}
-        ></OfferTitle>
-        <Card radius={'lg'}>
-          <form onSubmit={onSubmit(onHandleSubmit)}>
-            <OfferHeader
-              offerId={offer.offerId}
-              offerType={getOfferType(offer)}
-              image={backgroundImage}
-              title={
-                offerProperty ? offerProperty.location.aera : offer.miningSite
-              }
-              country={offerProperty ? offerProperty.location.country : ''}
-              energy={offerProperty ? offerProperty.energy.join(', ') : ''}
-            ></OfferHeader>
 
-            <Stack justify={'center'} align={'stretch'}>
-              <Flex direction={'column'} gap={'sm'}>
-                <Text size={'xl'}>{t('selectedOffer')}</Text>
-                <Flex direction={'column'} gap={8}>
-                  <Flex direction={'column'}>
-                    <Text fw={700}>{t('offerId')}</Text>
-                    <Text>
-                      {offer.offerId ? offer.offerId : 'Offer not found'}
-                    </Text>
-                  </Flex>
-                  <Flex direction={'column'}>
-                    <Text fw={700}>{t('price')}</Text>
-                    <Text>{offer.price}</Text>
-                  </Flex>
-                  <Flex direction={'column'}>
-                    <Text fw={700}>{t('amount')}</Text>
-                    <Text>{offer.amount}</Text>
-                  </Flex>
-                </Flex>
-              </Flex>
-
-              <Divider />
-
-              <NumberInput
-                label={t('price')}
-                required={true}
-                min={0}
-                placeholder={t('price')}
-                sx={{ flexGrow: 1 }}
-                {...getInputProps('price')}
-              />
-              <NumberInput
-                label={t('amount')}
-                required={true}
-                min={0}
-                placeholder={t('amount')}
-                sx={{ flexGrow: 1 }}
-                {...getInputProps('amount')}
-              />
-
-              <Text size={'xl'}>{t('summary')}</Text>
-              {values.price > 0 && values.amount > 0 && (
-                <Text size={'md'} mb={10}>
-                  {` ${t1('summaryText1')} ${
-                    values?.amount
-                  } ${offerTokenSymbol} ${t1('summaryText2')} ${cleanNumber(
-                    values?.price
-                  )} ${buyTokenSymbol} ${t1(
-                    'summaryText3'
-                  )} ${total} ${buyTokenSymbol}`}
-                </Text>
-              )}
-
-              <Group grow={true}>
-                <Button
-                  color={'red'}
-                  onClick={onClose}
-                  aria-label={t('cancel')}
-                >
-                  {t('cancel')}
-                </Button>
-                <Button
-                  type={'submit'}
-                  loading={isSubmittingRef.current}
-                  aria-label={t('confirm')}
-                  disabled={
-                    values.price == 0 ||
-                    values.amount == 0 ||
-                    values.price == undefined ||
-                    values.amount == undefined
-                  }
-                >
-                  {t('confirm')}
-                </Button>
-              </Group>
-            </Stack>
-          </form>
-        </Card>
-      </div>
-    </div>
+        <Group grow={true} sx={{ padding: '0 50px 0 50px' }}>
+          <Button
+            type={'submit'}
+            loading={isSubmittingRef.current}
+            aria-label={t('confirm')}
+            radius={'xl'}
+            disabled={
+              values.price == 0 ||
+              values.amount == 0 ||
+              values.price == undefined ||
+              values.amount == undefined
+            }
+          >
+            {t('confirm')}
+          </Button>
+        </Group>
+      </Stack>
+    </form>
   );
 };

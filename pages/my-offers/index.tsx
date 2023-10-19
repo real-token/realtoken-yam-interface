@@ -9,7 +9,7 @@ import {
   MarketTablePrivate,
   MarketTableUser,
 } from 'src/components/Market/MarketTable';
-import { BuyWithPermit } from 'src/components/Offer/Buy/BuyWithPermit';
+import { BuyOffer } from 'src/components/Offer/Buy/BuyOffer';
 import { DisplayOffer } from 'src/components/Offer/DisplayOffer';
 import { EditOffer } from 'src/components/Offer/Edit/EditOffer';
 import { ViewOffer } from 'src/components/Offer/View/ViewOffer';
@@ -51,7 +51,7 @@ const TransfersPage = () => {
 
             <Tabs.Panel value={'myOffers'} pt={'xs'}>
               <UserMarketList></UserMarketList>
-              <MarketTableUser />
+              {/* <MarketTableUser /> */}
             </Tabs.Panel>
 
             <Tabs.Panel value={'privateOffers'} pt={'xs'}>
