@@ -8,7 +8,8 @@ export type OfferData = {
   purchaseTokenAddress: string;
   launchDate: string;
   balanceWallet?: number;
-  sellerName: string;
+  creatorName: string;
+  creatorAddress: string;
   siteLocation: string;
   electricityPrice: number;
   initialSellingPrice?: number;
@@ -37,7 +38,7 @@ export enum MaxHeight {
 }
 
 export enum Columns {
-  sellerName = 'sellerName',
+  creatorName = 'sellerName',
   requestedSellingPrice = 'requestedSellingPrice',
   purchaseToken = 'purchaseToken',
   quantityAvailable = 'quantityAvailable',

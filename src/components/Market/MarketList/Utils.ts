@@ -13,7 +13,8 @@ export function mapOfferToOfferData(offer: Offer): OfferData {
     purchaseToken: offer.buyerTokenName,
     purchaseTokenAddress: offer.buyerTokenAddress,
     launchDate: offer.sellDate,
-    sellerName: offer.sellerName,
+    creatorName: offer.sellerName,
+    creatorAddress: offer.sellerAddress,
     siteLocation: offer.miningSite,
     electricityPrice: offer.electricityPrice,
     initialSellingPrice: offer.officialPrice,
@@ -80,4 +81,17 @@ export function getOfferColor(offer: OfferData) {
     : offer.type === OFFER_TYPE.EXCHANGE
     ? 'orange'
     : 'red';
+}
+
+export function truncateInMiddle(inputString: string): string {
+  if (inputString.length <= 7) {
+    return inputString; // No need to truncate
+  }
+
+  const startLength = 4;
+  const endLength = 3;
+  const beginning = inputString.slice(0, startLength);
+  const end = inputString.slice(-endLength);
+
+  return beginning + '...' + end;
 }

@@ -26,8 +26,8 @@ import { Offer } from 'src/types/offer';
 import { OFFER_TYPE } from 'src/types/offer/OfferType';
 import { formatPercent, formatToken, formatUsd } from 'src/utils/format';
 
-import { Columns, OfferData } from './Types';
-import { mapColumnLabels } from './Utils';
+import { Columns, OfferData } from '../Types';
+import { mapColumnLabels, truncateInMiddle } from '../Utils';
 
 const LINK_ACCESS_KEY = 'TEXT_URL';
 
@@ -421,20 +421,21 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
       >
         {!isLarge && (
           <Text fz={'md'} ta={'left'} color={'dimmed'}>
-            {columnLabels[Columns.sellerName]}
+            {columnLabels[Columns.creatorName]}
           </Text>
         )}
         <div>
           <Text fz={'md'} ta={isLarge ? 'right' : 'left'}>
-            {t(offer.sellerName)}
+            {t(offer.creatorName)}
           </Text>
           <Text
             fz={isLarge ? 'xs' : 'xs'}
             color={'dimmed'}
             ta={isLarge ? 'right' : 'left'}
-            style={{ color: 'rgba(0, 0, 0, 0)' }}
+            //truncate={'start'}
+            //style={{ color: 'rgba(0, 0, 0, 0)' }}
           >
-            {'-'}
+            {truncateInMiddle(offer.creatorAddress)}
           </Text>
         </div>
       </Stack>

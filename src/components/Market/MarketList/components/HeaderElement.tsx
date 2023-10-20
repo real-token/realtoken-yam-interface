@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { ActionIcon, Flex, Text, useMantineTheme } from '@mantine/core';
 import { IconChevronDown, IconChevronUp, IconSelector } from '@tabler/icons';
 
-import { Arrow, SortDirection } from './Types';
+import { Arrow, SortDirection } from '../Types';
 
 interface HeaderElementProps {
   label: string;

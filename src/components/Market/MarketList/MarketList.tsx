@@ -18,10 +18,10 @@ import { useAtomValue } from 'jotai';
 import { tableOfferTypeAtom } from 'src/states';
 import { Offer } from 'src/types/offer/Offer';
 
-import { HeaderElement } from './HeaderElement';
-import { ItemElement, ItemEmptyElement } from './ItemElement';
 import { Columns, MaxHeight, OfferData, SortDirection } from './Types';
 import { mapColumnLabels, mapOfferToOfferData } from './Utils';
+import { HeaderElement } from './components/HeaderElement';
+import { ItemElement, ItemEmptyElement } from './components/ItemElement';
 
 const ITEM_HEIGHT_MIN = 100;
 
@@ -154,7 +154,7 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
               iconWidth={70}
               icon={t('sortBy')}
               data={[
-                columnLabels[Columns.sellerName],
+                columnLabels[Columns.creatorName],
                 columnLabels[Columns.requestedSellingPrice],
                 columnLabels[Columns.purchaseToken],
                 columnLabels[Columns.quantityAvailable],
@@ -175,7 +175,7 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
               iconWidth={70}
               icon={t('sortBy')}
               data={[
-                columnLabels[Columns.sellerName],
+                columnLabels[Columns.creatorName],
                 columnLabels[Columns.requestedSellingPrice],
                 columnLabels[Columns.purchaseToken],
                 columnLabels[Columns.quantityAvailable],
