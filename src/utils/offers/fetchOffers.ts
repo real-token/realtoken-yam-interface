@@ -176,7 +176,13 @@ export const fetchOffersTheGraph = (
 
       prom.push(formatQuery(r, skip))
 
-      const offers: OfferGraphQl[] = (await Promise.all(prom)).map(val => val.data).reduce((prev, curent, i, arr) => [...prev, ...arr[i].offers], []) as OfferGraphQl[];
+      const offersFromYam = await Promise.all(prom);
+      console.log(offersFromYam)
+
+      const offers: OfferGraphQl[] = offersFromYam.map(val => val.data).reduce((prev, current) => {
+        if(!current) return prev;
+        return [...prev, ...current.offers] 
+      }, []) as OfferGraphQl[];
 
       const accountRealtokenDuplicates: string[] = offers.map(val => (val.seller.address + '-' + val.offerToken.address));
       const accountBalanceId = [...new Set(accountRealtokenDuplicates)]; // remove duplicates
