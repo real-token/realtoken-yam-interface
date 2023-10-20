@@ -32,6 +32,7 @@
     
     "sellerAddress": "Adresse du vendeur",
     "sellerName": "Vendeur",
+    "creatorName": "Vendeur",
 
     "TraderAddress": "Offer Token Address",
     "TraderName": "Trader name",

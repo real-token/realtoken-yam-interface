@@ -35,6 +35,7 @@
 
     "TraderAddress": "Adresse du trader",
     "TraderName": "Nom du trader",
+    "creatorName": "Vendeur",
 
     "sellDate": "Date de vente",
     "UNKNOWN":"inconnu",

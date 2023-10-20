@@ -35,6 +35,7 @@
     
     "sellerAddress": "Adresse du vendeur",
     "sellerName": "Vendeur",
+    "creatorName": "Vendeur",
 
     "sellDate": "Date de vente",
     "UNKNOWN":"inconnu",

@@ -38,7 +38,7 @@ export function mapColumnLabels(
   t: TFunction<'buy', 'list'>
 ): { [key: string]: string } {
   return {
-    sellerName:
+    creatorName:
       offerType === OFFER_TYPE.SELL
         ? t('sellerName')
         : offerType === OFFER_TYPE.BUY

@@ -38,7 +38,7 @@ export enum MaxHeight {
 }
 
 export enum Columns {
-  creatorName = 'sellerName',
+  creatorName = 'creatorName',
   requestedSellingPrice = 'requestedSellingPrice',
   purchaseToken = 'purchaseToken',
   quantityAvailable = 'quantityAvailable',
