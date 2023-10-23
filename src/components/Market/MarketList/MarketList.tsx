@@ -15,6 +15,7 @@ import { useMediaQuery } from '@mantine/hooks';
 
 import { useAtomValue } from 'jotai';
 
+import { useAllowedTokens } from 'src/hooks/useAllowedTokens';
 import { tableOfferTypeAtom } from 'src/states';
 import { Offer } from 'src/types/offer/Offer';
 
@@ -32,18 +33,28 @@ interface MarketListProps {
 
 export const MarketList: FC<MarketListProps> = ({ offers }) => {
   const theme = useMantineTheme();
-  const tableOfferType = useAtomValue(tableOfferTypeAtom);
+  const listOfferType = useAtomValue(tableOfferTypeAtom);
   const [sortedColumn, setSortedColumn] = useState('');
-  const isLarge = useMediaQuery(`(min-width: ${theme.breakpoints.lg})`);
+  const isLarge = useMediaQuery(`(min-width: 1200px)`);
+  const isMedium = useMediaQuery(`(min-width: 685`) && !isLarge;
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`);
   const isSmallMobile = useMediaQuery(`(max-width: 510px)`);
-  const isSmall = useMediaQuery(`(min-width: 510px`) && !isLarge;
+  const isSmall =
+    useMediaQuery(`(min-width: ${theme.breakpoints.xs}`) && !isMedium;
+
+  const { allowedTokens } = useAllowedTokens();
   const offersData: OfferData[] = offers.map((offer) =>
-    mapOfferToOfferData(offer)
+    mapOfferToOfferData(offer, listOfferType, allowedTokens)
   );
 
-  const { t } = useTranslation('buy', { keyPrefix: 'list' });
-  const columnLabels = mapColumnLabels(tableOfferType, t);
+  const { t: tList } = useTranslation('list');
+  const { t: tOfferMode } = useTranslation(listOfferType.toLowerCase(), {
+    keyPrefix: 'list',
+  });
+  const columnLabels = mapColumnLabels(tOfferMode);
+  // for (const column of Object.values(Columns)) {
+  //   console.log('COLUMN', column, columnLabels[column]);
+  // }
 
   const [filterText, setFilterText] = useState('');
   const [sortedOffers, setSortedOffers] = useState(
@@ -51,7 +62,7 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
   );
   useEffect(() => {
     const offersData: OfferData[] = offers.map((offer) =>
-      mapOfferToOfferData(offer)
+      mapOfferToOfferData(offer, listOfferType, allowedTokens)
     );
     setSortedOffers(offersData.filter(filterByText(filterText)));
   }, [offers, filterText]);
@@ -114,12 +125,21 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
   };
 
   const itemHeight = isSmallMobile
+    ? MaxHeight.SmallMobile
+    : isMobile
     ? MaxHeight.Mobile
     : isSmall
     ? MaxHeight.Small
     : isLarge
     ? MaxHeight.Large
     : MaxHeight.Medium;
+
+  console.log('screen', 'isLarge', isLarge);
+  console.log('screen', 'isMobile', isMobile);
+  console.log('screen', 'isSmall', isSmall);
+  console.log('screen', 'isSmallMobile', isSmallMobile);
+  console.log('screen', 'isMedium', isMedium);
+  console.log('screen', 'itemHeight', itemHeight);
 
   return (
     <Container
@@ -143,7 +163,7 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
         {isMobile && (
           <div>
             <TextInput
-              placeholder={t('search')}
+              placeholder={tList('search')}
               value={filterText}
               onChange={handleFilterChange}
               sx={{ marginBottom: '10px' }}
@@ -152,12 +172,12 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
               value={sortedColumn}
               onChange={handleSortChange}
               iconWidth={70}
-              icon={t('sortBy')}
+              icon={tList('sortBy')}
               data={[
-                columnLabels[Columns.creatorName],
-                columnLabels[Columns.requestedSellingPrice],
-                columnLabels[Columns.purchaseToken],
-                columnLabels[Columns.quantityAvailable],
+                columnLabels[Columns.requesterName],
+                columnLabels[Columns.requestedPrice],
+                columnLabels[Columns.requestedToken],
+                columnLabels[Columns.requestedAmount],
               ]}
             />
           </div>
@@ -165,7 +185,7 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
         {!isLarge && !isMobile && (
           <Group position={'apart'}>
             <TextInput
-              placeholder={t('search')}
+              placeholder={tList('search')}
               value={filterText}
               onChange={handleFilterChange}
             />
@@ -173,12 +193,12 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
               value={sortedColumn}
               onChange={handleSortChange}
               iconWidth={70}
-              icon={t('sortBy')}
+              icon={tList('sortBy')}
               data={[
-                columnLabels[Columns.creatorName],
-                columnLabels[Columns.requestedSellingPrice],
-                columnLabels[Columns.purchaseToken],
-                columnLabels[Columns.quantityAvailable],
+                columnLabels[Columns.requesterName],
+                columnLabels[Columns.requestedPrice],
+                columnLabels[Columns.requestedToken],
+                columnLabels[Columns.requestedAmount],
               ]}
             />
           </Group>
@@ -187,7 +207,7 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
           <Grid columns={20}>
             <Grid.Col xl={4} lg={5}>
               <TextInput
-                placeholder={t('search')}
+                placeholder={tList('search')}
                 value={filterText}
                 onChange={handleFilterChange}
               />
@@ -200,8 +220,8 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
                 <HeaderElement
                   label={columnLabels[column]}
                   description={
-                    column === Columns.requestedSellingPrice
-                      ? t('perToken')
+                    column === Columns.requestedPrice
+                      ? tList('perToken')
                       : undefined
                   }
                   sortOffersByColumn={(sortDirection: SortDirection) =>
@@ -235,8 +255,18 @@ function filterByText(
   return (offer) => {
     const searchTerms = filterText.toLowerCase();
     return (
-      offer.siteLocation.toLowerCase().includes(searchTerms) ||
-      offer.forSaleToken.toLowerCase().includes(searchTerms) ||
+      offer.sites.buying.aera.toLowerCase().includes(searchTerms) ||
+      offer.sites.buying.country.toLowerCase().includes(searchTerms) ||
+      offer.sites.buying.name.toLowerCase().includes(searchTerms) ||
+      offer.sites.buying.energy.join(',').toLowerCase().includes(searchTerms) ||
+      offer.sites.selling.aera.toLowerCase().includes(searchTerms) ||
+      offer.sites.selling.country.toLowerCase().includes(searchTerms) ||
+      offer.sites.selling.name.toLowerCase().includes(searchTerms) ||
+      offer.sites.selling.energy
+        .join(',')
+        .toLowerCase()
+        .includes(searchTerms) ||
+      offer.transferedToken.toLowerCase().includes(searchTerms) ||
       offer.id.toLowerCase().includes(searchTerms)
     );
   };

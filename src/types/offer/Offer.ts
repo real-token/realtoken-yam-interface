@@ -27,12 +27,33 @@ export type Offer = {
   priceDelta: number|undefined;
   officialYield: number|undefined;
   offerYield: number|undefined;
-  yieldDelta: number|undefined,
+  yieldDelta: number|undefined;
   buyCurrency: string;
   //
   electricityPrice: number
   sellDate: string
-  miningSite: string
+  sites:{
+    selling:{
+      miningSite: string;
+      name: string;
+      location:{
+        aera: string;
+        country: string;
+      };
+      energy:string[];
+    };
+    buying:{
+      miningSite: string;
+      name: string;
+      location:{
+        aera: string;
+        country: string;
+      };
+      energy:string[];
+    };
+    
+  }
+  
 };
 
 export const DEFAULT_OFFER: Offer = {
@@ -66,7 +87,24 @@ export const DEFAULT_OFFER: Offer = {
   //
   electricityPrice: 0,
   sellDate: "",
-  miningSite: ""
+  sites:{
+    selling: {
+      miningSite: "",
+      name: "",
+      location:{
+        aera: "",
+        country: "",
+      },
+      energy:[],},
+    buying: {
+      miningSite: "",
+      name: "",
+      location:{
+        aera: "",
+        country: "",
+      },
+      energy:[],},
+      }
 }
 
 export const OFFER_LOADING = [DEFAULT_OFFER, DEFAULT_OFFER, DEFAULT_OFFER]

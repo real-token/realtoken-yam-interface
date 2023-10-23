@@ -5,6 +5,6 @@ export enum OFFER_TYPE{
 }
 
 export enum OFFER_SELLER{
-    CSM = "BUY",
+    CSM = "CSM",
     UNKNOWN = "UNKNOWN",
 }

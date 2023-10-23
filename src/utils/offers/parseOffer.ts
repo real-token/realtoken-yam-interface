@@ -91,14 +91,37 @@ export const parseOffer = (
           }); */
       }
 
+      const offerSite = propertiesToken.findLast(
+        (t) =>
+          t.contractAddress.toLowerCase() ===
+          offer.offerToken.address.toLowerCase()
+      );
+      const buyingSite = propertiesToken.findLast(
+        (t) =>
+          t.contractAddress.toLowerCase() ===
+          offer.buyerToken.address.toLowerCase()
+      );
+      console.log(
+        'propertiesToken',
+        JSON.stringify(propertiesToken, null, 4),
+        offerSite?.shortName,
+        buyingSite?.shortName
+      );
+
+      offerSite?.fullName;
+
       const o: Offer = {
         offerId: BigNumber(offer.id).toString(),
         offerTokenAddress: (offer.offerToken.address as string)?.toLowerCase(),
-        offerTokenName: offer.offerToken.name ?? '',
+        offerTokenName: offerSite
+          ? offerSite.shortName
+          : offer.offerToken.name ?? '',
         offerTokenDecimals: offer.offerToken.decimals?.toString() ?? '',
         offerTokenType: offer.offerToken.tokenType ?? 0,
         buyerTokenAddress: (offer.buyerToken.address as string)?.toLowerCase(),
-        buyerTokenName: offer.buyerToken.name ?? '',
+        buyerTokenName: buyingSite
+          ? buyingSite.shortName
+          : offer.buyerToken.name ?? '',
         buyerTokenDecimals: offer.buyerToken.decimals?.toString() ?? '',
         buyerTokenType: offer.buyerToken.tokenType ?? 0,
         sellerAddress: (offer.seller.address as string)?.toLowerCase(),
@@ -131,7 +154,20 @@ export const parseOffer = (
         yieldDelta: undefined,
         electricityPrice: 0,
         sellDate: '',
-        miningSite: '',
+        sites: {
+          selling: {
+            miningSite: offerSite?.miningSite ?? '',
+            name: offerSite?.fullName ?? '',
+            energy: offerSite?.energy ?? [],
+            location: offerSite?.location ?? { aera: '', country: '' },
+          },
+          buying: {
+            miningSite: buyingSite?.miningSite ?? '',
+            name: buyingSite?.fullName ?? '',
+            energy: buyingSite?.energy ?? [],
+            location: buyingSite?.location ?? { aera: '', country: '' },
+          },
+        },
       };
 
       o.type = getOfferType(o.offerTokenType, o.buyerTokenType);
@@ -151,7 +187,6 @@ export const parseOffer = (
       o.priceDelta = getPriceDelta(prices, o);
       o.sellDate = propertyToken?.sellDate ?? '';
       o.electricityPrice = propertyToken?.electricityPrice ?? 0;
-      o.miningSite = propertyToken?.miningSite ?? '';
 
       // console.log(offer.availableAmount, balanceWallet, allowance)
       resolve(o);

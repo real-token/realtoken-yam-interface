@@ -1,20 +1,38 @@
+import { FC } from 'react';
+
 import { OFFER_TYPE } from 'src/types/offer/OfferType';
 
 export type OfferData = {
   id: string;
-  forSaleToken: string;
-  forSaleTokenAddress: string;
-  purchaseToken: string;
-  purchaseTokenAddress: string;
+  transferedToken: string;
+  transferedTokenAddress: string;
+  transferedTokenLogo?: FC<any>;
+  requestedToken: string;
+  requestedTokenAddress: string;
+  requestedTokenLogo?: FC<any>;
   launchDate: string;
   balanceWallet?: number;
-  creatorName: string;
-  creatorAddress: string;
-  siteLocation: string;
+  requesterName: string;
+  requesterAddress: string;
+  sites: {
+    buying: {
+      name: string;
+      country: string;
+      aera: string;
+      energy: string[];
+    };
+    selling: {
+      name: string;
+      country: string;
+      aera: string;
+      energy: string[];
+    };
+  };
+
   electricityPrice: number;
   initialSellingPrice?: number;
-  requestedSellingPrice?: number;
-  quantityAvailable?: number;
+  requestedPrice?: number;
+  requestedAmount?: number;
   image: string;
   type: OFFER_TYPE;
 };
@@ -31,15 +49,16 @@ export enum Arrow {
 }
 
 export enum MaxHeight {
-  Mobile = 413,
-  Small = 319,
-  Medium = 256,
-  Large = 155,
+  SmallMobile = 500,
+  Mobile = 336,
+  Small = 337,
+  Medium = 233,
+  Large = 161,
 }
 
 export enum Columns {
-  creatorName = 'creatorName',
-  requestedSellingPrice = 'requestedSellingPrice',
-  purchaseToken = 'purchaseToken',
-  quantityAvailable = 'quantityAvailable',
+  requesterName = 'requesterName',
+  requestedPrice = 'requestedPrice',
+  requestedToken = 'requestedToken',
+  requestedAmount = 'requestedAmount',
 }

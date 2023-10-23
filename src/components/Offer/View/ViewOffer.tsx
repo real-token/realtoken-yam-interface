@@ -266,7 +266,9 @@ const ViewOfferComponent_old: FC<ComponentOfferProps> = ({ offer, onEdit }) => {
           <OfferHeader
             image={backgroundImage}
             title={
-              offerProperty ? offerProperty.location.aera : offer.miningSite
+              offerProperty
+                ? offerProperty.location.aera
+                : offer.sites.selling.miningSite
             }
             country={offerProperty ? offerProperty.location.country : ''}
             energy={offerProperty ? offerProperty.energy.join(', ') : ''}

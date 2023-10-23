@@ -13,6 +13,7 @@ import {
   useMantineTheme,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
+import { IconArrowRight } from '@tabler/icons';
 
 import { BigNumber } from 'bignumber.js';
 
@@ -27,13 +28,13 @@ import { OFFER_TYPE } from 'src/types/offer/OfferType';
 import { formatPercent, formatToken, formatUsd } from 'src/utils/format';
 
 import { Columns, OfferData } from '../Types';
-import { mapColumnLabels, truncateInMiddle } from '../Utils';
+import { getSiteInfo, mapColumnLabels, truncateInMiddle } from '../Utils';
 
 const LINK_ACCESS_KEY = 'TEXT_URL';
 
 const avatarStyle = {
-  width: '80px',
-  height: '80px',
+  width: '40px',
+  height: '40px',
 };
 
 interface ItemElementProps {
@@ -43,32 +44,37 @@ interface ItemElementProps {
 export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
   const theme = useMantineTheme();
   const dispatch = useAppDispatch();
-  const isLarge = !useMediaQuery(`(max-width: ${theme.breakpoints.lg})`);
+  const isLarge = useMediaQuery(`(min-width: ${theme.breakpoints.lg})`);
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`);
   const [image, setImage] = useState<string>('');
+  const [sitesInfo, setSitesInfo] = useState<
+    { image: string; info: string[] }[]
+  >([]);
   const [siteUrl, setSiteUrl] = useState<string>('');
   const { offer: offerAction } = useOffer(parseInt(offer.id));
   const { getPropertyToken, propertiesIsloading } = usePropertiesToken();
   const { t } = useTranslation('buy', { keyPrefix: 'list' });
-  const columnLabels = mapColumnLabels(offer.type, t);
+  const { t: t2 } = useTranslation('list');
+  const columnLabels = mapColumnLabels(t);
 
   useEffect(() => {
     if (!offer || propertiesIsloading) return undefined;
+    const infos: { image: string; info: string[] }[] = [];
 
-    if (offer.type === OFFER_TYPE.BUY) {
-      const token = getPropertyToken(offer.purchaseTokenAddress);
-      if (token) {
-        offer.image = token.imageLink[0];
-        setImage(token.imageLink[0]);
-        setSiteUrl(token.marketplaceLink);
-      }
-    } else {
-      const token = getPropertyToken(offer.forSaleTokenAddress);
-      if (token) {
-        offer.image = token.imageLink[0];
-        setImage(token.imageLink[0]);
-        setSiteUrl(token.marketplaceLink);
-      }
+    const tokenRequest = getPropertyToken(offer.requestedTokenAddress);
+    if (tokenRequest) {
+      offer.image = tokenRequest.imageLink[0];
+      setImage(tokenRequest.imageLink[0]);
+      setSiteUrl(tokenRequest.marketplaceLink);
+      infos.push({ image: tokenRequest.imageLink[0], info: [] });
+    }
+
+    const token = getPropertyToken(offer.transferedTokenAddress);
+    if (token) {
+      offer.image = token.imageLink[0];
+      setImage(token.imageLink[0]);
+      setSiteUrl(token.marketplaceLink);
+      infos.push({ image: token.imageLink[0], info: [] });
     }
   }, [getPropertyToken, offer, propertiesIsloading]);
 
@@ -92,7 +98,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
       };
 
   const priceDelta = new BigNumber(
-    offer.requestedSellingPrice ?? offer.initialSellingPrice ?? 0
+    offer.requestedPrice ?? offer.initialSellingPrice ?? 0
   )
     .minus(offer.initialSellingPrice ?? 0)
     .dividedBy(
@@ -105,18 +111,20 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
   const priceDeltaColor =
     priceDelta === 0 ? 'dimmed' : priceDelta > 0 ? 'red' : 'teal';
 
-  const siteInfo: string[] = offer.siteLocation
+  /*const siteInfo: string[] = offer.siteLocation
     .split('(') //.split(/\(| et /)
     .map((locationPart) => locationPart.replace(')', ''))
-    .map((locationPart) => locationPart.replace(' et ', ', '));
+    .map((locationPart) => locationPart.replace(' et ', ', '));*/
+
+  const siteInfo = getSiteInfo(offer);
 
   // Triez les valeurs de siteInfo et formatez-les
   const sortedSiteInfo = siteInfo.map((locationPart, index) => {
-    const indexOrder = [1, 0, 2, 3]; // Ordre d'index souhaité
+    const indexOrder = [0, 1, 2, 3]; // Ordre d'index souhaité
     return {
       text: locationPart,
-      size: index === 1 ? 'lg' : index > 1 ? 'sm' : 'md',
-      fontWeight: index === 1 ? 'bold' : undefined,
+      size: index === 0 ? 'md' : index > 1 ? 'sm' : 'sm',
+      fontWeight: index <= 0 ? 'bold' : undefined,
       color: index > 1 ? 'dimmed' : undefined,
       order: indexOrder.indexOf(index),
     };
@@ -131,25 +139,18 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
         fw={info.fontWeight}
         key={index}
         color={info.color}
-        style={{ padding: 0, margin: 0 }}
+        style={{ padding: 0, margin: '-5px 0 0 0' }}
       >
         {info.text}
       </Text>
     ));
 
-  const siteToken =
-    offer.type === OFFER_TYPE.BUY
-      ? offer.purchaseToken
-      : offer.type === OFFER_TYPE.SELL
-      ? offer.forSaleToken
-      : offer.forSaleToken;
-
   const tradeToken =
     offer.type === OFFER_TYPE.BUY
-      ? offer.forSaleToken
+      ? offer.transferedToken
       : offer.type === OFFER_TYPE.SELL
-      ? offer.purchaseToken
-      : offer.purchaseToken;
+      ? offer.requestedToken
+      : offer.requestedToken;
 
   const onOpenOffer = useCallback(
     (offerAction: Offer) => {
@@ -160,13 +161,15 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
 
   const handleClickEvent = (event: React.PointerEvent<HTMLDivElement>) => {
     const target: HTMLDivElement = event.target as HTMLDivElement;
-    console.log('CLICK EVENT', offer.id);
     if (target.accessKey !== LINK_ACCESS_KEY) {
       offerAction
         ? onOpenOffer(offerAction)
         : console.warn('Offer not loaded ' + offer.id);
     }
   };
+
+  const LogoRequested = offer.requestedTokenLogo;
+  const LogoOffer = offer.transferedTokenLogo;
 
   return (
     <Card
@@ -195,33 +198,16 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
               id={offer.id}
             ></OfferBadge>
           </div>
-          <Group
-            spacing={isMobile ? 10 : isLarge ? 0 : 30}
-            position={isLarge ? 'apart' : 'left'}
-          >
-            <Stack spacing={5}>
-              <Group sx={{ marginTop: '10px' }}>
-                <Text fz={'md'} fw={'bold'}>
-                  <TextUrl url={siteUrl} accessKey={LINK_ACCESS_KEY}>
-                    {siteToken}
-                  </TextUrl>
-                </Text>
-              </Group>
-              <Group position={'left'}>
-                <Avatar
-                  src={image}
-                  alt={offer.id}
-                  style={avatarStyle}
-                  radius={37}
-                />
-                <div style={{ padding: 0, margin: 0 }}>{locationInfo}</div>
-              </Group>
-            </Stack>
-            {!isLarge && badgeList(offer, theme)}
-          </Group>
+          {isLarge && tradeSummary(offer, LogoRequested, LogoOffer)}
+          {!isLarge && (
+            <Group spacing={0} position={'apart'}>
+              {tradeSummary(offer, LogoRequested, LogoOffer)}
+              <>{badgeList(offer, theme, image, locationInfo, false)}</>
+            </Group>
+          )}
         </Grid.Col>
         <Grid.Col xl={4} lg={4} style={{ padding: isMobile ? 0 : undefined }}>
-          {isLarge && badgeList(offer, theme)}
+          {isLarge && badgeList(offer, theme, image, locationInfo, true)}
         </Grid.Col>
         <Grid.Col
           xl={3}
@@ -313,7 +299,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             ta={textAlignRight ? 'right' : 'left'}
             color={'dimmed'}
           >
-            {columnLabels[Columns.quantityAvailable]}
+            {columnLabels[Columns.requestedAmount]}
           </Text>
         )}
         <div>
@@ -322,7 +308,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             ta={isLarge || textAlignRight ? 'right' : 'left'}
             fw={500}
           >
-            {formatToken(offer.quantityAvailable ?? 0)}
+            {formatToken(offer.requestedAmount ?? 0)}
           </Text>
           <Text
             fz={isLarge ? 'xs' : 'xs'}
@@ -330,8 +316,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             ta={isLarge || textAlignRight ? 'right' : 'left'}
           >
             {formatUsd(
-              (offer.quantityAvailable ?? 0) *
-                (offer.requestedSellingPrice ?? 0)
+              (offer.requestedAmount ?? 0) * (offer.requestedPrice ?? 0)
             )}
           </Text>
         </div>
@@ -353,7 +338,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             ta={textAlignRight ? 'right' : 'left'}
             color={'dimmed'}
           >
-            {columnLabels[Columns.purchaseToken]}
+            {columnLabels[Columns.requestedToken]}
           </Text>
         )}
         <div>
@@ -386,7 +371,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
       >
         {!isLarge && (
           <Text fz={'md'} ta={'left'} color={'dimmed'}>
-            {columnLabels[Columns.requestedSellingPrice]}
+            {columnLabels[Columns.requestedPrice]}
           </Text>
         )}
         <div>
@@ -395,9 +380,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             ta={isLarge ? 'right' : 'left'}
             fw={500}
           >
-            {formatUsd(
-              offer.requestedSellingPrice ?? offer.initialSellingPrice ?? 0
-            )}
+            {formatUsd(offer.requestedPrice ?? offer.initialSellingPrice ?? 0)}
           </Text>
           <Text
             fz={isLarge ? 'xs' : 'xs'}
@@ -421,12 +404,12 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
       >
         {!isLarge && (
           <Text fz={'md'} ta={'left'} color={'dimmed'}>
-            {columnLabels[Columns.creatorName]}
+            {columnLabels[Columns.requesterName]}
           </Text>
         )}
         <div>
           <Text fz={'md'} ta={isLarge ? 'right' : 'left'}>
-            {t(offer.creatorName)}
+            {t2(offer.requesterName)}
           </Text>
           <Text
             fz={isLarge ? 'xs' : 'xs'}
@@ -435,7 +418,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             //truncate={'start'}
             //style={{ color: 'rgba(0, 0, 0, 0)' }}
           >
-            {truncateInMiddle(offer.creatorAddress)}
+            {truncateInMiddle(offer.requesterAddress)}
           </Text>
         </div>
       </Stack>
@@ -445,7 +428,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
 
 export const ItemEmptyElement: FC = () => {
   const theme = useMantineTheme();
-  const { t } = useTranslation('buy', { keyPrefix: 'list' });
+  const { t } = useTranslation('list');
   return (
     <Card
       withBorder={true}
@@ -464,63 +447,130 @@ export const ItemEmptyElement: FC = () => {
   );
 };
 
-function badgeList(offer: OfferData, theme: MantineTheme) {
+function tradeSummary(
+  offer: OfferData,
+  LogoRequested: React.FC<any> | undefined,
+  LogoOffer: React.FC<any> | undefined
+) {
   return (
-    <Stack spacing={5} h={'100%'} align={'stretch'} justify={'flex-end'}>
-      <div>
-        <Badge
-          variant={'light'}
-          color={'lime'}
-          radius={'sm'}
-          style={{
-            backgroundColor:
-              theme.colorScheme === 'dark'
-                ? `${theme.colors.brand[5]}0F`
-                : `${theme.colors.brand[6]}0F`,
-            color:
-              theme.colorScheme === 'dark'
-                ? `${theme.colors.brand[5]}`
-                : `${theme.colors.brand[6]}`,
-          }}
-        >
-          <Group>
-            <Text>{'Initial Price '}</Text>
-            <Text>{formatUsd(offer.initialSellingPrice ?? 0)}</Text>
-          </Group>
-        </Badge>
-      </div>
-      <div>
-        <Badge
-          variant={'light'}
-          color={'yellow'}
-          radius={'sm'}
-          style={{
-            backgroundColor: `${theme.colors.yellow[5]}0F`,
-            color: theme.colors.yellow[5],
-          }}
-        >
-          <Group>
-            <Text>{'Electricity Price'}</Text>
-            <Text>{formatUsd(offer.electricityPrice, 4)}</Text>
-          </Group>
-        </Badge>
-      </div>
-      <div>
-        <Badge
-          variant={'light'}
-          color={'yellow'}
-          radius={'sm'}
-          style={{
-            backgroundColor: `${theme.colors.yellow[5]}0F`,
-            color: theme.colors.yellow[5],
-          }}
-        >
-          <Group>
-            <Text>{'Launch Date'}</Text>
-            <Text>{offer.launchDate}</Text>
-          </Group>
-        </Badge>
-      </div>
+    <Stack spacing={5} h={'100%'} align={'stretch'} justify={'center'}>
+      <Group sx={{ marginTop: '10px' }} spacing={8}>
+        <Stack justify={'flex-start'} spacing={0}>
+          <Text fz={'md'} fw={'bold'}>
+            {offer.requestedToken}
+          </Text>
+          <div style={{ textAlign: 'center' }}>
+            {LogoRequested
+              ? React.cloneElement(<LogoRequested />, { width: '24' })
+              : undefined}
+          </div>
+        </Stack>
+        <Stack justify={'flex-start'} spacing={0}>
+          <Text fz={'md'} fw={'bold'} sx={{ paddingBottom: '3px' }}>
+            {' contre '}
+          </Text>
+          <div style={{ textAlign: 'center' }}>
+            <IconArrowRight size={20} aria-label={'Arrow'} />
+          </div>
+        </Stack>
+        <Stack justify={'flex-start'} spacing={0}>
+          <Text fz={'md'} fw={'bold'}>
+            {offer.transferedToken}
+          </Text>
+          <div style={{ textAlign: 'center' }}>
+            {LogoOffer
+              ? React.cloneElement(<LogoOffer />, { width: '24' })
+              : undefined}
+          </div>
+        </Stack>
+      </Group>
     </Stack>
+  );
+}
+
+function badgeList(
+  offer: OfferData,
+  theme: MantineTheme,
+  image: string,
+  locationInfo: JSX.Element[],
+  isStack: boolean
+) {
+  return (
+    <Group position={'center'}>
+      {!isStack && (
+        <Group position={'left'}>
+          <Avatar src={image} alt={offer.id} style={avatarStyle} radius={37} />
+          <div style={{ padding: 0, margin: 0 }}>{locationInfo}</div>
+        </Group>
+      )}
+
+      <Stack spacing={0} h={'100%'} align={'stretch'} justify={'flex-end'}>
+        {isStack && (
+          <Group position={'left'}>
+            <Avatar
+              src={image}
+              alt={offer.id}
+              style={avatarStyle}
+              radius={37}
+            />
+            <div style={{ padding: 0, margin: 0 }}>{locationInfo}</div>
+          </Group>
+        )}
+        <div>
+          <Badge
+            variant={'light'}
+            color={'lime'}
+            radius={'sm'}
+            style={{
+              backgroundColor:
+                theme.colorScheme === 'dark'
+                  ? `${theme.colors.brand[5]}0F`
+                  : `${theme.colors.brand[6]}0F`,
+              color:
+                theme.colorScheme === 'dark'
+                  ? `${theme.colors.brand[5]}`
+                  : `${theme.colors.brand[6]}`,
+            }}
+          >
+            <Group>
+              <Text>{'Initial Price '}</Text>
+              <Text>{formatUsd(offer.initialSellingPrice ?? 0)}</Text>
+            </Group>
+          </Badge>
+        </div>
+        <div>
+          <Badge
+            variant={'light'}
+            color={'yellow'}
+            radius={'sm'}
+            style={{
+              backgroundColor: `${theme.colors.yellow[5]}0F`,
+              color: theme.colors.yellow[5],
+            }}
+          >
+            <Group>
+              <Text>{'Electricity Price'}</Text>
+              <Text>{formatUsd(offer.electricityPrice, 4)}</Text>
+            </Group>
+          </Badge>
+        </div>
+        <div>
+          <Badge
+            variant={'light'}
+            color={'yellow'}
+            radius={'sm'}
+            style={{
+              backgroundColor: `${theme.colors.yellow[5]}0F`,
+              color: theme.colors.yellow[5],
+            }}
+          >
+            <Group>
+              <Text>{'Launch Date'}</Text>
+              <Text>{offer.launchDate}</Text>
+            </Group>
+          </Badge>
+        </div>
+      </Stack>
+    </Group>
   );
 }

@@ -1,4 +1,16 @@
 {
+
+  "list": {
+    "requesterName": "Acheteur",
+    "requesterAddress": "Adresse",
+    "requestedPrice": "Prix acheteur",
+    "requestedAmount": "Quantité demandée",
+    "requestedToken": "Achete contre"
+  },
+
+
+
+
   "table": {
     "market": "Marché",
     "title": "CleanSatMining YAM (You And Me)",
@@ -21,47 +33,6 @@
     "actionDelete": "Supprimer",
     "buy": "Acheter",
     "privateTexte": "privée",
-    "onMarketSince": "Date de création"
-  },
-  "list": {
-    "offerId": "ID de l'offre",
-    "offerTokenName": "En vente",
-
-    "buyerAddress": "Buyer Token Address",
-    "buyerName": "Acheteur",
-    
-    "sellerAddress": "Adresse du vendeur",
-    "sellerName": "Vendeur",
-
-    "TraderAddress": "Adresse du trader",
-    "TraderName": "Nom du trader",
-    "creatorName": "Vendeur",
-
-    "sellDate": "Date de vente",
-    "UNKNOWN":"inconnu",
-    "CSM":"✅ CSM",
-    "perToken": "par token",
-    "sortBy": "Trier par",
-    "search":"Rechercher...",
-    "noData": "Aucune donnée",
-
-    "buyerPrice": "Prix acheteur",
-    "buyerAmount": "Achat demandé",
-    "buyForToken": "Achete contre",
-
-    "sellerPrice": "Prix vendeur",
-    "sellerAmount": "En vente",
-    "sellForToken": "Vend contre",
-
-    "exchangePrice": "Prix d'échange",
-    "exchangeAmount": "A échanger",
-    "exchangeForToken": "Echange contre",
-
-    "walletBalance": "Wallet balance",
-    "BUY": "Achat",
-    "SELL": "Vente",
-    "EXCHANGE": "Echange",
-
     "onMarketSince": "Date de création"
   },
 
