@@ -12,5 +12,9 @@
     "walletBalance": "Wallet balance",
     "BUY": "Achat",
     "SELL": "Vente",
-    "EXCHANGE": "Echange"
+    "EXCHANGE": "Echange",
+    "for": " contre ",
+    "toBuy": "Acheter",
+    "toSell": "Vendre",
+    "toExchange": "Echanger"
   }

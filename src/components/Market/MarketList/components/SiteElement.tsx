@@ -8,6 +8,7 @@ import {
   Text,
   useMantineTheme,
 } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 
 import { formatUsd } from 'src/utils/format';
 
@@ -18,6 +19,7 @@ interface SiteElementProps {
 }
 export const SiteElement: FC<SiteElementProps> = ({ offer }) => {
   const theme = useMantineTheme();
+  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`);
   const isSell = offer.sites.transfered.name !== '';
   const isBuy = offer.sites.requested.name !== '';
 
@@ -32,21 +34,6 @@ export const SiteElement: FC<SiteElementProps> = ({ offer }) => {
         sx={{ marginBottom: '3px' }}
       >
         {<Group position={'left'} miw={isCsmExchange ? 130 : 0}></Group>}
-        {isBuy && (
-          <Group position={'left'} miw={65} spacing={2}>
-            <Avatar
-              src={offer.sites.requested.image}
-              alt={offer.id}
-              radius={'xl'}
-              size={25}
-            />
-            <Text fz={isCsmExchange ? 'xs' : 'sm'} fw={500}>
-              {isCsmExchange
-                ? offer.sites.requested.shortName.replace('CSM-', '')
-                : offer.sites.requested.name}
-            </Text>
-          </Group>
-        )}
         {isSell && (
           <Group position={'left'} miw={65} spacing={2}>
             <Avatar
@@ -62,6 +49,21 @@ export const SiteElement: FC<SiteElementProps> = ({ offer }) => {
             </Text>
           </Group>
         )}
+        {isBuy && (
+          <Group position={'left'} miw={65} spacing={2}>
+            <Avatar
+              src={offer.sites.requested.image}
+              alt={offer.id}
+              radius={'xl'}
+              size={25}
+            />
+            <Text fz={isCsmExchange ? 'xs' : 'sm'} fw={500}>
+              {isCsmExchange
+                ? offer.sites.requested.shortName.replace('CSM-', '')
+                : offer.sites.requested.name}
+            </Text>
+          </Group>
+        )}
       </Group>
       <Badge
         variant={'light'}
@@ -72,43 +74,49 @@ export const SiteElement: FC<SiteElementProps> = ({ offer }) => {
           backgroundColor:
             theme.colorScheme === 'dark'
               ? `${theme.colors.brand[5]}0F`
-              : `${theme.colors.brand[6]}0F`,
+              : `${theme.colors.brand[5]}0F`,
           color:
             theme.colorScheme === 'dark'
               ? `${theme.colors.brand[5]}`
-              : `${theme.colors.brand[6]}`,
+              : `${theme.colors.brand[5]}`,
         }}
       >
         <Group position={'apart'}>
           <Text miw={120}>{'initial price'}</Text>
-          {isBuy && (
-            <Text miw={65}>
-              {formatUsd(offer.sites.requested.tokenOfficialPrice)}
-            </Text>
-          )}
           {isSell && (
             <Text miw={65}>
               {formatUsd(offer.sites.transfered.tokenOfficialPrice)}
             </Text>
           )}
+          {isBuy && (
+            <Text miw={65}>
+              {formatUsd(offer.sites.requested.tokenOfficialPrice)}
+            </Text>
+          )}
         </Group>
       </Badge>
       <Badge
         variant={'light'}
-        color={'yellow'}
+        color={'dark'}
         radius={'sm'}
         miw={minWidth}
         style={{
-          backgroundColor: `${theme.colors.yellow[5]}0F`,
-          color: theme.colors.yellow[5],
+          backgroundColor:
+            theme.colorScheme === 'dark'
+              ? `${theme.colors.blue[2]}0F`
+              : `${theme.colors.dark[7]}0F`,
+          color:
+            theme.colorScheme === 'dark'
+              ? `${theme.colors.blue[2]}`
+              : `${theme.colors.gray[6]}`,
         }}
       >
         <Group position={'apart'}>
           <Text miw={120}>{'initial date'}</Text>
-          {isBuy && <Text miw={65}>{offer.sites.requested.tokenSellDate}</Text>}
           {isSell && (
             <Text miw={65}>{offer.sites.transfered.tokenSellDate}</Text>
           )}
+          {isBuy && <Text miw={65}>{offer.sites.requested.tokenSellDate}</Text>}
         </Group>
       </Badge>
       <Badge
@@ -117,20 +125,26 @@ export const SiteElement: FC<SiteElementProps> = ({ offer }) => {
         radius={'sm'}
         miw={minWidth}
         style={{
-          backgroundColor: `${theme.colors.yellow[5]}0F`,
-          color: theme.colors.yellow[5],
+          backgroundColor:
+            theme.colorScheme === 'dark'
+              ? `${theme.colors.blue[2]}0F`
+              : `${theme.colors.dark[7]}0F`,
+          color:
+            theme.colorScheme === 'dark'
+              ? `${theme.colors.blue[2]}`
+              : `${theme.colors.gray[6]}`,
         }}
       >
         <Group position={'apart'}>
           <Text miw={120}>{'elec. Price per kWh'}</Text>
-          {isBuy && (
-            <Text miw={65}>
-              {formatUsd(offer.sites.requested.electricityPrice, 4)}
-            </Text>
-          )}
           {isSell && (
             <Text miw={65}>
               {formatUsd(offer.sites.transfered.electricityPrice, 4)}
+            </Text>
+          )}
+          {isBuy && (
+            <Text miw={65}>
+              {formatUsd(offer.sites.requested.electricityPrice, 4)}
             </Text>
           )}
         </Group>

@@ -1,42 +1,30 @@
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import React, { FC, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import {
-  Avatar,
-  Badge,
-  Card,
-  Grid,
-  Group,
-  MantineTheme,
-  Stack,
-  Text,
-  useMantineTheme,
-} from '@mantine/core';
+import { Card, Grid, Group, Stack, Text, useMantineTheme } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
-import { IconArrowRight } from '@tabler/icons';
 
 import { BigNumber } from 'bignumber.js';
 
 import { OfferBadge } from 'src/components/Offer/components/OfferTypeBadge';
-import { TextUrl } from 'src/components/TextUrl/TextUrl';
 import { useOffer } from 'src/hooks/offers/useOffer';
 import { useAppDispatch } from 'src/hooks/react-hooks';
-import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
 import { buyOfferOpen } from 'src/store/features/buyOffer/buyOfferSlice';
 import { Offer } from 'src/types/offer';
 import { OFFER_TYPE } from 'src/types/offer/OfferType';
-import { formatPercent, formatToken, formatUsd } from 'src/utils/format';
+import {
+  formatPercent,
+  formatSmallToken,
+  formatToken,
+  formatUsd,
+} from 'src/utils/format';
 
 import { Columns, OfferData } from '../Types';
-import { getSiteInfo, mapColumnLabels, truncateInMiddle } from '../Utils';
+import { mapColumnLabels, truncateInMiddle } from '../Utils';
 import { SiteElement } from './SiteElement';
+import { TokensTradedElement } from './TokensTradedElement';
 
 const LINK_ACCESS_KEY = 'TEXT_URL';
-
-const avatarStyle = {
-  width: '40px',
-  height: '40px',
-};
 
 interface ItemElementProps {
   offer: OfferData;
@@ -47,35 +35,11 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
   const dispatch = useAppDispatch();
   const isLarge = useMediaQuery(`(min-width: ${theme.breakpoints.lg})`);
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`);
-  const [image, setImage] = useState<string>('');
-  const [siteUrl, setSiteUrl] = useState<string>('');
   const { offer: offerAction } = useOffer(parseInt(offer.id));
-  const { getPropertyToken, propertiesIsloading } = usePropertiesToken();
-  const { t } = useTranslation('buy', { keyPrefix: 'list' });
+  const { t } = useTranslation(offer.type.toLowerCase(), { keyPrefix: 'list' });
   const { t: t2 } = useTranslation('list');
   const columnLabels = mapColumnLabels(t);
   console.log('ITEM OFFER', JSON.stringify(offer, null, 4));
-
-  useEffect(() => {
-    if (!offer || propertiesIsloading) return undefined;
-    const infos: { image: string; info: string[] }[] = [];
-
-    const tokenRequest = getPropertyToken(offer.requestedTokenAddress);
-    if (tokenRequest) {
-      offer.image = tokenRequest.imageLink[0];
-      setImage(tokenRequest.imageLink[0]);
-      setSiteUrl(tokenRequest.marketplaceLink);
-      infos.push({ image: tokenRequest.imageLink[0], info: [] });
-    }
-
-    const token = getPropertyToken(offer.transferedTokenAddress);
-    if (token) {
-      offer.image = token.imageLink[0];
-      setImage(token.imageLink[0]);
-      setSiteUrl(token.marketplaceLink);
-      infos.push({ image: token.imageLink[0], info: [] });
-    }
-  }, [getPropertyToken, offer, propertiesIsloading]);
 
   const lastCardStyle = isLastItem
     ? {
@@ -115,7 +79,11 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
       ? 'red'
       : 'teal';
 
-  const tradeToken = offer.transferedToken;
+  const tokenPerSellingToken = formatSmallToken(
+    new BigNumber(1).dividedBy(offer.requestedRate).toNumber(),
+    offer.requestedToken
+  );
+  const perOfferToken = 'per ' + offer.transferedToken;
 
   const onOpenOffer = useCallback(
     (offerAction: Offer) => {
@@ -132,9 +100,6 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
         : console.warn('Offer not loaded ' + offer.id);
     }
   };
-
-  const LogoRequested = offer.requestedTokenLogo;
-  const LogoOffer = offer.transferedTokenLogo;
 
   return (
     <Card
@@ -163,10 +128,10 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
               id={offer.id}
             ></OfferBadge>
           </div>
-          {isLarge && tradeSummary(offer, LogoRequested, LogoOffer)}
+          {isLarge && <TokensTradedElement offer={offer}></TokensTradedElement>}
           {!isLarge && (
             <Group spacing={0} position={'apart'}>
-              {tradeSummary(offer, LogoRequested, LogoOffer)}
+              <TokensTradedElement offer={offer}></TokensTradedElement>
               <SiteElement offer={offer}></SiteElement>
             </Group>
           )}
@@ -312,14 +277,14 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             ta={isLarge || textAlignRight ? 'right' : 'left'}
             fw={500}
           >
-            {tradeToken}
+            {tokenPerSellingToken}
           </Text>
           <Text
             fz={'xs'}
             color={'dimmed'}
             ta={isLarge || textAlignRight ? 'right' : 'left'}
           >
-            {'Gnosis'}
+            {perOfferToken}
           </Text>
         </div>
       </Stack>
@@ -411,44 +376,3 @@ export const ItemEmptyElement: FC = () => {
     </Card>
   );
 };
-
-function tradeSummary(
-  offer: OfferData,
-  LogoRequested: React.FC<any> | undefined,
-  LogoOffer: React.FC<any> | undefined
-) {
-  return (
-    <Stack spacing={5} h={'100%'} align={'stretch'} justify={'center'}>
-      <Group sx={{ marginTop: '10px' }} spacing={8}>
-        <Stack justify={'flex-start'} spacing={0}>
-          <Text fz={'md'} fw={'bold'}>
-            {offer.requestedToken}
-          </Text>
-          <div style={{ textAlign: 'center' }}>
-            {LogoRequested
-              ? React.cloneElement(<LogoRequested />, { width: '24' })
-              : undefined}
-          </div>
-        </Stack>
-        <Stack justify={'flex-start'} spacing={0}>
-          <Text fz={'md'} fw={'bold'} sx={{ paddingBottom: '3px' }}>
-            {' contre '}
-          </Text>
-          <div style={{ textAlign: 'center' }}>
-            <IconArrowRight size={20} aria-label={'Arrow'} />
-          </div>
-        </Stack>
-        <Stack justify={'flex-start'} spacing={0}>
-          <Text fz={'md'} fw={'bold'}>
-            {offer.transferedToken}
-          </Text>
-          <div style={{ textAlign: 'center' }}>
-            {LogoOffer
-              ? React.cloneElement(<LogoOffer />, { width: '24' })
-              : undefined}
-          </div>
-        </Stack>
-      </Group>
-    </Stack>
-  );
-}

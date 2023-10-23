@@ -73,7 +73,7 @@ export function mapOfferToOfferData(
         tokenSellDate: offer.sites.selling.tokenSellDate,
       },
     },
-    requestedRate: 1,
+    requestedRate: parseFloat(offer.price),
     electricityPrice: offer.electricityPrice,
     initialSellingPrice:
       offer.officialPrice ?? offer.sites.selling.tokenOfficialPrice,

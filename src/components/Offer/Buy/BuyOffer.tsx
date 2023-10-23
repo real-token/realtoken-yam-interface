@@ -104,8 +104,12 @@ export const BuyOffer: FC<BuyOffertProps> = ({
   offer,
   triggerTableRefresh,
 }) => {
+  const { t } = useTranslation('list');
   return (
-    <OfferContainer offer={offer} action={'Acheter'}>
+    <OfferContainer
+      offer={offer}
+      action={offer.type === OFFER_TYPE.EXCHANGE ? t('toExchange') : t('toBuy')}
+    >
       <BuyOfferForms
         offer={offer}
         triggerTableRefresh={triggerTableRefresh}

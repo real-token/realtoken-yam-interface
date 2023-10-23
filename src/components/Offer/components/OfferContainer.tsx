@@ -11,7 +11,7 @@ import {
 import { useAppDispatch } from 'src/hooks/react-hooks';
 import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
 import { buyOfferClose } from 'src/store/features/buyOffer/buyOfferSlice';
-import { Offer } from 'src/types/offer';
+import { OFFER_TYPE, Offer } from 'src/types/offer';
 import { calcRem } from 'src/utils/style';
 
 import { OfferHeader, OfferTitle } from './Header';
@@ -94,8 +94,7 @@ export const OfferContainer: FC<OfferContainerProps> = ({
         )}
       >
         <OfferTitle
-          offerId={offer.offerId}
-          offerType={getOfferType(offer)}
+          offer={offer}
           onClose={onCloseView}
           action={action}
         ></OfferTitle>
@@ -104,11 +103,14 @@ export const OfferContainer: FC<OfferContainerProps> = ({
           header={
             <OfferHeader
               image={backgroundImage}
-              title={
-                offerProperty ? offerProperty.location.aera : offer.miningSite
-              }
+              title={offerProperty?.location.aera ?? ''}
               country={offerProperty ? offerProperty.location.country : ''}
               energy={offerProperty ? offerProperty.energy.join(', ') : ''}
+              offerTokenAddress={offer.offerTokenAddress}
+              offerTokenName={offer.buyerTokenName}
+              buyerTokenAddress={offer.buyerTokenAddress}
+              buyerTokenName={offer.buyerTokenName}
+              offerType={offer.type ?? OFFER_TYPE.SELL}
             ></OfferHeader>
           }
         >

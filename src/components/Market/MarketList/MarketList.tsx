@@ -16,7 +16,6 @@ import { useMediaQuery } from '@mantine/hooks';
 import { useAtomValue } from 'jotai';
 
 import { useAllowedTokens } from 'src/hooks/useAllowedTokens';
-import { OFFERS_TYPE } from 'src/hooks/useRightTableColumns';
 import { tableOfferTypeAtom } from 'src/states';
 import { OFFER_TYPE } from 'src/types/offer';
 import { Offer } from 'src/types/offer/Offer';
@@ -122,7 +121,8 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
     for (const key in columnLabels) {
       if (columnLabels[key] === selectedColumn) {
         const direction: SortDirection =
-          key === Columns.requestedPrice && listOfferType === OFFER_TYPE.BUY
+          (key === Columns.requestedPrice || key === Columns.requestedToken) &&
+          listOfferType === OFFER_TYPE.BUY
             ? SortDirection.Desc
             : SortDirection.Asc;
         console.log('SORT direction', key, listOfferType, direction);

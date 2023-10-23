@@ -257,11 +257,7 @@ const ViewOfferComponent_old: FC<ComponentOfferProps> = ({ offer, onEdit }) => {
           isMobile ? classes.containerMobile : undefined
         )}
       >
-        <OfferTitle
-          offerId={offer.offerId}
-          offerType={getOfferType(offer)}
-          onClose={onClose}
-        ></OfferTitle>
+        <OfferTitle offer={offer} onClose={onClose}></OfferTitle>
         <Card radius={'lg'}>
           <OfferHeader
             image={backgroundImage}
@@ -272,6 +268,11 @@ const ViewOfferComponent_old: FC<ComponentOfferProps> = ({ offer, onEdit }) => {
             }
             country={offerProperty ? offerProperty.location.country : ''}
             energy={offerProperty ? offerProperty.energy.join(', ') : ''}
+            offerTokenAddress={offer.offerTokenAddress}
+            offerTokenName={offer.buyerTokenName}
+            buyerTokenAddress={offer.buyerTokenAddress}
+            buyerTokenName={offer.buyerTokenName}
+            offerType={offer.type}
           ></OfferHeader>
           <Group>
             <Button
