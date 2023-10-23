@@ -1,5 +1,19 @@
 import { OFFER_TYPE } from "./OfferType";
 
+export type SiteDetails = {
+  miningSite: string;
+  name: string;
+  location: {
+    aera: string;
+    country: string;
+  };
+  energy: string[];
+  imageLink: string;
+  electricityPrice : number;
+  tokenOfficialPrice: number;
+  tokenSellDate: string;
+};
+
 export type Offer = {
   offerId: string;
   offerTokenAddress: string;
@@ -33,24 +47,8 @@ export type Offer = {
   electricityPrice: number
   sellDate: string
   sites:{
-    selling:{
-      miningSite: string;
-      name: string;
-      location:{
-        aera: string;
-        country: string;
-      };
-      energy:string[];
-    };
-    buying:{
-      miningSite: string;
-      name: string;
-      location:{
-        aera: string;
-        country: string;
-      };
-      energy:string[];
-    };
+    selling:SiteDetails;
+    buying:SiteDetails;
     
   }
   
@@ -95,7 +93,12 @@ export const DEFAULT_OFFER: Offer = {
         aera: "",
         country: "",
       },
-      energy:[],},
+      energy:[], 
+      imageLink: '',
+      electricityPrice:0,
+      tokenOfficialPrice:0,
+      tokenSellDate:'',
+    },
     buying: {
       miningSite: "",
       name: "",
@@ -103,8 +106,13 @@ export const DEFAULT_OFFER: Offer = {
         aera: "",
         country: "",
       },
-      energy:[],},
-      }
+      energy:[],
+      imageLink: '',
+      electricityPrice:0,
+      tokenOfficialPrice:0,
+      tokenSellDate:'',
+    },
+  }
 }
 
 export const OFFER_LOADING = [DEFAULT_OFFER, DEFAULT_OFFER, DEFAULT_OFFER]

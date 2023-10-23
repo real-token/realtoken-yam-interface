@@ -16,7 +16,9 @@ import { useMediaQuery } from '@mantine/hooks';
 import { useAtomValue } from 'jotai';
 
 import { useAllowedTokens } from 'src/hooks/useAllowedTokens';
+import { OFFERS_TYPE } from 'src/hooks/useRightTableColumns';
 import { tableOfferTypeAtom } from 'src/states';
+import { OFFER_TYPE } from 'src/types/offer';
 import { Offer } from 'src/types/offer/Offer';
 
 import { Columns, MaxHeight, OfferData, SortDirection } from './Types';
@@ -46,6 +48,7 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
   const offersData: OfferData[] = offers.map((offer) =>
     mapOfferToOfferData(offer, listOfferType, allowedTokens)
   );
+  console.log('MARKET LIST', JSON.stringify(offers, null, 4));
 
   const { t: tList } = useTranslation('list');
   const { t: tOfferMode } = useTranslation(listOfferType.toLowerCase(), {
@@ -118,7 +121,12 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
     // Call the sort function based on the selected column
     for (const key in columnLabels) {
       if (columnLabels[key] === selectedColumn) {
-        sortOffersByColumn(key as keyof OfferData, SortDirection.Asc);
+        const direction: SortDirection =
+          key === Columns.requestedPrice && listOfferType === OFFER_TYPE.BUY
+            ? SortDirection.Desc
+            : SortDirection.Asc;
+        console.log('SORT direction', key, listOfferType, direction);
+        sortOffersByColumn(key as keyof OfferData, direction);
         break;
       }
     }
@@ -134,12 +142,12 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
     ? MaxHeight.Large
     : MaxHeight.Medium;
 
-  console.log('screen', 'isLarge', isLarge);
-  console.log('screen', 'isMobile', isMobile);
-  console.log('screen', 'isSmall', isSmall);
-  console.log('screen', 'isSmallMobile', isSmallMobile);
-  console.log('screen', 'isMedium', isMedium);
-  console.log('screen', 'itemHeight', itemHeight);
+  // console.log('screen', 'isLarge', isLarge);
+  // console.log('screen', 'isMobile', isMobile);
+  // console.log('screen', 'isSmall', isSmall);
+  // console.log('screen', 'isSmallMobile', isSmallMobile);
+  // console.log('screen', 'isMedium', isMedium);
+  // console.log('screen', 'itemHeight', itemHeight);
 
   return (
     <Container
@@ -255,14 +263,17 @@ function filterByText(
   return (offer) => {
     const searchTerms = filterText.toLowerCase();
     return (
-      offer.sites.buying.aera.toLowerCase().includes(searchTerms) ||
-      offer.sites.buying.country.toLowerCase().includes(searchTerms) ||
-      offer.sites.buying.name.toLowerCase().includes(searchTerms) ||
-      offer.sites.buying.energy.join(',').toLowerCase().includes(searchTerms) ||
-      offer.sites.selling.aera.toLowerCase().includes(searchTerms) ||
-      offer.sites.selling.country.toLowerCase().includes(searchTerms) ||
-      offer.sites.selling.name.toLowerCase().includes(searchTerms) ||
-      offer.sites.selling.energy
+      offer.sites.requested.aera.toLowerCase().includes(searchTerms) ||
+      offer.sites.requested.country.toLowerCase().includes(searchTerms) ||
+      offer.sites.requested.name.toLowerCase().includes(searchTerms) ||
+      offer.sites.requested.energy
+        .join(',')
+        .toLowerCase()
+        .includes(searchTerms) ||
+      offer.sites.transfered.aera.toLowerCase().includes(searchTerms) ||
+      offer.sites.transfered.country.toLowerCase().includes(searchTerms) ||
+      offer.sites.transfered.name.toLowerCase().includes(searchTerms) ||
+      offer.sites.transfered.energy
         .join(',')
         .toLowerCase()
         .includes(searchTerms) ||

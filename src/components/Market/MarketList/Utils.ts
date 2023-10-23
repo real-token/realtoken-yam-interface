@@ -1,6 +1,8 @@
 import { TFunction } from 'react-i18next';
 
-import { CsmSvg } from 'src/assets/currency/CSM';
+import BigNumber from 'bignumber.js';
+
+import { CsmSvg } from 'src/assets/currency/Csm';
 import { AllowedToken } from 'src/types/allowedTokens';
 import { Offer } from 'src/types/offer';
 import { OFFER_TYPE } from 'src/types/offer/OfferType';
@@ -12,8 +14,6 @@ export function mapOfferToOfferData(
   offerType: OFFER_TYPE,
   allowedTokens?: AllowedToken[]
 ): OfferData {
-  console.log('allowedTokens', JSON.stringify(allowedTokens, null, 4));
-
   const allowedTokenOffer = allowedTokens
     ? allowedTokens.findLast(
         (t) =>
@@ -29,12 +29,6 @@ export function mapOfferToOfferData(
           offer.buyerTokenAddress.toLowerCase()
       )
     : undefined;
-
-  console.log(
-    'allowedTokens',
-    JSON.stringify(allowedTokenOffer, null, 4),
-    JSON.stringify(allowedTokenBuy, null, 4)
-  );
 
   return {
     id: offer.offerId,
@@ -52,23 +46,42 @@ export function mapOfferToOfferData(
     requesterName: offer.sellerName,
     requesterAddress: offer.sellerAddress,
     sites: {
-      buying: {
+      requested: {
         name: offer.sites.buying.name,
+        shortName: allowedTokenBuy
+          ? allowedTokenBuy.symbol
+          : offer.buyerTokenName,
         aera: offer.sites.buying.location.aera,
         country: offer.sites.buying.location.country,
         energy: offer.sites.buying.energy,
+        image: offer.sites.buying.imageLink,
+        electricityPrice: offer.sites.buying.electricityPrice,
+        tokenOfficialPrice: offer.sites.buying.tokenOfficialPrice,
+        tokenSellDate: offer.sites.buying.tokenSellDate,
       },
-      selling: {
+      transfered: {
         name: offer.sites.selling.name,
+        shortName: allowedTokenOffer
+          ? allowedTokenOffer.symbol
+          : offer.offerTokenName,
         aera: offer.sites.selling.location.aera,
         country: offer.sites.selling.location.country,
         energy: offer.sites.selling.energy,
+        image: offer.sites.selling.imageLink,
+        electricityPrice: offer.sites.selling.electricityPrice,
+        tokenOfficialPrice: offer.sites.selling.tokenOfficialPrice,
+        tokenSellDate: offer.sites.selling.tokenSellDate,
       },
     },
-
+    requestedRate: 1,
     electricityPrice: offer.electricityPrice,
-    initialSellingPrice: offer.officialPrice,
-    requestedPrice: offer.offerPrice,
+    initialSellingPrice:
+      offer.officialPrice ?? offer.sites.selling.tokenOfficialPrice,
+    requestedPrice:
+      offer.offerPrice ??
+      new BigNumber(parseFloat(offer.price))
+        .times(offer.sites.buying.tokenOfficialPrice ?? 0)
+        .toNumber(),
     requestedAmount: parseFloat(offer.amount),
     balanceWallet: offer.balanceWallet
       ? parseFloat(offer.balanceWallet)
@@ -133,27 +146,27 @@ export function getSiteInfo(offer: OfferData): string[] {
     case OFFER_TYPE.BUY:
       // Action à effectuer lorsque OFFER_TYPE est "BUY"
       return [
-        offer.sites.buying.aera,
-        offer.sites.buying.country,
-        offer.sites.buying.energy.join(', '),
+        offer.sites.requested.aera,
+        offer.sites.requested.country,
+        offer.sites.requested.energy.join(', '),
       ];
     case OFFER_TYPE.SELL:
       // Action à effectuer lorsque OFFER_TYPE est "SELL"
       return [
-        offer.sites.selling.aera,
-        offer.sites.selling.country,
-        offer.sites.selling.energy.join(', '),
+        offer.sites.transfered.aera,
+        offer.sites.transfered.country,
+        offer.sites.transfered.energy.join(', '),
       ];
 
     case OFFER_TYPE.EXCHANGE:
       // Action à effectuer lorsque OFFER_TYPE est "EXCHANGE"
       return [
-        offer.sites.buying.aera,
-        offer.sites.buying.country,
-        offer.sites.buying.energy.join(', '),
-        offer.sites.selling.aera,
-        offer.sites.selling.country,
-        offer.sites.selling.energy.join(', '),
+        offer.sites.requested.aera,
+        offer.sites.requested.country,
+        offer.sites.requested.energy.join(', '),
+        offer.sites.transfered.aera,
+        offer.sites.transfered.country,
+        offer.sites.transfered.energy.join(', '),
       ];
 
     default:

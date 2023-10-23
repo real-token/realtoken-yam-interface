@@ -13,7 +13,7 @@ import {
   createStyles,
 } from '@mantine/core';
 import { useModals } from '@mantine/modals';
-import { IconExternalLink, IconShoppingCart } from '@tabler/icons';
+import { IconShoppingCart } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
 
 import BigNumber from 'bignumber.js';

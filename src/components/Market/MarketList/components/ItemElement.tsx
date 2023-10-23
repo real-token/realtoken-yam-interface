@@ -29,6 +29,7 @@ import { formatPercent, formatToken, formatUsd } from 'src/utils/format';
 
 import { Columns, OfferData } from '../Types';
 import { getSiteInfo, mapColumnLabels, truncateInMiddle } from '../Utils';
+import { SiteElement } from './SiteElement';
 
 const LINK_ACCESS_KEY = 'TEXT_URL';
 
@@ -47,15 +48,13 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
   const isLarge = useMediaQuery(`(min-width: ${theme.breakpoints.lg})`);
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`);
   const [image, setImage] = useState<string>('');
-  const [sitesInfo, setSitesInfo] = useState<
-    { image: string; info: string[] }[]
-  >([]);
   const [siteUrl, setSiteUrl] = useState<string>('');
   const { offer: offerAction } = useOffer(parseInt(offer.id));
   const { getPropertyToken, propertiesIsloading } = usePropertiesToken();
   const { t } = useTranslation('buy', { keyPrefix: 'list' });
   const { t: t2 } = useTranslation('list');
   const columnLabels = mapColumnLabels(t);
+  console.log('ITEM OFFER', JSON.stringify(offer, null, 4));
 
   useEffect(() => {
     if (!offer || propertiesIsloading) return undefined;
@@ -109,48 +108,14 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
     .toNumber();
 
   const priceDeltaColor =
-    priceDelta === 0 ? 'dimmed' : priceDelta > 0 ? 'red' : 'teal';
+    priceDelta === 0
+      ? 'dimmed'
+      : (priceDelta < 0 && offer.type === OFFER_TYPE.BUY) ||
+        (priceDelta > 0 && offer.type !== OFFER_TYPE.BUY)
+      ? 'red'
+      : 'teal';
 
-  /*const siteInfo: string[] = offer.siteLocation
-    .split('(') //.split(/\(| et /)
-    .map((locationPart) => locationPart.replace(')', ''))
-    .map((locationPart) => locationPart.replace(' et ', ', '));*/
-
-  const siteInfo = getSiteInfo(offer);
-
-  // Triez les valeurs de siteInfo et formatez-les
-  const sortedSiteInfo = siteInfo.map((locationPart, index) => {
-    const indexOrder = [0, 1, 2, 3]; // Ordre d'index souhaité
-    return {
-      text: locationPart,
-      size: index === 0 ? 'md' : index > 1 ? 'sm' : 'sm',
-      fontWeight: index <= 0 ? 'bold' : undefined,
-      color: index > 1 ? 'dimmed' : undefined,
-      order: indexOrder.indexOf(index),
-    };
-  });
-
-  // Utilisation de map pour générer les balises Text
-  const locationInfo = sortedSiteInfo
-    .sort((a, b) => a.order - b.order)
-    .map((info, index) => (
-      <Text
-        fz={info.size}
-        fw={info.fontWeight}
-        key={index}
-        color={info.color}
-        style={{ padding: 0, margin: '-5px 0 0 0' }}
-      >
-        {info.text}
-      </Text>
-    ));
-
-  const tradeToken =
-    offer.type === OFFER_TYPE.BUY
-      ? offer.transferedToken
-      : offer.type === OFFER_TYPE.SELL
-      ? offer.requestedToken
-      : offer.requestedToken;
+  const tradeToken = offer.transferedToken;
 
   const onOpenOffer = useCallback(
     (offerAction: Offer) => {
@@ -202,12 +167,12 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
           {!isLarge && (
             <Group spacing={0} position={'apart'}>
               {tradeSummary(offer, LogoRequested, LogoOffer)}
-              <>{badgeList(offer, theme, image, locationInfo, false)}</>
+              <SiteElement offer={offer}></SiteElement>
             </Group>
           )}
         </Grid.Col>
         <Grid.Col xl={4} lg={4} style={{ padding: isMobile ? 0 : undefined }}>
-          {isLarge && badgeList(offer, theme, image, locationInfo, true)}
+          {isLarge && <SiteElement offer={offer}></SiteElement>}
         </Grid.Col>
         <Grid.Col
           xl={3}
@@ -485,92 +450,5 @@ function tradeSummary(
         </Stack>
       </Group>
     </Stack>
-  );
-}
-
-function badgeList(
-  offer: OfferData,
-  theme: MantineTheme,
-  image: string,
-  locationInfo: JSX.Element[],
-  isStack: boolean
-) {
-  return (
-    <Group position={'center'}>
-      {!isStack && (
-        <Group position={'left'}>
-          <Avatar src={image} alt={offer.id} style={avatarStyle} radius={37} />
-          <div style={{ padding: 0, margin: 0 }}>{locationInfo}</div>
-        </Group>
-      )}
-
-      <Stack spacing={0} h={'100%'} align={'stretch'} justify={'flex-end'}>
-        {isStack && (
-          <Group position={'left'}>
-            <Avatar
-              src={image}
-              alt={offer.id}
-              style={avatarStyle}
-              radius={37}
-            />
-            <div style={{ padding: 0, margin: 0 }}>{locationInfo}</div>
-          </Group>
-        )}
-        <div>
-          <Badge
-            variant={'light'}
-            color={'lime'}
-            radius={'sm'}
-            style={{
-              backgroundColor:
-                theme.colorScheme === 'dark'
-                  ? `${theme.colors.brand[5]}0F`
-                  : `${theme.colors.brand[6]}0F`,
-              color:
-                theme.colorScheme === 'dark'
-                  ? `${theme.colors.brand[5]}`
-                  : `${theme.colors.brand[6]}`,
-            }}
-          >
-            <Group>
-              <Text>{'Initial Price '}</Text>
-              <Text>{formatUsd(offer.initialSellingPrice ?? 0)}</Text>
-            </Group>
-          </Badge>
-        </div>
-        <div>
-          <Badge
-            variant={'light'}
-            color={'yellow'}
-            radius={'sm'}
-            style={{
-              backgroundColor: `${theme.colors.yellow[5]}0F`,
-              color: theme.colors.yellow[5],
-            }}
-          >
-            <Group>
-              <Text>{'Electricity Price'}</Text>
-              <Text>{formatUsd(offer.electricityPrice, 4)}</Text>
-            </Group>
-          </Badge>
-        </div>
-        <div>
-          <Badge
-            variant={'light'}
-            color={'yellow'}
-            radius={'sm'}
-            style={{
-              backgroundColor: `${theme.colors.yellow[5]}0F`,
-              color: theme.colors.yellow[5],
-            }}
-          >
-            <Group>
-              <Text>{'Launch Date'}</Text>
-              <Text>{offer.launchDate}</Text>
-            </Group>
-          </Badge>
-        </div>
-      </Stack>
-    </Group>
   );
 }

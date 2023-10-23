@@ -30,8 +30,6 @@ export const getOfferType = (
 
 const CSM_ADDRESSES = ['0x8b998419e00be0705b3a4c6b873c1bb4e0620874'];
 
-console.log('CSM_ADDRESSES', CSM_ADDRESSES);
-
 export const parseOffer = (
   provider: Web3Provider,
   account: string,
@@ -101,14 +99,6 @@ export const parseOffer = (
           t.contractAddress.toLowerCase() ===
           offer.buyerToken.address.toLowerCase()
       );
-      console.log(
-        'propertiesToken',
-        JSON.stringify(propertiesToken, null, 4),
-        offerSite?.shortName,
-        buyingSite?.shortName
-      );
-
-      offerSite?.fullName;
 
       const o: Offer = {
         offerId: BigNumber(offer.id).toString(),
@@ -160,12 +150,20 @@ export const parseOffer = (
             name: offerSite?.fullName ?? '',
             energy: offerSite?.energy ?? [],
             location: offerSite?.location ?? { aera: '', country: '' },
+            imageLink: '',
+            electricityPrice: 0,
+            tokenOfficialPrice: 0,
+            tokenSellDate: '',
           },
           buying: {
             miningSite: buyingSite?.miningSite ?? '',
             name: buyingSite?.fullName ?? '',
             energy: buyingSite?.energy ?? [],
             location: buyingSite?.location ?? { aera: '', country: '' },
+            imageLink: '',
+            electricityPrice: 0,
+            tokenOfficialPrice: 0,
+            tokenSellDate: '',
           },
         },
       };
@@ -173,7 +171,21 @@ export const parseOffer = (
       o.type = getOfferType(o.offerTokenType, o.buyerTokenType);
 
       const propertyToken = getProperty(
-        o.type == OFFER_TYPE.BUY ? o.buyerTokenAddress : o.offerTokenAddress,
+        o.type == OFFER_TYPE.BUY
+          ? o.buyerTokenAddress
+          : o.type == OFFER_TYPE.SELL
+          ? o.offerTokenAddress
+          : '',
+        propertiesToken
+      );
+
+      const propertyTokenBuy = getProperty(
+        o.buyerTokenAddress,
+        propertiesToken
+      );
+
+      const propertyTokenSell = getProperty(
+        o.offerTokenAddress,
         propertiesToken
       );
 
@@ -187,6 +199,17 @@ export const parseOffer = (
       o.priceDelta = getPriceDelta(prices, o);
       o.sellDate = propertyToken?.sellDate ?? '';
       o.electricityPrice = propertyToken?.electricityPrice ?? 0;
+      o.sites.buying.electricityPrice = propertyTokenBuy?.electricityPrice ?? 0;
+      o.sites.selling.electricityPrice =
+        propertyTokenSell?.electricityPrice ?? 0;
+      o.sites.buying.imageLink = propertyTokenBuy?.imageLink[0] ?? '';
+      o.sites.selling.imageLink = propertyTokenSell?.imageLink[0] ?? '';
+      o.sites.buying.tokenOfficialPrice =
+        getOfficialPrice(propertyTokenBuy) ?? 0;
+      o.sites.selling.tokenOfficialPrice =
+        getOfficialPrice(propertyTokenSell) ?? 0;
+      o.sites.buying.tokenSellDate = propertyTokenBuy?.sellDate ?? '';
+      o.sites.selling.tokenSellDate = propertyTokenSell?.sellDate ?? '';
 
       // console.log(offer.availableAmount, balanceWallet, allowance)
       resolve(o);

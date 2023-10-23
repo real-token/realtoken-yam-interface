@@ -15,26 +15,29 @@ export type OfferData = {
   requesterName: string;
   requesterAddress: string;
   sites: {
-    buying: {
-      name: string;
-      country: string;
-      aera: string;
-      energy: string[];
-    };
-    selling: {
-      name: string;
-      country: string;
-      aera: string;
-      energy: string[];
-    };
+    requested: SiteData;
+    transfered: SiteData;
   };
 
   electricityPrice: number;
-  initialSellingPrice?: number;
-  requestedPrice?: number;
+  initialSellingPrice?: number; //USD
+  requestedRate: number;
+  requestedPrice: number; //USD
   requestedAmount?: number;
   image: string;
   type: OFFER_TYPE;
+};
+
+export type SiteData = {
+  name: string;
+  shortName: string;
+  image: string;
+  country: string;
+  aera: string;
+  energy: string[];
+  electricityPrice: number;
+  tokenOfficialPrice: number;
+  tokenSellDate: string;
 };
 
 export enum SortDirection {
