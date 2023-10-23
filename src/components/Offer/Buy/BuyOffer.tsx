@@ -11,16 +11,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Web3Provider } from '@ethersproject/providers';
 import { createStyles, em } from '@mantine/core';
-import {
-  Button,
-  Card,
-  Divider,
-  Flex,
-  Group,
-  Stack,
-  Text,
-  useMantineColorScheme,
-} from '@mantine/core';
+import { Button, Divider, Flex, Group, Stack, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useMediaQuery } from '@mantine/hooks';
 import { useWeb3React } from '@web3-react/core';
@@ -41,6 +32,7 @@ import { providerAtom } from 'src/states';
 import { buyOfferClose } from 'src/store/features/buyOffer/buyOfferSlice';
 import { OFFER_TYPE, Offer } from 'src/types/offer';
 import { getContract } from 'src/utils';
+import { formatBigDecimals, formatPercent, formatUsd } from 'src/utils/format';
 import { cleanNumber } from 'src/utils/number';
 import { calcRem } from 'src/utils/style';
 import { buy } from 'src/utils/tx/buy';
@@ -75,7 +67,15 @@ const useStyle = createStyles((theme) => ({
   textValue: {
     fontWeight: 600,
     fontSize: theme.fontSizes.sm,
-    color: theme.colorScheme === 'dark' ? undefined : theme.colors.gray[8],
+    color: theme.colorScheme === 'dark' ? undefined : theme.colors.gray[7],
+  },
+  stressValue: {
+    fontWeight: 600,
+    fontSize: theme.fontSizes.sm,
+    color:
+      theme.colorScheme === 'dark'
+        ? theme.colors.brand[5]
+        : theme.colors.brand[5],
   },
   header: {
     backgroundColor:
@@ -108,7 +108,13 @@ export const BuyOffer: FC<BuyOffertProps> = ({
   return (
     <OfferContainer
       offer={offer}
-      action={offer.type === OFFER_TYPE.EXCHANGE ? t('toExchange') : t('toBuy')}
+      action={
+        offer.type === OFFER_TYPE.EXCHANGE
+          ? t('toExchange')
+          : offer.type === OFFER_TYPE.BUY
+          ? t('toSell')
+          : t('toBuy')
+      }
     >
       <BuyOfferForms
         offer={offer}
@@ -311,6 +317,25 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({
               <Text
                 className={classes.textValue}
               >{`${offer.price} ${buyTokenSymbol}`}</Text>
+            </Flex>
+            <Flex direction={'row'} gap={16}>
+              <Text className={classes.textLabel}>{'Prix/Jeton initial'}</Text>
+              <Text className={classes.stressValue}>
+                {offer.type === OFFER_TYPE.BUY
+                  ? formatBigDecimals(
+                      new BigNumber(1)
+                        .dividedBy(offer.officialPrice ?? 1)
+                        .toNumber(),
+                      6
+                    ) + (' ' + buyTokenSymbol ?? '')
+                  : formatUsd(offer.officialPrice ?? 0)}
+              </Text>
+            </Flex>
+            <Flex direction={'row'} gap={16}>
+              <Text className={classes.textLabel}>{'Delta'}</Text>
+              <Text className={classes.textValue}>
+                {formatPercent(offer.priceDelta)}
+              </Text>
             </Flex>
           </Flex>
         </Flex>
