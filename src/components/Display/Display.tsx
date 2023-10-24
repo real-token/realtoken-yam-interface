@@ -34,6 +34,14 @@ const Display: FC = () => {
   const availableDisplays = useMemo(() => {
     return new Map<Displays, Display>([
       [
+        Displays.LIST,
+        {
+          display: Displays.LIST,
+          title: 'List',
+          component: <PublicMarketList key={'list'} />,
+        },
+      ],
+      [
         Displays.TABLE,
         {
           display: Displays.TABLE,
@@ -47,14 +55,6 @@ const Display: FC = () => {
           display: Displays.GRID,
           title: 'Grid',
           component: <MarketGrid key={'grid'} />,
-        },
-      ],
-      [
-        Displays.LIST,
-        {
-          display: Displays.LIST,
-          title: 'List',
-          component: <PublicMarketList key={'list'} />,
         },
       ],
     ]);
@@ -91,7 +91,7 @@ const Display: FC = () => {
 
           <Flex justify={'space-between'} mb={16}>
             <MarketSort />
-            {!isMobile && (
+            {/* {!isMobile && (
               <Select
                 data={datas}
                 value={choosenDisplay}
@@ -99,7 +99,7 @@ const Display: FC = () => {
                   if (value) setChoosenDisplay(value);
                 }}
               />
-            )}
+            )} */}
           </Flex>
           {getDisplay() ? getDisplay()?.component : undefined}
         </>

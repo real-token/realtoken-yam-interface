@@ -65,7 +65,7 @@ export const CheckCompliance: FC<ComplianceProps> = ({ margin }) => {
           margin={margin}
         ></NotificationCompliance>
       )}
-      <Group position={isMobile ? 'center' : 'right'}>
+      <Group position={isMobile ? 'right' : 'right'}>
         <ComplianceStatus margin={'-16px 0px 10px 0px'}></ComplianceStatus>
       </Group>
     </>

@@ -239,6 +239,15 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({
     ]
   );
 
+  const initialPriceTranslation: Map<OFFER_TYPE, string> = new Map<
+    OFFER_TYPE,
+    string
+  >([
+    [OFFER_TYPE.BUY, t('buyOfferTypeInitialPrice')],
+    [OFFER_TYPE.SELL, t('sellOfferTypeInitialPrice')],
+    [OFFER_TYPE.EXCHANGE, t('exchangeOfferTypeInitialPrice')],
+  ]);
+
   const amountTranslation: Map<OFFER_TYPE, string> = new Map<
     OFFER_TYPE,
     string
@@ -258,6 +267,69 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({
   const [backgroundImage, setBackgroundImage] = useState<string>(
     offerProperty ? offerProperty.imageLink[0] : ''
   );
+
+  let initialPrice: string | undefined = undefined;
+  let priceDelta: string | undefined = undefined;
+  let priceColor: string | undefined = undefined;
+
+  switch (offer.type) {
+    case OFFER_TYPE.BUY: {
+      initialPrice =
+        formatBigDecimals(
+          new BigNumber(1).dividedBy(offer.officialPrice ?? 1).toNumber(),
+          6
+        ) + (' ' + buyTokenSymbol ?? '');
+      if (offer.priceDelta && offer.priceDelta > 0) {
+        priceColor = 'teal';
+      } else if (offer.priceDelta && offer.priceDelta < 0) {
+        priceColor = 'red';
+      }
+
+      priceDelta = offer.priceDelta
+        ? formatPercent(offer.priceDelta)
+        : undefined;
+      break;
+    }
+    case OFFER_TYPE.SELL: {
+      initialPrice = formatUsd(
+        offer.officialPrice ?? parseFloat(offer.price) ?? 0
+      );
+      if (offer.priceDelta && offer.priceDelta > 0) {
+        priceColor = 'red';
+      } else if (offer.priceDelta && offer.priceDelta < 0) {
+        priceColor = 'teal';
+      }
+      priceDelta = offer.priceDelta
+        ? formatPercent(offer.priceDelta)
+        : undefined;
+      break;
+    }
+    case OFFER_TYPE.EXCHANGE: {
+      if (offer.sites.buying.tokenOfficialPrice > 0) {
+        const rate = new BigNumber(parseFloat(offer.price))
+          .times(offer.sites.buying.tokenOfficialPrice)
+          .dividedBy(offer.sites.selling.tokenOfficialPrice);
+
+        const delta = rate.minus(parseFloat(offer.price));
+
+        if (delta.toNumber() > 0) {
+          priceColor = 'red';
+        } else if (delta.toNumber() < 0) {
+          priceColor = 'teal';
+        }
+
+        initialPrice =
+          formatBigDecimals(rate.toNumber()) + ' ' + offer.buyerTokenName;
+        priceDelta = formatPercent(delta.dividedBy(rate).toNumber());
+      }
+
+      break;
+    }
+    default: {
+      //statements;
+      break;
+    }
+  }
 
   useEffect(() => {
     if (!offer || propertiesIsloading) return;
@@ -318,25 +390,22 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({
                 className={classes.textValue}
               >{`${offer.price} ${buyTokenSymbol}`}</Text>
             </Flex>
-            <Flex direction={'row'} gap={16}>
-              <Text className={classes.textLabel}>{'Prix/Jeton initial'}</Text>
-              <Text className={classes.stressValue}>
-                {offer.type === OFFER_TYPE.BUY
-                  ? formatBigDecimals(
-                      new BigNumber(1)
-                        .dividedBy(offer.officialPrice ?? 1)
-                        .toNumber(),
-                      6
-                    ) + (' ' + buyTokenSymbol ?? '')
-                  : formatUsd(offer.officialPrice ?? 0)}
-              </Text>
-            </Flex>
-            <Flex direction={'row'} gap={16}>
-              <Text className={classes.textLabel}>{'Delta'}</Text>
-              <Text className={classes.textValue}>
-                {formatPercent(offer.priceDelta)}
-              </Text>
-            </Flex>
+            {initialPrice && (
+              <Flex direction={'row'} gap={16}>
+                <Text className={classes.textLabel}>
+                  {offer.type ? initialPriceTranslation.get(offer.type) : ''}
+                </Text>
+                <Text className={classes.stressValue}>{initialPrice}</Text>
+              </Flex>
+            )}
+            {priceDelta && (
+              <Flex direction={'row'} gap={16}>
+                <Text className={classes.textLabel}>{'Delta'}</Text>
+                <Text className={classes.textValue} color={priceColor}>
+                  {priceDelta}
+                </Text>
+              </Flex>
+            )}
           </Flex>
         </Flex>
 

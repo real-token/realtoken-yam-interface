@@ -83,7 +83,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
     new BigNumber(1).dividedBy(offer.requestedRate).toNumber(),
     offer.requestedToken
   );
-  const perOfferToken = 'per ' + offer.transferedToken;
+  const perOfferToken = t2('per') + offer.transferedToken;
 
   const onOpenOffer = useCallback(
     (offerAction: Offer) => {
