@@ -92,14 +92,14 @@ export const OfferHeader: FC<OfferHeaderProps> = ({
 
   const { allowedTokens } = useAllowedTokens();
   const allowedTokenOffer = allowedTokens
-    ? allowedTokens.findLast(
+    ? allowedTokens.find(
         (t) =>
           t.contractAddress.toLowerCase() === offerTokenAddress.toLowerCase()
       )
     : undefined;
 
   const allowedTokenBuy = allowedTokens
-    ? allowedTokens.findLast(
+    ? allowedTokens.find(
         (t) =>
           t.contractAddress.toLowerCase() === buyerTokenAddress.toLowerCase()
       )

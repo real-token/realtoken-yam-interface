@@ -51,7 +51,7 @@ export type Offer = {
     buying:SiteDetails;
     
   }
-  
+  miningSite?: string;
 };
 
 export const DEFAULT_OFFER: Offer = {

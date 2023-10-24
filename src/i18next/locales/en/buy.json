@@ -1,4 +1,12 @@
 {
+
+  "list": {
+    "requesterName": "Buyer",
+    "requesterAddress": "Address",
+    "requestedPrice": "Price (USD)",
+    "requestedAmount": "Quantity",
+    "requestedToken": "Received Token"
+  },
   "table": {
     "market": "Market",
     "title": "CleanSatMining YAM (You And Me)",
@@ -23,13 +31,7 @@
     "privateTexte": "private",
     "onMarketSince": "On market since"
   },
-  "list": {
-    "requesterName": "Acheteur",
-    "requesterAddress": "Adresse",
-    "requestedPrice": "Prix acheteur",
-    "requestedAmount": "Quantité demandée",
-    "requestedToken": "Achete contre"
-  },
+
   "grid": {
     "buy": "Buy",
     "sell": "Sell",

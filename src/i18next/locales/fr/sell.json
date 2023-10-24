@@ -2,8 +2,8 @@
   "list": {
     "requesterName": "Vendeur",
     "requesterAddress": "Adresse",
-    "requestedPrice": "Prix vendeur",
-    "requestedAmount": "En vente",
-    "requestedToken": "Vend contre"
+    "requestedPrice": "Prix (usd)",
+    "requestedAmount": "Quantité",
+    "requestedToken": "Token reçu"
   }
 }

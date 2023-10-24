@@ -1,10 +1,9 @@
 {
   "list": {
-    "requesterName": "Demandeur",
-    "requesterAddress": "Adresse",
-    "requestedPrice": "taux de change",
-    "requestedAmount": "Quantité demandée",
-    "requestedToken": "Echange contre"
+    "requesterName": "Requester",
+    "requesterAddress": "Address",
+    "requestedPrice": "Price (USD)",
+    "requestedAmount": "Quantity",
+    "requestedToken": "Received Token"
   }
-  
 }

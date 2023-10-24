@@ -89,12 +89,12 @@ export const parseOffer = (
           }); */
       }
 
-      const offerSite = propertiesToken.findLast(
+      const offerSite = propertiesToken.find(
         (t) =>
           t.contractAddress.toLowerCase() ===
           offer.offerToken.address.toLowerCase()
       );
-      const buyingSite = propertiesToken.findLast(
+      const buyingSite = propertiesToken.find(
         (t) =>
           t.contractAddress.toLowerCase() ===
           offer.buyerToken.address.toLowerCase()
@@ -210,7 +210,7 @@ export const parseOffer = (
         getOfficialPrice(propertyTokenSell) ?? 0;
       o.sites.buying.tokenSellDate = propertyTokenBuy?.sellDate ?? '';
       o.sites.selling.tokenSellDate = propertyTokenSell?.sellDate ?? '';
-
+      o.miningSite = propertyToken?.miningSite;
       // console.log(offer.availableAmount, balanceWallet, allowance)
       resolve(o);
     } catch (err) {

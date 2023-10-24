@@ -15,7 +15,7 @@ export function mapOfferToOfferData(
   allowedTokens?: AllowedToken[]
 ): OfferData {
   const allowedTokenOffer = allowedTokens
-    ? allowedTokens.findLast(
+    ? allowedTokens.find(
         (t) =>
           t.contractAddress.toLowerCase() ===
           offer.offerTokenAddress.toLowerCase()
@@ -23,7 +23,7 @@ export function mapOfferToOfferData(
     : undefined;
 
   const allowedTokenBuy = allowedTokens
-    ? allowedTokens.findLast(
+    ? allowedTokens.find(
         (t) =>
           t.contractAddress.toLowerCase() ===
           offer.buyerTokenAddress.toLowerCase()

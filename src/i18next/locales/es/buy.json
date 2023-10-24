@@ -24,11 +24,11 @@
     "onMarketSince": "On market since"
   },
   "list": {
-    "requesterName": "Acheteur",
-    "requesterAddress": "Adresse",
-    "requestedPrice": "Prix acheteur",
-    "requestedAmount": "Quantité demandée",
-    "requestedToken": "Achete contre"
+    "requesterName": "Comprador",
+    "requesterAddress": "Dirección",
+    "requestedPrice": "Precio (USD)",
+    "requestedAmount": "Cantidad",
+    "requestedToken": "Token recibido"
   },
   "grid": {
     "buy": "Buy",

@@ -3,9 +3,9 @@
   "list": {
     "requesterName": "Acheteur",
     "requesterAddress": "Adresse",
-    "requestedPrice": "Prix acheteur",
-    "requestedAmount": "Quantité demandée",
-    "requestedToken": "Achete contre"
+    "requestedPrice": "Prix (usd)",
+    "requestedAmount": "Quantité",
+    "requestedToken": "Token reçu"
   },
 
 
