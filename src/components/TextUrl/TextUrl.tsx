@@ -17,6 +17,12 @@ const useStyle = createStyles((theme) => ({
       cursor: 'pointer',
     },
   },
+  text: {
+    '&:hover': {
+      color: theme.colors.brand,
+      cursor: 'pointer',
+    },
+  },
 }));
 
 interface TextUrlProps {
@@ -32,5 +38,20 @@ export const TextUrl = ({ url, children, accessKey }: TextUrlProps) => {
       <Text accessKey={accessKey}>{children}</Text>
       <IconExternalLink size={16} />
     </Flex>
+  );
+};
+
+export const SimpleTextUrl = ({ url, children, accessKey }: TextUrlProps) => {
+  const { classes } = useStyle();
+
+  return (
+    <Text
+      td={'underline'}
+      accessKey={accessKey}
+      onClick={() => openInNewTab(url)}
+      className={classes.text}
+    >
+      {children}
+    </Text>
   );
 };

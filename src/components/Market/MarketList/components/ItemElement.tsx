@@ -21,10 +21,9 @@ import {
 
 import { Columns, OfferData } from '../Types';
 import { mapColumnLabels, truncateInMiddle } from '../Utils';
+import { LINK_ACCESS_KEY, SPOT_ACCESS_KEY } from '../constants';
 import { SiteElement } from './SiteElement';
 import { TokensTradedElement } from './TokensTradedElement';
-
-const LINK_ACCESS_KEY = 'TEXT_URL';
 
 interface ItemElementProps {
   offer: OfferData;
@@ -94,7 +93,10 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
 
   const handleClickEvent = (event: React.PointerEvent<HTMLDivElement>) => {
     const target: HTMLDivElement = event.target as HTMLDivElement;
-    if (target.accessKey !== LINK_ACCESS_KEY) {
+    if (
+      target.accessKey !== LINK_ACCESS_KEY &&
+      target.accessKey !== SPOT_ACCESS_KEY
+    ) {
       offerAction
         ? onOpenOffer(offerAction)
         : console.warn('Offer not loaded ' + offer.id);

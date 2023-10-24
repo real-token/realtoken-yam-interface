@@ -35,6 +35,7 @@ export type PropertiesToken = {
     annualYield?: number
     energy: string[]
     electricityPrice: number
+    electricitySpotPriceUrl: string
     sellDate: string
     miningSite: string
     location: {

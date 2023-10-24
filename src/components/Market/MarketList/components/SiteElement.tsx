@@ -1,14 +1,18 @@
 import React, { FC } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Avatar, Group, Stack, Text, useMantineTheme } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 
+import { SimpleTextUrl } from 'src/components/TextUrl/TextUrl';
+import { usePropertyToken } from 'src/hooks/usePropertyToken';
 import { formatUsd } from 'src/utils/format';
 
 import { OfferData } from '../Types';
+import { SPOT_ACCESS_KEY } from '../constants';
 
 const WIDTH_COL1 = 115;
-const WIDTH_COL2 = 72;
+const WIDTH_COL2 = 76;
 
 interface SiteElementProps {
   offer: OfferData;
@@ -18,9 +22,29 @@ export const SiteElement: FC<SiteElementProps> = ({ offer }) => {
   const isMobile = useMediaQuery(`(max-width: 384px`);
   const isSell = offer.sites.transfered.name !== '';
   const isBuy = offer.sites.requested.name !== '';
-
+  const { t } = useTranslation('list');
   const isCsmExchange = isSell && isBuy;
   const minWidth = isSell && isBuy ? 300 : 230;
+  const { propertyToken: sellerPropertyToken } = usePropertyToken(
+    offer.requestedTokenAddress
+  );
+  const { propertyToken: buyerPropertyToken } = usePropertyToken(
+    offer.transferedTokenAddress
+  );
+
+  const elecSpotBuyer = buyerPropertyToken
+    ? buyerPropertyToken.electricitySpotPriceUrl
+    : undefined;
+
+  const elecSpotSeller = buyerPropertyToken
+    ? buyerPropertyToken.electricitySpotPriceUrl
+    : undefined;
+
+  console.log(
+    'usePropertyToken',
+    JSON.stringify(sellerPropertyToken, null, 4),
+    JSON.stringify(buyerPropertyToken, null, 4)
+  );
 
   return (
     <Stack spacing={1} sx={{ marginLeft: isMobile ? '-16px' : undefined }}>
@@ -90,7 +114,7 @@ export const SiteElement: FC<SiteElementProps> = ({ offer }) => {
       >
         <Group position={'apart'} spacing={0}>
           <Text tt={'uppercase'} w={WIDTH_COL1}>
-            {'initial price'}
+            {t('initialPrice')}
           </Text>
           {isSell && (
             <Text tt={'uppercase'} miw={WIDTH_COL2}>
@@ -123,7 +147,7 @@ export const SiteElement: FC<SiteElementProps> = ({ offer }) => {
       >
         <Group position={'apart'} spacing={0}>
           <Text tt={'uppercase'} w={WIDTH_COL1}>
-            {'initial date'}
+            {t('initialDate')}
           </Text>
           {isSell && (
             <Text tt={'uppercase'} miw={WIDTH_COL2}>
@@ -156,17 +180,33 @@ export const SiteElement: FC<SiteElementProps> = ({ offer }) => {
       >
         <Group position={'apart'} spacing={0}>
           <Text tt={'uppercase'} w={WIDTH_COL1}>
-            {'elec. Price per kWh'}
+            {t('electricityPrice')}
           </Text>
           {isSell && (
-            <Text tt={'uppercase'} miw={WIDTH_COL2}>
-              {formatUsd(offer.sites.transfered.electricityPrice, 4)}
-            </Text>
+            <Group spacing={0} miw={WIDTH_COL2}>
+              {elecSpotSeller && (
+                <SimpleTextUrl url={elecSpotSeller} accessKey={SPOT_ACCESS_KEY}>
+                  {'SPOT'}
+                </SimpleTextUrl>
+              )}
+              <Text tt={'uppercase'}>
+                {(elecSpotSeller ? '+' : '') +
+                  formatUsd(offer.sites.transfered.electricityPrice, 4)}
+              </Text>
+            </Group>
           )}
           {isBuy && (
-            <Text tt={'uppercase'} miw={WIDTH_COL2}>
-              {formatUsd(offer.sites.requested.electricityPrice, 4)}
-            </Text>
+            <Group spacing={0} miw={WIDTH_COL2}>
+              {elecSpotBuyer && (
+                <SimpleTextUrl url={elecSpotBuyer} accessKey={SPOT_ACCESS_KEY}>
+                  {'SPOT'}
+                </SimpleTextUrl>
+              )}
+              <Text tt={'uppercase'} miw={WIDTH_COL2}>
+                {(elecSpotBuyer ? 'SPOT+' : '') +
+                  formatUsd(offer.sites.requested.electricityPrice, 4)}
+              </Text>
+            </Group>
           )}
         </Group>
       </div>

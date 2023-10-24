@@ -15,6 +15,9 @@
     "EXCHANGE": "Exchange",
     "for": " for ",
     "per": "per ",
+    "initialPrice":"Initial sale price",
+    "initialDate":"Creation date",
+    "electricityPrice":"Elec. price per kWh",
     "toBuy": "Buy",
     "toSell": "Sell",
     "toExchange": "Exchange"

@@ -140,6 +140,7 @@ export function fetchProperties(chainId: number) {
 
       if (response.ok) {
         const responseJson: PropertiesToken[] = await response.json();
+        //console.log('responseJson', JSON.stringify(responseJson, null, 4));
         dispatch({
           type: propertiesChangedDispatchType,
           payload: responseJson,
