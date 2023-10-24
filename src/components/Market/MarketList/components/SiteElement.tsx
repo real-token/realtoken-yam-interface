@@ -8,8 +8,8 @@ import { SimpleTextUrl } from 'src/components/TextUrl/TextUrl';
 import { usePropertyToken } from 'src/hooks/usePropertyToken';
 import { formatUsd } from 'src/utils/format';
 
+import { SPOT_ACCESS_KEY } from '../Constants';
 import { OfferData } from '../Types';
-import { SPOT_ACCESS_KEY } from '../constants';
 
 const WIDTH_COL1 = 115;
 const WIDTH_COL2 = 76;

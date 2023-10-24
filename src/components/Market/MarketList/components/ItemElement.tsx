@@ -19,9 +19,9 @@ import {
   formatUsd,
 } from 'src/utils/format';
 
+import { LINK_ACCESS_KEY, SPOT_ACCESS_KEY } from '../Constants';
 import { Columns, OfferData } from '../Types';
 import { mapColumnLabels, truncateInMiddle } from '../Utils';
-import { LINK_ACCESS_KEY, SPOT_ACCESS_KEY } from '../constants';
 import { SiteElement } from './SiteElement';
 import { TokensTradedElement } from './TokensTradedElement';
 
