@@ -30,6 +30,14 @@ export function mapOfferToOfferData(
       )
     : undefined;
 
+  const requestedUsdPrice =
+    offer.offerPrice ??
+    (offer.sites.buying.tokenOfficialPrice > 0
+      ? new BigNumber(parseFloat(offer.price))
+          .times(offer.sites.buying.tokenOfficialPrice ?? 1)
+          .toNumber()
+      : parseFloat(offer.price));
+
   return {
     id: offer.offerId,
     transferedToken: allowedTokenBuy
@@ -77,17 +85,14 @@ export function mapOfferToOfferData(
     electricityPrice: offer.electricityPrice,
     initialSellingPrice:
       offer.officialPrice ?? offer.sites.selling.tokenOfficialPrice,
-    requestedPrice:
-      offer.offerPrice ??
-      new BigNumber(parseFloat(offer.price))
-        .times(offer.sites.buying.tokenOfficialPrice ?? 0)
-        .toNumber(),
+    requestedPrice: requestedUsdPrice,
     requestedAmount: parseFloat(offer.amount),
     balanceWallet: offer.balanceWallet
       ? parseFloat(offer.balanceWallet)
       : undefined,
     image: '', // Vous devrez spécifier l'image appropriée ici
     type: offerType,
+    priceDelta: offer.priceDelta,
     // offer.offerTokenType === 1 || offer.offerTokenType === 0
     //   ? OFFER_TYPE.SELL
     //   : offer.offerTokenType === 2

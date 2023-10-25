@@ -5,7 +5,7 @@
     "requesterAddress": "Address",
     "requestedPrice": "Price (USD)",
     "requestedAmount": "Quantity",
-    "requestedToken": "Received Token"
+    "requestedToken": "Exchange rate"
   },
   "table": {
     "market": "Market",

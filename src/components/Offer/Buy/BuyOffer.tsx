@@ -24,11 +24,14 @@ import { NumberInput } from 'src/components/NumberInput';
 import { getOfferPropertyAddress } from 'src/components/Offer/Utils';
 import { ContractsID } from 'src/constants';
 import { useActiveChain, useContract } from 'src/hooks';
+import { useAppSelector } from 'src/hooks/react-hooks';
 import { useERC20TokenInfo } from 'src/hooks/useERC20TokenInfo';
 import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
 import { useWalletERC20Balance } from 'src/hooks/useWalletERC20Balance';
 import { providerAtom } from 'src/states';
+import { selectPrices } from 'src/store/features/interface/interfaceSelector';
 import { OFFER_TYPE, Offer } from 'src/types/offer';
+import { Price } from 'src/types/price';
 import { getContract } from 'src/utils';
 import { formatBigDecimals, formatPercent, formatUsd } from 'src/utils/format';
 import { cleanNumber } from 'src/utils/number';
@@ -146,7 +149,7 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({
   const [offerTokenSellerBalance, setOfferTokenSellerBalance] = useState<
     string | undefined
   >('');
-
+  const prices: Price = useAppSelector(selectPrices);
   const { name: offerTokenName, symbol: offerTokenSymbol } = useERC20TokenInfo(
     offer.offerTokenAddress
   );
@@ -245,6 +248,15 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({
     [OFFER_TYPE.EXCHANGE, t('exchangeOfferTypeInitialPrice')],
   ]);
 
+  const deltaPriceTranslation: Map<OFFER_TYPE, string> = new Map<
+    OFFER_TYPE,
+    string
+  >([
+    [OFFER_TYPE.BUY, t('buyOfferTypeDeltaPrice')],
+    [OFFER_TYPE.SELL, t('sellOfferTypeDeltaPrice')],
+    [OFFER_TYPE.EXCHANGE, t('exchangeOfferTypeDeltaPrice')],
+  ]);
+
   const amountTranslation: Map<OFFER_TYPE, string> = new Map<
     OFFER_TYPE,
     string
@@ -270,7 +282,7 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({
     initialPrice: string | undefined;
     priceDelta: string | undefined;
     priceColor: string | undefined;
-  } = offerPrices(offer, buyTokenSymbol);
+  } = offerPrices(offer, buyTokenSymbol, prices);
 
   useEffect(() => {
     if (!offer || propertiesIsloading) return;
@@ -325,21 +337,27 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({
             </Flex>
             <Flex direction={'row'} gap={16}>
               <Text className={classes.textLabel}>
-                {offer.type ? priceTranslation.get(offer.type) : ''}
+                {offer.type ? priceTranslation.get(offer.type) : 'Price/token'}
               </Text>
               <Text className={classes.textValue}>{offerPrice}</Text>
             </Flex>
             {initialPrice && (
               <Flex direction={'row'} gap={16}>
                 <Text className={classes.textLabel}>
-                  {offer.type ? initialPriceTranslation.get(offer.type) : ''}
+                  {offer.type
+                    ? initialPriceTranslation.get(offer.type)
+                    : 'Initial price/token'}
                 </Text>
                 <Text className={classes.stressValue}>{initialPrice}</Text>
               </Flex>
             )}
             {priceDelta && (
               <Flex direction={'row'} gap={16}>
-                <Text className={classes.textLabel}>{'Delta'}</Text>
+                <Text className={classes.textLabel}>
+                  {offer.type
+                    ? deltaPriceTranslation.get(offer.type)
+                    : 'Delta price/token'}
+                </Text>
                 <Text className={classes.textValue} color={priceColor}>
                   {priceDelta}
                 </Text>
@@ -403,7 +421,11 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({
     </form>
   );
 };
-function offerPrices(offer: Offer, buyTokenSymbol: string | undefined) {
+function offerPrices(
+  offer: Offer,
+  buyTokenSymbol: string | undefined,
+  prices: Price
+) {
   let offerPrice: string | undefined = undefined;
   let initialPrice: string | undefined = undefined;
   let priceDelta: string | undefined = undefined;
@@ -411,57 +433,121 @@ function offerPrices(offer: Offer, buyTokenSymbol: string | undefined) {
 
   switch (offer.type) {
     case OFFER_TYPE.BUY: {
-      initialPrice =
-        formatBigDecimals(
-          new BigNumber(1).dividedBy(offer.officialPrice ?? 1).toNumber(),
-          6
-        ) + (' ' + buyTokenSymbol ?? '');
+      const tokenInitialPricePerUsd = new BigNumber(1)
+        .dividedBy(offer.officialPrice ?? 1)
+        .toNumber();
+      const tokenInitialUsdPrice = new BigNumber(
+        offer.officialPrice ?? 1
+      ).toNumber();
+
       if (offer.priceDelta && offer.priceDelta > 0) {
         priceColor = 'teal';
       } else if (offer.priceDelta && offer.priceDelta < 0) {
         priceColor = 'red';
       }
+      const tokenUsdPrice = new BigNumber(
+        prices[offer.offerTokenAddress.toLowerCase()]
+      );
+      const deltaUsdPrice = tokenUsdPrice
+        .dividedBy(parseFloat(offer.price))
+        .minus(tokenInitialUsdPrice)
+        .toNumber();
 
+      initialPrice =
+        formatBigDecimals(tokenInitialPricePerUsd, 6) +
+        (' ' + buyTokenSymbol ?? '');
       priceDelta = offer.priceDelta
         ? formatPercent(offer.priceDelta)
         : undefined;
-
+      priceDelta = offer.priceDelta
+        ? formatUsd(deltaUsdPrice) +
+          ' (' +
+          sign(offer.priceDelta) +
+          formatPercent(offer.priceDelta) +
+          ')'
+        : undefined;
       offerPrice = offer.price + ' ' + buyTokenSymbol;
+
       break;
     }
     case OFFER_TYPE.SELL: {
-      initialPrice = formatUsd(
-        offer.officialPrice ?? parseFloat(offer.price) ?? 0
-      );
+      const tokenInitialUsdPrice =
+        offer.officialPrice ?? parseFloat(offer.price) ?? 0;
+
       if (offer.priceDelta && offer.priceDelta > 0) {
         priceColor = 'red';
       } else if (offer.priceDelta && offer.priceDelta < 0) {
         priceColor = 'teal';
       }
-      priceDelta = offer.priceDelta
-        ? formatPercent(offer.priceDelta)
-        : undefined;
 
+      const tokenUsdPrice = new BigNumber(
+        prices[offer.buyerTokenAddress.toLowerCase()]
+      );
+
+      const deltaUsdPrice = tokenUsdPrice
+        .times(parseFloat(offer.price))
+        .minus(tokenInitialUsdPrice)
+        .toNumber();
+
+      initialPrice = formatUsd(tokenInitialUsdPrice);
       offerPrice = offer.price + ' ' + buyTokenSymbol;
+      priceDelta = offer.priceDelta
+        ? formatUsd(deltaUsdPrice) +
+          ' (' +
+          sign(offer.priceDelta) +
+          formatPercent(offer.priceDelta) +
+          ')'
+        : undefined;
       break;
     }
     case OFFER_TYPE.EXCHANGE: {
       if (offer.sites.buying.tokenOfficialPrice > 0) {
-        const rate = new BigNumber(parseFloat(offer.price))
-          .times(offer.sites.buying.tokenOfficialPrice)
-          .dividedBy(offer.sites.selling.tokenOfficialPrice);
+        const initalRate = new BigNumber(
+          offer.sites.selling.tokenOfficialPrice
+        ).dividedBy(offer.sites.buying.tokenOfficialPrice);
 
-        const delta = rate.minus(parseFloat(offer.price));
+        const rate = exchangeRates(offer);
 
-        if (delta.toNumber() > 0) {
+        if (rate.delta > 0) {
           priceColor = 'red';
-        } else if (delta.toNumber() < 0) {
+        } else if (rate.delta < 0) {
           priceColor = 'teal';
         }
 
         initialPrice =
-          formatBigDecimals(rate.toNumber()) + ' ' + offer.buyerTokenName;
-        priceDelta = formatPercent(delta.dividedBy(rate).toNumber());
+          formatBigDecimals(initalRate.toNumber(), 4) +
+          ' ' +
+          offer.buyerTokenName;
+        priceDelta =
+          formatUsd(rate.delta) +
+          ' (' +
+          sign(rate.delta) +
+          formatPercent(rate.percent) +
+          ')';
+      } else {
+        const p1 = new BigNumber(prices[offer.buyerTokenAddress.toLowerCase()]);
+
+        const p2 = new BigNumber(prices[offer.offerTokenAddress.toLowerCase()]);
+
+        const priceDeltaUsd = p1.times(parseFloat(offer.price)).minus(p2);
+
+        if (priceDeltaUsd.toNumber() > 0) {
+          priceColor = 'red';
+        } else if (priceDeltaUsd.toNumber() < 0) {
+          priceColor = 'teal';
+        }
+
+        initialPrice =
+          formatBigDecimals(p2.dividedBy(p1).toNumber()) + ' ' + buyTokenSymbol;
+
+        priceDelta =
+          formatBigDecimals(priceDeltaUsd.toNumber()) +
+          ' ' +
+          buyTokenSymbol +
+          ' (' +
+          sign(priceDeltaUsd.toNumber()) +
+          formatPercent(priceDeltaUsd.dividedBy(p1).toNumber()) +
+          ')';
       }
 
       offerPrice = offer.price + ' ' + buyTokenSymbol;
@@ -473,4 +559,37 @@ function offerPrices(offer: Offer, buyTokenSymbol: string | undefined) {
     }
   }
   return { offerPrice, initialPrice, priceDelta, priceColor };
+}
+
+function sign(num: number): string {
+  return num > 0 ? '+' : '';
+}
+
+function exchangeRates(offer: Offer): { delta: number; percent: number } {
+  const usdInitPerTokenForSale = new BigNumber(
+    offer.sites.selling.tokenOfficialPrice
+    //offer.sites.transfered.tokenOfficialPrice
+  );
+  const usdInitPerTokenBuyWith = new BigNumber(
+    offer.sites.buying.tokenOfficialPrice
+  );
+
+  const numberOfTokenForSalePerTokenBuyWith = new BigNumber(1).dividedBy(
+    parseFloat(offer.price)
+  );
+
+  const usdPerTokenForSale = usdInitPerTokenBuyWith.dividedBy(
+    numberOfTokenForSalePerTokenBuyWith
+  );
+
+  const usdDeltaPerTokenForSale = usdPerTokenForSale.minus(
+    usdInitPerTokenForSale
+  );
+
+  return {
+    delta: usdDeltaPerTokenForSale.toNumber(),
+    percent: usdDeltaPerTokenForSale
+      .dividedBy(usdInitPerTokenForSale)
+      .toNumber(),
+  };
 }

@@ -21,6 +21,7 @@ export type OfferData = {
 
   electricityPrice: number;
   initialSellingPrice?: number; //USD
+  priceDelta?: number;
   requestedRate: number;
   requestedPrice: number; //USD
   requestedAmount?: number;

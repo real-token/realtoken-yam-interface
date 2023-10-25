@@ -47,7 +47,7 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
   const offersData: OfferData[] = offers.map((offer) =>
     mapOfferToOfferData(offer, listOfferType, allowedTokens)
   );
-  console.log('MARKET LIST', JSON.stringify(offers, null, 4));
+  //console.log('MARKET LIST', JSON.stringify(offers, null, 4));
 
   const { t: tList } = useTranslation('list');
   const { t: tOfferMode } = useTranslation(listOfferType.toLowerCase(), {

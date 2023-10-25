@@ -5,7 +5,7 @@
     "requesterAddress": "Adresse",
     "requestedPrice": "Prix (usd)",
     "requestedAmount": "Quantité",
-    "requestedToken": "Token reçu"
+    "requestedToken": "Taux de change"
   },
 
 

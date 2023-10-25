@@ -9,9 +9,12 @@ import { BigNumber } from 'bignumber.js';
 import { OfferBadge } from 'src/components/Offer/components/OfferTypeBadge';
 import { useOffer } from 'src/hooks/offers/useOffer';
 import { useAppDispatch } from 'src/hooks/react-hooks';
+import { useAppSelector } from 'src/hooks/react-hooks';
 import { buyOfferOpen } from 'src/store/features/buyOffer/buyOfferSlice';
+import { selectPrices } from 'src/store/features/interface/interfaceSelector';
 import { Offer } from 'src/types/offer';
 import { OFFER_TYPE } from 'src/types/offer/OfferType';
+import { Price } from 'src/types/price';
 import {
   formatPercent,
   formatSmallToken,
@@ -34,12 +37,13 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
   const dispatch = useAppDispatch();
   const isLarge = useMediaQuery(`(min-width: ${theme.breakpoints.lg})`);
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`);
+  //const isSmallMobile = useMediaQuery(`(max-width: 300px`);
   const { offer: offerAction } = useOffer(parseInt(offer.id));
   const { t } = useTranslation(offer.type.toLowerCase(), { keyPrefix: 'list' });
   const { t: t2 } = useTranslation('list');
   const columnLabels = mapColumnLabels(t);
-  console.log('ITEM OFFER', JSON.stringify(offer, null, 4));
-
+  //console.log('ITEM OFFER', JSON.stringify(offer, null, 4));
+  const prices: Price = useAppSelector(selectPrices);
   const lastCardStyle = isLastItem
     ? {
         marginTop: '-1px',
@@ -59,16 +63,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             : theme.colors.gray[0],
       };
 
-  const priceDelta = new BigNumber(
-    offer.requestedPrice ?? offer.initialSellingPrice ?? 0
-  )
-    .minus(offer.initialSellingPrice ?? 0)
-    .dividedBy(
-      offer.initialSellingPrice && offer.initialSellingPrice !== 0
-        ? offer.initialSellingPrice
-        : 1
-    )
-    .toNumber();
+  const priceDelta = calculatePriceDelta(offer, prices);
 
   const priceDeltaColor =
     priceDelta === 0
@@ -132,7 +127,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
           </div>
           {isLarge && <TokensTradedElement offer={offer}></TokensTradedElement>}
           {!isLarge && (
-            <Group spacing={0} position={'apart'}>
+            <Group spacing={10} position={'left'}>
               <TokensTradedElement offer={offer}></TokensTradedElement>
               <SiteElement offer={offer}></SiteElement>
             </Group>
@@ -294,6 +289,9 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
   }
 
   function stackTokenPrice() {
+    if (offer.type === OFFER_TYPE.EXCHANGE)
+      console.log('stackTokenPrice', JSON.stringify(offer, null, 4));
+
     return (
       <Stack
         h={'100%'}
@@ -378,3 +376,68 @@ export const ItemEmptyElement: FC = () => {
     </Card>
   );
 };
+function calculatePriceDelta(offer: OfferData, prices: Price) {
+  let priceDelta = offer.priceDelta;
+
+  if (!priceDelta) {
+    if (offer.initialSellingPrice) {
+      const usdInitPerTokenForSale = new BigNumber(
+        offer.sites.transfered.tokenOfficialPrice
+      );
+      const usdInitPerTokenBuyWith = new BigNumber(
+        offer.sites.requested.tokenOfficialPrice
+      );
+
+      const numberOfTokenForSalePerTokenBuyWith = new BigNumber(1).dividedBy(
+        offer.requestedRate
+      );
+
+      const usdPerTokenForSale = usdInitPerTokenBuyWith.dividedBy(
+        numberOfTokenForSalePerTokenBuyWith
+      );
+
+      const usdDeltaPerTokenForSale = usdPerTokenForSale.minus(
+        usdInitPerTokenForSale
+      );
+
+      priceDelta = usdDeltaPerTokenForSale
+        .dividedBy(usdInitPerTokenForSale)
+        .toNumber();
+
+      // console.log(
+      //   'WARNING CALC',
+      //   offer.id,
+      //   'numberOfTokenForSalePerTokenBuyWith',
+      //   numberOfTokenForSalePerTokenBuyWith.toNumber()
+      // );
+      // console.log(
+      //   'WARNING CALC',
+      //   offer.id,
+      //   'usdPerTokenForSale',
+      //   usdPerTokenForSale.toNumber()
+      // );
+      // console.log(
+      //   'WARNING CALC',
+      //   offer.id,
+      //   'usdInitPerTokenForSale',
+      //   usdInitPerTokenForSale.toNumber()
+      // );
+    } else {
+      const p1 = new BigNumber(
+        prices[offer.requestedTokenAddress.toLowerCase()]
+      );
+
+      const p2 = new BigNumber(
+        prices[offer.transferedTokenAddress.toLowerCase()]
+      );
+
+      priceDelta = p2
+        .times(offer.requestedPrice)
+        .minus(p1)
+        .dividedBy(p2)
+        .toNumber();
+    }
+  }
+
+  return priceDelta;
+}
