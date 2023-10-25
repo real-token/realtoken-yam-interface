@@ -189,8 +189,10 @@ export const CreateOffer = () => {
                 const priceInWei = new BigNumber(offer.price.toString()).shiftedBy(Number(buyerTokenDecimals)).toString(10);
                 const transactionDeadline = Math.floor(Date.now() / 1000) + 3600;
 
-                const isSafe = connector == "gnosis-safe";
+                const isSafe = connector == "gnosisSafe";
                 const isWalletConnect = connector == "walletConnect"; 
+
+                console.log(isSafe)
 
                 console.log(isWalletConnect)
 
@@ -222,7 +224,7 @@ export const CreateOffer = () => {
 
                     console.log("permitAnswer: ", permitAnswer)
 
-                }else if(offerTokenType == 2 &&  !(isSafe || isWalletConnect)){
+                }else if(offerTokenType == 2 && !(isSafe || isWalletConnect)){
                     console.log('TEST2')
                     // TokenType = 2: ERC20 With Permit
                     needPermit = true;
