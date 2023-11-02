@@ -271,7 +271,7 @@ export const CreateOffer = () => {
             JSON.stringify(e)
           );
           console.log('Error erc20PermitSignature', e, error.code);
-          if (error.code === -32601) {
+          if (error.code === -32601 || error.code === undefined) {
             console.log(
               'Error erc20PermitSignature : BUY WITH PERMIT FAIL, TRY BUY WITHOUT PERMIT',
               error.code
