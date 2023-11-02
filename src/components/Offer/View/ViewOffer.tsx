@@ -80,6 +80,8 @@ export const ViewOffer: FC<OfferProps> = ({ offer }) => {
     [setIsEdited]
   );
 
+  window.scrollTo({ top: 0, left: 0 });
+
   return (
     <>
       {isEdited ? (

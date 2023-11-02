@@ -1,6 +1,6 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, useEffect, useMemo, useRef } from 'react';
 
-import { Flex, Group, Select, em } from '@mantine/core';
+import { Flex, Group, em } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 
 import { useAtom } from 'jotai';
@@ -30,6 +30,7 @@ const Display: FC = () => {
   const shallBuyInterfaceDisplay = useAppSelector(selectIsBuyOfferOpened);
   const offerToBuy = useAppSelector(selectBuyOffer);
   const [choosenDisplay, setChoosenDisplay] = useAtom(displayChoosedAtom);
+  const displayRef = useRef<HTMLDivElement | null>(null);
 
   const availableDisplays = useMemo(() => {
     return new Map<Displays, Display>([
@@ -60,13 +61,6 @@ const Display: FC = () => {
     ]);
   }, []);
 
-  const datas = useMemo(() => {
-    return [...availableDisplays].map(([, value]) => ({
-      value: value.display,
-      label: value.title,
-    }));
-  }, [availableDisplays]);
-
   const getDisplay = (): Display | undefined => {
     if (isMobile) {
       setChoosenDisplay(Displays.LIST);
@@ -77,8 +71,16 @@ const Display: FC = () => {
     );
   };
 
+  // Scroll to the top when the component is loaded
+  useEffect(() => {
+    console.log('scrolling .....');
+    if (displayRef.current) {
+      displayRef.current.scrollIntoView({ behavior: 'instant' });
+    }
+  }, [shallBuyInterfaceDisplay, offerToBuy]);
+
   return (
-    <>
+    <div ref={displayRef}>
       {!shallBuyInterfaceDisplay && (
         <>
           <Group>
@@ -107,7 +109,7 @@ const Display: FC = () => {
       {shallBuyInterfaceDisplay && offerToBuy && (
         <BuyOffer offer={offerToBuy}></BuyOffer>
       )}
-    </>
+    </div>
   );
 };
 export default Display;
