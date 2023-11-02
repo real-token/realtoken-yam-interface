@@ -29,7 +29,6 @@ interface OfferTitleProps {
 export const OfferTitle: FC<OfferTitleProps> = ({ offer, action, onClose }) => {
   const { getI18OfferTypeName } = useOfferType();
 
-  console.log('OFFER TYPE', offer.type);
   return (
     <>
       <>

@@ -1,12 +1,4 @@
-import {
-  Dispatch,
-  FC,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Web3Provider } from '@ethersproject/providers';
@@ -21,12 +13,10 @@ import { useAtomValue } from 'jotai';
 
 import { Erc20, Erc20ABI } from 'src/abis';
 import { NumberInput } from 'src/components/NumberInput';
-import { getOfferPropertyAddress } from 'src/components/Offer/Utils';
 import { ContractsID } from 'src/constants';
 import { useActiveChain, useContract } from 'src/hooks';
 import { useAppSelector } from 'src/hooks/react-hooks';
 import { useERC20TokenInfo } from 'src/hooks/useERC20TokenInfo';
-import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
 import { useWalletERC20Balance } from 'src/hooks/useWalletERC20Balance';
 import { providerAtom } from 'src/states';
 import { selectPrices } from 'src/store/features/interface/interfaceSelector';
@@ -88,7 +78,6 @@ const useStyle = createStyles((theme) => ({
 
 interface BuyOffertProps {
   offer: Offer;
-  triggerTableRefresh?: Dispatch<SetStateAction<boolean>>;
 }
 
 type BuyOfferFormValues = {
@@ -101,10 +90,7 @@ type BuyOfferFormValues = {
   buyerTokenDecimals: number;
 };
 
-export const BuyOffer: FC<BuyOffertProps> = ({
-  offer,
-  triggerTableRefresh,
-}) => {
+export const BuyOffer: FC<BuyOffertProps> = ({ offer }) => {
   const { t } = useTranslation('list');
   return (
     <OfferContainer
@@ -117,18 +103,13 @@ export const BuyOffer: FC<BuyOffertProps> = ({
           : t('toBuy')
       }
     >
-      <BuyOfferForms
-        offer={offer}
-        triggerTableRefresh={triggerTableRefresh}
-      ></BuyOfferForms>
+      <BuyOfferForms offer={offer}></BuyOfferForms>
     </OfferContainer>
   );
 };
 
-export const BuyOfferForms: FC<BuyOffertProps> = ({
-  offer,
-  triggerTableRefresh,
-}) => {
+export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
+  const [refreshKey, setRefreshKey] = useState(0);
   const isMobile = useMediaQuery(`(max-width: ${em(750)})`);
   const { classes } = useStyle();
   const { account, provider } = useWeb3React();
@@ -194,8 +175,11 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({
   const onHandleSubmit = useCallback(
     async (formValues: BuyOfferFormValues) => {
       const onFinished = () => {
-        if (triggerTableRefresh) triggerTableRefresh(true);
+        setSubmitting(false);
+        formValues.amount = 0;
+        setRefreshKey((prevKey) => prevKey + 1);
       };
+      setSubmitting(true);
 
       buy(
         account,
@@ -209,15 +193,7 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({
         onFinished
       );
     },
-    [
-      account,
-      provider,
-      activeChain,
-      realTokenYamUpgradeable,
-      offer,
-      connector,
-      triggerTableRefresh,
-    ]
+    [account, provider, activeChain, realTokenYamUpgradeable, offer, connector]
   );
 
   const maxTokenBuy: number | undefined = useMemo(() => {
@@ -266,12 +242,6 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({
     [OFFER_TYPE.EXCHANGE, t('exchangeOfferTypeAmount')],
   ]);
 
-  const { getPropertyToken, propertiesIsloading } = usePropertiesToken();
-  const offerProperty = getPropertyToken(getOfferPropertyAddress(offer));
-  const [backgroundImage, setBackgroundImage] = useState<string>(
-    offerProperty ? offerProperty.imageLink[0] : ''
-  );
-
   const {
     offerPrice,
     initialPrice,
@@ -283,24 +253,6 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({
     priceDelta: string | undefined;
     priceColor: string | undefined;
   } = offerPrices(offer, buyTokenSymbol, prices);
-
-  useEffect(() => {
-    if (!offer || propertiesIsloading) return;
-
-    if (offer.buyerTokenType === 1) {
-      const offerProperty = getPropertyToken(offer.buyerTokenAddress);
-      if (offerProperty) {
-        setBackgroundImage(offerProperty.imageLink[0]);
-      }
-    }
-
-    if (offer.offerTokenType === 1) {
-      const offerProperty = getPropertyToken(offer.offerTokenAddress);
-      if (offerProperty) {
-        setBackgroundImage(offerProperty.imageLink[0]);
-      }
-    }
-  }, [getPropertyToken, offer, propertiesIsloading]);
 
   return (
     <form onSubmit={onSubmit(onHandleSubmit)}>

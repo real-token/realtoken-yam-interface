@@ -4,10 +4,7 @@ import { createStyles, em } from '@mantine/core';
 import { Card, Space, useMantineColorScheme } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 
-import {
-  getOfferPropertyAddress,
-  getOfferType,
-} from 'src/components/Offer/Utils';
+import { getOfferPropertyAddress } from 'src/components/Offer/Utils';
 import { useAppDispatch } from 'src/hooks/react-hooks';
 import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
 import { buyOfferClose } from 'src/store/features/buyOffer/buyOfferSlice';

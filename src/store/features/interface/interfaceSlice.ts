@@ -123,7 +123,7 @@ export function fetchOffers(
     // else{
     //   offersData = await fetchOffersBasic(realTokenYamUpgradeable,provider,account,properties);
     // }
-    console.log('FETCH', JSON.stringify(offersData, null, 4));
+    //console.log('FETCH', JSON.stringify(offersData, null, 4));
     dispatch({ type: offersChangedDispatchType, payload: offersData });
     dispatch({ type: offersIsLoadingDispatchType, payload: false });
   };
