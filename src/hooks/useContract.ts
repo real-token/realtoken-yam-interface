@@ -17,7 +17,12 @@ export const useContract = <T extends ContractsID>(contractId: T) => {
 
     const { abi, address, metadata } = activeChain.contracts[contractId];
 
-    const contract = getContract(address, abi, provider, account);
+    const contract = getContract(
+      address,
+      abi,
+      provider,
+      account?.toLowerCase()
+    );
 
     if (!contract) return undefined;
 

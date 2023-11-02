@@ -1,4 +1,18 @@
 {
+  "kycRequired": {
+    "title": "Warning",
+    "contact": "click here",
+    "form": "form",
+    "message": "Dear users,\n\nYou can purchase Clean Sat Mining tokens after completing the following two steps:\n\n1) In accordance with legal requirements, all users must first complete the KYC process on the Mt Pelerin platform before making purchases within our application. We invite you to register on Mt Pelerin and complete your KYC.\n\n2) Please note that CSM tokens are subject to a whitelist of approved addresses for interactions. Any transaction of these tokens to an unauthorized address will fail. We invite you to complete this form. An email will be sent to you once your address is whitelisted, which may take a few days.\n\n⚠️ VERY IMPORTANT ⚠️\nPlease be cautious about the price at which you are purchasing CSM tokens. CleanSat Mining is not responsible for online offers. You can see in the table below the initial price at which the tokens were sold and the price proposed by the seller. Please take this into account before investing in any CSM projects.\n\nTo contact us, click here (email address contact@cleansatmining.com).\n\nThe CleanSat Mining Team"
+  },
+  "warning": {
+    "title": "⚠️ VERY IMPORTANT ⚠️",
+    "message": "Please be cautious about the price at which you are purchasing CSM tokens. CleanSat Mining is not responsible for online offers. You can see in the table below the initial price at which the tokens were sold and the price proposed by the seller. Please take this into account before investing in any CSM projects."
+  },
+  "kycCheck": {
+    "verified": "Address verified",
+    "invalid": "Address not verified"
+  },
   "grantRoleLoading": {
     "title": "Copied 🎉",
     "message": "Your transaction is being validated."

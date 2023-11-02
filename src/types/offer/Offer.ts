@@ -1,5 +1,19 @@
 import { OFFER_TYPE } from "./OfferType";
 
+export type SiteDetails = {
+  miningSite: string;
+  name: string;
+  location: {
+    aera: string;
+    country: string;
+  };
+  energy: string[];
+  imageLink: string;
+  electricityPrice : number;
+  tokenOfficialPrice: number;
+  tokenSellDate: string;
+};
+
 export type Offer = {
   offerId: string;
   offerTokenAddress: string;
@@ -11,6 +25,7 @@ export type Offer = {
   buyerTokenDecimals: string;
   buyerTokenType: number;
   sellerAddress: string;
+  sellerName: string;
   buyerAddress: string;
   price: string;
   amount: string;
@@ -26,12 +41,17 @@ export type Offer = {
   priceDelta: number|undefined;
   officialYield: number|undefined;
   offerYield: number|undefined;
-  yieldDelta: number|undefined,
+  yieldDelta: number|undefined;
   buyCurrency: string;
   //
   electricityPrice: number
   sellDate: string
-  miningSite: string
+  sites:{
+    selling:SiteDetails;
+    buying:SiteDetails;
+    
+  }
+  miningSite?: string;
 };
 
 export const DEFAULT_OFFER: Offer = {
@@ -45,6 +65,7 @@ export const DEFAULT_OFFER: Offer = {
   buyerTokenDecimals: "",
   buyerTokenType: 0,
   sellerAddress: "",
+  sellerName: "",
   buyerAddress: "",
   price: "",
   amount: "",
@@ -64,7 +85,34 @@ export const DEFAULT_OFFER: Offer = {
   //
   electricityPrice: 0,
   sellDate: "",
-  miningSite: ""
+  sites:{
+    selling: {
+      miningSite: "",
+      name: "",
+      location:{
+        aera: "",
+        country: "",
+      },
+      energy:[], 
+      imageLink: '',
+      electricityPrice:0,
+      tokenOfficialPrice:0,
+      tokenSellDate:'',
+    },
+    buying: {
+      miningSite: "",
+      name: "",
+      location:{
+        aera: "",
+        country: "",
+      },
+      energy:[],
+      imageLink: '',
+      electricityPrice:0,
+      tokenOfficialPrice:0,
+      tokenSellDate:'',
+    },
+  }
 }
 
 export const OFFER_LOADING = [DEFAULT_OFFER, DEFAULT_OFFER, DEFAULT_OFFER]

@@ -24,9 +24,29 @@ const coinBridgeTokenPermitSignature = async (
       { name: 'verifyingContract', type: 'address' },
     ];
 
+    console.log(
+      'CONTRACT NAME',
+      contractName,
+      (await contract.VERSION()).toString()
+    );
+    let version = '3';
+    if (
+      contractName === 'CleanSat Mining Alpha' ||
+      contractName === 'CleanSat Mining Beta' ||
+      contractName === 'CleanSat Mining Omega' ||
+      contractName === 'CleanSat Mining Gamma' ||
+      contractName === 'CleanSat Mining Delta'
+    ) {
+      version = '2';
+    }
+    console.log(
+      'CONTRACT NAME',
+      contractName,
+      (await contract.VERSION()).toString() + ' vs ' + version
+    );
     const domain = {
       name: contractName,
-      version: (await contract.VERSION()).toString(), // get version of token since RealToken is upgraded to V2, otherwise wrong signature
+      version: version, //(await contract.VERSION()).toString(), // get version of token since RealToken is upgraded to V2, otherwise wrong signature
       chainId: library.network.chainId,
       verifyingContract: contract.address,
     };
@@ -71,7 +91,7 @@ const coinBridgeTokenPermitSignature = async (
     };
   } catch (e) {
     console.log('Error getting permit signature: ', e);
-    return e;
+    throw e;
   }
 };
 

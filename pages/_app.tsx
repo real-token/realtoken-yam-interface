@@ -1,50 +1,62 @@
-import type { AppProps as NextAppProps } from 'next/app';
-import { ColorScheme, Image } from '@mantine/core';
-import store from 'src/store/store';
-import 'src/i18next';
-import InitStoreProvider from 'src/providers/InitStoreProvider';
-import { Provider as JotaiProvider} from 'jotai';
+import { QueryClient, QueryClientProvider } from 'react-query';
 import { Provider as ReduxProvide } from 'react-redux';
-import { QueryClient, QueryClientProvider } from "react-query";
-import { 
-  ChainSelectConfig, 
-  Head, 
-  LanguageInit, 
-  Layout, 
-  MantineProviders, 
-  RealtProvider, 
-  Web3Providers, 
-  Websites, 
-  getConnectors, 
-  getWalletConnectV2, 
-  gnosisHooks, 
-  gnosisSafe, 
-  initLanguage, 
-  metaMask, 
-  metaMaskHooks, 
-  parseAllowedChain ,
+
+import type { AppProps as NextAppProps } from 'next/app';
+
+import { ColorScheme, Image, em } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
+import {
+  ChainSelectConfig,
+  Head,
+  LanguageInit,
+  Layout,
+  MantineProviders,
+  RealtProvider,
+  Web3Providers,
+  Websites,
+  getConnectors,
+  getWalletConnectV2,
+  gnosisHooks,
+  gnosisSafe,
+  initLanguage,
+  metaMask,
+  metaMaskHooks,
+  parseAllowedChain,
 } from '@realtoken/realt-commons';
-import { resources } from 'src/i18next';
-import { CHAINS, Chain as CustomChain, ChainsID } from '../src/constants';
-import { modals } from '../src/components';
-import { modalStyles, theme } from '../src/theme';
+
+import { Provider as JotaiProvider } from 'jotai';
+
 import { Logo } from 'src/assets';
+import 'src/i18next';
+import { resources } from 'src/i18next';
+import InitStoreProvider from 'src/providers/InitStoreProvider';
+import store from 'src/store/store';
+
+import { modals } from '../src/components';
 import { HeaderNav } from '../src/components/HeaderNav';
+import { CHAINS, ChainsID, Chain as CustomChain } from '../src/constants';
+import { modalStyles, theme } from '../src/theme';
 
 export const i18n = initLanguage(resources);
 
 const customChains: ChainSelectConfig<CustomChain> = {
   allowedChains: parseAllowedChain(ChainsID),
-  chainsConfig: CHAINS
-}
+  chainsConfig: CHAINS,
+  defaultChainId: 100,
+};
 
-const showAllNetworks = false;
+const showAllNetworks = true;
 
-const env = process.env.NEXT_PUBLIC_ENV ?? "development";
-const walletConnectKey = process.env.NEXT_PUBLIC_WALLET_CONNECT_KEY ?? "";
+const env = process.env.NEXT_PUBLIC_ENV ?? 'development';
+const walletConnectKey = process.env.NEXT_PUBLIC_WALLET_CONNECT_KEY ?? '';
 //console.log("wallet connect key: ", walletConnectKey)
 
-const [walletConnectV2, walletConnectV2Hooks] = getWalletConnectV2<CustomChain>(customChains,env, walletConnectKey, showAllNetworks);
+const [walletConnectV2, walletConnectV2Hooks] = getWalletConnectV2<CustomChain>(
+  customChains,
+  env,
+  walletConnectKey,
+  showAllNetworks
+);
 
 const libraryConnectors = getConnectors(
   [metaMask, metaMaskHooks],
@@ -57,6 +69,7 @@ type AppProps = NextAppProps & { colorScheme: ColorScheme; locale: string };
 const queryClient = new QueryClient({});
 
 const App = ({ Component, pageProps }: AppProps) => {
+  const isMobile = useMediaQuery(`(max-width: ${em(750)})`);
   return (
     <QueryClientProvider client={queryClient}>
       <JotaiProvider>
@@ -64,27 +77,43 @@ const App = ({ Component, pageProps }: AppProps) => {
           <ReduxProvide store={store}>
             <Web3Providers libraryConnectors={libraryConnectors}>
               <InitStoreProvider>
-                <MantineProviders modals={modals} modalStyles={modalStyles} theme={theme}>
-                    <LanguageInit i={i18n} />
-                    <Layout
-                      chains={customChains}
-                      head={<Head title={'CleanSatMining YAM'} description='CleanSatMining YAM'/>}
-                      headerNav={<HeaderNav/>}
-                      newWebsite={{
-                        name: "CleanSatMining YAM",
-                        url: "/",
-                        logo: () => <Image src={Logo.src} alt={'CSM Logo'} width={36}/>,
-                        comingSoon: false
-                      }}
-                      disableHeaderMultisite={true}
-                      footerParam={{
-                        name: "CleanSatMining",
-                        copyright: "CleanSatMining, All rights reserved @2023",
-                        logo: () => <Image src={Logo.src} alt={'CSM Logo'} width={36}/>
-                      }}
-                    >
-                      <Component {...pageProps} />
-                    </Layout>
+                <MantineProviders
+                  modals={modals}
+                  modalStyles={modalStyles}
+                  theme={theme}
+                >
+                  <LanguageInit i={i18n} />
+                  <Layout
+                    chains={customChains}
+                    head={
+                      <Head
+                        title={isMobile ? 'CSM YAM' : 'CleanSatMining YAM'}
+                        description={
+                          isMobile ? 'CSM YAM' : 'CleanSatMining YAM'
+                        }
+                      />
+                    }
+                    headerNav={<HeaderNav />}
+                    newWebsite={{
+                      name: isMobile ? 'CSM YAM' : 'CleanSatMining YAM',
+                      url: '/',
+                      logo: () => (
+                        <Image src={Logo.src} alt={'CSM Logo'} width={36} />
+                      ),
+                      comingSoon: false,
+                    }}
+                    disableHeaderMultisite={true}
+                    footerParam={{
+                      name: isMobile ? 'CSM YAM' : 'CleanSatMining YAM',
+                      copyright: `CleanSatMining SA, All rights reserved @${new Date().getFullYear()}, power by Realt.co`,
+                      logo: () => (
+                        <Image src={Logo.src} alt={'CSM Logo'} width={36} />
+                      ),
+                      links: {},
+                    }}
+                  >
+                    <Component {...pageProps} />
+                  </Layout>
                 </MantineProviders>
               </InitStoreProvider>
             </Web3Providers>

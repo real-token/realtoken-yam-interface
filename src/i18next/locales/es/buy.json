@@ -8,6 +8,10 @@
     "buyerTokenAddress": "Buyer Token Address",
     "buyerTokenName": "Buyer Token",
     "sellerAddress": "Seller Address",
+    "sellerName": "Seller",
+    "sellDate": "Sell Date",
+    "UNKNOWN":"unknown",
+    "CSM":"✅ CSM",
     "price": "Price/token",
     "amount": "Available quantity",
     "allowance": "Allowance",
@@ -18,6 +22,13 @@
     "buy": "Buy",
     "privateTexte": "private",
     "onMarketSince": "On market since"
+  },
+  "list": {
+    "requesterName": "Comprador",
+    "requesterAddress": "Dirección",
+    "requestedPrice": "Precio (USD)",
+    "requestedAmount": "Cantidad",
+    "requestedToken": "Tasa de cambio"
   },
   "grid": {
     "buy": "Buy",

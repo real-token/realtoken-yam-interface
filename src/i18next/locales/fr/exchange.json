@@ -1,0 +1,10 @@
+{
+  "list": {
+    "requesterName": "Demandeur",
+    "requesterAddress": "Adresse",
+    "requestedPrice": "Prix (usd)",
+    "requestedAmount": "Quantité",
+    "requestedToken": "Taux de change"
+  }
+  
+}

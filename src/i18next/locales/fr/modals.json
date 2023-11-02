@@ -58,6 +58,12 @@
     "buyOfferTypePrice": "Prix/Jeton (Nb de jeton d'achat par jeton CSM)",
     "sellOfferTypePrice": "Prix/Jeton (Nb de jeton CSM par jeton en vente)",
     "exchangeOfferTypePrice": "Prix/Jeton (Nb de jeton d'achat par jeton en vente)",
+    "buyOfferTypeInitialPrice": "Prix initial/Jeton",
+    "sellOfferTypeInitialPrice": "Prix initial/Jeton",
+    "exchangeOfferTypeInitialPrice": "Prix initial/Jeton",
+    "buyOfferTypeDeltaPrice": "Delta/Jeton",
+    "sellOfferTypeDeltaPrice": "Delta/Jeton",
+    "exchangeOfferTypeDeltaPrice": "Delta/Jeton",
     "amount": "Quantité",
     "buyOfferTypeAmount": "Quantité (de jeton en achat)",
     "sellOfferTypeAmount": "Quantité (de jeton en vente)",
@@ -125,5 +131,9 @@
     "buyTypeExplain": "Choisissez le type d'offre \"{{ offerType }}\" si vous souhaitez acheter un token CSM avec un autre token non CSM (WXDAI, USDC etc...)",
     "sellTypeExplain": "Choisissez le type d'offre \"{{ offerType }}\" si vous souhaitez vendre un token CSM contre un autre token non CSM (WXDAI, USDC etc...)",
     "exchangeTypeExplain": "Choisissez le type d'offre \"{{ offerType }}\" si vous souhaitez échanger deux tokens CSM entre eux ou des tokens non CSM (WXDAI, USDC etc...) entre eux."
+  },
+  "offer":{
+    "title": "Offre",
+    "close": "Fermer"
   }
 }

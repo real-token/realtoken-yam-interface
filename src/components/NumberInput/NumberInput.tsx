@@ -3,21 +3,21 @@ import { forwardRef, useRef } from 'react';
 import {
   Button,
   ButtonProps,
-  NumberInput as MantineInput,
-  NumberInputProps as MantineNumberInputProps,
-  NumberInputHandlers,
-  MantineNumberSize,
   Flex,
   Loader,
+  NumberInput as MantineInput,
+  NumberInputProps as MantineNumberInputProps,
+  MantineNumberSize,
+  NumberInputHandlers,
 } from '@mantine/core';
+import { SetFieldValue } from '@mantine/form/lib/types';
 
 import { FRC } from 'src/types';
-import { SetFieldValue } from '@mantine/form/lib/types';
 
 export const truncDigits = (inputNumber: number, digits: number): number => {
   const fact = 10 ** digits;
   return Math.floor(inputNumber * fact) / fact;
-}
+};
 
 type NumberInputProps = {
   showMax?: boolean | undefined;
@@ -29,17 +29,34 @@ type NumberInputProps = {
 } & MantineNumberInputProps;
 
 export const NumberInput: FRC<NumberInputProps, HTMLInputElement> = forwardRef(
-  ({ disabled, showMin, showMax, controlsProps, groupMarginBottom, setFieldValue, width, ...props }, ref) => {
+  (
+    {
+      disabled,
+      showMin,
+      showMax,
+      controlsProps,
+      groupMarginBottom,
+      setFieldValue,
+      width,
+      ...props
+    },
+    ref
+  ) => {
     const handlers = useRef<NumberInputHandlers>();
 
     const setMax = () => {
-      if(!props.max) return;
-      const max = truncDigits(props.max,6);
-      if(setFieldValue) setFieldValue("amount",max);
-    }
+      if (!props.max) return;
+      const max = truncDigits(props.max, 6);
+      if (setFieldValue) setFieldValue('amount', max);
+    };
 
     return (
-      <Flex gap={5} align={'flex-end'} mb={groupMarginBottom ?? 0} style={{ width: width ? width : "auto" }}>
+      <Flex
+        gap={5}
+        align={'flex-end'}
+        mb={groupMarginBottom ?? 0}
+        style={{ width: width ? width : 'auto', textAlign: 'left' }}
+      >
         <MantineInput
           hideControls={true}
           handlersRef={handlers}
@@ -61,13 +78,14 @@ export const NumberInput: FRC<NumberInputProps, HTMLInputElement> = forwardRef(
         )}
         {showMax && (
           <Button
+            color={'orange'}
             aria-label={'Max'}
             variant={'light'}
             disabled={disabled}
             onClick={() => setMax()}
             {...controlsProps}
           >
-            {props.max == undefined ? <Loader size={"xs"}/> : 'Max'}
+            {props.max == undefined ? <Loader size={'xs'} /> : 'Max'}
           </Button>
         )}
       </Flex>

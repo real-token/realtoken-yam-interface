@@ -21,19 +21,17 @@ type TokenInfoShow = {
   priceDifference: string;
 };
 export const MarketSubRow: FC<TableSubRowProps<Offer>> = ({
-  row: {
-    original: offer,
-  },
+  row: { original: offer },
 }) => {
   const { t } = useTranslation('buy', { keyPrefix: 'subRow' });
 
-  const columns = useMemo<ColumnDef<Offer,string>[]>(
+  const columns = useMemo<ColumnDef<Offer, string>[]>(
     () => [
       {
         id: 'sellerAddress',
         accessorKey: 'sellerAddress',
-        header: () => <Title order={6}>{t("sellerAddress")}</Title>,
-        cell: ({ getValue }: CellContext<Offer,string>) => (
+        header: () => <Title order={6}>{t('sellerAddress')}</Title>,
+        cell: ({ getValue }: CellContext<Offer, string>) => (
           <Text
             size={'sm'}
             sx={{

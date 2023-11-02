@@ -1,0 +1,9 @@
+{
+  "list": {
+    "requesterName": "Requester",
+    "requesterAddress": "Address",
+    "requestedPrice": "Price (USD)",
+    "requestedAmount": "Quantity",
+    "requestedToken": "Exchange rate"
+  }
+}
