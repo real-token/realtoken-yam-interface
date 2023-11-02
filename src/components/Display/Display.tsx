@@ -75,7 +75,7 @@ const Display: FC = () => {
   useEffect(() => {
     console.log('scrolling .....');
     if (displayRef.current) {
-      displayRef.current.scrollIntoView({ behavior: 'instant' });
+      displayRef.current.scrollIntoView();
     }
   }, [shallBuyInterfaceDisplay, offerToBuy]);
 
