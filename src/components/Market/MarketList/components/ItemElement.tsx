@@ -289,9 +289,6 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
   }
 
   function stackTokenPrice() {
-    if (offer.type === OFFER_TYPE.EXCHANGE)
-      console.log('stackTokenPrice', JSON.stringify(offer, null, 4));
-
     return (
       <Stack
         h={'100%'}

@@ -73,7 +73,6 @@ const Display: FC = () => {
 
   // Scroll to the top when the component is loaded
   useEffect(() => {
-    console.log('scrolling .....');
     if (displayRef.current) {
       displayRef.current.scrollIntoView();
     }
