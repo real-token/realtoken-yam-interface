@@ -192,10 +192,6 @@ export const CreateOffer = () => {
                 const isSafe = connector == "gnosisSafe";
                 const isWalletConnect = connector == "walletConnect"; 
 
-                console.log(isSafe)
-
-                console.log(isWalletConnect)
-
                 let permitAnswer: any|undefined = undefined;
                 let needPermit = false;
 
