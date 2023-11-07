@@ -17,7 +17,7 @@ import { Table } from '../../Table';
 import { MarketSubRow } from '../MarketSubRow';
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 import { selectPublicOffers } from 'src/store/features/interface/interfaceSelector';
-import { adminActionsColumn, adminAmount, adminHeader, buyerTokenNameColumn, buyShortTokenNameColumn, exchangeBuyShortTokenNameColumn, exchangeOfferShortTokenNameColumn, idColumn, offerDateColumn, offerShortTokenNameColumn, offerTokenNameColumn, priceColumn, priceDeltaColumn, sellerAddressColumn, yieldDeltaColumn } from 'src/hooks/column';
+import { adminActionsColumn, adminAmount, adminHeader, buyerTokenNameColumn, buyShortTokenNameColumn, exchangeBuyShortTokenNameColumn, exchangeOfferShortTokenNameColumn, idColumn, offerDateColumn, offerShortTokenNameColumn, offerTokenNameColumn, offerYieldColumn, priceColumn, priceDeltaColumn, sellerAddressColumn, yieldDeltaColumn } from 'src/hooks/column';
 import React from 'react';
 import { Offer, OFFER_TYPE } from 'src/types/offer';
 import { useModals } from '@mantine/modals';
@@ -125,6 +125,7 @@ export const MarketTableAdmin: FC = () => {
             offerShortTokenNameColumn(t,2),
             buyerTokenNameColumn(t,2),
             yieldDeltaColumn(t,1),
+            offerYieldColumn(t,1),
             sellerAddressColumn(t,1),
             priceColumn(t,1),
             priceDeltaColumn(t,1),
@@ -145,6 +146,7 @@ export const MarketTableAdmin: FC = () => {
           offerTokenNameColumn(t,2),
           buyShortTokenNameColumn(t,2),
           yieldDeltaColumn(t,1),
+          offerYieldColumn(t,1),
           sellerAddressColumn(t,1),
           priceColumn(t,1),
           priceDeltaColumn(t,1),
