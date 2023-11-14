@@ -55,7 +55,8 @@ export const buy = async (
           offer.buyerTokenAddress
         );
 
-        if(connector == "gnosis-safe"){
+        console.log(connector)
+        if(connector == "gnosisSafe"){
             
           // TokenType = 3: ERC20 Without Permit, do Approve/buy
           const approveTx = await buyerToken.approve(

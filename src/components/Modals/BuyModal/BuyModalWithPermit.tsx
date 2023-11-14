@@ -115,6 +115,7 @@ export const BuyModalWithPermit: FC<
   const total = values?.amount * values?.price;
 
   const connector = useAtomValue(providerAtom);
+  console.log('connector: ', connector)
 
   const onHandleSubmit = useCallback(
     async (formValues: BuyWithPermitFormValues) => {
