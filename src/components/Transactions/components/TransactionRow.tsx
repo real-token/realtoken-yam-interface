@@ -77,7 +77,7 @@ const TransactionRow: React.FC<TransactionRowProps> = ({
         className={isLastRow ? classes.lastRow : classes.row}
         sx={{ height: `${ROW_HEIGHT}px` }}
       >
-        <Grid columns={16}>
+        <Grid columns={18}>
           <Col span={3}>
             <OfferBadgeAbsolute
               offerType={transaction.offerType}
@@ -176,6 +176,15 @@ const TransactionRow: React.FC<TransactionRowProps> = ({
                   </Text>
                 </div>
               )}
+            </Stack>
+          </Col>
+          <Col span={2}>
+            <Stack h={'100%'} align={'stretch'} justify={'center'} spacing={0}>
+              <div>
+                <Text fz={'lg'} ta={'left'} fw={500}>
+                  {formatUsd(transaction.price)}
+                </Text>
+              </div>
             </Stack>
           </Col>
           <Col span={2}>

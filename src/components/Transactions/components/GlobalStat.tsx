@@ -1,15 +1,6 @@
 import React, { FC } from 'react';
 
-import {
-  Card,
-  Container,
-  Group,
-  Paper,
-  SimpleGrid,
-  Space,
-  Text,
-  useMantineTheme,
-} from '@mantine/core';
+import { Card, Container, Group, SimpleGrid, Text } from '@mantine/core';
 
 import { BigNumber } from 'bignumber.js';
 
@@ -18,10 +9,10 @@ import { formatPercent, formatUsd } from 'src/utils/format';
 
 import {
   calculateAverageExpense as calculateAverageExpensePerTransaction,
+  calculateAveragePrice,
   calculateExpensesPer24Hours,
+  calculatePricesPer24Hours,
   calculateTransactionsPer24Hours,
-  formatTimestamp,
-  getTimestampRange,
   sumSpendingValues,
 } from '../Utils';
 
@@ -30,7 +21,6 @@ interface GlobalStatProps {
 }
 
 export const GlobalStat: FC<GlobalStatProps> = ({ transactions }) => {
-  const theme = useMantineTheme();
   const { color, performance, volume } = get24HVolume(transactions);
   const {
     color: transactionColor,
@@ -44,6 +34,14 @@ export const GlobalStat: FC<GlobalStatProps> = ({ transactions }) => {
     performance: expensePerformance,
   } = get24HExpensePerTransaction(transactions);
 
+  const {
+    color: priceColor,
+    price,
+    performance: pricePerformance,
+  } = get24HPrice(transactions);
+
+  const averagePrice = calculateAveragePrice(transactions);
+
   return (
     <Container
       style={{
@@ -53,7 +51,7 @@ export const GlobalStat: FC<GlobalStatProps> = ({ transactions }) => {
         padding: 0,
       }}
     >
-      <SimpleGrid cols={3}>
+      <SimpleGrid cols={4}>
         <Card withBorder={true} shadow={'sm'} radius={'md'}>
           <Card.Section withBorder={true} inheritPadding={true} py={'xs'}>
             <Group position={'apart'}>
@@ -110,11 +108,32 @@ export const GlobalStat: FC<GlobalStatProps> = ({ transactions }) => {
           {expense && (
             <>
               <Text fw={500} mt={'sm'} size={'lg'}>
-                {expense + ' (24h)'}
+                {formatUsd(expense) + ' (24h)'}
               </Text>
               <Text color={expenseColor} size={'xs'}>
                 {(expensePerformance && expensePerformance > 0 ? '+' : '') +
                   formatPercent(expensePerformance)}
+              </Text>
+            </>
+          )}
+        </Card>
+        <Card withBorder={true} shadow={'sm'} radius={'md'}>
+          <Card.Section withBorder={true} inheritPadding={true} py={'xs'}>
+            <Group position={'apart'}>
+              <Text weight={500}>{'Prix'}</Text>
+            </Group>
+          </Card.Section>
+          <Text fw={700} mt={'xs'} color={'blue'} size={'xl'}>
+            {formatUsd(averagePrice ?? 0)}
+          </Text>
+          {price && (
+            <>
+              <Text fw={500} mt={'sm'} size={'lg'}>
+                {formatUsd(price) + ' (24h)'}
+              </Text>
+              <Text color={priceColor} size={'xs'}>
+                {(pricePerformance && pricePerformance > 0 ? '+' : '') +
+                  formatPercent(pricePerformance)}
               </Text>
             </>
           )}
@@ -307,5 +326,48 @@ function get24HExpensePerTransaction(transactions: TransactionData[]): {
     color: color,
     performance: performance,
     expenseBefore: secondLast24HAverageExpense,
+  };
+}
+
+function get24HPrice(transactions: TransactionData[]): {
+  price: number | undefined;
+  priceBefore: number | undefined;
+  color: string | undefined;
+  performance: number | undefined;
+} {
+  let color: string | undefined = undefined;
+
+  let performance: number | undefined = undefined;
+  const t0: number = new Date().getTime() / 1000;
+  const pricePer24Hours = calculatePricesPer24Hours(transactions, t0);
+
+  const last24H = pricePer24Hours.has(-1) ? pricePer24Hours.get(-1) : 0;
+  const secondLast24H = pricePer24Hours.has(-2)
+    ? pricePer24Hours.get(-2)
+    : undefined;
+
+  if (last24H && secondLast24H && last24H > secondLast24H) {
+    color = 'green';
+    performance = new BigNumber(last24H)
+      .minus(secondLast24H)
+      .dividedBy(secondLast24H)
+      .times(100)
+      .toNumber();
+  } else if (last24H && secondLast24H && last24H < secondLast24H) {
+    color = 'red';
+    performance = new BigNumber(last24H)
+      .minus(secondLast24H)
+      .dividedBy(secondLast24H)
+      .times(100)
+      .toNumber();
+  } else if (last24H && secondLast24H && last24H === secondLast24H) {
+    performance = 0;
+  }
+
+  return {
+    price: last24H,
+    color: color,
+    performance: performance,
+    priceBefore: secondLast24H,
   };
 }

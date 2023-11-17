@@ -133,20 +133,20 @@ export const guessCreateOfferTransactionId = (
       const correspondingIds = [...correspondingIdsSet];
 
       if (correspondingTransactions && correspondingIds.length === 1) {
-        console.log(
-          'CHAMPAGNE',
-          correspondingIds[0],
-          [...offerIds],
-          createOfferTransaction.blockNumber
-        );
+        // console.log(
+        //   'CHAMPAGNE',
+        //   correspondingIds[0],
+        //   [...offerIds],
+        //   createOfferTransaction.blockNumber
+        // );
         createOfferTransaction.offerId = correspondingIds[0];
         offerIds.add(createOfferTransaction.offerId);
       } else if (correspondingTransactions.length > 1) {
-        console.log(
-          'ALMOST CHAMPAGNE',
-          correspondingIds,
-          createOfferTransaction.blockNumber
-        );
+        // console.log(
+        //   'ALMOST CHAMPAGNE',
+        //   correspondingIds,
+        //   createOfferTransaction.blockNumber
+        // );
       }
 
       // Ajoute l'offre correspondante à la transaction
@@ -311,6 +311,24 @@ export function calculateAverageExpense(
   return averageExpense;
 }
 
+export function calculateAveragePrice(
+  transactions: TransactionData[]
+): number | undefined {
+  if (transactions.length === 0) {
+    return undefined;
+  }
+
+  // Calcul de la somme des dépenses
+  const totalPrice = transactions.reduce((acc, transaction) => {
+    return acc + transaction.price;
+  }, 0);
+
+  // Calcul de la dépense moyenne
+  const averageExpense = totalPrice / transactions.length;
+
+  return averageExpense;
+}
+
 export function calculateExpenseStandardDeviation(
   transactions: TransactionData[]
 ): number | undefined {
@@ -465,4 +483,44 @@ export function calculateTransactionsPer24Hours(
   });
 
   return numberOftransactionsPer24Hours;
+}
+
+export function calculatePricesPer24Hours(
+  transactions: TransactionData[],
+  t0: number
+): Map<number, number> {
+  const pricesPer24Hours = new Map<number, number>();
+  const transactionPricesPer24Hours = new Map<number, TransactionData[]>();
+
+  // Group transactions by 24-hour periods
+  transactions.forEach((transaction) => {
+    const hoursSinceT0 = Math.floor((transaction.timeStamp - t0) / 3600); // Convert to hours since T0
+    const periodIndex = Math.floor(hoursSinceT0 / 24); // Calculate the 24-hour period index
+
+    if (!transactionPricesPer24Hours.has(periodIndex)) {
+      transactionPricesPer24Hours.set(periodIndex, []);
+    }
+    transactionPricesPer24Hours.get(periodIndex)?.push(transaction);
+  });
+
+  // Calculate the sum of expenses per 24-hour period
+  transactionPricesPer24Hours.forEach((dailyTransactions) => {
+    const dailyPrice = dailyTransactions
+      .reduce(
+        (totalExpense, transaction) =>
+          totalExpense.plus(new BigNumber(transaction.price)),
+        new BigNumber(0)
+      )
+      .dividedBy(dailyTransactions.length);
+
+    const hoursSinceT0 = Math.floor(
+      (dailyTransactions[0].timeStamp - t0) / 3600
+    ); // Convert to hours since T0
+    const periodIndex = Math.floor(hoursSinceT0 / 24); // Calculate the 24-hour period index
+
+    // Store the sum of expenses for each 24-hour period
+    pricesPer24Hours.set(periodIndex, dailyPrice.toNumber());
+  });
+
+  return pricesPer24Hours;
 }

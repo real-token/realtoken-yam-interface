@@ -24,7 +24,7 @@ const HeaderCard: FC<HeaderCardProps> = ({
 
   return (
     <Card withBorder={true} radius={0} className={classes.card}>
-      <Grid columns={16}>
+      <Grid columns={18}>
         <Grid.Col span={3}>
           <TextInput
             placeholder={'search'}
@@ -46,6 +46,9 @@ const HeaderCard: FC<HeaderCardProps> = ({
         </Grid.Col>
         <Grid.Col span={2}>
           <div>{'Création offre'}</div>
+        </Grid.Col>
+        <Grid.Col span={2}>
+          <div>{'Prix'}</div>
         </Grid.Col>
         <Grid.Col span={2}>
           <div>{'Quantité restante'}</div>

@@ -1,9 +1,10 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
 import { VariableSizeList as List } from 'react-window';
 
-import { Container, Space } from '@mantine/core';
+import { Button, Container, Space } from '@mantine/core';
 
 import { TransactionData } from 'src/components/Transactions/Types';
+import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
 
 import { GlobalStat } from './components/GlobalStat';
 import HeaderCard from './components/HeaderCard';
@@ -12,7 +13,6 @@ import TransactionRow from './components/TransactionRow';
 
 const ROW_HEIGHT = 160;
 const PAGE_SIZE = 10;
-const MAX_TOKEN_AVAILABLE = 500000; //token max par site (pour filtré les valeur impossible)
 
 interface TransactionListProps {
   transactions: TransactionData[];
@@ -25,32 +25,34 @@ const TransactionList: FC<TransactionListProps> = ({
   transactionsOffer,
   children,
 }) => {
+  const { propertiesToken } = usePropertiesToken();
+
   const [searchText, setSearchText] = useState<string>('');
   const [transactionsDisplayed, setTransactionsDisplayed] =
     useState<number>(PAGE_SIZE);
   const endListRef = useRef<HTMLDivElement>(null);
+  const [tokenFilterStates, setTokenFilterStates] = useState<
+    Map<string, boolean>
+  >(new Map(propertiesToken.map((token) => [token.contractAddress, false])));
+
   console.log('LOAD TransactionList', transactions.length);
-
-  // const [sortedTransactions, setSortedTransaction] = useState<
-  //   TransactionData[] | undefined
-  // >(transactions);
-
-  // useEffect(() => {
-  //   if (transactions)
-  //     setSortedTransaction(transactions.filter(filterByText(filterText)));
-  // }, []);
 
   const handleReachEndList = (entries: IntersectionObserverEntry[]) => {
     const isEndListReached = entries[0].isIntersecting;
+    const totalItems = transactions.length;
+
     console.log(
       'handleReachEndList',
       transactionsDisplayed,
-      transactions.length,
+      totalItems,
       isEndListReached
     );
-    if (isEndListReached && transactionsDisplayed < transactions.length) {
+
+    if (isEndListReached && transactionsDisplayed < totalItems) {
       console.log('handleReachEndList', 'update');
-      setTransactionsDisplayed(transactionsDisplayed + PAGE_SIZE);
+      setTransactionsDisplayed(
+        Math.min(transactionsDisplayed + PAGE_SIZE, totalItems)
+      );
     }
   };
 
@@ -72,8 +74,9 @@ const TransactionList: FC<TransactionListProps> = ({
       observer.disconnect();
     };
   }, [transactionsDisplayed, transactions.length]);
+
   const Row = ({ index, style }: { index: number; style: any }) => {
-    if (!getFirstElements(transactions, searchText)) {
+    if (!getFirstElements(transactions, searchText, tokenFilterStates)) {
       return (
         <div style={{ ...style, textAlign: 'center', padding: 10 }}>
           {'Aucune donnée'}
@@ -81,8 +84,13 @@ const TransactionList: FC<TransactionListProps> = ({
       );
     }
     const isLastRow =
-      index === getFirstElements(transactions, searchText).length - 1;
-    const transaction = getFirstElements(transactions, searchText)[index];
+      index ===
+      getFirstElements(transactions, searchText, tokenFilterStates).length - 1;
+    const transaction = getFirstElements(
+      transactions,
+      searchText,
+      tokenFilterStates
+    )[index];
 
     return (
       <TransactionRow
@@ -96,6 +104,14 @@ const TransactionList: FC<TransactionListProps> = ({
 
   const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchText(event.target.value);
+  };
+
+  const handleTokenFilter = (contractAddress: string) => {
+    setTokenFilterStates((prev) => {
+      const newFilterStates = new Map(prev);
+      newFilterStates.set(contractAddress, !prev.get(contractAddress));
+      return newFilterStates;
+    });
   };
 
   return (
@@ -113,10 +129,28 @@ const TransactionList: FC<TransactionListProps> = ({
       >
         {children}
       </TimeRange>
-
+      <Space h={'xs'}></Space>
+      <div>
+        {propertiesToken.map((token) => (
+          <Button
+            key={token.contractAddress}
+            style={{ marginRight: 10 }}
+            onClick={() => handleTokenFilter(token.contractAddress)}
+            color={
+              tokenFilterStates.get(token.contractAddress) ? 'blue' : 'gray'
+            }
+          >
+            {token.shortName}
+          </Button>
+        ))}
+      </div>
       <Space h={'xs'}></Space>
       <GlobalStat
-        transactions={getFilterElements(transactions, searchText)}
+        transactions={getFilterElements(
+          transactions,
+          searchText,
+          tokenFilterStates
+        )}
       ></GlobalStat>
       <Space h={10}></Space>
       <HeaderCard
@@ -125,14 +159,18 @@ const TransactionList: FC<TransactionListProps> = ({
       ></HeaderCard>
       <List
         height={
-          getFirstElements(transactions, searchText)
-            ? Math.max(getFirstElements(transactions, searchText).length, 1) *
-              ROW_HEIGHT
+          getFirstElements(transactions, searchText, tokenFilterStates)
+            ? Math.max(
+                getFirstElements(transactions, searchText, tokenFilterStates)
+                  .length,
+                1
+              ) * ROW_HEIGHT
             : ROW_HEIGHT
         }
         itemCount={
-          getFirstElements(transactions, searchText)
-            ? getFirstElements(transactions, searchText).length
+          getFirstElements(transactions, searchText, tokenFilterStates)
+            ? getFirstElements(transactions, searchText, tokenFilterStates)
+                .length
             : 1
         }
         itemSize={() => ROW_HEIGHT}
@@ -146,10 +184,11 @@ const TransactionList: FC<TransactionListProps> = ({
 
   function getFirstElements(
     transactions: TransactionData[],
-    filterText: string
+    filterText: string,
+    filterToken: Map<string, boolean>
   ): TransactionData[] {
     return transactions
-      .filter(filterByText(filterText))
+      .filter(filterByText(filterText, filterToken))
       .slice(0, transactionsDisplayed);
   }
 };
@@ -157,7 +196,8 @@ const TransactionList: FC<TransactionListProps> = ({
 export default TransactionList;
 
 function filterByText(
-  filterText: string
+  filterText: string,
+  filterToken: Map<string, boolean>
 ): (
   value: TransactionData,
   index: number,
@@ -167,23 +207,30 @@ function filterByText(
     const searchTerms = filterText.toLowerCase();
 
     return (
-      transaction.amount < MAX_TOKEN_AVAILABLE ||
-      transaction.offerId.toLowerCase().includes(searchTerms) ||
-      // transaction.from.toLowerCase().includes(searchTerms.toLowerCase()) ||
-      // transaction.offerType
-      //   ?.toLowerCase()
-      //   .includes(searchTerms.toLowerCase()) ||
-      transaction.tokenBuyWith?.name.toLowerCase().includes(searchTerms) ||
-      transaction.tokenForSale?.name.toLowerCase().includes(searchTerms) ||
-      transaction.tokenBuyWith?.symbol?.toLowerCase().includes(searchTerms) ||
-      transaction.tokenForSale?.symbol?.toLowerCase().includes(searchTerms)
+      (Array.from(filterToken).every(([address, active]) => !active) ||
+        Array.from(filterToken).some(
+          ([address, active]) =>
+            active &&
+            transaction.tokenForSale?.address.toLowerCase() ===
+              address.toLowerCase()
+        )) &&
+      (transaction.offerId.toLowerCase().includes(searchTerms) ||
+        // transaction.from.toLowerCase().includes(searchTerms.toLowerCase()) ||
+        // transaction.offerType
+        //   ?.toLowerCase()
+        //   .includes(searchTerms.toLowerCase()) ||
+        transaction.tokenBuyWith?.name.toLowerCase().includes(searchTerms) ||
+        transaction.tokenForSale?.name.toLowerCase().includes(searchTerms) ||
+        transaction.tokenBuyWith?.symbol?.toLowerCase().includes(searchTerms) ||
+        transaction.tokenForSale?.symbol?.toLowerCase().includes(searchTerms))
     );
   };
 }
 
 function getFilterElements(
   transactions: TransactionData[],
-  filterText: string
+  filterText: string,
+  filterToken: Map<string, boolean>
 ): TransactionData[] {
-  return transactions.filter(filterByText(filterText));
+  return transactions.filter(filterByText(filterText, filterToken));
 }
