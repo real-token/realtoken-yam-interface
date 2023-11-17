@@ -25,7 +25,7 @@ export const formatUsd = (
 
   if (shouldShowUnits) {
     num = tvl / 1000 ** order;
-    unitToDisplay = units[order];
+    unitToDisplay = units[order] ?? '';
   }
   const prefix = symbol;
   const digitSmallNumber = digit === 0 ? 2 : digit;

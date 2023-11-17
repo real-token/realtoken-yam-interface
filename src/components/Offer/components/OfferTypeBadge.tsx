@@ -21,7 +21,7 @@ const useStyle = createStyles((theme, { offerTypeColor }: StyleProps) => ({
 }));
 
 interface OfferTypeBadgeProps {
-  offerType: OFFER_TYPE;
+  offerType: OFFER_TYPE | undefined;
   textSize?: number;
   style?: any;
   id?: string;
@@ -31,7 +31,7 @@ interface OfferTypeBadgeProps {
 export const OfferTypeBadge = ({ offerType, sx }: OfferTypeBadgeProps) => {
   const { getColorCode, getI18OfferTypeName } = useOfferType();
   const { classes } = useStyle({
-    offerTypeColor: getColorCode(offerType) ?? 'blue',
+    offerTypeColor: offerType ? getColorCode(offerType) ?? 'blue' : 'blue',
   });
 
   return (
@@ -56,13 +56,44 @@ export const OfferBadge = ({
 
   return (
     <Badge
-      color={getColor(offerType) ?? 'red'}
+      color={offerType ? getColor(offerType) ?? 'red' : 'blue'}
       radius={radius}
       variant={'filled'}
       style={style}
       sx={sx}
     >
-      {getI18OfferTypeName(offerType)?.toUpperCase() + (id ? ' #' + id : '')}
+      {(offerType ? getI18OfferTypeName(offerType)?.toUpperCase() : '') +
+        (id ? ' #' + id : '')}
     </Badge>
+  );
+};
+
+export const OfferBadgeAbsolute = ({
+  offerType,
+  id,
+  sx,
+  radius = 0,
+}: OfferTypeBadgeProps) => {
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        top: '0px',
+        left: '0px',
+      }}
+    >
+      <OfferBadge
+        offerType={offerType}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          borderBottomRightRadius: '10px',
+        }}
+        id={id}
+        radius={radius}
+        sx={sx}
+      ></OfferBadge>
+    </div>
   );
 };

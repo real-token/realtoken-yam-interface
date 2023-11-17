@@ -57,8 +57,10 @@ export const useOfferType: UseOfferType = () => {
       : undefined;
   };
 
-  const getColorCode = (offerType: OFFER_TYPE): string | undefined => {
-    return OFFER_COLORS.has(offerType)
+  const getColorCode = (
+    offerType: OFFER_TYPE | undefined
+  ): string | undefined => {
+    return offerType && OFFER_COLORS.has(offerType)
       ? OFFER_COLORS.get(offerType)?.colorCode
       : undefined;
   };

@@ -30,7 +30,6 @@ const ITEM_HEIGHT_MIN = 100;
 interface MarketListProps {
   offers: Offer[];
 }
-//export const HeaderElement: FC<HeaderElementProps> = ({
 
 export const MarketList: FC<MarketListProps> = ({ offers }) => {
   const theme = useMantineTheme();
@@ -48,7 +47,7 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
     mapOfferToOfferData(offer, listOfferType, allowedTokens)
   );
   //console.log('MARKET LIST', JSON.stringify(offers, null, 4));
-
+  console.log('LOAD MarketList');
   const { t: tList } = useTranslation('list');
   const { t: tOfferMode } = useTranslation(listOfferType.toLowerCase(), {
     keyPrefix: 'list',
@@ -67,7 +66,7 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
       mapOfferToOfferData(offer, listOfferType, allowedTokens)
     );
     setSortedOffers(offersData.filter(filterByText(filterText)));
-  }, [offers, filterText]);
+  }, [offers, filterText, allowedTokens, listOfferType]);
 
   const [selectedHeader, setSelectedHeader] = useState<Columns | null>(null);
 
