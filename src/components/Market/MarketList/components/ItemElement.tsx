@@ -6,7 +6,7 @@ import { useMediaQuery } from '@mantine/hooks';
 
 import { BigNumber } from 'bignumber.js';
 
-import { OfferBadge } from 'src/components/Offer/components/OfferTypeBadge';
+import { OfferBadgeAbsolute } from 'src/components/Offer/components/OfferTypeBadge';
 import { useOffer } from 'src/hooks/offers/useOffer';
 import { useAppDispatch } from 'src/hooks/react-hooks';
 import { useAppSelector } from 'src/hooks/react-hooks';
@@ -107,24 +107,11 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
     >
       <Grid columns={20}>
         <Grid.Col xl={4} lg={5}>
-          <div
-            style={{
-              position: 'absolute',
-              top: '0px',
-              left: '0px',
-            }}
-          >
-            <OfferBadge
-              offerType={offer.type}
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                borderBottomRightRadius: '10px',
-              }}
-              id={offer.id}
-            ></OfferBadge>
-          </div>
+          <OfferBadgeAbsolute
+            offerType={offer.type}
+            id={offer.id}
+          ></OfferBadgeAbsolute>
+
           {isLarge && <TokensTradedElement offer={offer}></TokensTradedElement>}
           {!isLarge && (
             <Group spacing={10} position={'left'}>

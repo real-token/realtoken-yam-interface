@@ -43,6 +43,13 @@ export const selectPublicOffers = (state: RootState) => {
   );
 };
 
+export const selectAllOffers = (state: RootState) => {
+  const offers = selectOffers(state);
+  const offersIsLoading = selectOffersIsLoading(state);
+  if (!offers || offersIsLoading) return OFFER_LOADING;
+  return offers;
+};
+
 export const selectPrivateOffers = (state: RootState) => {
   const address = selectAddress(state);
   const offers = selectOffers(state);
