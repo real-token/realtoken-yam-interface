@@ -257,19 +257,15 @@ function filterByText(
     const searchTerms = filterText.toLowerCase();
 
     return (
-      (Array.from(filterToken).every(([address, active]) => !active) ||
+      (((!filterUnknownToken || transaction.offerType === undefined) &&
+        Array.from(filterToken).every(([address, active]) => !active)) ||
         Array.from(filterToken).some(
           ([address, active]) =>
             active &&
             transaction.tokenForSale?.address.toLowerCase() ===
               address.toLowerCase()
         )) &&
-      ((filterUnknownToken && !transaction.tokenForSale) ||
-        transaction.offerId.toLowerCase().includes(searchTerms) ||
-        // transaction.from.toLowerCase().includes(searchTerms.toLowerCase()) ||
-        // transaction.offerType
-        //   ?.toLowerCase()
-        //   .includes(searchTerms.toLowerCase()) ||
+      (transaction.offerId.toLowerCase().includes(searchTerms) ||
         transaction.tokenBuyWith?.name.toLowerCase().includes(searchTerms) ||
         transaction.tokenForSale?.name.toLowerCase().includes(searchTerms) ||
         transaction.tokenBuyWith?.symbol?.toLowerCase().includes(searchTerms) ||
