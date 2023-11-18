@@ -119,10 +119,12 @@ const TransactionList: FC<TransactionListProps> = ({
   };
 
   const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTransactionsDisplayed(PAGE_SIZE);
     setSearchText(event.target.value);
   };
 
   const handleTokenFilter = (contractAddress: string) => {
+    setTransactionsDisplayed(PAGE_SIZE);
     setTokenFilterStates((prev) => {
       const newFilterStates = new Map(prev);
       newFilterStates.set(contractAddress, !prev.get(contractAddress));
@@ -131,6 +133,7 @@ const TransactionList: FC<TransactionListProps> = ({
   };
 
   const handleUnknownTokenFilter = () => {
+    setTransactionsDisplayed(PAGE_SIZE);
     setUnknownTokenFilterStates((prev) => {
       return !prev;
     });
