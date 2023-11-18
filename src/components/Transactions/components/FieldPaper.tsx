@@ -16,19 +16,21 @@ interface FieldPaperProps {
   name: string;
   value: string;
   copyButton?: boolean;
+  truncate?: boolean;
 }
 
 export const FieldPaper: React.FC<FieldPaperProps> = ({
   name,
   value,
   copyButton = false,
+  truncate = true,
 }) => {
-  const truncatedField = truncateHash(value);
+  const truncatedField = truncate ? truncateHash(value) : value;
   const isTruncated = truncatedField.length !== value.length;
 
   return (
-    <Paper shadow={'xs'} sx={{ padding: '0 10px 0 10px' }} miw={200}>
-      <Group spacing={5} position={'apart'}>
+    <Paper shadow={'xs'} sx={{ padding: '0 10px 0 10px' }} miw={200} w={'100%'}>
+      <Group spacing={5} position={'apart'} w={'100%'}>
         <Text fw={600} fz={'sm'}>
           {name}
         </Text>

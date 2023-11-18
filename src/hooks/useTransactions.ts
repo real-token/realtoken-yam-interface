@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import BigNumber from 'bignumber.js';
 import useSWRInfinite, { SWRInfiniteResponse } from 'swr/infinite';
@@ -48,7 +48,7 @@ const CREATE_OFFER_METHOD = '0x2befd4ad';
 const CREATE_OFFER_WITH_PERMIT_METHOD = '0xdc3033fc';
 const CREATE_OFFER_BATCH_METHOD = '0x1a2caf6f';
 
-const PAGE_SIZE = 30; // Nombre d'éléments par page
+const PAGE_SIZE = 100; // Nombre d'éléments par page
 
 const MAX_TOKEN_AVAILABLE = 500000; //token max par site (pour filtré les valeur impossible)
 
@@ -58,24 +58,26 @@ function fetcher(url: string) {
 
 function useTransaction(
   address: string,
-  page = 1,
+  initPage = 1,
   offers: Offer[] = [],
   allowedTokens: AllowedToken[] = []
 ) {
-  console.log('HOOK useTransaction', page);
+  console.log('HOOK useTransaction', initPage);
 
   // Définissez une fonction pour obtenir la clé de pagination
   const getKey = (pageIndex: number, previousPageData: Result | null) => {
     // Si pageIndex est 0, c'est la première page, pas besoin de page précédente
     if (pageIndex === 0) {
-      return `/api/transactions?address=${address}&page=1&pageSize=${PAGE_SIZE}`;
+      const apiUrl = `https://api.gnosisscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=${1}&offset=${PAGE_SIZE}&sort=desc&apikey=${'6N3JDM1VBU8CUR2FFXDC19EZJ45RRB12HM'}`;
+      return apiUrl; //`/api/transactions?address=${address}&page=1&pageSize=${PAGE_SIZE}`;
     }
 
     // Utilisez la clé de la page précédente pour obtenir la suivante
     const nextPage = pageIndex + 1;
 
     if (previousPageData && previousPageData.result.length === PAGE_SIZE) {
-      return `/api/transactions?address=${address}&page=${nextPage}&pageSize=${PAGE_SIZE}`;
+      const apiUrl = `https://api.gnosisscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=${nextPage}&offset=${PAGE_SIZE}&sort=desc&apikey=${'6N3JDM1VBU8CUR2FFXDC19EZJ45RRB12HM'}`;
+      return apiUrl; // `/api/transactions?address=${address}&page=${nextPage}&pageSize=${PAGE_SIZE}`;
     }
 
     // S'il n'y a plus de données, arrêtez de demander
@@ -87,10 +89,45 @@ function useTransaction(
   //const { data, error } = useSWR<{ result: Transaction[] }>(apiUrl, fetcher);
 
   // Utilisez useSWRInfinite pour la pagination
-  const { data, error, size, setSize, isValidating } = useSWRInfinite<Result>(
-    getKey,
-    fetcher
-  ) as SWRInfiniteResponse<Result>;
+  const { data, error, size, setSize, isValidating, mutate } =
+    useSWRInfinite<Result>(getKey, fetcher, {
+      revalidateOnMount: true,
+      refreshInterval: 10 * 60 * 1000, // Cache de X minutes (X minutes * 60 secondes * 1000 millisecondes)
+    }) as SWRInfiniteResponse<Result>;
+
+  // Effect pour charger les trois premières pages de manière synchrone
+  useEffect(() => {
+    async function loadInitialPages() {
+      //console.log('SIZE before', size);
+      setSize(initPage);
+      // try {
+      //   // Chargez les trois premières pages
+      //   const results: Result[] = [];
+      //   let previousPageData: Result | null = null;
+      //   for (let i = 0; i < 3; i++) {
+      //     console.log('KEY page', i);
+      //     const apiUrl = getKey(i, previousPageData);
+      //     if (apiUrl) {
+      //      console.log('FETCH page', i);
+      //       const response: Result = await fetcher(apiUrl);
+      //       if (response && response.result) {
+      //         //console.log('RESULT', JSON.stringify(response, null, 4));
+      //         results.push(response);
+      //         previousPageData = response;
+      //         setSize(i + 1);
+      //         console.log('RESULT page', i, 'size', size);
+      //       }
+      //     }
+      //   }
+      //   mutate(results, false);
+      // } catch (error) {
+      //   // Gérer les erreurs
+      //   console.error('Erreur lors du chargement des pages initiales :', error);
+      // }
+    }
+
+    loadInitialPages();
+  }, [mutate]);
 
   const allTransactions: Transaction[] = useMemo(
     () =>

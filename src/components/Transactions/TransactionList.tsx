@@ -34,6 +34,8 @@ const TransactionList: FC<TransactionListProps> = ({
   const [tokenFilterStates, setTokenFilterStates] = useState<
     Map<string, boolean>
   >(new Map(propertiesToken.map((token) => [token.contractAddress, false])));
+  const [unknownTokenFilterStates, setUnknownTokenFilterStates] =
+    useState(false);
 
   console.log('LOAD TransactionList', transactions.length);
 
@@ -76,7 +78,14 @@ const TransactionList: FC<TransactionListProps> = ({
   }, [transactionsDisplayed, transactions.length]);
 
   const Row = ({ index, style }: { index: number; style: any }) => {
-    if (!getFirstElements(transactions, searchText, tokenFilterStates)) {
+    if (
+      !getFirstElements(
+        transactions,
+        searchText,
+        tokenFilterStates,
+        unknownTokenFilterStates
+      )
+    ) {
       return (
         <div style={{ ...style, textAlign: 'center', padding: 10 }}>
           {'Aucune donnée'}
@@ -85,11 +94,18 @@ const TransactionList: FC<TransactionListProps> = ({
     }
     const isLastRow =
       index ===
-      getFirstElements(transactions, searchText, tokenFilterStates).length - 1;
+      getFirstElements(
+        transactions,
+        searchText,
+        tokenFilterStates,
+        unknownTokenFilterStates
+      ).length -
+        1;
     const transaction = getFirstElements(
       transactions,
       searchText,
-      tokenFilterStates
+      tokenFilterStates,
+      unknownTokenFilterStates
     )[index];
 
     return (
@@ -111,6 +127,12 @@ const TransactionList: FC<TransactionListProps> = ({
       const newFilterStates = new Map(prev);
       newFilterStates.set(contractAddress, !prev.get(contractAddress));
       return newFilterStates;
+    });
+  };
+
+  const handleUnknownTokenFilter = () => {
+    setUnknownTokenFilterStates((prev) => {
+      return !prev;
     });
   };
 
@@ -143,13 +165,21 @@ const TransactionList: FC<TransactionListProps> = ({
             {token.shortName}
           </Button>
         ))}
+        <Button
+          style={{ marginRight: 10 }}
+          onClick={() => handleUnknownTokenFilter()}
+          color={unknownTokenFilterStates ? 'blue' : 'gray'}
+        >
+          {'Autres'}
+        </Button>
       </div>
       <Space h={'xs'}></Space>
       <GlobalStat
         transactions={getFilterElements(
           transactions,
           searchText,
-          tokenFilterStates
+          tokenFilterStates,
+          unknownTokenFilterStates
         )}
       ></GlobalStat>
       <Space h={10}></Space>
@@ -159,18 +189,36 @@ const TransactionList: FC<TransactionListProps> = ({
       ></HeaderCard>
       <List
         height={
-          getFirstElements(transactions, searchText, tokenFilterStates)
+          getFirstElements(
+            transactions,
+            searchText,
+            tokenFilterStates,
+            unknownTokenFilterStates
+          )
             ? Math.max(
-                getFirstElements(transactions, searchText, tokenFilterStates)
-                  .length,
+                getFirstElements(
+                  transactions,
+                  searchText,
+                  tokenFilterStates,
+                  unknownTokenFilterStates
+                ).length,
                 1
               ) * ROW_HEIGHT
             : ROW_HEIGHT
         }
         itemCount={
-          getFirstElements(transactions, searchText, tokenFilterStates)
-            ? getFirstElements(transactions, searchText, tokenFilterStates)
-                .length
+          getFirstElements(
+            transactions,
+            searchText,
+            tokenFilterStates,
+            unknownTokenFilterStates
+          )
+            ? getFirstElements(
+                transactions,
+                searchText,
+                tokenFilterStates,
+                unknownTokenFilterStates
+              ).length
             : 1
         }
         itemSize={() => ROW_HEIGHT}
@@ -185,10 +233,11 @@ const TransactionList: FC<TransactionListProps> = ({
   function getFirstElements(
     transactions: TransactionData[],
     filterText: string,
-    filterToken: Map<string, boolean>
+    filterToken: Map<string, boolean>,
+    filterUnknownToken: boolean
   ): TransactionData[] {
     return transactions
-      .filter(filterByText(filterText, filterToken))
+      .filter(filterByText(filterText, filterToken, filterUnknownToken))
       .slice(0, transactionsDisplayed);
   }
 };
@@ -197,7 +246,8 @@ export default TransactionList;
 
 function filterByText(
   filterText: string,
-  filterToken: Map<string, boolean>
+  filterToken: Map<string, boolean>,
+  filterUnknownToken: boolean
 ): (
   value: TransactionData,
   index: number,
@@ -214,7 +264,8 @@ function filterByText(
             transaction.tokenForSale?.address.toLowerCase() ===
               address.toLowerCase()
         )) &&
-      (transaction.offerId.toLowerCase().includes(searchTerms) ||
+      ((filterUnknownToken && !transaction.tokenForSale) ||
+        transaction.offerId.toLowerCase().includes(searchTerms) ||
         // transaction.from.toLowerCase().includes(searchTerms.toLowerCase()) ||
         // transaction.offerType
         //   ?.toLowerCase()
@@ -230,7 +281,10 @@ function filterByText(
 function getFilterElements(
   transactions: TransactionData[],
   filterText: string,
-  filterToken: Map<string, boolean>
+  filterToken: Map<string, boolean>,
+  filterUnknownToken: boolean
 ): TransactionData[] {
-  return transactions.filter(filterByText(filterText, filterToken));
+  return transactions.filter(
+    filterByText(filterText, filterToken, filterUnknownToken)
+  );
 }

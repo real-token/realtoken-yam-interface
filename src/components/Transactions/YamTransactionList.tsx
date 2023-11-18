@@ -30,20 +30,10 @@ const YamTransactionList = ({}) => {
     size,
   } = useTransaction(
     chain?.contracts[ContractsID.realTokenYamUpgradeable].address ?? '',
-    1,
+    3,
     offers,
     allowedTokens
   );
-
-  useEffect(() => {
-    // Chargez les dix premières pages au montage du composant
-    if (size < 10) {
-      setSize(size + 1);
-    } else {
-      // Le nombre de pages n'a pas changé, pas besoin de rappeler useTransaction
-      console.log('Number of pages unchanged, skipping useTransaction');
-    }
-  }, [size, setSize]);
 
   if (isLoading) {
     return <div>{'Loading...'}</div>;

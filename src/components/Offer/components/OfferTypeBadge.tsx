@@ -1,4 +1,4 @@
-import { Badge, Flex, Sx, createStyles } from '@mantine/core';
+import { Badge, Flex, Sx, Text, createStyles } from '@mantine/core';
 
 import { useOfferType } from 'src/hooks/useOfferType';
 import { OFFER_TYPE } from 'src/types/offer';
@@ -95,5 +95,22 @@ export const OfferBadgeAbsolute = ({
         sx={sx}
       ></OfferBadge>
     </div>
+  );
+};
+
+export const OfferText = ({
+  offerType,
+  textSize,
+  style,
+  id,
+  sx,
+}: OfferTypeBadgeProps) => {
+  const { getI18OfferTypeName } = useOfferType();
+
+  return (
+    <Text fz={textSize} style={style} sx={sx}>
+      {(offerType ? getI18OfferTypeName(offerType)?.toUpperCase() : '') +
+        (id ? ' #' + id : '')}
+    </Text>
   );
 };
