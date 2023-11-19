@@ -16,10 +16,18 @@ const YamTransactionList = ({}) => {
   const chain = useActiveChain();
 
   const allOffers = useAppSelector(selectAllOffers);
-  const { offers } = useTypedOffers(allOffers);
+  //const { offers } = useTypedOffers(allOffers);
   const { allowedTokens } = useAllowedTokens();
 
-  console.log('LOAD TransactionList');
+  console.log(
+    'LOAD TransactionList allOffers',
+    allOffers.map((a) => a.offerId)
+  );
+
+  // console.log(
+  //   'LOAD TransactionList offers',
+  //   offers.map((o) => o.offerId)
+  // );
 
   const {
     buyTransactions: transactions,
@@ -31,7 +39,7 @@ const YamTransactionList = ({}) => {
   } = useTransaction(
     chain?.contracts[ContractsID.realTokenYamUpgradeable].address ?? '',
     3,
-    offers,
+    allOffers,
     allowedTokens
   );
 

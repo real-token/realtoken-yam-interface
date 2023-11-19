@@ -38,6 +38,9 @@ export const parseOffer = (
   propertiesToken: PropertiesToken[],
   prices: Price
 ): Promise<Offer> => {
+  if ('43' === BigNumber(offer.id).toString()) {
+    console.log('GQL OFFER', JSON.stringify(offer, null, 4));
+  }
   return new Promise<Offer>(async (resolve, reject) => {
     try {
       // console.log(

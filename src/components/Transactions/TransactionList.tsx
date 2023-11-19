@@ -1,7 +1,8 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
 import { VariableSizeList as List } from 'react-window';
 
-import { Button, Container, Space } from '@mantine/core';
+import { Button, Container, Group, Loader, Space, Text } from '@mantine/core';
+import { DateInput } from '@mantine/dates';
 
 import { TransactionData } from 'src/components/Transactions/Types';
 import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
@@ -36,7 +37,8 @@ const TransactionList: FC<TransactionListProps> = ({
   >(new Map(propertiesToken.map((token) => [token.contractAddress, false])));
   const [unknownTokenFilterStates, setUnknownTokenFilterStates] =
     useState(false);
-
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
   console.log('LOAD TransactionList', transactions.length);
 
   const handleReachEndList = (entries: IntersectionObserverEntry[]) => {
@@ -83,7 +85,9 @@ const TransactionList: FC<TransactionListProps> = ({
         transactions,
         searchText,
         tokenFilterStates,
-        unknownTokenFilterStates
+        unknownTokenFilterStates,
+        startDate?.getTime(),
+        endDate?.getTime()
       )
     ) {
       return (
@@ -98,14 +102,18 @@ const TransactionList: FC<TransactionListProps> = ({
         transactions,
         searchText,
         tokenFilterStates,
-        unknownTokenFilterStates
+        unknownTokenFilterStates,
+        startDate?.getTime(),
+        endDate?.getTime()
       ).length -
         1;
     const transaction = getFirstElements(
       transactions,
       searchText,
       tokenFilterStates,
-      unknownTokenFilterStates
+      unknownTokenFilterStates,
+      startDate?.getTime(),
+      endDate?.getTime()
     )[index];
 
     return (
@@ -139,6 +147,16 @@ const TransactionList: FC<TransactionListProps> = ({
     });
   };
 
+  const handleStartDateFilter = (newDate: Date | null) => {
+    setTransactionsDisplayed(PAGE_SIZE);
+    setStartDate(newDate);
+  };
+
+  const handleEndDateFilter = (newDate: Date | null) => {
+    setTransactionsDisplayed(PAGE_SIZE);
+    setEndDate(newDate);
+  };
+
   return (
     <Container
       style={{
@@ -155,11 +173,10 @@ const TransactionList: FC<TransactionListProps> = ({
         {children}
       </TimeRange>
       <Space h={'xs'}></Space>
-      <div>
+      <Group position={'left'}>
         {propertiesToken.map((token) => (
           <Button
             key={token.contractAddress}
-            style={{ marginRight: 10 }}
             onClick={() => handleTokenFilter(token.contractAddress)}
             color={
               tokenFilterStates.get(token.contractAddress) ? 'blue' : 'gray'
@@ -168,21 +185,37 @@ const TransactionList: FC<TransactionListProps> = ({
             {token.shortName}
           </Button>
         ))}
-        <Button
-          style={{ marginRight: 10 }}
-          onClick={() => handleUnknownTokenFilter()}
-          color={unknownTokenFilterStates ? 'blue' : 'gray'}
-        >
-          {'Autres'}
-        </Button>
-      </div>
+      </Group>
+      <Space h={'xs'}></Space>
+      <Group position={'left'}>
+        <Text>{'Du'}</Text>
+        <DateInput
+          value={startDate}
+          onChange={handleStartDateFilter}
+          minDate={new Date(1693526400000)}
+          maxDate={endDate ?? new Date()}
+          placeholder='Date début'
+          clearable={true}
+        />
+        <Text>{'à'}</Text>
+        <DateInput
+          value={endDate}
+          onChange={handleEndDateFilter}
+          minDate={startDate ?? new Date(1693526400000)}
+          maxDate={new Date()}
+          placeholder='Date fin'
+          clearable={true}
+        />
+      </Group>
       <Space h={'xs'}></Space>
       <GlobalStat
         transactions={getFilterElements(
           transactions,
           searchText,
           tokenFilterStates,
-          unknownTokenFilterStates
+          unknownTokenFilterStates,
+          startDate?.getTime(),
+          endDate?.getTime()
         )}
       ></GlobalStat>
       <Space h={10}></Space>
@@ -196,14 +229,18 @@ const TransactionList: FC<TransactionListProps> = ({
             transactions,
             searchText,
             tokenFilterStates,
-            unknownTokenFilterStates
+            unknownTokenFilterStates,
+            startDate?.getTime(),
+            endDate?.getTime()
           )
             ? Math.max(
                 getFirstElements(
                   transactions,
                   searchText,
                   tokenFilterStates,
-                  unknownTokenFilterStates
+                  unknownTokenFilterStates,
+                  startDate?.getTime(),
+                  endDate?.getTime()
                 ).length,
                 1
               ) * ROW_HEIGHT
@@ -214,13 +251,17 @@ const TransactionList: FC<TransactionListProps> = ({
             transactions,
             searchText,
             tokenFilterStates,
-            unknownTokenFilterStates
+            unknownTokenFilterStates,
+            startDate?.getTime(),
+            endDate?.getTime()
           )
             ? getFirstElements(
                 transactions,
                 searchText,
                 tokenFilterStates,
-                unknownTokenFilterStates
+                unknownTokenFilterStates,
+                startDate?.getTime(),
+                endDate?.getTime()
               ).length
             : 1
         }
@@ -230,6 +271,22 @@ const TransactionList: FC<TransactionListProps> = ({
         {Row}
       </List>
       <div ref={endListRef}></div>
+      {transactionsDisplayed <
+        getFilterElements(
+          transactions,
+          searchText,
+          tokenFilterStates,
+          unknownTokenFilterStates,
+          startDate?.getTime(),
+          endDate?.getTime()
+        ).length && (
+        <div>
+          <Space h={'xl'}></Space>
+          <Group position={'center'}>
+            <Loader></Loader>
+          </Group>
+        </div>
+      )}
     </Container>
   );
 
@@ -237,20 +294,32 @@ const TransactionList: FC<TransactionListProps> = ({
     transactions: TransactionData[],
     filterText: string,
     filterToken: Map<string, boolean>,
-    filterUnknownToken: boolean
+    filterUnknownToken: boolean,
+    filterStartDate: number | undefined,
+    filterEndDate: number | undefined
   ): TransactionData[] {
     return transactions
-      .filter(filterByText(filterText, filterToken, filterUnknownToken))
+      .filter(
+        filterTransaction(
+          filterText,
+          filterToken,
+          filterUnknownToken,
+          filterStartDate,
+          filterEndDate
+        )
+      )
       .slice(0, transactionsDisplayed);
   }
 };
 
 export default TransactionList;
 
-function filterByText(
+function filterTransaction(
   filterText: string,
   filterToken: Map<string, boolean>,
-  filterUnknownToken: boolean
+  filterUnknownToken: boolean,
+  filterStartDate: number | undefined,
+  filterEndDate: number | undefined
 ): (
   value: TransactionData,
   index: number,
@@ -258,15 +327,20 @@ function filterByText(
 ) => unknown {
   return (transaction) => {
     const searchTerms = filterText.toLowerCase();
+    //console.log('FILTER TRANSACTION', filterStartDate, transaction.timeStamp);
 
     return (
-      (((!filterUnknownToken || transaction.offerType === undefined) &&
-        Array.from(filterToken).every(([address, active]) => !active)) ||
+      (!filterStartDate || transaction.timeStamp > filterStartDate / 1000) &&
+      (!filterEndDate ||
+        transaction.timeStamp < filterEndDate / 1000 + 86400) &&
+      (Array.from(filterToken).every(([address, active]) => !active) ||
         Array.from(filterToken).some(
           ([address, active]) =>
             active &&
-            transaction.tokenForSale?.address.toLowerCase() ===
-              address.toLowerCase()
+            (transaction.tokenForSale?.address.toLowerCase() ===
+              address.toLowerCase() ||
+              transaction.tokenBuyWith?.address.toLowerCase() ===
+                address.toLowerCase())
         )) &&
       (transaction.offerId.toLowerCase().includes(searchTerms) ||
         transaction.tokenBuyWith?.name.toLowerCase().includes(searchTerms) ||
@@ -281,9 +355,17 @@ function getFilterElements(
   transactions: TransactionData[],
   filterText: string,
   filterToken: Map<string, boolean>,
-  filterUnknownToken: boolean
+  filterUnknownToken: boolean,
+  filterStartDate: number | undefined,
+  filterEndDate: number | undefined
 ): TransactionData[] {
   return transactions.filter(
-    filterByText(filterText, filterToken, filterUnknownToken)
+    filterTransaction(
+      filterText,
+      filterToken,
+      filterUnknownToken,
+      filterStartDate,
+      filterEndDate
+    )
   );
 }

@@ -84,10 +84,6 @@ function useTransaction(
     return null;
   };
 
-  //const apiUrl = `/api/transactions?address=${address}&page=${page}&pageSize=${PAGE_SIZE}`; // Utilisez le chemin de l'API Next.js
-
-  //const { data, error } = useSWR<{ result: Transaction[] }>(apiUrl, fetcher);
-
   // Utilisez useSWRInfinite pour la pagination
   const { data, error, size, setSize, isValidating, mutate } =
     useSWRInfinite<Result>(getKey, fetcher, {
@@ -100,30 +96,6 @@ function useTransaction(
     async function loadInitialPages() {
       //console.log('SIZE before', size);
       setSize(initPage);
-      // try {
-      //   // Chargez les trois premières pages
-      //   const results: Result[] = [];
-      //   let previousPageData: Result | null = null;
-      //   for (let i = 0; i < 3; i++) {
-      //     console.log('KEY page', i);
-      //     const apiUrl = getKey(i, previousPageData);
-      //     if (apiUrl) {
-      //      console.log('FETCH page', i);
-      //       const response: Result = await fetcher(apiUrl);
-      //       if (response && response.result) {
-      //         //console.log('RESULT', JSON.stringify(response, null, 4));
-      //         results.push(response);
-      //         previousPageData = response;
-      //         setSize(i + 1);
-      //         console.log('RESULT page', i, 'size', size);
-      //       }
-      //     }
-      //   }
-      //   mutate(results, false);
-      // } catch (error) {
-      //   // Gérer les erreurs
-      //   console.error('Erreur lors du chargement des pages initiales :', error);
-      // }
     }
 
     loadInitialPages();
@@ -266,20 +238,20 @@ function agregateTransactions(
     allowedTokens
   );
 
-  guessCreateOfferTransactionId(
-    formattedBuyTransactions,
-    formattedCreateOfferTransactions
-  );
+  // guessCreateOfferTransactionId(
+  //   formattedBuyTransactions,
+  //   formattedCreateOfferTransactions
+  // );
 
-  associateBuyWithCreateOfferTransaction(
-    formattedBuyTransactions,
-    formattedCreateOfferTransactions
-  );
+  // associateBuyWithCreateOfferTransaction(
+  //   formattedBuyTransactions,
+  //   formattedCreateOfferTransactions
+  // );
 
-  guessCreateOfferTransactionId(
-    formattedBuyTransactions,
-    formattedCreateOfferTransactions
-  );
+  // guessCreateOfferTransactionId(
+  //   formattedBuyTransactions,
+  //   formattedCreateOfferTransactions
+  // );
 }
 
 /**

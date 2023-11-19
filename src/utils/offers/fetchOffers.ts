@@ -128,7 +128,7 @@ export const fetchOffersTheGraph = (
         const { data } = await clientYAM.query({
           query: gql`
             query getOffers {
-              offers(first: 1000, skip: ${skip}, where: { removedAtBlock: null }) {
+              offers(first: 1000, skip: ${skip}) {
                 ${getOfferQuery()}
               }
             }
@@ -146,8 +146,6 @@ export const fetchOffersTheGraph = (
           stop = true;
         }
       }
-
-      //console.log('Query dataYAM', offers.length);
 
       const accountRealtoken: string[] = usersDataYAM.accounts.map(
         (account: { address: string; offers: [] }) =>
@@ -215,6 +213,12 @@ export const fetchOffersTheGraph = (
       );
 
       const parsedOffers = await Promise.all(promises);
+
+      console.log(
+        'Query dataYAM',
+        parsedOffers.length,
+        parsedOffers.map((o) => o.offerId)
+      );
 
       offersData.push(...parsedOffers);
 

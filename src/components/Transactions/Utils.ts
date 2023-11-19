@@ -13,6 +13,16 @@ export const associateTransactionWithOffer = (
   transactionsWithOffers: TransactionData[];
   createTransactionsWithOffers: TransactionData[];
 } => {
+  // for (const t of transactions) {
+  //   if (t.offerId === '43')
+  //     console.log('Transaction43', JSON.stringify(t, null, 4));
+  // }
+  for (const o of offers) {
+    console.log('Transaction43 offer id', o.offerId);
+    //if (parseInt(o.offerId) === 43 || o.offerId.includes('43'))
+    //console.log('Transaction43 offer', JSON.stringify(o, null, 4));
+  }
+
   // Boucle à travers chaque transaction
   const transactionsWithOffers = transactions.map((transaction) => {
     // Trouve l'offre correspondante en utilisant offerId
@@ -67,6 +77,7 @@ export const associateTransactionWithOffer = (
     transaction.currentOfferAmount = correspondingOffer?.amount
       ? parseInt(correspondingOffer.amount)
       : undefined;
+    transaction.initialOfferAmount = correspondingOffer?.initialAmount;
 
     // Ajoute l'offre correspondante à la transaction
     return {
@@ -320,13 +331,13 @@ export function calculateAveragePrice(
 
   // Calcul de la somme des dépenses
   const totalPrice = transactions.reduce((acc, transaction) => {
-    return acc + transaction.price;
-  }, 0);
+    return acc.plus(transaction.price);
+  }, new BigNumber(0));
 
   // Calcul de la dépense moyenne
-  const averageExpense = totalPrice / transactions.length;
+  const averageExpense = totalPrice.dividedBy(transactions.length);
 
-  return averageExpense;
+  return averageExpense.toNumber();
 }
 
 export function calculateExpenseStandardDeviation(
