@@ -4,6 +4,6 @@
     "requesterAddress": "Address",
     "requestedPrice": "Price (USD)",
     "requestedAmount": "Quantity",
-    "requestedToken": "Exchange rate"
+    "createdAt": "Created at"
 }
 }

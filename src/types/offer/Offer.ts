@@ -29,6 +29,7 @@ export type Offer = {
   buyerAddress: string;
   price: string;
   amount: string;
+  initialAmount: number;
   hasPropertyToken: boolean;
   removed: boolean;
   availableAmount: string;
@@ -69,6 +70,7 @@ export const DEFAULT_OFFER: Offer = {
   buyerAddress: "",
   price: "",
   amount: "",
+  initialAmount: 0,
   hasPropertyToken: false,
   removed: false,
   availableAmount: "",

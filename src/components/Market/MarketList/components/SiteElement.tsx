@@ -26,9 +26,7 @@ export const SiteElement: FC<SiteElementProps> = ({ offer }) => {
   const isOnlyCsmExchange = isSell && isBuy;
   const isCSMTokenExchange = isSell || isBuy;
   const minWidth = isSell && isBuy ? 300 : 230;
-  const { propertyToken: sellerPropertyToken } = usePropertyToken(
-    offer.requestedTokenAddress
-  );
+
   const { propertyToken: buyerPropertyToken } = usePropertyToken(
     offer.transferedTokenAddress
   );

@@ -10,7 +10,8 @@ export type OfferData = {
   requestedToken: string;
   requestedTokenAddress: string;
   requestedTokenLogo?: FC<any>;
-  launchDate: string;
+  launchDate: string; // a deplacer dans site
+  createdAt: number;
   balanceWallet?: number;
   requesterName: string;
   requesterAddress: string;
@@ -25,6 +26,7 @@ export type OfferData = {
   requestedRate: number;
   requestedPrice: number; //USD
   requestedAmount?: number;
+  initialAmount: number;
   image: string;
   type: OFFER_TYPE;
 };
@@ -63,6 +65,6 @@ export enum MaxHeight {
 export enum Columns {
   requesterName = 'requesterName',
   requestedPrice = 'requestedPrice',
-  requestedToken = 'requestedToken',
+  createdAt = 'createdAt',
   requestedAmount = 'requestedAmount',
 }

@@ -5,7 +5,7 @@
     "requesterAddress": "Adresse",
     "requestedPrice": "Prix (usd)",
     "requestedAmount": "Quantité",
-    "requestedToken": "Taux de change"
+    "createdAt": "Créée le"
   },
 
 

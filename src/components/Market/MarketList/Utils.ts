@@ -93,11 +93,8 @@ export function mapOfferToOfferData(
     image: '', // Vous devrez spécifier l'image appropriée ici
     type: offerType,
     priceDelta: offer.priceDelta,
-    // offer.offerTokenType === 1 || offer.offerTokenType === 0
-    //   ? OFFER_TYPE.SELL
-    //   : offer.offerTokenType === 2
-    //   ? OFFER_TYPE.BUY
-    //   : OFFER_TYPE.EXCHANGE,
+    initialAmount: offer.initialAmount,
+    createdAt: offer.createdAtTimestamp,
   };
 }
 
@@ -111,7 +108,7 @@ export function mapColumnLabels(
   return {
     requesterName: t('requesterName'),
     requestedPrice: t('requestedPrice'),
-    requestedToken: t('requestedToken'),
+    createdAt: t('createdAt'),
     requestedAmount: t('requestedAmount'),
   };
 }

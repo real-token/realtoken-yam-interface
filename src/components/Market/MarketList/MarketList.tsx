@@ -53,18 +53,15 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
     keyPrefix: 'list',
   });
   const columnLabels = mapColumnLabels(tOfferMode);
-  // for (const column of Object.values(Columns)) {
-  //   console.log('COLUMN', column, columnLabels[column]);
-  // }
 
   const [filterText, setFilterText] = useState('');
   const [sortedOffers, setSortedOffers] = useState(
     offersData.filter(filterByText(filterText))
   );
   useEffect(() => {
-    const offersData: OfferData[] = offers.map((offer) =>
-      mapOfferToOfferData(offer, listOfferType, allowedTokens)
-    );
+    const offersData: OfferData[] = offers
+      .map((offer) => mapOfferToOfferData(offer, listOfferType, allowedTokens))
+      .sort(sortColumn(Columns.createdAt, SortDirection.Desc));
     setSortedOffers(offersData.filter(filterByText(filterText)));
   }, [offers, filterText, allowedTokens, listOfferType]);
 
@@ -75,24 +72,7 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
     sortDirection: SortDirection
   ) => {
     const sorted = [...sortedOffers];
-    sorted.sort((a, b) => {
-      const columnA = a[column];
-      const columnB = b[column];
-
-      if (typeof columnA === 'number' && typeof columnB === 'number') {
-        if (sortDirection === SortDirection.Asc) {
-          return columnA - columnB;
-        } else {
-          return columnB - columnA;
-        }
-      }
-
-      if (sortDirection === SortDirection.Asc) {
-        return String(columnA).localeCompare(String(columnB));
-      } else {
-        return String(columnB).localeCompare(String(columnA));
-      }
-    });
+    sorted.sort(sortColumn(column, sortDirection));
     setSortedOffers(sorted);
   };
 
@@ -120,7 +100,7 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
     for (const key in columnLabels) {
       if (columnLabels[key] === selectedColumn) {
         const direction: SortDirection =
-          (key === Columns.requestedPrice || key === Columns.requestedToken) &&
+          (key === Columns.requestedPrice || key === Columns.createdAt) &&
           listOfferType === OFFER_TYPE.BUY
             ? SortDirection.Desc
             : SortDirection.Asc;
@@ -183,7 +163,7 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
               data={[
                 columnLabels[Columns.requesterName],
                 columnLabels[Columns.requestedPrice],
-                columnLabels[Columns.requestedToken],
+                columnLabels[Columns.createdAt],
                 columnLabels[Columns.requestedAmount],
               ]}
             />
@@ -204,7 +184,7 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
               data={[
                 columnLabels[Columns.requesterName],
                 columnLabels[Columns.requestedPrice],
-                columnLabels[Columns.requestedToken],
+                columnLabels[Columns.createdAt],
                 columnLabels[Columns.requestedAmount],
               ]}
             />
@@ -256,6 +236,31 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
     </Container>
   );
 };
+function sortColumn(
+  column: keyof OfferData,
+  sortDirection: SortDirection
+): ((a: OfferData, b: OfferData) => number) | undefined {
+  console.log('Sort', column, sortDirection);
+  return (a, b) => {
+    const columnA = a[column];
+    const columnB = b[column];
+
+    if (typeof columnA === 'number' && typeof columnB === 'number') {
+      if (sortDirection === SortDirection.Asc) {
+        return columnA - columnB;
+      } else {
+        return columnB - columnA;
+      }
+    }
+
+    if (sortDirection === SortDirection.Asc) {
+      return String(columnA).localeCompare(String(columnB));
+    } else {
+      return String(columnB).localeCompare(String(columnA));
+    }
+  };
+}
+
 function filterByText(
   filterText: string
 ): (value: OfferData, index: number, array: OfferData[]) => unknown {

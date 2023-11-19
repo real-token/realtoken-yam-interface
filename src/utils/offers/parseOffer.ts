@@ -129,6 +129,7 @@ export const parseOffer = (
             allowance
           ).toString(10) ?? '0',
         availableAmount: offer.availableAmount.toString(),
+        initialAmount: offer.price.amount,
         balanceWallet: balanceWallet ?? '0',
         allowanceToken: allowance ?? '0',
         hasPropertyToken: false,

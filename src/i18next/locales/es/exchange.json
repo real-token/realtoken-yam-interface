@@ -4,6 +4,6 @@
     "requesterAddress": "Dirección",
     "requestedPrice": "Precio (USD)",
     "requestedAmount": "Cantidad",
-    "requestedToken": "Tasa de cambio"
+    "createdAt": "Created at"
   }
 }

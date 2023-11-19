@@ -1,7 +1,16 @@
 import React, { FC, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Card, Grid, Group, Stack, Text, useMantineTheme } from '@mantine/core';
+import {
+  Card,
+  Grid,
+  Group,
+  Progress,
+  RingProgress,
+  Stack,
+  Text,
+  useMantineTheme,
+} from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 
 import { BigNumber } from 'bignumber.js';
@@ -18,6 +27,9 @@ import { Price } from 'src/types/price';
 import {
   formatPercent,
   formatSmallToken,
+  formatTimestamp,
+  formatTimestampDay,
+  formatTimestampHour,
   formatToken,
   formatUsd,
 } from 'src/utils/format';
@@ -160,7 +172,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             paddingBottom: isMobile ? 0 : undefined,
           }}
         >
-          {!isMobile && stackTradeToken()}
+          {!isMobile && stackOfferDate()}
         </Grid.Col>
         <Grid.Col
           xl={3}
@@ -173,7 +185,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             paddingBottom: isMobile ? 0 : undefined,
           }}
         >
-          {!isMobile && stackAmountForSale()}
+          {!isMobile && stackAmountForSale(true)}
         </Grid.Col>
 
         <Grid.Col
@@ -186,7 +198,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             <Stack>
               <Group position={'apart'}>
                 {stackSeller()}
-                {stackTradeToken(true)}
+                {stackOfferDate(true)}
               </Group>
               <Group position={'apart'}>
                 {stackTokenPrice()}
@@ -204,7 +216,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
       <Stack
         h={'100%'}
         align={'stretch'}
-        justify={isLarge ? 'center' : 'flex-start'}
+        justify={isLarge ? 'flex-end' : 'flex-start'}
         spacing={0}
       >
         {!isLarge && (
@@ -216,29 +228,68 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             {columnLabels[Columns.requestedAmount]}
           </Text>
         )}
-        <div>
-          <Text
-            fz={isLarge ? 'lg' : 'md'}
-            ta={isLarge || textAlignRight ? 'right' : 'left'}
-            fw={500}
-          >
-            {formatToken(offer.requestedAmount ?? 0)}
-          </Text>
-          <Text
-            fz={isLarge ? 'xs' : 'xs'}
-            color={'dimmed'}
-            ta={isLarge || textAlignRight ? 'right' : 'left'}
-          >
-            {formatUsd(
-              (offer.requestedAmount ?? 0) * (offer.requestedPrice ?? 0)
-            )}
-          </Text>
-        </div>
+        {!isLarge && (
+          <div>
+            <Group position={'right'}>
+              <Text size={'xs'} align={'center'}>
+                {formatToken(offer.requestedAmount ?? 0) +
+                  ' / ' +
+                  formatToken(offer.initialAmount)}
+              </Text>
+            </Group>
+            <Progress
+              color={'yellow'}
+              value={((offer.requestedAmount ?? 0) / offer.initialAmount) * 100}
+            />
+            <Group position={'right'}>
+              <Text size={'xs'} align={'center'}>
+                {formatPercent(
+                  (offer.requestedAmount ?? 0) / offer.initialAmount
+                )}
+              </Text>
+            </Group>
+          </div>
+        )}
+
+        {isLarge && (
+          <Group w={'100%'} position={textAlignRight ? 'right' : 'left'}>
+            <div>
+              <RingProgress
+                size={100}
+                label={
+                  <Text size={'xs'} align={'center'}>
+                    {formatToken(offer.requestedAmount ?? 0) +
+                      ' / ' +
+                      formatToken(offer.initialAmount)}
+                  </Text>
+                }
+                sections={[
+                  {
+                    value:
+                      ((offer.requestedAmount ?? 0) / offer.initialAmount) *
+                      100,
+                    color: 'yellow',
+                  },
+                ]}
+              />
+              <Text
+                fz={isLarge ? 'xs' : 'xs'}
+                color={'dimmed'}
+                ta={isLarge || textAlignRight ? 'center' : 'left'}
+                sx={{ marginTop: '-10px' }}
+              >
+                {formatUsd(
+                  (offer.requestedAmount ?? 0) * (offer.requestedPrice ?? 0)
+                )}
+              </Text>
+            </div>
+          </Group>
+        )}
       </Stack>
     );
   }
 
-  function stackTradeToken(textAlignRight = false) {
+  function stackOfferDate(textAlignRight = false) {
     return (
       <Stack
         h={'100%'}
@@ -252,7 +303,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             ta={textAlignRight ? 'right' : 'left'}
             color={'dimmed'}
           >
-            {columnLabels[Columns.requestedToken]}
+            {columnLabels[Columns.createdAt]}
           </Text>
         )}
         <div>
@@ -261,14 +312,14 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             ta={isLarge || textAlignRight ? 'right' : 'left'}
             fw={500}
           >
-            {tokenPerSellingToken}
+            {formatTimestampDay(offer.createdAt)}
           </Text>
           <Text
             fz={'xs'}
             color={'dimmed'}
             ta={isLarge || textAlignRight ? 'right' : 'left'}
           >
-            {perOfferToken}
+            {formatTimestampHour(offer.createdAt)}
           </Text>
         </div>
       </Stack>
