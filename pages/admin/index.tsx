@@ -18,20 +18,20 @@ export const Admin = () => {
         <Tabs
           color={'brand'}
           variant={'pills'}
-          defaultValue={'adminMarketTable'}
+          defaultValue={'adminTransactionActions'}
         >
           <Tabs.List>
-            <Tabs.Tab value={'adminMarketTable'} icon={<IconList size={18} />}>
-              {t('adminMarketTable')}
-            </Tabs.Tab>
-            <Tabs.Tab value={'adminActions'} icon={<IconClick size={18} />}>
-              {t('adminActions')}
-            </Tabs.Tab>
             <Tabs.Tab
               value={'adminTransactionActions'}
               icon={<IconFileDollar size={18} />}
             >
               {'Transactions'}
+            </Tabs.Tab>
+            <Tabs.Tab value={'adminMarketTable'} icon={<IconList size={18} />}>
+              {t('adminMarketTable')}
+            </Tabs.Tab>
+            <Tabs.Tab value={'adminActions'} icon={<IconClick size={18} />}>
+              {t('adminActions')}
             </Tabs.Tab>
           </Tabs.List>
 

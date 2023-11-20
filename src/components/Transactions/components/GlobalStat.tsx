@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import { TFunction, useTranslation } from 'react-i18next';
 
 import { Card, Container, Group, SimpleGrid, Text } from '@mantine/core';
 
@@ -25,6 +26,8 @@ export const GlobalStat: FC<GlobalStatProps> = ({
   transactions,
   daysPeriod,
 }) => {
+  const { t } = useTranslation('transactions', { keyPrefix: 'stats' });
+
   const { color, performance, volume, volumeBefore } = getPeriodVolume(
     transactions,
     daysPeriod
@@ -65,7 +68,7 @@ export const GlobalStat: FC<GlobalStatProps> = ({
         <Card withBorder={true} shadow={'sm'} radius={'md'}>
           <Card.Section withBorder={true} inheritPadding={true} py={'xs'}>
             <Group position={'apart'}>
-              <Text weight={500}>{'Volume'}</Text>
+              <Text weight={500}>{t('volume')}</Text>
             </Group>
           </Card.Section>
           <Text fw={700} mt={'xs'} color={'blue'} size={'xl'}>
@@ -73,7 +76,7 @@ export const GlobalStat: FC<GlobalStatProps> = ({
           </Text>
 
           <Text fw={500} mt={'sm'} size={'lg'}>
-            {formatUsd(volume ?? 0) + ' (' + daysPeriod + ' jours)'}
+            {formatUsd(volume ?? 0) + ' (' + formatPeriod(daysPeriod, t) + ')'}
           </Text>
           <Text color={color} size={'xs'}>
             {formatPeriodPerformance(
@@ -86,7 +89,7 @@ export const GlobalStat: FC<GlobalStatProps> = ({
         <Card withBorder={true} shadow={'sm'} radius={'md'}>
           <Card.Section withBorder={true} inheritPadding={true} py={'xs'}>
             <Group position={'apart'}>
-              <Text weight={500}>{'Transactions'}</Text>
+              <Text weight={500}>{t('transactions')}</Text>
             </Group>
           </Card.Section>
           <Text fw={700} mt={'xs'} color={'blue'} size={'xl'}>
@@ -94,7 +97,7 @@ export const GlobalStat: FC<GlobalStatProps> = ({
           </Text>
 
           <Text fw={500} mt={'sm'} size={'lg'}>
-            {transactionAmount + ' (' + daysPeriod + ' jours)'}
+            {transactionAmount + ' (' + formatPeriod(daysPeriod, t) + ')'}
           </Text>
           <Text color={transactionColor} size={'xs'}>
             {formatPeriodPerformance(
@@ -109,7 +112,7 @@ export const GlobalStat: FC<GlobalStatProps> = ({
         <Card withBorder={true} shadow={'sm'} radius={'md'}>
           <Card.Section withBorder={true} inheritPadding={true} py={'xs'}>
             <Group position={'apart'}>
-              <Text weight={500}>{'Dépense par Transactions'}</Text>
+              <Text weight={500}>{t('expense')}</Text>
             </Group>
           </Card.Section>
           <Text fw={700} mt={'xs'} color={'blue'} size={'xl'}>
@@ -118,7 +121,10 @@ export const GlobalStat: FC<GlobalStatProps> = ({
 
           <>
             <Text fw={500} mt={'sm'} size={'lg'}>
-              {formatUsd(expense ?? 0) + ' (' + daysPeriod + ' jours)'}
+              {formatUsd(expense ?? 0) +
+                ' (' +
+                formatPeriod(daysPeriod, t) +
+                ')'}
             </Text>
 
             <Text color={expenseColor} size={'xs'}>
@@ -133,7 +139,7 @@ export const GlobalStat: FC<GlobalStatProps> = ({
         <Card withBorder={true} shadow={'sm'} radius={'md'}>
           <Card.Section withBorder={true} inheritPadding={true} py={'xs'}>
             <Group position={'apart'}>
-              <Text weight={500}>{'Prix'}</Text>
+              <Text weight={500}>{t('price')}</Text>
             </Group>
           </Card.Section>
           <Text fw={700} mt={'xs'} color={'blue'} size={'xl'}>
@@ -141,7 +147,7 @@ export const GlobalStat: FC<GlobalStatProps> = ({
           </Text>
 
           <Text fw={500} mt={'sm'} size={'lg'}>
-            {formatUsd(price ?? 0) + ' (' + daysPeriod + ' jours)'}
+            {formatUsd(price ?? 0) + ' (' + formatPeriod(daysPeriod, t) + ')'}
           </Text>
           <Text color={priceColor} size={'xs'}>
             {formatPeriodPerformance(
@@ -155,6 +161,13 @@ export const GlobalStat: FC<GlobalStatProps> = ({
     </Container>
   );
 };
+
+function formatPeriod(
+  days: number,
+  t: TFunction<'transactions', 'stats'>
+): string {
+  return days === 1 ? '24h' : days + ' ' + t('day') + 's';
+}
 
 function formatPeriodPerformance(
   performance: number | undefined,

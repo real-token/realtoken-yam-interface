@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Card, Grid, TextInput, createStyles } from '@mantine/core';
 
@@ -21,34 +22,34 @@ const HeaderCard: FC<HeaderCardProps> = ({
   handleFilterChange,
 }) => {
   const { classes } = useStyle();
-
+  const { t } = useTranslation('transactions', { keyPrefix: 'list' });
   return (
     <Card withBorder={true} radius={0} className={classes.card}>
       <Grid columns={15}>
         <Grid.Col span={3}>
           <TextInput
-            placeholder={'search'}
+            placeholder={t('search')}
             value={filterText}
             onChange={handleFilterChange}
           />
         </Grid.Col>
         <Grid.Col span={2}>
-          <div>{'Date achat'}</div>
+          <div>{t('buyingDate')}</div>
         </Grid.Col>
         <Grid.Col span={2}>
-          <div>{'Quantité'}</div>
+          <div>{t('tokenAmount')}</div>
         </Grid.Col>
         <Grid.Col span={2}>
-          <div>{'Montant'}</div>
+          <div>{t('usdAmount')}</div>
         </Grid.Col>
         <Grid.Col span={2}>
-          <div>{'Création offre'}</div>
+          <div>{t('offerDate')}</div>
         </Grid.Col>
         <Grid.Col span={2}>
-          <div>{'Prix'}</div>
+          <div>{t('offerPrice')}</div>
         </Grid.Col>
         <Grid.Col span={2}>
-          <div>{'Quantité restante'}</div>
+          <div>{t('amountLeft')}</div>
         </Grid.Col>
       </Grid>
     </Card>

@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import { TFunction, useTranslation } from 'react-i18next';
 
 import { Group, Paper, Text, useMantineTheme } from '@mantine/core';
 
@@ -9,16 +10,12 @@ import DownloadButton from './DownloadButton';
 
 interface TimeRangeProps {
   transactions: TransactionData[];
-  createOffertransaction?: TransactionData[];
   children?: React.ReactNode;
 }
 
-export const TimeRange: FC<TimeRangeProps> = ({
-  transactions,
-  children,
-  createOffertransaction,
-}) => {
+export const TimeRange: FC<TimeRangeProps> = ({ transactions, children }) => {
   const theme = useMantineTheme();
+  const { t } = useTranslation('transactions', { keyPrefix: 'loader' });
 
   return (
     <Group position={'left'}>
@@ -32,7 +29,7 @@ export const TimeRange: FC<TimeRangeProps> = ({
         }}
       >
         <Text fw={600} size={'sm'}>
-          {formatTimestampRange(transactions)}
+          {formatTimestampRange(transactions, t)}
         </Text>
       </Paper>
       <Paper
@@ -45,7 +42,7 @@ export const TimeRange: FC<TimeRangeProps> = ({
         }}
       >
         <Text fw={600} size={'sm'}>
-          {formatRange(transactions)}
+          {formatRange(transactions, t)}
         </Text>
       </Paper>
       {children}
@@ -54,7 +51,10 @@ export const TimeRange: FC<TimeRangeProps> = ({
   );
 };
 
-function formatTimestampRange(transactions: TransactionData[]): string {
+function formatTimestampRange(
+  transactions: TransactionData[],
+  t: TFunction
+): string {
   if (transactions.length === 0) {
     return '';
   }
@@ -64,14 +64,17 @@ function formatTimestampRange(transactions: TransactionData[]): string {
   if (!firstTimestamp || !lastTimestamp) return '';
 
   return (
-    'Du ' +
+    t('from') +
+    ' ' +
     formatTimestamp(firstTimestamp) +
-    ' au ' +
+    ' ' +
+    t('to') +
+    ' ' +
     formatTimestamp(lastTimestamp)
   );
 }
 
-function formatRange(transactions: TransactionData[]): string {
+function formatRange(transactions: TransactionData[], t: TFunction): string {
   if (transactions.length === 0) {
     return '';
   }
@@ -80,17 +83,18 @@ function formatRange(transactions: TransactionData[]): string {
 
   if (!firstTimestamp || !lastTimestamp) return '';
 
-  const duration = formatDuration(lastTimestamp - firstTimestamp);
+  const duration = formatDuration(lastTimestamp - firstTimestamp, t);
 
   return duration;
 }
 
-function formatDuration(durationInSeconds: number): string {
+function formatDuration(durationInSeconds: number, t: TFunction): string {
   const days = Math.floor(durationInSeconds / 86400); // 1 jour = 86400 secondes
   const hours = Math.floor((durationInSeconds % 86400) / 3600); // 1 heure = 3600 secondes
   const minutes = Math.floor((durationInSeconds % 3600) / 60); // 1 minute = 60 secondes
 
-  const daysText = days > 0 ? `${days} jour${days !== 1 ? 's ' : ' '}` : ' ';
+  const daysText =
+    days > 0 ? `${days} ${t('day')}${days !== 1 ? 's ' : ' '}` : ' ';
   const hoursText = hours > 0 ? `${hours}h` : '';
   const minutesText = minutes > 0 ? `${minutes}m` : '';
 
@@ -98,5 +102,5 @@ function formatDuration(durationInSeconds: number): string {
     .filter(Boolean)
     .join(' ');
 
-  return formattedDuration || "Moins d'une minute";
+  return formattedDuration || t('lessOneMinute');
 }

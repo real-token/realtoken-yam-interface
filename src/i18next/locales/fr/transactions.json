@@ -1,0 +1,38 @@
+{
+  
+  "loader": {
+    "day": "jour",
+    "heure": "heure",
+    "from": "Du",
+    "to": "au",
+    "loadMore": "Charger plus",
+    "download": "Télécharger les transactions",
+    "lessOneMinute": "Moins d'une minute"
+  },
+  "filter": {
+    "day": "jour",
+    "heure": "heure",
+    "priceEvolution": "Evolution des prix",
+    "startDate": "Date début",
+    "endDate": "Date fin",
+    "filterFrom": "Filtrer du",
+    "to": "au"
+  },
+  "stats":{
+    "day": "jour",
+    "heure": "heure",
+    "volume": "Volume",
+    "transactions": "Transactions",
+    "expense":"Dépense moyenne",
+    "price": "Prix"
+  },
+  "list": {
+    "search": "Rechercher",
+    "buyingDate": "Date achat",
+    "tokenAmount": "Quantité",
+    "usdAmount": "Montant",
+    "offerDate": "Création offre",
+    "offerPrice": "Prix",
+    "amountLeft": "Quantité restante"
+  }
+}

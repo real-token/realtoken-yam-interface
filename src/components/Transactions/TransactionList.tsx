@@ -18,13 +18,11 @@ const PAGE_SIZE = 10;
 
 interface TransactionListProps {
   transactions: TransactionData[];
-  transactionsOffer?: TransactionData[];
   children?: React.ReactNode;
 }
 
 const TransactionList: FC<TransactionListProps> = ({
   transactions,
-  transactionsOffer,
   children,
 }) => {
   const { propertiesToken } = usePropertiesToken();
@@ -160,12 +158,7 @@ const TransactionList: FC<TransactionListProps> = ({
         padding: 0,
       }}
     >
-      <TimeRange
-        transactions={transactions}
-        createOffertransaction={transactionsOffer}
-      >
-        {children}
-      </TimeRange>
+      <TimeRange transactions={transactions}>{children}</TimeRange>
       <Space h={'xs'}></Space>
       <Filters
         tokenFilterStates={tokenFilterStates}

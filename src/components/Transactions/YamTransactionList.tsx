@@ -1,4 +1,5 @@
-import React, { memo, useEffect, useMemo, useState } from 'react';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@mantine/core';
 
@@ -13,6 +14,8 @@ import TransactionList from './TransactionList';
 
 const YamTransactionList = ({}) => {
   console.log('YamTransactionList rendered');
+  const { t } = useTranslation('transactions', { keyPrefix: 'loader' });
+
   const chain = useActiveChain();
   const allOffers = useAppSelector(selectAllOffers);
   const { allowedTokens } = useAllowedTokens();
@@ -41,18 +44,13 @@ const YamTransactionList = ({}) => {
 
   return (
     <>
-      <TransactionList
-        transactions={transactions}
-        transactionsOffer={createOfferTransactions}
-      >
+      <TransactionList transactions={transactions}>
         <Button
           onClick={() => {
-            console.log('SIZE', size);
             setSize(size + 1);
-            console.log('SIZE +1', size);
           }}
         >
-          {'Charger plus'}
+          {t('loadMore')}
         </Button>
       </TransactionList>
     </>

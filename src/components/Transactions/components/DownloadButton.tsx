@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@mantine/core';
 
@@ -13,13 +14,15 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
   transactions,
   label,
 }) => {
+  const { t } = useTranslation('transactions', { keyPrefix: 'loader' });
+
   const handleDownload = () => {
     downloadTransactionsAsCsv(transactions);
   };
 
   return (
     <Button onClick={handleDownload} variant={'outline'}>
-      {label ? label : 'Télécharger les transactions'}
+      {label ? label : t('download')}
     </Button>
   );
 };

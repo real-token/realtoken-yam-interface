@@ -1,0 +1,37 @@
+{
+  "loader": {
+    "day": "day",
+    "heure": "hour",
+    "from": "From",
+    "to": "To",
+    "loadMore": "Load more",
+    "download": "Download transactions",
+    "lessOneMinute": "Less than a minute"
+  },
+  "filter": {
+    "day": "day",
+    "heure": "hour",
+    "priceEvolution": "Price Evolution",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "filterFrom": "Filter from",
+    "to": "To"
+  },
+  "stats": {
+    "day": "day",
+    "heure": "hour",
+    "volume": "Volume",
+    "transactions": "Transactions",
+    "expense": "Average Expense",
+    "price": "Price"
+  },
+  "list": {
+    "search": "Search",
+    "buyingDate": "Purchase Date",
+    "tokenAmount": "Quantity",
+    "usdAmount": "Amount",
+    "offerDate": "Offer Creation",
+    "offerPrice": "Price",
+    "amountLeft": "Remaining Quantity"
+  }
+}

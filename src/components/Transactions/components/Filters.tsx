@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Button, Group, NativeSelect, Space, Text } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
@@ -29,44 +30,52 @@ export const Filters: FC<FiltersProps> = ({
   handleEndDateFilter,
   handlePricePeriodFilter,
 }) => {
+  const { t } = useTranslation('transactions', { keyPrefix: 'filter' });
+
   const onPeriodChange = (period: string) => {
-    console.log(period);
+    //console.log(period);
     handlePricePeriodFilter(period);
   };
 
   return (
     <>
       <Group position={'left'}>
-        <Text color={'dimmed'}>{'Du'}</Text>
+        <Text fz={'sm'} color={'dimmed'}>
+          {t('filterFrom')}
+        </Text>
         <DateInput
           value={startDate}
           onChange={handleStartDateFilter}
           minDate={new Date(1693526400000)}
           maxDate={endDate ?? new Date()}
-          placeholder={'Date début'}
+          placeholder={t('startDate')}
           clearable={true}
         />
-        <Text color={'dimmed'}>{'à'}</Text>
+        <Text fz={'sm'} color={'dimmed'}>
+          {t('to')}
+        </Text>
         <DateInput
           value={endDate}
           onChange={handleEndDateFilter}
           minDate={startDate ?? new Date(1693526400000)}
           maxDate={new Date()}
-          placeholder={'Date fin'}
+          placeholder={t('endDate')}
           clearable={true}
         />
-        <Text fz={'sm'} color={'dimmed'}>
-          {'Evolution des prix'}
-        </Text>
-        <NativeSelect
-          value={pricePeriod}
-          onChange={(event) => onPeriodChange(event.currentTarget.value)}
-          data={[
-            { value: PRICE_PERIOD['24h'], label: '24h %' },
-            { value: PRICE_PERIOD['7d'], label: '7d %' },
-            { value: PRICE_PERIOD['30d'], label: '30d %' },
-          ]}
-        />
+        <Group>
+          <Text fz={'sm'} color={'dimmed'}>
+            {t('priceEvolution')}
+          </Text>
+          <NativeSelect
+            value={pricePeriod}
+            onChange={(event) => onPeriodChange(event.currentTarget.value)}
+            data={[
+              { value: PRICE_PERIOD['24h'], label: '24h %' },
+              { value: PRICE_PERIOD['7d'], label: '7d %' },
+              { value: PRICE_PERIOD['30d'], label: '30d %' },
+            ]}
+          />
+        </Group>
       </Group>
       <Space h={'xs'}></Space>
       <Group position={'left'}>

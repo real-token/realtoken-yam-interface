@@ -11,6 +11,7 @@ import { default as modals } from './modals.json';
 import { default as notifications } from './notifications.json';
 import { default as sell } from './sell.json';
 import { default as table } from './table.json';
+import { default as transactions } from './transactions.json';
 
 export { default as buy } from './buy.json';
 export { default as links } from './links.json';
@@ -27,6 +28,7 @@ export { default as sell } from './sell.json';
 export { default as exchange } from './exchange.json';
 
 const lng = {
+  transactions,
   exchange,
   sell,
   list,
