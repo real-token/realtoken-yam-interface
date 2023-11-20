@@ -11,34 +11,44 @@ import {
   calculateAverageExpense as calculateAverageExpensePerTransaction,
   calculateAveragePrice,
   calculateExpensesPer24Hours,
-  calculatePricesPer24Hours,
-  calculateTransactionsPer24Hours,
+  calculatePricesPerPeriod,
+  calculateTransactionsPerPeriod,
   sumSpendingValues,
 } from '../Utils';
 
 interface GlobalStatProps {
   transactions: TransactionData[];
+  daysPeriod: number;
 }
 
-export const GlobalStat: FC<GlobalStatProps> = ({ transactions }) => {
-  const { color, performance, volume } = get24HVolume(transactions);
+export const GlobalStat: FC<GlobalStatProps> = ({
+  transactions,
+  daysPeriod,
+}) => {
+  const { color, performance, volume, volumeBefore } = getPeriodVolume(
+    transactions,
+    daysPeriod
+  );
   const {
     color: transactionColor,
     performance: transactionPerformance,
     amount: transactionAmount,
-  } = get24HTransaction(transactions);
+    amountBefore,
+  } = getPeriodTransaction(transactions, daysPeriod);
 
   const {
     color: expenseColor,
     expense,
+    expenseBefore,
     performance: expensePerformance,
-  } = get24HExpensePerTransaction(transactions);
+  } = getPeriodExpensePerTransaction(transactions, daysPeriod);
 
   const {
     color: priceColor,
     price,
+    priceBefore,
     performance: pricePerformance,
-  } = get24HPrice(transactions);
+  } = getPeriodPrice(transactions, daysPeriod);
 
   const averagePrice = calculateAveragePrice(transactions);
 
@@ -61,17 +71,17 @@ export const GlobalStat: FC<GlobalStatProps> = ({ transactions }) => {
           <Text fw={700} mt={'xs'} color={'blue'} size={'xl'}>
             {formatTotalVolume(transactions)}
           </Text>
-          {volume && (
-            <>
-              <Text fw={500} mt={'sm'} size={'lg'}>
-                {formatUsd(volume) + ' (24h)'}
-              </Text>
-              <Text color={color} size={'xs'}>
-                {(performance && performance > 0 ? '+' : '') +
-                  formatPercent(performance)}
-              </Text>
-            </>
-          )}
+
+          <Text fw={500} mt={'sm'} size={'lg'}>
+            {formatUsd(volume ?? 0) + ' (' + daysPeriod + ' jours)'}
+          </Text>
+          <Text color={color} size={'xs'}>
+            {formatPeriodPerformance(
+              performance,
+              volume ?? 0,
+              volumeBefore ?? 0
+            )}
+          </Text>
         </Card>
         <Card withBorder={true} shadow={'sm'} radius={'md'}>
           <Card.Section withBorder={true} inheritPadding={true} py={'xs'}>
@@ -82,18 +92,18 @@ export const GlobalStat: FC<GlobalStatProps> = ({ transactions }) => {
           <Text fw={700} mt={'xs'} color={'blue'} size={'xl'}>
             {transactions.length}
           </Text>
-          {transactionAmount && (
-            <>
-              <Text fw={500} mt={'sm'} size={'lg'}>
-                {transactionAmount + ' (24h)'}
-              </Text>
-              <Text color={transactionColor} size={'xs'}>
-                {(transactionPerformance && transactionPerformance > 0
-                  ? '+'
-                  : '') + formatPercent(transactionPerformance)}
-              </Text>
-            </>
-          )}
+
+          <Text fw={500} mt={'sm'} size={'lg'}>
+            {transactionAmount + ' (' + daysPeriod + ' jours)'}
+          </Text>
+          <Text color={transactionColor} size={'xs'}>
+            {formatPeriodPerformance(
+              transactionPerformance,
+              transactionAmount ?? 0,
+              amountBefore ?? 0,
+              false
+            )}
+          </Text>
         </Card>
 
         <Card withBorder={true} shadow={'sm'} radius={'md'}>
@@ -105,17 +115,20 @@ export const GlobalStat: FC<GlobalStatProps> = ({ transactions }) => {
           <Text fw={700} mt={'xs'} color={'blue'} size={'xl'}>
             {formatAverageSpendingPertransaction(transactions)}
           </Text>
-          {expense && (
-            <>
-              <Text fw={500} mt={'sm'} size={'lg'}>
-                {formatUsd(expense) + ' (24h)'}
-              </Text>
-              <Text color={expenseColor} size={'xs'}>
-                {(expensePerformance && expensePerformance > 0 ? '+' : '') +
-                  formatPercent(expensePerformance)}
-              </Text>
-            </>
-          )}
+
+          <>
+            <Text fw={500} mt={'sm'} size={'lg'}>
+              {formatUsd(expense ?? 0) + ' (' + daysPeriod + ' jours)'}
+            </Text>
+
+            <Text color={expenseColor} size={'xs'}>
+              {formatPeriodPerformance(
+                expensePerformance,
+                expense ?? 0,
+                expenseBefore ?? 0
+              )}
+            </Text>
+          </>
         </Card>
         <Card withBorder={true} shadow={'sm'} radius={'md'}>
           <Card.Section withBorder={true} inheritPadding={true} py={'xs'}>
@@ -126,22 +139,40 @@ export const GlobalStat: FC<GlobalStatProps> = ({ transactions }) => {
           <Text fw={700} mt={'xs'} color={'blue'} size={'xl'}>
             {formatUsd(averagePrice ?? 0)}
           </Text>
-          {price && (
-            <>
-              <Text fw={500} mt={'sm'} size={'lg'}>
-                {formatUsd(price) + ' (24h)'}
-              </Text>
-              <Text color={priceColor} size={'xs'}>
-                {(pricePerformance && pricePerformance > 0 ? '+' : '') +
-                  formatPercent(pricePerformance)}
-              </Text>
-            </>
-          )}
+
+          <Text fw={500} mt={'sm'} size={'lg'}>
+            {formatUsd(price ?? 0) + ' (' + daysPeriod + ' jours)'}
+          </Text>
+          <Text color={priceColor} size={'xs'}>
+            {formatPeriodPerformance(
+              pricePerformance,
+              price ?? 0,
+              priceBefore ?? 0
+            )}
+          </Text>
         </Card>
       </SimpleGrid>
     </Container>
   );
 };
+
+function formatPeriodPerformance(
+  performance: number | undefined,
+  value: number,
+  valueBefore: number,
+  isUsd = true
+): React.ReactNode {
+  const gain = new BigNumber(value).minus(valueBefore).toNumber();
+  const formatedGain = isUsd ? formatUsd(gain) : gain;
+  const symbol = performance && performance > 0 ? '+' : '';
+  const formatedPerformance =
+    symbol +
+    formatedGain +
+    ' (' +
+    formatPercent(performance ? performance / 100 : 0) +
+    ')';
+  return performance ? formatedPerformance : '-';
+}
 
 function formatAverageSpendingPertransaction(
   transactions: TransactionData[]
@@ -161,8 +192,12 @@ function formatTotalVolume(transactions: TransactionData[]): string {
   return formatUsd(sumSpendingValues(transactions));
 }
 
-function get24HVolume(transactions: TransactionData[]): {
+function getPeriodVolume(
+  transactions: TransactionData[],
+  days: number
+): {
   volume: number | undefined;
+  volumeBefore: number | undefined;
   color: string | undefined;
   performance: number | undefined;
 } {
@@ -170,7 +205,11 @@ function get24HVolume(transactions: TransactionData[]): {
 
   let performance: number | undefined = undefined;
   const t0: number = new Date().getTime() / 1000;
-  const expensesPer24Hours = calculateExpensesPer24Hours(transactions, t0);
+  const expensesPer24Hours = calculateExpensesPer24Hours(
+    transactions,
+    t0,
+    days
+  );
 
   const last24H = expensesPer24Hours.has(-1) ? expensesPer24Hours.get(-1) : 0;
   const secondLast24H = expensesPer24Hours.has(-2)
@@ -195,12 +234,16 @@ function get24HVolume(transactions: TransactionData[]): {
 
   return {
     volume: last24H,
+    volumeBefore: secondLast24H,
     color: color,
     performance: performance,
   };
 }
 
-function get24HTransaction(transactions: TransactionData[]): {
+function getPeriodTransaction(
+  transactions: TransactionData[],
+  days: number
+): {
   amount: number | undefined;
   amountBefore: number | undefined;
   color: string | undefined;
@@ -210,9 +253,10 @@ function get24HTransaction(transactions: TransactionData[]): {
 
   let performance: number | undefined = undefined;
   const t0: number = new Date().getTime() / 1000;
-  const transactionsPer24Hours = calculateTransactionsPer24Hours(
+  const transactionsPer24Hours = calculateTransactionsPerPeriod(
     transactions,
-    t0
+    t0,
+    days
   );
 
   const last24H = transactionsPer24Hours.has(-1)
@@ -248,7 +292,10 @@ function get24HTransaction(transactions: TransactionData[]): {
   };
 }
 
-function get24HExpensePerTransaction(transactions: TransactionData[]): {
+function getPeriodExpensePerTransaction(
+  transactions: TransactionData[],
+  days: number
+): {
   expense: number | undefined;
   expenseBefore: number | undefined;
   color: string | undefined;
@@ -258,11 +305,16 @@ function get24HExpensePerTransaction(transactions: TransactionData[]): {
 
   let performance: number | undefined = undefined;
   const t0: number = new Date().getTime() / 1000;
-  const transactionsPer24Hours = calculateTransactionsPer24Hours(
+  const transactionsPer24Hours = calculateTransactionsPerPeriod(
     transactions,
-    t0
+    t0,
+    days
   );
-  const expensesPer24Hours = calculateExpensesPer24Hours(transactions, t0);
+  const expensesPer24Hours = calculateExpensesPer24Hours(
+    transactions,
+    t0,
+    days
+  );
 
   const last24HTransaction = transactionsPer24Hours.has(-1)
     ? transactionsPer24Hours.get(-1)
@@ -329,7 +381,10 @@ function get24HExpensePerTransaction(transactions: TransactionData[]): {
   };
 }
 
-function get24HPrice(transactions: TransactionData[]): {
+function getPeriodPrice(
+  transactions: TransactionData[],
+  days: number
+): {
   price: number | undefined;
   priceBefore: number | undefined;
   color: string | undefined;
@@ -339,7 +394,7 @@ function get24HPrice(transactions: TransactionData[]): {
 
   let performance: number | undefined = undefined;
   const t0: number = new Date().getTime() / 1000;
-  const pricePer24Hours = calculatePricesPer24Hours(transactions, t0);
+  const pricePer24Hours = calculatePricesPerPeriod(transactions, t0, days);
 
   const last24H = pricePer24Hours.has(-1) ? pricePer24Hours.get(-1) : 0;
   const secondLast24H = pricePer24Hours.has(-2)

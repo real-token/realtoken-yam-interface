@@ -1,9 +1,8 @@
-import React, { memo, useEffect } from 'react';
+import React, { memo, useEffect, useMemo, useState } from 'react';
 
 import { Button } from '@mantine/core';
 
 import { ContractsID } from 'src/constants/contracts';
-import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
 import { useAppSelector } from 'src/hooks/react-hooks';
 import { useActiveChain } from 'src/hooks/useActiveChain';
 import { useAllowedTokens } from 'src/hooks/useAllowedTokens';
@@ -13,21 +12,10 @@ import { selectAllOffers } from 'src/store/features/interface/interfaceSelector'
 import TransactionList from './TransactionList';
 
 const YamTransactionList = ({}) => {
+  console.log('YamTransactionList rendered');
   const chain = useActiveChain();
-
   const allOffers = useAppSelector(selectAllOffers);
-  //const { offers } = useTypedOffers(allOffers);
   const { allowedTokens } = useAllowedTokens();
-
-  console.log(
-    'LOAD TransactionList allOffers',
-    allOffers.map((a) => a.offerId)
-  );
-
-  // console.log(
-  //   'LOAD TransactionList offers',
-  //   offers.map((o) => o.offerId)
-  // );
 
   const {
     buyTransactions: transactions,
@@ -38,7 +26,7 @@ const YamTransactionList = ({}) => {
     size,
   } = useTransaction(
     chain?.contracts[ContractsID.realTokenYamUpgradeable].address ?? '',
-    3,
+    1,
     allOffers,
     allowedTokens
   );
@@ -53,13 +41,24 @@ const YamTransactionList = ({}) => {
 
   return (
     <>
+      <Button
+        onClick={() => {
+          console.log('SIZE', size);
+          setSize(size + 1);
+          console.log('SIZE +1', size);
+        }}
+      >
+        {'Load more'}
+      </Button>
       <TransactionList
         transactions={transactions}
         transactionsOffer={createOfferTransactions}
       >
         <Button
           onClick={() => {
+            console.log('SIZE', size);
             setSize(size + 1);
+            console.log('SIZE +1', size);
           }}
         >
           {'Load more'}
@@ -69,4 +68,4 @@ const YamTransactionList = ({}) => {
   );
 };
 
-export default memo(YamTransactionList);
+export default YamTransactionList;

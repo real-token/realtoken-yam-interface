@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import BigNumber from 'bignumber.js';
 import useSWRInfinite, { SWRInfiniteResponse } from 'swr/infinite';
@@ -7,11 +7,7 @@ import { AllowedToken } from 'src/types/allowedTokens';
 import { Offer } from 'src/types/offer/Offer';
 
 import { TransactionData } from '../components/Transactions/Types';
-import {
-  associateBuyWithCreateOfferTransaction,
-  associateTransactionWithOffer,
-  guessCreateOfferTransactionId,
-} from '../components/Transactions/Utils';
+import { associateTransactionWithOffer } from '../components/Transactions/Utils';
 
 interface Transaction {
   blockNumber: number;
@@ -66,8 +62,11 @@ function useTransaction(
 
   // Définissez une fonction pour obtenir la clé de pagination
   const getKey = (pageIndex: number, previousPageData: Result | null) => {
+    console.log('LOADING ... ', pageIndex, previousPageData);
+
     // Si pageIndex est 0, c'est la première page, pas besoin de page précédente
     if (pageIndex === 0) {
+      console.log('LOAD ', 0);
       const apiUrl = `https://api.gnosisscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=${1}&offset=${PAGE_SIZE}&sort=desc&apikey=${'6N3JDM1VBU8CUR2FFXDC19EZJ45RRB12HM'}`;
       return apiUrl; //`/api/transactions?address=${address}&page=1&pageSize=${PAGE_SIZE}`;
     }
@@ -76,6 +75,7 @@ function useTransaction(
     const nextPage = pageIndex + 1;
 
     if (previousPageData && previousPageData.result.length === PAGE_SIZE) {
+      console.log('LOAD ', nextPage);
       const apiUrl = `https://api.gnosisscan.io/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=${nextPage}&offset=${PAGE_SIZE}&sort=desc&apikey=${'6N3JDM1VBU8CUR2FFXDC19EZJ45RRB12HM'}`;
       return apiUrl; // `/api/transactions?address=${address}&page=${nextPage}&pageSize=${PAGE_SIZE}`;
     }
@@ -87,18 +87,20 @@ function useTransaction(
   // Utilisez useSWRInfinite pour la pagination
   const { data, error, size, setSize, isValidating, mutate } =
     useSWRInfinite<Result>(getKey, fetcher, {
-      revalidateOnMount: true,
+      revalidateOnMount: false,
       refreshInterval: 10 * 60 * 1000, // Cache de X minutes (X minutes * 60 secondes * 1000 millisecondes)
     }) as SWRInfiniteResponse<Result>;
 
   // Effect pour charger les trois premières pages de manière synchrone
   useEffect(() => {
     async function loadInitialPages() {
-      //console.log('SIZE before', size);
       setSize(initPage);
     }
 
+    //if (size < initPage + 2) {
+    console.log('!!!!!!!!!!!!!! loadInitialPages', size);
     loadInitialPages();
+    //}
   }, [mutate]);
 
   const allTransactions: Transaction[] = useMemo(
@@ -112,14 +114,18 @@ function useTransaction(
     [data]
   );
 
-  const buyTransactions = allTransactions.filter(
-    (transaction) =>
-      transaction.methodId &&
-      (transaction.methodId.toLowerCase() === BUY_METHOD.toLowerCase() ||
-        transaction.methodId.toLowerCase() ==
-          BUY_OFFER_BATCH_METHOD.toLowerCase() ||
-        transaction.methodId.toLowerCase() ==
-          BUY_OFFER_WITH_PERMIT_METHOD.toLowerCase())
+  const buyTransactions = useMemo(
+    () =>
+      allTransactions.filter(
+        (transaction) =>
+          transaction.methodId &&
+          (transaction.methodId.toLowerCase() === BUY_METHOD.toLowerCase() ||
+            transaction.methodId.toLowerCase() ==
+              BUY_OFFER_BATCH_METHOD.toLowerCase() ||
+            transaction.methodId.toLowerCase() ==
+              BUY_OFFER_WITH_PERMIT_METHOD.toLowerCase())
+      ),
+    [allTransactions]
   );
 
   const createOfferTransactions = useMemo(
@@ -204,7 +210,7 @@ function useTransaction(
     );
 
   if (formattedBuyTransactions && formattedCreateOfferTransactions) {
-    agregateTransactions(
+    aggregateTransactions(
       formattedBuyTransactions,
       formattedCreateOfferTransactions,
       offers,
@@ -225,7 +231,7 @@ function useTransaction(
 
 export default useTransaction;
 
-function agregateTransactions(
+function aggregateTransactions(
   formattedBuyTransactions: TransactionData[],
   formattedCreateOfferTransactions: TransactionData[],
   offers: Offer[],
@@ -237,21 +243,6 @@ function agregateTransactions(
     offers,
     allowedTokens
   );
-
-  // guessCreateOfferTransactionId(
-  //   formattedBuyTransactions,
-  //   formattedCreateOfferTransactions
-  // );
-
-  // associateBuyWithCreateOfferTransaction(
-  //   formattedBuyTransactions,
-  //   formattedCreateOfferTransactions
-  // );
-
-  // guessCreateOfferTransactionId(
-  //   formattedBuyTransactions,
-  //   formattedCreateOfferTransactions
-  // );
 }
 
 /**

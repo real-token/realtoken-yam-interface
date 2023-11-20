@@ -50,12 +50,6 @@ export const TimeRange: FC<TimeRangeProps> = ({
       </Paper>
       {children}
       <DownloadButton transactions={transactions}></DownloadButton>
-      {createOffertransaction && (
-        <DownloadButton
-          label={'Telecharger les offres'}
-          transactions={createOffertransaction}
-        ></DownloadButton>
-      )}
     </Group>
   );
 };

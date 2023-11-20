@@ -1,12 +1,13 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
 import { VariableSizeList as List } from 'react-window';
 
-import { Button, Container, Group, Loader, Space, Text } from '@mantine/core';
-import { DateInput } from '@mantine/dates';
+import { Container, Group, Loader, Space } from '@mantine/core';
 
 import { TransactionData } from 'src/components/Transactions/Types';
 import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
 
+import { PRICE_PERIOD } from './Types';
+import { Filters } from './components/Filters';
 import { GlobalStat } from './components/GlobalStat';
 import HeaderCard from './components/HeaderCard';
 import { TimeRange } from './components/TimeRange';
@@ -35,10 +36,10 @@ const TransactionList: FC<TransactionListProps> = ({
   const [tokenFilterStates, setTokenFilterStates] = useState<
     Map<string, boolean>
   >(new Map(propertiesToken.map((token) => [token.contractAddress, false])));
-  const [unknownTokenFilterStates, setUnknownTokenFilterStates] =
-    useState(false);
+
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
+  const [pricePeriod, setPricePeriod] = useState<string>(PRICE_PERIOD['7d']);
   console.log('LOAD TransactionList', transactions.length);
 
   const handleReachEndList = (entries: IntersectionObserverEntry[]) => {
@@ -85,7 +86,7 @@ const TransactionList: FC<TransactionListProps> = ({
         transactions,
         searchText,
         tokenFilterStates,
-        unknownTokenFilterStates,
+
         startDate?.getTime(),
         endDate?.getTime()
       )
@@ -102,7 +103,7 @@ const TransactionList: FC<TransactionListProps> = ({
         transactions,
         searchText,
         tokenFilterStates,
-        unknownTokenFilterStates,
+
         startDate?.getTime(),
         endDate?.getTime()
       ).length -
@@ -111,7 +112,7 @@ const TransactionList: FC<TransactionListProps> = ({
       transactions,
       searchText,
       tokenFilterStates,
-      unknownTokenFilterStates,
+
       startDate?.getTime(),
       endDate?.getTime()
     )[index];
@@ -137,13 +138,6 @@ const TransactionList: FC<TransactionListProps> = ({
       const newFilterStates = new Map(prev);
       newFilterStates.set(contractAddress, !prev.get(contractAddress));
       return newFilterStates;
-    });
-  };
-
-  const handleUnknownTokenFilter = () => {
-    setTransactionsDisplayed(PAGE_SIZE);
-    setUnknownTokenFilterStates((prev) => {
-      return !prev;
     });
   };
 
@@ -173,50 +167,29 @@ const TransactionList: FC<TransactionListProps> = ({
         {children}
       </TimeRange>
       <Space h={'xs'}></Space>
-      <Group position={'left'}>
-        {propertiesToken.map((token) => (
-          <Button
-            key={token.contractAddress}
-            onClick={() => handleTokenFilter(token.contractAddress)}
-            color={
-              tokenFilterStates.get(token.contractAddress) ? 'blue' : 'gray'
-            }
-          >
-            {token.shortName}
-          </Button>
-        ))}
-      </Group>
-      <Space h={'xs'}></Space>
-      <Group position={'left'}>
-        <Text>{'Du'}</Text>
-        <DateInput
-          value={startDate}
-          onChange={handleStartDateFilter}
-          minDate={new Date(1693526400000)}
-          maxDate={endDate ?? new Date()}
-          placeholder='Date début'
-          clearable={true}
-        />
-        <Text>{'à'}</Text>
-        <DateInput
-          value={endDate}
-          onChange={handleEndDateFilter}
-          minDate={startDate ?? new Date(1693526400000)}
-          maxDate={new Date()}
-          placeholder='Date fin'
-          clearable={true}
-        />
-      </Group>
+      <Filters
+        tokenFilterStates={tokenFilterStates}
+        startDate={startDate}
+        endDate={endDate}
+        pricePeriod={'7'} //{pricePeriod}
+        propertiesToken={propertiesToken}
+        handleTokenFilter={handleTokenFilter}
+        handlePricePeriodFilter={setPricePeriod}
+        handleStartDateFilter={handleStartDateFilter}
+        handleEndDateFilter={handleEndDateFilter}
+      ></Filters>
+
       <Space h={'xs'}></Space>
       <GlobalStat
         transactions={getFilterElements(
           transactions,
           searchText,
           tokenFilterStates,
-          unknownTokenFilterStates,
+
           startDate?.getTime(),
           endDate?.getTime()
         )}
+        daysPeriod={parseInt(pricePeriod)}
       ></GlobalStat>
       <Space h={10}></Space>
       <HeaderCard
@@ -229,7 +202,7 @@ const TransactionList: FC<TransactionListProps> = ({
             transactions,
             searchText,
             tokenFilterStates,
-            unknownTokenFilterStates,
+
             startDate?.getTime(),
             endDate?.getTime()
           )
@@ -238,7 +211,7 @@ const TransactionList: FC<TransactionListProps> = ({
                   transactions,
                   searchText,
                   tokenFilterStates,
-                  unknownTokenFilterStates,
+
                   startDate?.getTime(),
                   endDate?.getTime()
                 ).length,
@@ -251,7 +224,7 @@ const TransactionList: FC<TransactionListProps> = ({
             transactions,
             searchText,
             tokenFilterStates,
-            unknownTokenFilterStates,
+
             startDate?.getTime(),
             endDate?.getTime()
           )
@@ -259,7 +232,7 @@ const TransactionList: FC<TransactionListProps> = ({
                 transactions,
                 searchText,
                 tokenFilterStates,
-                unknownTokenFilterStates,
+
                 startDate?.getTime(),
                 endDate?.getTime()
               ).length
@@ -276,7 +249,6 @@ const TransactionList: FC<TransactionListProps> = ({
           transactions,
           searchText,
           tokenFilterStates,
-          unknownTokenFilterStates,
           startDate?.getTime(),
           endDate?.getTime()
         ).length && (
@@ -294,7 +266,6 @@ const TransactionList: FC<TransactionListProps> = ({
     transactions: TransactionData[],
     filterText: string,
     filterToken: Map<string, boolean>,
-    filterUnknownToken: boolean,
     filterStartDate: number | undefined,
     filterEndDate: number | undefined
   ): TransactionData[] {
@@ -303,7 +274,6 @@ const TransactionList: FC<TransactionListProps> = ({
         filterTransaction(
           filterText,
           filterToken,
-          filterUnknownToken,
           filterStartDate,
           filterEndDate
         )
@@ -317,7 +287,7 @@ export default TransactionList;
 function filterTransaction(
   filterText: string,
   filterToken: Map<string, boolean>,
-  filterUnknownToken: boolean,
+
   filterStartDate: number | undefined,
   filterEndDate: number | undefined
 ): (
@@ -355,7 +325,7 @@ function getFilterElements(
   transactions: TransactionData[],
   filterText: string,
   filterToken: Map<string, boolean>,
-  filterUnknownToken: boolean,
+
   filterStartDate: number | undefined,
   filterEndDate: number | undefined
 ): TransactionData[] {
@@ -363,7 +333,7 @@ function getFilterElements(
     filterTransaction(
       filterText,
       filterToken,
-      filterUnknownToken,
+
       filterStartDate,
       filterEndDate
     )

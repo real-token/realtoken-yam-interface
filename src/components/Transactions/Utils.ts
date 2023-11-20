@@ -13,16 +13,6 @@ export const associateTransactionWithOffer = (
   transactionsWithOffers: TransactionData[];
   createTransactionsWithOffers: TransactionData[];
 } => {
-  // for (const t of transactions) {
-  //   if (t.offerId === '43')
-  //     console.log('Transaction43', JSON.stringify(t, null, 4));
-  // }
-  for (const o of offers) {
-    console.log('Transaction43 offer id', o.offerId);
-    //if (parseInt(o.offerId) === 43 || o.offerId.includes('43'))
-    //console.log('Transaction43 offer', JSON.stringify(o, null, 4));
-  }
-
   // Boucle à travers chaque transaction
   const transactionsWithOffers = transactions.map((transaction) => {
     // Trouve l'offre correspondante en utilisant offerId
@@ -271,21 +261,16 @@ export function formatTimestampHour(timestamp: number): string {
 }
 export function sumSpendingValues(transactions: TransactionData[]): number {
   return transactions.reduce((total, transaction) => {
-    // console.log(
-    //   'sumSpendingValues',
-    //   new BigNumber(transaction.price).times(transaction.amount).toNumber()
-    // );
-    // if (transaction.blockNumber < 30280820) {
-    //   console.log(
-    //     'SUM T',
-    //     transaction.blockNumber,
-    //     transaction.price,
-    //     transaction.amount,
-    //     total
-    //   );
-    // }
     return new BigNumber(total)
       .plus(new BigNumber(transaction.price).times(transaction.amount))
+      .toNumber();
+  }, 0);
+}
+
+export function sumAmountValues(transactions: TransactionData[]): number {
+  return transactions.reduce((total, transaction) => {
+    return new BigNumber(total)
+      .plus(new BigNumber(transaction.amount))
       .toNumber();
   }, 0);
 }
@@ -329,15 +314,15 @@ export function calculateAveragePrice(
     return undefined;
   }
 
+  const totalAmount = sumAmountValues(transactions);
+
   // Calcul de la somme des dépenses
-  const totalPrice = transactions.reduce((acc, transaction) => {
-    return acc.plus(transaction.price);
-  }, new BigNumber(0));
+  const totalPrice = sumSpendingValues(transactions);
 
   // Calcul de la dépense moyenne
-  const averageExpense = totalPrice.dividedBy(transactions.length);
+  const averagePrice = new BigNumber(totalPrice).dividedBy(totalAmount);
 
-  return averageExpense.toNumber();
+  return averagePrice.toNumber();
 }
 
 export function calculateExpenseStandardDeviation(
@@ -418,7 +403,8 @@ export function calculateAverageExpensesPerDay(
 
 export function calculateExpensesPer24Hours(
   transactions: TransactionData[],
-  t0: number
+  t0: number,
+  days = 7
 ): Map<number, number> {
   const expensesPer24Hours = new Map<number, number>();
   const transactionsPer24Hours = new Map<number, TransactionData[]>();
@@ -426,7 +412,7 @@ export function calculateExpensesPer24Hours(
   // Group transactions by 24-hour periods
   transactions.forEach((transaction) => {
     const hoursSinceT0 = Math.floor((transaction.timeStamp - t0) / 3600); // Convert to hours since T0
-    const periodIndex = Math.floor(hoursSinceT0 / 24); // Calculate the 24-hour period index
+    const periodIndex = Math.floor(hoursSinceT0 / (24 * days)); // Calculate the 24-hour period index
 
     if (!transactionsPer24Hours.has(periodIndex)) {
       transactionsPer24Hours.set(periodIndex, []);
@@ -447,7 +433,7 @@ export function calculateExpensesPer24Hours(
     const hoursSinceT0 = Math.floor(
       (dailyTransactions[0].timeStamp - t0) / 3600
     ); // Convert to hours since T0
-    const periodIndex = Math.floor(hoursSinceT0 / 24); // Calculate the 24-hour period index
+    const periodIndex = Math.floor(hoursSinceT0 / (24 * days)); // Calculate the 24-hour period index
 
     // Store the sum of expenses for each 24-hour period
     expensesPer24Hours.set(periodIndex, dailyExpense.toNumber());
@@ -456,9 +442,10 @@ export function calculateExpensesPer24Hours(
   return expensesPer24Hours;
 }
 
-export function calculateTransactionsPer24Hours(
+export function calculateTransactionsPerPeriod(
   transactions: TransactionData[],
-  t0: number
+  t0: number,
+  days = 7
 ): Map<number, number> {
   const numberOftransactionsPer24Hours = new Map<number, number>();
   const transactionsPer24Hours = new Map<number, TransactionData[]>();
@@ -466,7 +453,7 @@ export function calculateTransactionsPer24Hours(
   // Group transactions by 24-hour periods
   transactions.forEach((transaction) => {
     const hoursSinceT0 = Math.floor((transaction.timeStamp - t0) / 3600); // Convert to hours since T0
-    const periodIndex = Math.floor(hoursSinceT0 / 24); // Calculate the 24-hour period index
+    const periodIndex = Math.floor(hoursSinceT0 / (24 * days)); // Calculate the 24-hour period index
 
     if (!transactionsPer24Hours.has(periodIndex)) {
       transactionsPer24Hours.set(periodIndex, []);
@@ -484,7 +471,7 @@ export function calculateTransactionsPer24Hours(
     const hoursSinceT0 = Math.floor(
       (dailyTransactions[0].timeStamp - t0) / 3600
     ); // Convert to hours since T0
-    const periodIndex = Math.floor(hoursSinceT0 / 24); // Calculate the 24-hour period index
+    const periodIndex = Math.floor(hoursSinceT0 / (24 * days)); // Calculate the 24-hour period index
 
     // Store the sum of expenses for each 24-hour period
     numberOftransactionsPer24Hours.set(
@@ -496,9 +483,10 @@ export function calculateTransactionsPer24Hours(
   return numberOftransactionsPer24Hours;
 }
 
-export function calculatePricesPer24Hours(
+export function calculatePricesPerPeriod(
   transactions: TransactionData[],
-  t0: number
+  t0: number,
+  days = 7
 ): Map<number, number> {
   const pricesPer24Hours = new Map<number, number>();
   const transactionPricesPer24Hours = new Map<number, TransactionData[]>();
@@ -506,7 +494,7 @@ export function calculatePricesPer24Hours(
   // Group transactions by 24-hour periods
   transactions.forEach((transaction) => {
     const hoursSinceT0 = Math.floor((transaction.timeStamp - t0) / 3600); // Convert to hours since T0
-    const periodIndex = Math.floor(hoursSinceT0 / 24); // Calculate the 24-hour period index
+    const periodIndex = Math.floor(hoursSinceT0 / (24 * days)); // Calculate the 24-hour period index
 
     if (!transactionPricesPer24Hours.has(periodIndex)) {
       transactionPricesPer24Hours.set(periodIndex, []);
@@ -516,21 +504,15 @@ export function calculatePricesPer24Hours(
 
   // Calculate the sum of expenses per 24-hour period
   transactionPricesPer24Hours.forEach((dailyTransactions) => {
-    const dailyPrice = dailyTransactions
-      .reduce(
-        (totalExpense, transaction) =>
-          totalExpense.plus(new BigNumber(transaction.price)),
-        new BigNumber(0)
-      )
-      .dividedBy(dailyTransactions.length);
+    const dailyPrice = calculateAveragePrice(dailyTransactions);
 
     const hoursSinceT0 = Math.floor(
       (dailyTransactions[0].timeStamp - t0) / 3600
     ); // Convert to hours since T0
-    const periodIndex = Math.floor(hoursSinceT0 / 24); // Calculate the 24-hour period index
+    const periodIndex = Math.floor(hoursSinceT0 / (24 * days)); // Calculate the 24-hour period index
 
     // Store the sum of expenses for each 24-hour period
-    pricesPer24Hours.set(periodIndex, dailyPrice.toNumber());
+    pricesPer24Hours.set(periodIndex, dailyPrice ?? 0);
   });
 
   return pricesPer24Hours;

@@ -214,11 +214,11 @@ export const fetchOffersTheGraph = (
 
       const parsedOffers = await Promise.all(promises);
 
-      console.log(
-        'Query dataYAM',
-        parsedOffers.length,
-        parsedOffers.map((o) => o.offerId)
-      );
+      // console.log(
+      //   'Query dataYAM',
+      //   parsedOffers.length,
+      //   parsedOffers.map((o) => o.offerId)
+      // );
 
       offersData.push(...parsedOffers);
 

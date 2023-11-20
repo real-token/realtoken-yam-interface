@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Flex, Tabs } from '@mantine/core';
@@ -10,7 +11,7 @@ import { ConnectedProvider } from 'src/providers/ConnectProvider';
 
 export const Admin = () => {
   const { t } = useTranslation('menu', { keyPrefix: 'subMenuAdmin' });
-
+  const transactionPanel = useMemo(() => <YamTransactionList />, []);
   return (
     <ConnectedProvider>
       <Flex direction={'column'} py={'xl'} style={{ flexGrow: 1 }}>
@@ -42,7 +43,8 @@ export const Admin = () => {
             <AdminActions />
           </Tabs.Panel>
           <Tabs.Panel value={'adminTransactionActions'} pt={'xs'}>
-            <YamTransactionList />
+            {transactionPanel}
+            {/* <YamTransactionList /> */}
           </Tabs.Panel>
         </Tabs>
       </Flex>

@@ -28,3 +28,9 @@ export interface TokenData {
   symbol?: string;
   Logo?: React.FC<any>;
 }
+
+export enum PRICE_PERIOD {
+  '24h' = '1',
+  '7d' = '7',
+  '30d' = '30',
+}
