@@ -65,7 +65,15 @@ const TransactionList: FC<TransactionListProps> = ({
 
   useEffect(() => {
     setFilteredTransaction(getFilteredTransactions());
-  }, [transactions.length]);
+  }, [
+    transactions.length,
+    searchText,
+    tokenFilterStates,
+    startDate,
+    endDate,
+    selectedHeader,
+    sortDirection,
+  ]);
 
   useEffect(() => {
     const options = {
