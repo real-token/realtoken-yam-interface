@@ -79,41 +79,15 @@ const TransactionList: FC<TransactionListProps> = ({
   }, [transactionsDisplayed, transactions.length]);
 
   const Row = ({ index, style }: { index: number; style: any }) => {
-    if (
-      !getFirstElements(
-        transactions,
-        searchText,
-        tokenFilterStates,
-
-        startDate?.getTime(),
-        endDate?.getTime()
-      )
-    ) {
+    if (!getTransactionsToDisplay()) {
       return (
         <div style={{ ...style, textAlign: 'center', padding: 10 }}>
           {'Aucune donnée'}
         </div>
       );
     }
-    const isLastRow =
-      index ===
-      getFirstElements(
-        transactions,
-        searchText,
-        tokenFilterStates,
-
-        startDate?.getTime(),
-        endDate?.getTime()
-      ).length -
-        1;
-    const transaction = getFirstElements(
-      transactions,
-      searchText,
-      tokenFilterStates,
-
-      startDate?.getTime(),
-      endDate?.getTime()
-    )[index];
+    const isLastRow = index === getTransactionsToDisplay().length - 1;
+    const transaction = getTransactionsToDisplay()[index];
 
     return (
       <TransactionRow
@@ -174,14 +148,7 @@ const TransactionList: FC<TransactionListProps> = ({
 
       <Space h={'xs'}></Space>
       <GlobalStat
-        transactions={getFilterElements(
-          transactions,
-          searchText,
-          tokenFilterStates,
-
-          startDate?.getTime(),
-          endDate?.getTime()
-        )}
+        transactions={getFilteredTransactions()}
         daysPeriod={parseInt(pricePeriod)}
       ></GlobalStat>
       <Space h={10}></Space>
@@ -191,45 +158,12 @@ const TransactionList: FC<TransactionListProps> = ({
       ></HeaderCard>
       <List
         height={
-          getFirstElements(
-            transactions,
-            searchText,
-            tokenFilterStates,
-
-            startDate?.getTime(),
-            endDate?.getTime()
-          )
-            ? Math.max(
-                getFirstElements(
-                  transactions,
-                  searchText,
-                  tokenFilterStates,
-
-                  startDate?.getTime(),
-                  endDate?.getTime()
-                ).length,
-                1
-              ) * ROW_HEIGHT
+          getTransactionsToDisplay()
+            ? Math.max(getTransactionsToDisplay().length, 1) * ROW_HEIGHT
             : ROW_HEIGHT
         }
         itemCount={
-          getFirstElements(
-            transactions,
-            searchText,
-            tokenFilterStates,
-
-            startDate?.getTime(),
-            endDate?.getTime()
-          )
-            ? getFirstElements(
-                transactions,
-                searchText,
-                tokenFilterStates,
-
-                startDate?.getTime(),
-                endDate?.getTime()
-              ).length
-            : 1
+          getTransactionsToDisplay() ? getTransactionsToDisplay().length : 1
         }
         itemSize={() => ROW_HEIGHT}
         width={'100%'}
@@ -237,14 +171,7 @@ const TransactionList: FC<TransactionListProps> = ({
         {Row}
       </List>
       <div ref={endListRef}></div>
-      {transactionsDisplayed <
-        getFilterElements(
-          transactions,
-          searchText,
-          tokenFilterStates,
-          startDate?.getTime(),
-          endDate?.getTime()
-        ).length && (
+      {transactionsDisplayed < getFilteredTransactions().length && (
         <div>
           <Space h={'xl'}></Space>
           <Group position={'center'}>
@@ -255,27 +182,63 @@ const TransactionList: FC<TransactionListProps> = ({
     </Container>
   );
 
-  function getFirstElements(
-    transactions: TransactionData[],
-    filterText: string,
-    filterToken: Map<string, boolean>,
-    filterStartDate: number | undefined,
-    filterEndDate: number | undefined
-  ): TransactionData[] {
-    return transactions
-      .filter(
-        filterTransaction(
-          filterText,
-          filterToken,
-          filterStartDate,
-          filterEndDate
-        )
-      )
-      .slice(0, transactionsDisplayed);
+  function getTransactionsToDisplay() {
+    return getFirstFilteredTransactions(
+      transactions,
+      transactionsDisplayed,
+      searchText,
+      tokenFilterStates,
+      startDate?.getTime(),
+      endDate?.getTime()
+    );
   }
+
+  function getFilteredTransactions() {
+    return getFilterElements(
+      transactions,
+      searchText,
+      tokenFilterStates,
+      startDate?.getTime(),
+      endDate?.getTime()
+    );
+  }
+
+  // function getFirstElements1(
+  //   transactions: TransactionData[],
+  //   filterText: string,
+  //   filterToken: Map<string, boolean>,
+  //   filterStartDate: number | undefined,
+  //   filterEndDate: number | undefined
+  // ): TransactionData[] {
+  //   return transactions
+  //     .filter(
+  //       filterTransaction(
+  //         filterText,
+  //         filterToken,
+  //         filterStartDate,
+  //         filterEndDate
+  //       )
+  //     )
+  //     .slice(0, transactionsDisplayed);
+  // }
 };
 
 export default TransactionList;
+
+function getFirstFilteredTransactions(
+  transactions: TransactionData[],
+  transactionsDisplayed: number,
+  filterText: string,
+  filterToken: Map<string, boolean>,
+  filterStartDate: number | undefined,
+  filterEndDate: number | undefined
+): TransactionData[] {
+  return transactions
+    .filter(
+      filterTransaction(filterText, filterToken, filterStartDate, filterEndDate)
+    )
+    .slice(0, transactionsDisplayed);
+}
 
 function filterTransaction(
   filterText: string,
