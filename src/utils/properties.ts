@@ -1,4 +1,4 @@
-import { Token } from ".graphclient";
+import { Token } from "../../gql/graphql";
 import { gql } from "@apollo/client";
 import { ShortProperty } from "src/types";
 import { Offer, OFFER_TYPE } from "src/types/offer";
