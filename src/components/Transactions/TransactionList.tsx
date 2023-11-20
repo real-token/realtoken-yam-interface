@@ -1,9 +1,14 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { VariableSizeList as List } from 'react-window';
 
 import { Container, Group, Loader, Space } from '@mantine/core';
 
-import { TransactionData } from 'src/components/Transactions/Types';
+import {
+  Columns,
+  SortDirection,
+  TransactionData,
+} from 'src/components/Transactions/Types';
 import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
 
 import { PRICE_PERIOD } from './Types';
@@ -25,6 +30,7 @@ const TransactionList: FC<TransactionListProps> = ({
   transactions,
   children,
 }) => {
+  const { t } = useTranslation('transactions', { keyPrefix: 'list' });
   const { propertiesToken } = usePropertiesToken();
 
   const [searchText, setSearchText] = useState<string>('');
@@ -38,26 +44,28 @@ const TransactionList: FC<TransactionListProps> = ({
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [pricePeriod, setPricePeriod] = useState<string>(PRICE_PERIOD['7d']);
-  console.log('LOAD TransactionList', transactions.length);
+  const [selectedHeader, setSelectedHeader] = useState<Columns | null>(null);
+  const [sortDirection, setSortDirection] = useState<SortDirection>(
+    SortDirection.Asc
+  );
+  const [filtedTransactions, setFilteredTransaction] = useState<
+    TransactionData[]
+  >(getFilteredTransactions());
 
   const handleReachEndList = (entries: IntersectionObserverEntry[]) => {
     const isEndListReached = entries[0].isIntersecting;
     const totalItems = transactions.length;
 
-    console.log(
-      'handleReachEndList',
-      transactionsDisplayed,
-      totalItems,
-      isEndListReached
-    );
-
     if (isEndListReached && transactionsDisplayed < totalItems) {
-      console.log('handleReachEndList', 'update');
       setTransactionsDisplayed(
         Math.min(transactionsDisplayed + PAGE_SIZE, totalItems)
       );
     }
   };
+
+  useEffect(() => {
+    setFilteredTransaction(getFilteredTransactions());
+  }, [transactions.length]);
 
   useEffect(() => {
     const options = {
@@ -79,15 +87,26 @@ const TransactionList: FC<TransactionListProps> = ({
   }, [transactionsDisplayed, transactions.length]);
 
   const Row = ({ index, style }: { index: number; style: any }) => {
-    if (!getTransactionsToDisplay()) {
+    if (!getDisplayedTransactions(filtedTransactions, transactionsDisplayed)) {
       return (
         <div style={{ ...style, textAlign: 'center', padding: 10 }}>
           {'Aucune donnée'}
         </div>
       );
     }
-    const isLastRow = index === getTransactionsToDisplay().length - 1;
-    const transaction = getTransactionsToDisplay()[index];
+    const isLastRow =
+      index ===
+      getDisplayedTransactions(filtedTransactions, transactionsDisplayed)
+        .length -
+        1;
+    const transaction = selectedHeader
+      ? getDisplayedTransactions(
+          filtedTransactions.sort(sortColumn(selectedHeader, sortDirection)),
+          transactionsDisplayed
+        )[index]
+      : getDisplayedTransactions(filtedTransactions, transactionsDisplayed)[
+          index
+        ];
 
     return (
       <TransactionRow
@@ -102,6 +121,7 @@ const TransactionList: FC<TransactionListProps> = ({
   const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTransactionsDisplayed(PAGE_SIZE);
     setSearchText(event.target.value);
+    setFilteredTransaction(getFilteredTransactions());
   };
 
   const handleTokenFilter = (contractAddress: string) => {
@@ -111,16 +131,25 @@ const TransactionList: FC<TransactionListProps> = ({
       newFilterStates.set(contractAddress, !prev.get(contractAddress));
       return newFilterStates;
     });
+    setFilteredTransaction(getFilteredTransactions());
   };
 
   const handleStartDateFilter = (newDate: Date | null) => {
     setTransactionsDisplayed(PAGE_SIZE);
     setStartDate(newDate);
+    setFilteredTransaction(getFilteredTransactions());
   };
 
   const handleEndDateFilter = (newDate: Date | null) => {
     setTransactionsDisplayed(PAGE_SIZE);
     setEndDate(newDate);
+    setFilteredTransaction(getFilteredTransactions());
+  };
+
+  const handleSortChange = (sortDirection: SortDirection) => {
+    setTransactionsDisplayed(PAGE_SIZE);
+    setSortDirection(sortDirection);
+    setFilteredTransaction(getFilteredTransactions());
   };
 
   return (
@@ -148,13 +177,16 @@ const TransactionList: FC<TransactionListProps> = ({
 
       <Space h={'xs'}></Space>
       <GlobalStat
-        transactions={getFilteredTransactions()}
+        transactions={filtedTransactions}
         daysPeriod={parseInt(pricePeriod)}
       ></GlobalStat>
       <Space h={10}></Space>
       <HeaderCard
         filterText={searchText}
         handleFilterChange={handleFilterChange}
+        handleSortChange={handleSortChange}
+        setSelectedHeader={setSelectedHeader}
+        selectedHeader={selectedHeader}
       ></HeaderCard>
       <List
         height={
@@ -183,14 +215,15 @@ const TransactionList: FC<TransactionListProps> = ({
   );
 
   function getTransactionsToDisplay() {
-    return getFirstFilteredTransactions(
-      transactions,
-      transactionsDisplayed,
-      searchText,
-      tokenFilterStates,
-      startDate?.getTime(),
-      endDate?.getTime()
-    );
+    return filtedTransactions.slice(0, transactionsDisplayed);
+    // return getFirstFilteredTransactions(
+    //   filtedTransactions, //transactions,
+    //   transactionsDisplayed,
+    //   searchText,
+    //   tokenFilterStates,
+    //   startDate?.getTime(),
+    //   endDate?.getTime()
+    // );
   }
 
   function getFilteredTransactions() {
@@ -199,7 +232,9 @@ const TransactionList: FC<TransactionListProps> = ({
       searchText,
       tokenFilterStates,
       startDate?.getTime(),
-      endDate?.getTime()
+      endDate?.getTime(),
+      selectedHeader,
+      sortDirection
     );
   }
 
@@ -225,6 +260,21 @@ const TransactionList: FC<TransactionListProps> = ({
 
 export default TransactionList;
 
+function getDisplayedTransactions(
+  filtedTransactions: TransactionData[],
+  transactionsDisplayed: number
+) {
+  return filtedTransactions.slice(0, transactionsDisplayed);
+  // return getFirstFilteredTransactions(
+  //   filtedTransactions, //transactions,
+  //   transactionsDisplayed,
+  //   searchText,
+  //   tokenFilterStates,
+  //   startDate?.getTime(),
+  //   endDate?.getTime()
+  // );
+}
+
 function getFirstFilteredTransactions(
   transactions: TransactionData[],
   transactionsDisplayed: number,
@@ -243,7 +293,6 @@ function getFirstFilteredTransactions(
 function filterTransaction(
   filterText: string,
   filterToken: Map<string, boolean>,
-
   filterStartDate: number | undefined,
   filterEndDate: number | undefined
 ): (
@@ -281,17 +330,51 @@ function getFilterElements(
   transactions: TransactionData[],
   filterText: string,
   filterToken: Map<string, boolean>,
-
   filterStartDate: number | undefined,
-  filterEndDate: number | undefined
+  filterEndDate: number | undefined,
+  sortedColumn: Columns | null,
+  sortDirection: SortDirection
 ): TransactionData[] {
-  return transactions.filter(
-    filterTransaction(
-      filterText,
-      filterToken,
+  if (sortedColumn) {
+    const sorted = transactions
+      .filter(
+        filterTransaction(
+          filterText,
+          filterToken,
+          filterStartDate,
+          filterEndDate
+        )
+      )
+      .sort(sortColumn(sortedColumn, sortDirection));
 
-      filterStartDate,
-      filterEndDate
-    )
-  );
+    return sorted;
+  } else {
+    return transactions.filter(
+      filterTransaction(filterText, filterToken, filterStartDate, filterEndDate)
+    );
+  }
+}
+
+function sortColumn(
+  column: keyof TransactionData,
+  sortDirection: SortDirection
+): ((a: TransactionData, b: TransactionData) => number) | undefined {
+  return (a, b) => {
+    const columnA = a[column];
+    const columnB = b[column];
+
+    if (typeof columnA === 'number' && typeof columnB === 'number') {
+      if (sortDirection === SortDirection.Asc) {
+        return columnA - columnB;
+      } else {
+        return columnB - columnA;
+      }
+    }
+
+    if (sortDirection === SortDirection.Asc) {
+      return String(columnA).localeCompare(String(columnB));
+    } else {
+      return String(columnB).localeCompare(String(columnA));
+    }
+  };
 }

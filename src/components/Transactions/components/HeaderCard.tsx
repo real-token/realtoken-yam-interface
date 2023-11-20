@@ -3,6 +3,11 @@ import { useTranslation } from 'react-i18next';
 
 import { Card, Grid, TextInput, createStyles } from '@mantine/core';
 
+import { HeaderElement } from 'src/components/List/HeaderElement';
+import { Arrow, SortDirection } from 'src/components/List/Types';
+
+import { Columns, mapColumnLabels } from '../Types';
+
 const useStyle = createStyles((theme) => ({
   card: {
     marginTop: '-1px',
@@ -14,15 +19,22 @@ const useStyle = createStyles((theme) => ({
 
 interface HeaderCardProps {
   filterText: string;
+  selectedHeader: Columns | null;
   handleFilterChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleSortChange: (sortDirection: SortDirection) => void;
+  setSelectedHeader: (value: React.SetStateAction<Columns | null>) => void;
 }
 
 const HeaderCard: FC<HeaderCardProps> = ({
   filterText,
+  selectedHeader,
   handleFilterChange,
+  handleSortChange,
+  setSelectedHeader,
 }) => {
   const { classes } = useStyle();
   const { t } = useTranslation('transactions', { keyPrefix: 'list' });
+  const columnLabels = mapColumnLabels(t);
   return (
     <Card withBorder={true} radius={0} className={classes.card}>
       <Grid columns={15}>
@@ -33,24 +45,86 @@ const HeaderCard: FC<HeaderCardProps> = ({
             onChange={handleFilterChange}
           />
         </Grid.Col>
-        <Grid.Col span={2}>
-          <div>{t('buyingDate')}</div>
+        {Object.values(Columns).map((column, index) => (
+          <Grid.Col key={index} span={2}>
+            <HeaderElement
+              label={columnLabels[column]}
+              sortByColumn={(sortDirection: SortDirection) => {
+                handleSortChange(sortDirection);
+                console.log(column, sortDirection);
+              }}
+              selected={selectedHeader !== null && selectedHeader === column}
+              setSelectedHeader={() => setSelectedHeader(column)}
+              justify={'left'}
+            ></HeaderElement>
+          </Grid.Col>
+        ))}
+        {/* <Grid.Col span={2}>
+          <HeaderElement
+            label={t('buyingDate')}
+            sortByColumn={(sortDirection: SortDirection) =>
+              console.log('Sort buy date', sortDirection)
+            }
+            selected={true}
+            setSelectedHeader={() => console.log('se selected')}
+            justify={'left'}
+          ></HeaderElement>
         </Grid.Col>
         <Grid.Col span={2}>
-          <div>{t('tokenAmount')}</div>
+          <HeaderElement
+            label={t('tokenAmount')}
+            sortByColumn={(sortDirection: SortDirection) =>
+              console.log('Sort buy date', sortDirection)
+            }
+            selected={true}
+            setSelectedHeader={() => console.log('se selected')}
+            justify={'left'}
+          ></HeaderElement>
         </Grid.Col>
         <Grid.Col span={2}>
-          <div>{t('usdAmount')}</div>
+          <HeaderElement
+            label={t('usdAmount')}
+            sortByColumn={(sortDirection: SortDirection) =>
+              console.log('Sort buy date', sortDirection)
+            }
+            selected={true}
+            setSelectedHeader={() => console.log('se selected')}
+            justify={'left'}
+          ></HeaderElement>
         </Grid.Col>
         <Grid.Col span={2}>
-          <div>{t('offerDate')}</div>
+          <HeaderElement
+            label={t('offerDate')}
+            sortByColumn={(sortDirection: SortDirection) =>
+              console.log('Sort buy date', sortDirection)
+            }
+            selected={true}
+            setSelectedHeader={() => console.log('se selected')}
+            justify={'left'}
+          ></HeaderElement>
         </Grid.Col>
         <Grid.Col span={2}>
-          <div>{t('offerPrice')}</div>
+          <HeaderElement
+            label={t('offerPrice')}
+            sortByColumn={(sortDirection: SortDirection) =>
+              console.log('Sort buy date', sortDirection)
+            }
+            selected={true}
+            setSelectedHeader={() => console.log('se selected')}
+            justify={'left'}
+          ></HeaderElement>
         </Grid.Col>
         <Grid.Col span={2}>
-          <div>{t('amountLeft')}</div>
-        </Grid.Col>
+          <HeaderElement
+            label={t('amountLeft')}
+            sortByColumn={(sortDirection: SortDirection) =>
+              console.log('Sort buy date', sortDirection)
+            }
+            selected={true}
+            setSelectedHeader={() => console.log('se selected')}
+            justify={'left'}
+          ></HeaderElement>
+        </Grid.Col> */}
       </Grid>
     </Card>
   );

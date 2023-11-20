@@ -20,9 +20,9 @@ import { tableOfferTypeAtom } from 'src/states';
 import { OFFER_TYPE } from 'src/types/offer';
 import { Offer } from 'src/types/offer/Offer';
 
+import { HeaderElement } from '../../List/HeaderElement';
 import { Columns, MaxHeight, OfferData, SortDirection } from './Types';
 import { mapColumnLabels, mapOfferToOfferData } from './Utils';
-import { HeaderElement } from './components/HeaderElement';
 import { ItemElement, ItemEmptyElement } from './components/ItemElement';
 
 const ITEM_HEIGHT_MIN = 100;
@@ -211,7 +211,7 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
                       ? tList('perToken')
                       : undefined
                   }
-                  sortOffersByColumn={(sortDirection: SortDirection) =>
+                  sortByColumn={(sortDirection: SortDirection) =>
                     sortOffersByColumn(column, sortDirection)
                   }
                   selected={

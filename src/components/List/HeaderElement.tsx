@@ -3,21 +3,23 @@ import React, { FC, useEffect, useState } from 'react';
 import { ActionIcon, Flex, Text, useMantineTheme } from '@mantine/core';
 import { IconChevronDown, IconChevronUp, IconSelector } from '@tabler/icons';
 
-import { Arrow, SortDirection } from '../Types';
+import { Arrow, SortDirection } from './Types';
 
 interface HeaderElementProps {
   label: string;
   description?: string;
-  sortOffersByColumn: (sortDirection: SortDirection) => void;
+  sortByColumn: (sortDirection: SortDirection) => void;
   selected: boolean;
   setSelectedHeader: () => void;
+  justify?: string;
 }
 export const HeaderElement: FC<HeaderElementProps> = ({
   label,
   description,
-  sortOffersByColumn,
+  sortByColumn,
   selected,
   setSelectedHeader,
+  justify = 'right',
 }) => {
   const theme = useMantineTheme();
   const [selectedArrow, setSelectedArrow] = useState<Arrow>(Arrow.None);
@@ -32,9 +34,9 @@ export const HeaderElement: FC<HeaderElementProps> = ({
     theme.colorScheme === 'dark' ? theme.colors.gray[6] : theme.colors.gray[6];
 
   return (
-    <Flex gap={2} justify={'right'} align={'center'} wrap={'wrap'}>
+    <Flex gap={2} justify={justify} align={'center'} wrap={'wrap'}>
       <div>
-        <Text ta={'right'} fw={500}>
+        <Text ta={justify as any} fw={500}>
           {label}
         </Text>
         {description && (
@@ -84,8 +86,9 @@ export const HeaderElement: FC<HeaderElementProps> = ({
   );
 
   function handleArrowClick(arrow: Arrow, sortDirection: SortDirection) {
+    console.log('sorted', sortDirection);
     setSelectedHeader();
     setSelectedArrow(arrow);
-    sortOffersByColumn(sortDirection);
+    sortByColumn(sortDirection);
   }
 };

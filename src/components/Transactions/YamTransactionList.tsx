@@ -22,7 +22,6 @@ const YamTransactionList = ({}) => {
 
   const {
     buyTransactions: transactions,
-    createOfferTransactions,
     isLoading,
     isError,
     setSize,
