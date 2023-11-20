@@ -41,15 +41,6 @@ const YamTransactionList = ({}) => {
 
   return (
     <>
-      <Button
-        onClick={() => {
-          console.log('SIZE', size);
-          setSize(size + 1);
-          console.log('SIZE +1', size);
-        }}
-      >
-        {'Load more'}
-      </Button>
       <TransactionList
         transactions={transactions}
         transactionsOffer={createOfferTransactions}
@@ -61,7 +52,7 @@ const YamTransactionList = ({}) => {
             console.log('SIZE +1', size);
           }}
         >
-          {'Load more'}
+          {'Charger plus'}
         </Button>
       </TransactionList>
     </>
