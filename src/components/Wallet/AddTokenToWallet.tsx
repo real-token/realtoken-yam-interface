@@ -70,28 +70,30 @@ export const AddErc20ToWalletWidget: FC<Erc20Props> = ({
               </Tooltip>
             )}
           </CopyButton>
-          <Tooltip label={t('addTokenToMetaMask')} position={'right'}>
-            <ActionIcon
-              size={16}
-              onClick={() =>
-                addErc20TokenToMetaMask(
-                  erc20TokenAddress,
-                  erc20TokenSymbol,
-                  erc20TokenDecimal,
-                  erc20TokenImage
-                )
-              }
-              variant={'transparent'}
-            >
-              <Image
-                src={
-                  'https://static.coingecko.com/s/metamask_fox-99d631a5c38b5b392fdb2edd238a525ba0657bc9ce045077c4bae090cfc5b90a.svg'
+          {isMetaMask() && (
+            <Tooltip label={t('addTokenToMetaMask')} position={'right'}>
+              <ActionIcon
+                size={16}
+                onClick={() =>
+                  addErc20TokenToMetaMask(
+                    erc20TokenAddress,
+                    erc20TokenSymbol,
+                    erc20TokenDecimal,
+                    erc20TokenImage
+                  )
                 }
-                alt={'nft'}
-                height={16}
-              ></Image>
-            </ActionIcon>
-          </Tooltip>
+                variant={'transparent'}
+              >
+                <Image
+                  src={
+                    'https://static.coingecko.com/s/metamask_fox-99d631a5c38b5b392fdb2edd238a525ba0657bc9ce045077c4bae090cfc5b90a.svg'
+                  }
+                  alt={'nft'}
+                  height={16}
+                ></Image>
+              </ActionIcon>
+            </Tooltip>
+          )}
         </Group>
       </Paper>
     </div>
@@ -106,28 +108,32 @@ export const AddErc20ToWallet: FC<Erc20Props> = ({
 }) => {
   const { t } = useTranslation('wallet', { keyPrefix: 'metamask' });
   return (
-    <Tooltip label={t('addTokenToMetaMask')} position={'right'}>
-      <ActionIcon
-        size={16}
-        onClick={() =>
-          addErc20TokenToMetaMask(
-            erc20TokenAddress,
-            erc20TokenSymbol,
-            erc20TokenDecimal,
-            erc20TokenImage
-          )
-        }
-        variant={'transparent'}
-      >
-        <Image
-          src={
-            'https://static.coingecko.com/s/metamask_fox-99d631a5c38b5b392fdb2edd238a525ba0657bc9ce045077c4bae090cfc5b90a.svg'
-          }
-          alt={'nft'}
-          height={16}
-        ></Image>
-      </ActionIcon>
-    </Tooltip>
+    <>
+      {isMetaMask() && (
+        <Tooltip label={t('addTokenToMetaMask')} position={'right'}>
+          <ActionIcon
+            size={16}
+            onClick={() =>
+              addErc20TokenToMetaMask(
+                erc20TokenAddress,
+                erc20TokenSymbol,
+                erc20TokenDecimal,
+                erc20TokenImage
+              )
+            }
+            variant={'transparent'}
+          >
+            <Image
+              src={
+                'https://static.coingecko.com/s/metamask_fox-99d631a5c38b5b392fdb2edd238a525ba0657bc9ce045077c4bae090cfc5b90a.svg'
+              }
+              alt={'nft'}
+              height={16}
+            ></Image>
+          </ActionIcon>
+        </Tooltip>
+      )}
+    </>
   );
 };
 
@@ -225,6 +231,36 @@ export const AddNftToWalletWidget: FC<NftProps> = ({
             </Tooltip>
           )}
         </CopyButton>
+        {isMetaMask() && (
+          <Tooltip label={t('addNFTToMetaMask')} position={'right'}>
+            <ActionIcon
+              size={16}
+              onClick={() => addNftToMetaMask(nftContractAddress, nftTokenId)}
+              variant={'transparent'}
+            >
+              <Image
+                src={
+                  'https://static.coingecko.com/s/metamask_fox-99d631a5c38b5b392fdb2edd238a525ba0657bc9ce045077c4bae090cfc5b90a.svg'
+                }
+                alt={'nft'}
+                height={16}
+              ></Image>
+            </ActionIcon>
+          </Tooltip>
+        )}
+      </Group>
+    </div>
+  );
+};
+
+export const AddNftToWallet: FC<NftProps> = ({
+  nftContractAddress,
+  nftTokenId,
+}) => {
+  const { t } = useTranslation('wallet', { keyPrefix: 'metamask' });
+  return (
+    <>
+      {isMetaMask() && (
         <Tooltip label={t('addNFTToMetaMask')} position={'right'}>
           <ActionIcon
             size={16}
@@ -240,34 +276,17 @@ export const AddNftToWalletWidget: FC<NftProps> = ({
             ></Image>
           </ActionIcon>
         </Tooltip>
-      </Group>
-    </div>
+      )}
+    </>
   );
 };
-
-export const AddNftToWallet: FC<NftProps> = ({
-  nftContractAddress,
-  nftTokenId,
-}) => {
-  const { t } = useTranslation('wallet', { keyPrefix: 'metamask' });
-  return (
-    <Tooltip label={t('addNFTToMetaMask')} position={'right'}>
-      <ActionIcon
-        size={16}
-        onClick={() => addNftToMetaMask(nftContractAddress, nftTokenId)}
-        variant={'transparent'}
-      >
-        <Image
-          src={
-            'https://static.coingecko.com/s/metamask_fox-99d631a5c38b5b392fdb2edd238a525ba0657bc9ce045077c4bae090cfc5b90a.svg'
-          }
-          alt={'nft'}
-          height={16}
-        ></Image>
-      </ActionIcon>
-    </Tooltip>
-  );
-};
+export function isMetaMask() {
+  const { ethereum } = window;
+  if (ethereum) {
+    return ethereum.isMetaMask ?? false;
+  }
+  return false;
+}
 
 export async function addErc20TokenToMetaMask(
   erc20TokenAddress: string,
