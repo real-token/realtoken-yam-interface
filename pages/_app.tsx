@@ -15,6 +15,7 @@ import {
   Web3Providers,
   Websites,
   getConnectors,
+  getReadOnlyConnector,
   getWalletConnectV2,
   gnosisHooks,
   gnosisSafe,
@@ -42,14 +43,13 @@ export const i18n = initLanguage(resources);
 const customChains: ChainSelectConfig<CustomChain> = {
   allowedChains: parseAllowedChain(ChainsID),
   chainsConfig: CHAINS,
-  defaultChainId: 100,
 };
 
 const showAllNetworks = true;
 
 const env = process.env.NEXT_PUBLIC_ENV ?? 'development';
 const walletConnectKey = process.env.NEXT_PUBLIC_WALLET_CONNECT_KEY ?? '';
-//console.log("wallet connect key: ", walletConnectKey)
+console.log('key: ', walletConnectKey);
 
 const [walletConnectV2, walletConnectV2Hooks] = getWalletConnectV2<CustomChain>(
   customChains,
@@ -57,16 +57,19 @@ const [walletConnectV2, walletConnectV2Hooks] = getWalletConnectV2<CustomChain>(
   walletConnectKey,
   showAllNetworks
 );
+const [readOnly, readOnlyHooks] = getReadOnlyConnector(customChains);
 
-const libraryConnectors = getConnectors(
-  [metaMask, metaMaskHooks],
-  [gnosisSafe, gnosisHooks],
-  [walletConnectV2, walletConnectV2Hooks]
-);
+const libraryConnectors = getConnectors({
+  metamask: [metaMask, metaMaskHooks],
+  gnosisSafe: [gnosisSafe, gnosisHooks],
+  walletConnectV2: [walletConnectV2, walletConnectV2Hooks],
+  readOnly: [readOnly, readOnlyHooks],
+});
+
 
 type AppProps = NextAppProps & { colorScheme: ColorScheme; locale: string };
 
-const queryClient = new QueryClient({});
+const queryClient = new QueryClient();
 
 const App = ({ Component, pageProps }: AppProps) => {
   const isMobile = useMediaQuery(`(max-width: ${em(750)})`);

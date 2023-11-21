@@ -11,8 +11,12 @@ import {
   Tooltip,
   useMantineTheme,
 } from '@mantine/core';
+import { AvailableConnectors } from '@realtoken/realt-commons';
 import { IconCheck, IconCopy } from '@tabler/icons';
 
+import { useAtomValue } from 'jotai';
+
+import { providerAtom } from 'src/states';
 import { truncateAddress } from 'src/utils/string';
 import { openInNewTab } from 'src/utils/window';
 
@@ -34,6 +38,7 @@ export const AddErc20ToWalletWidget: FC<Erc20Props> = ({
   // Condition pour choisir la couleur d'arrière-plan en fonction du thème
   const backgroundColor =
     theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[0];
+  const connector = useAtomValue(providerAtom);
 
   return (
     <div>
@@ -70,7 +75,7 @@ export const AddErc20ToWalletWidget: FC<Erc20Props> = ({
               </Tooltip>
             )}
           </CopyButton>
-          {isMetaMask() && (
+          {isMetaMask(connector) && (
             <Tooltip label={t('addTokenToMetaMask')} position={'right'}>
               <ActionIcon
                 size={16}
@@ -107,9 +112,10 @@ export const AddErc20ToWallet: FC<Erc20Props> = ({
   erc20TokenDecimal = 9,
 }) => {
   const { t } = useTranslation('wallet', { keyPrefix: 'metamask' });
+  const connector = useAtomValue(providerAtom);
   return (
     <>
-      {isMetaMask() && (
+      {isMetaMask(connector) && (
         <Tooltip label={t('addTokenToMetaMask')} position={'right'}>
           <ActionIcon
             size={16}
@@ -191,6 +197,7 @@ export const AddNftToWalletWidget: FC<NftProps> = ({
   color,
 }) => {
   const { t } = useTranslation('wallet', { keyPrefix: 'metamask' });
+  const connector = useAtomValue(providerAtom);
   return (
     <div
       style={{
@@ -231,7 +238,7 @@ export const AddNftToWalletWidget: FC<NftProps> = ({
             </Tooltip>
           )}
         </CopyButton>
-        {isMetaMask() && (
+        {isMetaMask(connector) && (
           <Tooltip label={t('addNFTToMetaMask')} position={'right'}>
             <ActionIcon
               size={16}
@@ -258,9 +265,10 @@ export const AddNftToWallet: FC<NftProps> = ({
   nftTokenId,
 }) => {
   const { t } = useTranslation('wallet', { keyPrefix: 'metamask' });
+  const connector = useAtomValue(providerAtom);
   return (
     <>
-      {isMetaMask() && (
+      {isMetaMask(connector) && (
         <Tooltip label={t('addNFTToMetaMask')} position={'right'}>
           <ActionIcon
             size={16}
@@ -280,11 +288,19 @@ export const AddNftToWallet: FC<NftProps> = ({
     </>
   );
 };
-export function isMetaMask() {
-  const { ethereum } = window;
-  if (ethereum) {
-    return ethereum.isMetaMask ?? false;
+export function isMetaMask(connector?: string) {
+  if (connector) {
+    return (
+      AvailableConnectors.metamask.toString().toLowerCase() ===
+      connector.toLowerCase()
+    );
+  } else {
+    const { ethereum } = window;
+    if (ethereum) {
+      return ethereum.isMetaMask ?? false;
+    }
   }
+
   return false;
 }
 

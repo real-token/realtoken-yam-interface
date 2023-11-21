@@ -215,7 +215,7 @@ const TransactionList: FC<TransactionListProps> = ({
         <div>
           <Space h={'xl'}></Space>
           <Group position={'center'}>
-            <Loader></Loader>
+            <Loader variant={'dots'}></Loader>
           </Group>
         </div>
       )}
@@ -224,14 +224,6 @@ const TransactionList: FC<TransactionListProps> = ({
 
   function getTransactionsToDisplay() {
     return filtedTransactions.slice(0, transactionsDisplayed);
-    // return getFirstFilteredTransactions(
-    //   filtedTransactions, //transactions,
-    //   transactionsDisplayed,
-    //   searchText,
-    //   tokenFilterStates,
-    //   startDate?.getTime(),
-    //   endDate?.getTime()
-    // );
   }
 
   function getFilteredTransactions() {
@@ -245,25 +237,6 @@ const TransactionList: FC<TransactionListProps> = ({
       sortDirection
     );
   }
-
-  // function getFirstElements1(
-  //   transactions: TransactionData[],
-  //   filterText: string,
-  //   filterToken: Map<string, boolean>,
-  //   filterStartDate: number | undefined,
-  //   filterEndDate: number | undefined
-  // ): TransactionData[] {
-  //   return transactions
-  //     .filter(
-  //       filterTransaction(
-  //         filterText,
-  //         filterToken,
-  //         filterStartDate,
-  //         filterEndDate
-  //       )
-  //     )
-  //     .slice(0, transactionsDisplayed);
-  // }
 };
 
 export default TransactionList;
