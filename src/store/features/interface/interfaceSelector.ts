@@ -37,7 +37,9 @@ export const selectPublicOffers = (state: RootState) => {
   if (!offers || offersIsLoading) return OFFER_LOADING;
   return offers.filter(
     (offer: Offer) =>
-      !offer.buyerAddress && BigNumber(offer.amount).times(offer.price).gt(0.01)
+      !offer.buyerAddress &&
+      BigNumber(offer.amount).times(offer.price).gt(0.01) &&
+      offer.removed === false
   );
 };
 

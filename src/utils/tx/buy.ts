@@ -328,6 +328,13 @@ async function buyTokenWithoutPermit(
 
   await approveTx.wait(1);
 
+  console.log(
+    'realTokenYamUpgradeable.buy',
+    offer.offerId,
+    priceInWei.toString(),
+    amountInWei.toString()
+  );
+
   const buyTx = await realTokenYamUpgradeable.buy(
     offer.offerId,
     priceInWei.toString(),

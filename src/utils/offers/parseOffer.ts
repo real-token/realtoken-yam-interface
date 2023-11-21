@@ -134,7 +134,7 @@ export const parseOffer = (
         allowanceToken: allowance ?? '0',
         hasPropertyToken: false,
         type: undefined,
-        removed: false,
+        removed: offer.removedAtBlock === null ? false : true,
         createdAtTimestamp: offer.createdAtTimestamp,
         buyCurrency: '',
         officialPrice: undefined,

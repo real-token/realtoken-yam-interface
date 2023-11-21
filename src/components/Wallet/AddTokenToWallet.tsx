@@ -16,11 +16,6 @@ import { IconCheck, IconCopy } from '@tabler/icons';
 import { truncateAddress } from 'src/utils/string';
 import { openInNewTab } from 'src/utils/window';
 
-//import { usdt } from 'src/assets/currency';
-//import { ReactComponent as UsdtImage } from '../../assets/currency/usdt.svg';
-//import { usdt as UsdtImage } from 'src/assets/currency';
-import '../../assets/currency/usdc.svg';
-
 type Erc20Props = {
   erc20TokenAddress: string;
   erc20TokenSymbol: string;
