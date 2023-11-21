@@ -10,7 +10,7 @@ import {
 } from '@mantine/core';
 import { IconCheck, IconCopy } from '@tabler/icons';
 
-import { truncateHash } from 'src/utils/string';
+import { truncateAddress } from 'src/utils/string';
 
 interface FieldPaperProps {
   name: string;
@@ -25,7 +25,7 @@ export const FieldPaper: React.FC<FieldPaperProps> = ({
   copyButton = false,
   truncate = true,
 }) => {
-  const truncatedField = truncate ? truncateHash(value) : value;
+  const truncatedField = truncate ? truncateAddress(value) : value;
   const isTruncated = truncatedField.length !== value.length;
 
   return (

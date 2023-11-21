@@ -29,7 +29,7 @@ import { Contract } from 'ethers';
 import { CoinBridgeToken, coinBridgeTokenABI } from 'src/abis';
 import { OfferTypeBadge } from 'src/components/Offer/components/OfferTypeBadge';
 import { Shield } from 'src/components/Shield/Shield';
-import { WalletERC20Balance } from 'src/components/WalletBalance/WalletERC20Balance';
+import { WalletERC20Balance } from 'src/components/Wallet/WalletERC20Balance';
 import { Chain, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { ZERO_ADDRESS } from 'src/constants';
 import { useAppDispatch, useAppSelector } from 'src/hooks/react-hooks';

@@ -121,17 +121,16 @@ export const buy = async (
         NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationBuy)
       );
 
-      buyTx
-        .wait()
-        .then(({ status }) =>
-          updateNotification(
-            NOTIFICATIONS[
-              status === 1
-                ? NotificationsID.buyOfferSuccess
-                : NotificationsID.buyOfferError
-            ](notificationBuy)
-          )
+      buyTx.wait().then(({ status }) => {
+        updateNotification(
+          NOTIFICATIONS[
+            status === 1
+              ? NotificationsID.buyOfferSuccess
+              : NotificationsID.buyOfferError
+          ](notificationBuy)
         );
+        if (onFinished && status === 1) onFinished();
+      });
     } else {
       try {
         if (buyerTokenType === 1) {
@@ -167,15 +166,16 @@ export const buy = async (
             NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationPayload)
           );
 
-          tx.wait().then(({ status }) =>
+          tx.wait().then(({ status }) => {
             updateNotification(
               NOTIFICATIONS[
                 status === 1
                   ? NotificationsID.buyOfferSuccess
                   : NotificationsID.buyOfferError
               ](notificationPayload)
-            )
-          );
+            );
+            if (onFinished && status === 1) onFinished();
+          });
         } else if (buyerTokenType === 2) {
           // TokenType = 2: ERC20 With Permit
           console.log('buyerTokenType === 2');
@@ -209,17 +209,16 @@ export const buy = async (
             NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationPayload)
           );
 
-          buyWithPermitTx
-            .wait()
-            .then(({ status }) =>
-              updateNotification(
-                NOTIFICATIONS[
-                  status === 1
-                    ? NotificationsID.buyOfferSuccess
-                    : NotificationsID.buyOfferError
-                ](notificationPayload)
-              )
+          buyWithPermitTx.wait().then(({ status }) => {
+            updateNotification(
+              NOTIFICATIONS[
+                status === 1
+                  ? NotificationsID.buyOfferSuccess
+                  : NotificationsID.buyOfferError
+              ](notificationPayload)
             );
+            if (onFinished && status === 1) onFinished();
+          });
         } else if (buyerTokenType === 3) {
           // TokenType = 3: ERC20 Without Permit, do Approve/buy
           console.log('buyerTokenType === 3');
@@ -230,7 +229,8 @@ export const buy = async (
             activeChain,
             offer,
             priceInWei,
-            amountInWei
+            amountInWei,
+            onFinished
           );
         } else {
           console.log('Token is not whitelisted');
@@ -257,7 +257,8 @@ export const buy = async (
             activeChain,
             offer,
             priceInWei,
-            amountInWei
+            amountInWei,
+            onFinished
           );
         } else {
           console.log(
@@ -269,7 +270,7 @@ export const buy = async (
       }
     }
 
-    if (onFinished) onFinished();
+    //if (onFinished) onFinished();
   } catch (e) {
     const error = JSON.stringify(e);
 
@@ -295,7 +296,8 @@ async function buyTokenWithoutPermit(
   activeChain: Chain | undefined,
   offer: Offer,
   priceInWei: BigNumber,
-  amountInWei: BigNumber
+  amountInWei: BigNumber,
+  onFinished?: () => void
 ) {
   const approveTx = await buyerToken.approve(
     realTokenYamUpgradeable.address,
@@ -342,15 +344,14 @@ async function buyTokenWithoutPermit(
     NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationBuy)
   );
 
-  buyTx
-    .wait()
-    .then(({ status }) =>
-      updateNotification(
-        NOTIFICATIONS[
-          status === 1
-            ? NotificationsID.buyOfferSuccess
-            : NotificationsID.buyOfferError
-        ](notificationBuy)
-      )
+  buyTx.wait().then(({ status }) => {
+    updateNotification(
+      NOTIFICATIONS[
+        status === 1
+          ? NotificationsID.buyOfferSuccess
+          : NotificationsID.buyOfferError
+      ](notificationBuy)
     );
+    if (onFinished && status === 1) onFinished();
+  });
 }

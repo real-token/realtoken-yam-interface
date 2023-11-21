@@ -1,4 +1,4 @@
-export function truncateHash(input: string): string {
+export function truncateAddress(input: string): string {
   if (input.length <= 12) {
     return input; // Renvoie la chaîne telle quelle si elle est courte
   }

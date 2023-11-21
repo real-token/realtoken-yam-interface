@@ -50,6 +50,11 @@
     "title": "Veuillez patienter",
     "message": "Votre transaction est en cours de validation."
   },
+  "buyOfferFinish": {
+    "title": "Félicitation 🎉",
+    "message": "Vous avez reçu ",
+    "question":"Voulez vous ajouter ce token à Metamask ?"
+  },
   "buyOfferSuccess": {
     "title": "Réussi",
     "message": "Votre transaction est validée."

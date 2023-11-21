@@ -50,6 +50,11 @@
     "title": "Waiting",
     "message": "Your transaction is being validated."
   },
+  "buyOfferFinish": {
+    "title": "Congratulation 🎉",
+    "message": "You received ",
+    "question":"Do you want to add this token to Metamask?"
+  },
   "buyOfferSuccess": {
     "title": "Success",
     "message": "Your transaction has been validated."
