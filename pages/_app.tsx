@@ -66,7 +66,6 @@ const libraryConnectors = getConnectors({
   readOnly: [readOnly, readOnlyHooks],
 });
 
-
 type AppProps = NextAppProps & { colorScheme: ColorScheme; locale: string };
 
 const queryClient = new QueryClient();
