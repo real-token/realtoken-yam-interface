@@ -44,12 +44,14 @@ export function mapOfferToOfferData(
       ? allowedTokenBuy.symbol
       : offer.buyerTokenName,
     transferedTokenAddress: offer.offerTokenAddress,
-    transferedTokenLogo: allowedTokenBuy?.logo ?? CsmSvg,
+    transferedTokenLogo:
+      allowedTokenBuy?.logo ?? (offer.offerId === '' ? undefined : CsmSvg),
     requestedToken: allowedTokenOffer
       ? allowedTokenOffer.symbol
       : offer.offerTokenName,
     requestedTokenAddress: offer.buyerTokenAddress,
-    requestedTokenLogo: allowedTokenOffer?.logo ?? CsmSvg,
+    requestedTokenLogo:
+      allowedTokenOffer?.logo ?? (offer.offerId === '' ? undefined : CsmSvg),
     launchDate: offer.sellDate,
     requesterName: offer.sellerName,
     requesterAddress: offer.sellerAddress,

@@ -7,6 +7,7 @@ import {
   Group,
   Progress,
   RingProgress,
+  Skeleton,
   Stack,
   Text,
   useMantineTheme,
@@ -26,8 +27,6 @@ import { OFFER_TYPE } from 'src/types/offer/OfferType';
 import { Price } from 'src/types/price';
 import {
   formatPercent,
-  formatSmallToken,
-  formatTimestamp,
   formatTimestampDay,
   formatTimestampHour,
   formatToken,
@@ -84,12 +83,6 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
         (priceDelta > 0 && offer.type !== OFFER_TYPE.BUY)
       ? 'red'
       : 'teal';
-
-  const tokenPerSellingToken = formatSmallToken(
-    new BigNumber(1).dividedBy(offer.requestedRate).toNumber(),
-    offer.requestedToken
-  );
-  const perOfferToken = t2('per') + offer.transferedToken;
 
   const onOpenOffer = useCallback(
     (offerAction: Offer) => {
@@ -216,7 +209,9 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
       <Stack
         h={'100%'}
         align={'stretch'}
-        justify={isLarge ? 'flex-end' : 'flex-start'}
+        justify={
+          offer.id === '' ? 'center' : isLarge ? 'flex-end' : 'flex-start'
+        }
         spacing={0}
       >
         {!isLarge && (
@@ -229,60 +224,78 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
           </Text>
         )}
         {!isLarge && (
-          <div>
-            <Group position={'right'}>
-              <Text size={'xs'} align={'center'}>
-                {formatToken(offer.requestedAmount ?? 0) +
-                  ' / ' +
-                  formatToken(offer.initialAmount)}
-              </Text>
-            </Group>
-            <Progress
-              color={'yellow'}
-              value={((offer.requestedAmount ?? 0) / offer.initialAmount) * 100}
-            />
-            <Group position={'right'}>
-              <Text size={'xs'} align={'center'}>
-                {formatPercent(
-                  (offer.requestedAmount ?? 0) / offer.initialAmount
-                )}
-              </Text>
-            </Group>
-          </div>
-        )}
-
-        {isLarge && (
-          <Group w={'100%'} position={textAlignRight ? 'right' : 'left'}>
-            <div>
-              <RingProgress
-                size={100}
-                label={
+          <>
+            {offer.id !== '' ? (
+              <div>
+                <Group position={'right'}>
                   <Text size={'xs'} align={'center'}>
                     {formatToken(offer.requestedAmount ?? 0) +
                       ' / ' +
                       formatToken(offer.initialAmount)}
                   </Text>
-                }
-                sections={[
-                  {
-                    value:
-                      ((offer.requestedAmount ?? 0) / offer.initialAmount) *
-                      100,
-                    color: 'yellow',
-                  },
-                ]}
-              />
-              <Text
-                fz={isLarge ? 'xs' : 'xs'}
-                color={'dimmed'}
-                ta={isLarge || textAlignRight ? 'center' : 'left'}
-                sx={{ marginTop: '-10px' }}
-              >
-                {formatUsd(
-                  (offer.requestedAmount ?? 0) * (offer.requestedPrice ?? 0)
-                )}
-              </Text>
-            </div>
+                </Group>
+                <Progress
+                  color={'yellow'}
+                  value={
+                    ((offer.requestedAmount ?? 0) / offer.initialAmount) * 100
+                  }
+                />
+                <Group position={'right'}>
+                  <Text size={'xs'} align={'center'}>
+                    {formatPercent(
+                      (offer.requestedAmount ?? 0) / offer.initialAmount
+                    )}
+                  </Text>
+                </Group>
+              </div>
+            ) : (
+              <Group position={'right'}>
+                {' '}
+                <Skeleton height={12} radius={'xl'} width={100} />
+              </Group>
+            )}
+          </>
+        )}
+
+        {isLarge && (
+          <Group w={'100%'} position={textAlignRight ? 'right' : 'left'}>
+            {offer.id !== '' ? (
+              <div>
+                <RingProgress
+                  size={100}
+                  label={
+                    <Text size={'xs'} align={'center'}>
+                      {formatToken(offer.requestedAmount ?? 0) +
+                        ' / ' +
+                        formatToken(offer.initialAmount)}
+                    </Text>
+                  }
+                  sections={[
+                    {
+                      value:
+                        ((offer.requestedAmount ?? 0) / offer.initialAmount) *
+                        100,
+                      color: 'yellow',
+                    },
+                  ]}
+                />
+                <Text
+                  fz={isLarge ? 'xs' : 'xs'}
+                  color={'dimmed'}
+                  ta={isLarge || textAlignRight ? 'center' : 'left'}
+                  sx={{ marginTop: '-10px' }}
+                >
+                  {formatUsd(
+                    (offer.requestedAmount ?? 0) * (offer.requestedPrice ?? 0)
+                  )}
+                </Text>
+              </div>
+            ) : (
+              <Group position={isLarge ? 'right' : 'left'}>
+                {' '}
+                <Skeleton height={12} radius={'xl'} width={100} />
+              </Group>
+            )}
           </Group>
         )}
       </Stack>
@@ -306,22 +319,29 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             {columnLabels[Columns.createdAt]}
           </Text>
         )}
-        <div>
-          <Text
-            fz={'md'}
-            ta={isLarge || textAlignRight ? 'right' : 'left'}
-            fw={500}
-          >
-            {formatTimestampDay(offer.createdAt)}
-          </Text>
-          <Text
-            fz={'xs'}
-            color={'dimmed'}
-            ta={isLarge || textAlignRight ? 'right' : 'left'}
-          >
-            {formatTimestampHour(offer.createdAt)}
-          </Text>
-        </div>
+        {offer.id !== '' ? (
+          <div>
+            <Text
+              fz={'md'}
+              ta={isLarge || textAlignRight ? 'right' : 'left'}
+              fw={500}
+            >
+              {formatTimestampDay(offer.createdAt)}
+            </Text>
+            <Text
+              fz={'xs'}
+              color={'dimmed'}
+              ta={isLarge || textAlignRight ? 'right' : 'left'}
+            >
+              {formatTimestampHour(offer.createdAt)}
+            </Text>
+          </div>
+        ) : (
+          <Group position={isLarge ? 'right' : 'left'}>
+            {' '}
+            <Skeleton height={12} radius={'xl'} width={100} />
+          </Group>
+        )}
       </Stack>
     );
   }
@@ -339,22 +359,31 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             {columnLabels[Columns.requestedPrice]}
           </Text>
         )}
-        <div>
-          <Text
-            fz={isLarge ? 'md' : 'md'}
-            ta={isLarge ? 'right' : 'left'}
-            fw={500}
-          >
-            {formatUsd(offer.requestedPrice ?? offer.initialSellingPrice ?? 0)}
-          </Text>
-          <Text
-            fz={isLarge ? 'xs' : 'xs'}
-            color={priceDeltaColor}
-            ta={isLarge ? 'right' : 'left'}
-          >
-            {(priceDelta > 0 ? '+' : '') + formatPercent(priceDelta)}
-          </Text>
-        </div>
+        {offer.id !== '' ? (
+          <div>
+            <Text
+              fz={isLarge ? 'md' : 'md'}
+              ta={isLarge ? 'right' : 'left'}
+              fw={500}
+            >
+              {formatUsd(
+                offer.requestedPrice ?? offer.initialSellingPrice ?? 0
+              )}
+            </Text>
+            <Text
+              fz={isLarge ? 'xs' : 'xs'}
+              color={priceDeltaColor}
+              ta={isLarge ? 'right' : 'left'}
+            >
+              {(priceDelta > 0 ? '+' : '') + formatPercent(priceDelta)}
+            </Text>
+          </div>
+        ) : (
+          <Group position={isLarge ? 'right' : 'left'}>
+            {' '}
+            <Skeleton height={12} radius={'xl'} width={100} />
+          </Group>
+        )}
       </Stack>
     );
   }
@@ -372,20 +401,25 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             {columnLabels[Columns.requesterName]}
           </Text>
         )}
-        <div>
-          <Text fz={'md'} ta={isLarge ? 'right' : 'left'}>
-            {t2(offer.requesterName)}
-          </Text>
-          <Text
-            fz={isLarge ? 'xs' : 'xs'}
-            color={'dimmed'}
-            ta={isLarge ? 'right' : 'left'}
-            //truncate={'start'}
-            //style={{ color: 'rgba(0, 0, 0, 0)' }}
-          >
-            {truncateInMiddle(offer.requesterAddress)}
-          </Text>
-        </div>
+        {offer.id !== '' ? (
+          <div>
+            <Text fz={'md'} ta={isLarge ? 'right' : 'left'}>
+              {t2(offer.requesterName)}
+            </Text>
+            <Text
+              fz={isLarge ? 'xs' : 'xs'}
+              color={'dimmed'}
+              ta={isLarge ? 'right' : 'left'}
+            >
+              {truncateInMiddle(offer.requesterAddress)}
+            </Text>
+          </div>
+        ) : (
+          <Group position={isLarge ? 'right' : 'left'}>
+            {' '}
+            <Skeleton height={12} radius={'xl'} width={100} />
+          </Group>
+        )}
       </Stack>
     );
   }

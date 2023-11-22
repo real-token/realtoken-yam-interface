@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Group, Stack, Text } from '@mantine/core';
+import { Group, Skeleton, Stack, Text } from '@mantine/core';
 import { IconArrowRight } from '@tabler/icons';
 
 import { CsmSvg } from 'src/assets/currency/Csm';
@@ -23,17 +23,31 @@ export const TokenExchangeElement: FC<TokenExchangeElementProps> = ({
   marginTop = '10px',
 }) => {
   const { t } = useTranslation('list');
+
   return (
     <Stack spacing={5} h={'100%'} align={'stretch'} justify={'center'}>
       <Group sx={{ marginTop }} spacing={8} miw={minWidth ? 300 : undefined}>
         <Stack justify={'flex-start'} spacing={0}>
-          <Text fz={'md'} fw={'bold'}>
-            {token1}
-          </Text>
+          {token1 !== '' ? (
+            <Text fz={'md'} fw={'bold'}>
+              {token1}
+            </Text>
+          ) : (
+            <Skeleton height={12} radius={'xl'} width={100} />
+          )}
           <div style={{ textAlign: 'center' }}>
-            {LogoToken1
-              ? React.cloneElement(<LogoToken1 />, { width: '24' })
-              : React.cloneElement(<CsmSvg />, { width: '24' })}
+            {LogoToken1 ? (
+              React.cloneElement(<LogoToken1 />, { width: '24' })
+            ) : (
+              <Group position={'center'}>
+                <Skeleton
+                  height={24}
+                  circle={true}
+                  animate={true}
+                  sx={{ marginTop: '5px' }}
+                />
+              </Group>
+            )}
           </div>
         </Stack>
         <Stack justify={'flex-start'} spacing={0}>
@@ -45,13 +59,26 @@ export const TokenExchangeElement: FC<TokenExchangeElementProps> = ({
           </div>
         </Stack>
         <Stack justify={'flex-start'} spacing={0}>
-          <Text fz={'md'} fw={'bold'}>
-            {token2}
-          </Text>
+          {token2 !== '' ? (
+            <Text fz={'md'} fw={'bold'}>
+              {token2}
+            </Text>
+          ) : (
+            <Skeleton height={12} radius={'xl'} width={100} />
+          )}
           <div style={{ textAlign: 'center' }}>
-            {LogoToken2
-              ? React.cloneElement(<LogoToken2 />, { width: '24' })
-              : React.cloneElement(<CsmSvg />, { width: '24' })}
+            {LogoToken2 ? (
+              React.cloneElement(<LogoToken2 />, { width: '24' })
+            ) : (
+              <Group position={'center'}>
+                <Skeleton
+                  height={24}
+                  circle={true}
+                  animate={true}
+                  sx={{ marginTop: '5px' }}
+                />
+              </Group>
+            )}
           </div>
         </Stack>
       </Group>

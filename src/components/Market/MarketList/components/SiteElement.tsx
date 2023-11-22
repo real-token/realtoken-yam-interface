@@ -1,7 +1,14 @@
 import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Avatar, Group, Stack, Text, useMantineTheme } from '@mantine/core';
+import {
+  Avatar,
+  Group,
+  Skeleton,
+  Stack,
+  Text,
+  useMantineTheme,
+} from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 
 import { SimpleTextUrl } from 'src/components/TextUrl/TextUrl';
@@ -49,7 +56,7 @@ export const SiteElement: FC<SiteElementProps> = ({ offer }) => {
           }}
         >
           <Group
-            position={isMobile ? 'left' : 'left'}
+            position={'left'}
             miw={minWidth}
             sx={{
               marginBottom: '3px',
@@ -220,6 +227,104 @@ export const SiteElement: FC<SiteElementProps> = ({ offer }) => {
                   </Text>
                 </Group>
               )}
+            </Group>
+          </div>
+        </Stack>
+      )}
+      {offer.id === '' && (
+        <Stack
+          spacing={1}
+          sx={{
+            marginLeft: isMobile && isOnlyCsmExchange ? '-16px' : undefined,
+          }}
+        >
+          <Group
+            position={'left'}
+            miw={minWidth}
+            sx={{
+              marginBottom: '3px',
+              marginLeft: isOnlyCsmExchange ? 0 : '10px',
+            }}
+          >
+            <Group
+              position={'left'}
+              miw={WIDTH_COL2}
+              spacing={isOnlyCsmExchange ? 2 : 10}
+            >
+              <Skeleton height={25} circle={true} animate={true} />
+              <Skeleton height={12} width={150} radius={'xl'} />
+            </Group>
+          </Group>
+          <div
+            style={{
+              padding: '0 10px 0 10px',
+              fontSize: '11px',
+              fontWeight: 700,
+              minWidth: minWidth,
+              borderRadius: '4px',
+              backgroundColor:
+                theme.colorScheme === 'dark'
+                  ? `${theme.colors.brand[5]}0F`
+                  : `${theme.colors.brand[5]}0F`,
+              color:
+                theme.colorScheme === 'dark'
+                  ? `${theme.colors.brand[5]}`
+                  : `${theme.colors.brand[5]}`,
+            }}
+          >
+            <Group position={'apart'} spacing={0}>
+              <Text tt={'uppercase'} w={WIDTH_COL1}>
+                {t('initialPrice')}
+              </Text>
+              <Skeleton height={12} width={70} radius={'xl'} />
+            </Group>
+          </div>
+          <div
+            style={{
+              padding: '0 10px 0 10px',
+              fontSize: '11px',
+              fontWeight: 700,
+              minWidth: minWidth,
+              borderRadius: '4px',
+              backgroundColor:
+                theme.colorScheme === 'dark'
+                  ? `${theme.colors.blue[2]}0F`
+                  : `${theme.colors.dark[7]}0F`,
+              color:
+                theme.colorScheme === 'dark'
+                  ? `${theme.colors.blue[2]}`
+                  : `${theme.colors.gray[6]}`,
+            }}
+          >
+            <Group position={'apart'} spacing={0}>
+              <Text tt={'uppercase'} w={WIDTH_COL1}>
+                {t('initialDate')}
+              </Text>
+              <Skeleton height={12} width={70} radius={'xl'} />
+            </Group>
+          </div>
+          <div
+            style={{
+              padding: '0 10px 0 10px',
+              fontSize: '11px',
+              fontWeight: 700,
+              minWidth: minWidth,
+              borderRadius: '4px',
+              backgroundColor:
+                theme.colorScheme === 'dark'
+                  ? `${theme.colors.blue[2]}0F`
+                  : `${theme.colors.dark[7]}0F`,
+              color:
+                theme.colorScheme === 'dark'
+                  ? `${theme.colors.blue[2]}`
+                  : `${theme.colors.gray[6]}`,
+            }}
+          >
+            <Group position={'apart'} spacing={0}>
+              <Text tt={'uppercase'} w={WIDTH_COL1}>
+                {t('electricityPrice')}
+              </Text>
+              <Skeleton height={12} width={70} radius={'xl'} />
             </Group>
           </div>
         </Stack>

@@ -54,12 +54,24 @@ export enum Arrow {
   Down = 2,
 }
 
-export enum MaxHeight {
-  SmallMobile = 500,
-  Mobile = 336,
-  Small = 337,
-  Medium = 233,
-  Large = 161,
+export enum SCREEN_BREAKPOINT {
+  Small = 577,
+  Medium = 632,
+  Large = 1200,
+}
+
+export enum SCREEN_SIZE {
+  Mobile,
+  Small,
+  Medium,
+  Large,
+}
+
+export enum ROW_HEIGHT {
+  Mobile = 356,
+  Small = 294,
+  Medium = 219,
+  Large = 143,
 }
 
 export enum Columns {
@@ -67,4 +79,40 @@ export enum Columns {
   requestedPrice = 'requestedPrice',
   createdAt = 'createdAt',
   requestedAmount = 'requestedAmount',
+}
+
+export function getRowHeight(size: SCREEN_SIZE): number {
+  let height = 0;
+
+  switch (size) {
+    case SCREEN_SIZE.Large:
+      height = ROW_HEIGHT.Large;
+      break;
+    case SCREEN_SIZE.Medium:
+      height = ROW_HEIGHT.Medium;
+      break;
+    case SCREEN_SIZE.Small:
+      height = ROW_HEIGHT.Small;
+      break;
+    case SCREEN_SIZE.Mobile:
+      height = ROW_HEIGHT.Mobile;
+      break;
+  }
+
+  return height;
+}
+
+export function getScreenSize(width: number) {
+  let size;
+
+  if (width > SCREEN_BREAKPOINT.Large) {
+    size = SCREEN_SIZE.Large;
+  } else if (width > SCREEN_BREAKPOINT.Medium) {
+    size = SCREEN_SIZE.Medium;
+  } else if (width > SCREEN_BREAKPOINT.Small) {
+    size = SCREEN_SIZE.Small;
+  } else {
+    size = SCREEN_SIZE.Mobile;
+  }
+  return size;
 }

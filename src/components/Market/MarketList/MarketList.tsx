@@ -7,11 +7,12 @@ import {
   Container,
   Grid,
   Group,
+  Loader,
   NativeSelect,
   TextInput,
   useMantineTheme,
 } from '@mantine/core';
-import { useMediaQuery } from '@mantine/hooks';
+import { useMediaQuery, useViewportSize } from '@mantine/hooks';
 
 import { useAtomValue } from 'jotai';
 
@@ -21,7 +22,15 @@ import { OFFER_TYPE } from 'src/types/offer';
 import { Offer } from 'src/types/offer/Offer';
 
 import { HeaderElement } from '../../List/HeaderElement';
-import { Columns, MaxHeight, OfferData, SortDirection } from './Types';
+import {
+  Columns,
+  OfferData,
+  ROW_HEIGHT,
+  SCREEN_SIZE,
+  SortDirection,
+  getRowHeight,
+  getScreenSize,
+} from './Types';
 import { mapColumnLabels, mapOfferToOfferData } from './Utils';
 import { ItemElement, ItemEmptyElement } from './components/ItemElement';
 
@@ -35,19 +44,28 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
   const theme = useMantineTheme();
   const listOfferType = useAtomValue(tableOfferTypeAtom);
   const [sortedColumn, setSortedColumn] = useState('');
-  const isLarge = useMediaQuery(`(min-width: 1200px)`);
-  const isMedium = useMediaQuery(`(min-width: 685`) && !isLarge;
-  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`);
-  const isSmallMobile = useMediaQuery(`(max-width: 510px)`);
-  const isSmall =
-    useMediaQuery(`(min-width: ${theme.breakpoints.xs}`) && !isMedium;
+  const { width } = useViewportSize();
+  const screenSize = getScreenSize(width);
+  const rowHeight = getRowHeight(screenSize);
+  // const isLarge = SCREEN_BREAKPOINT.Large <= width; //useMediaQuery(`(min-width: 1200px)`);
+  // const isMedium =
+  //   SCREEN_BREAKPOINT.Medium <= width && width < SCREEN_BREAKPOINT.Large; //useMediaQuery(`(min-width: 685`) && !isLarge;
+  // const isMobile = width < SCREEN_BREAKPOINT.Small; //useMediaQuery(`(max-width: ${theme.breakpoints.xs})`);
+  // //const isSmallMobile = useMediaQuery(`(max-width: 510px)`);
+  // const isSmall =
+  //   SCREEN_BREAKPOINT.Small <= width && width < SCREEN_BREAKPOINT.Medium; //useMediaQuery(`(min-width: ${theme.breakpoints.xs}`) && !isMedium;
+
+  //mobile < 577         =>356
+  //577 <= small <632    =>294
+  //632 <= medium < 1200 =>219
+  //1200 <= large        =>143
 
   const { allowedTokens } = useAllowedTokens();
   const offersData: OfferData[] = offers.map((offer) =>
     mapOfferToOfferData(offer, listOfferType, allowedTokens)
   );
   //console.log('MARKET LIST', JSON.stringify(offers, null, 4));
-  console.log('LOAD MarketList');
+  //console.log('LOAD MarketList');
   const { t: tList } = useTranslation('list');
   const { t: tOfferMode } = useTranslation(listOfferType.toLowerCase(), {
     keyPrefix: 'list',
@@ -104,29 +122,15 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
           listOfferType === OFFER_TYPE.BUY
             ? SortDirection.Desc
             : SortDirection.Asc;
-        console.log('SORT direction', key, listOfferType, direction);
+        //console.log('SORT direction', key, listOfferType, direction);
         sortOffersByColumn(key as keyof OfferData, direction);
         break;
       }
     }
   };
 
-  const itemHeight = isSmallMobile
-    ? MaxHeight.SmallMobile
-    : isMobile
-    ? MaxHeight.Mobile
-    : isSmall
-    ? MaxHeight.Small
-    : isLarge
-    ? MaxHeight.Large
-    : MaxHeight.Medium;
-
-  // console.log('screen', 'isLarge', isLarge);
-  // console.log('screen', 'isMobile', isMobile);
-  // console.log('screen', 'isSmall', isSmall);
-  // console.log('screen', 'isSmallMobile', isSmallMobile);
-  // console.log('screen', 'isMedium', isMedium);
-  // console.log('screen', 'itemHeight', itemHeight);
+  const isMediumOrSmall =
+    screenSize === SCREEN_SIZE.Medium || screenSize === SCREEN_SIZE.Small;
 
   return (
     <Container
@@ -147,7 +151,7 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
             theme.colorScheme === 'dark' ? undefined : theme.colors.gray[1],
         }}
       >
-        {isMobile && (
+        {screenSize === SCREEN_SIZE.Mobile && (
           <div>
             <TextInput
               placeholder={tList('search')}
@@ -169,7 +173,7 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
             />
           </div>
         )}
-        {!isLarge && !isMobile && (
+        {isMediumOrSmall && (
           <Group position={'apart'}>
             <TextInput
               placeholder={tList('search')}
@@ -190,7 +194,7 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
             />
           </Group>
         )}
-        {isLarge && (
+        {screenSize === SCREEN_SIZE.Large && (
           <Grid columns={20}>
             <Grid.Col xl={4} lg={5}>
               <TextInput
@@ -226,13 +230,18 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
       </Card>
 
       <List
-        height={Math.max(sortedOffers.length, 1) * itemHeight}
+        height={Math.max(sortedOffers.length, 1) * rowHeight}
         itemCount={Math.max(sortedOffers.length, 1)}
         itemSize={() => ITEM_HEIGHT_MIN}
         width={'100%'}
       >
         {renderItem}
       </List>
+      {sortedOffers[0].id === '' && (
+        <Group position={'center'}>
+          <Loader variant={'dots'} />
+        </Group>
+      )}
     </Container>
   );
 };
@@ -240,7 +249,7 @@ function sortColumn(
   column: keyof OfferData,
   sortDirection: SortDirection
 ): ((a: OfferData, b: OfferData) => number) | undefined {
-  console.log('Sort', column, sortDirection);
+  //console.log('Sort', column, sortDirection);
   return (a, b) => {
     const columnA = a[column];
     const columnB = b[column];

@@ -22,6 +22,7 @@ export const useTypedOffers: UseTypedOffers = (offers) => {
   const getTypedOffers = useCallback(
     (type: OFFER_TYPE): Offer[] => {
       if (!offers || offersLoading) return OFFER_LOADING;
+
       return offers.filter((offer: Offer) => offer.type == type);
     },
     [offers, offersLoading]
