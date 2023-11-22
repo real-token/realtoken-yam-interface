@@ -167,7 +167,7 @@ export function getPriceEvolution(
     priceDiffPercent = new BigNumber(priceDiff)
       .dividedBy(formerPrice)
       .toNumber();
-    priceColor = priceDiff > 0 ? 'green' : 'red';
+    priceColor = priceDiff > 0 ? 'teal' : 'red';
     Icon = priceDiff > 0 ? IconTriangle : IconTriangleInverted;
   } else if (formerPrice && currentPrice && formerPrice === currentPrice) {
     priceDiff = 0;
