@@ -128,7 +128,7 @@ export const fetchOffersTheGraph = (
         const { data } = await clientYAM.query({
           query: gql`
             query getOffers {
-              offers(first: 1000, skip: ${skip}, where: { removedAtBlock: null }) {
+              offers(first: 1000, skip: ${skip}) {
                 ${getOfferQuery()}
               }
             }
