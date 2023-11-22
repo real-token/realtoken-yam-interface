@@ -703,6 +703,34 @@ export type Block_height = {
   number_gte?: InputMaybe<Scalars['Int']>;
 };
 
+/**  Transaction entity  */
+export type Transaction = {
+  /**  Transaction block  */
+  block: Scalars['BigInt'];
+  /**  Transaction hash  */
+  id: Scalars['String'];
+  /**  Transaction timestamp  */
+  timestamp: Scalars['BigInt'];
+  /**  Yam contract  */
+  to: Scalars['String'];
+  /**  Transaction input */
+  input: Scalars['String'];
+  /**  Buyer token 0x */
+  transferEvents: Array<TransferEvent>;
+  
+};
+
+export type TransferEvent ={
+  amount: Scalars['BigInt'];
+  sender: Scalars['String'];
+  token: {
+    address: Scalars['String'];
+    decimals: Scalars['BigInt'];
+    fullName: Scalars['String'];
+    symbol: Scalars['String'];
+  };
+}
+
 /**  Offer entity  */
 export type Offer = {
   balance: AccountBalance | null;

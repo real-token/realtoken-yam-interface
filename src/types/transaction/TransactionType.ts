@@ -1,0 +1,14 @@
+
+export enum TRANSACTION_METHOD  {
+  BUY_METHOD = '40993b26',
+  BUY_OFFER_BATCH_METHOD = '14b2051f',
+  BUY_OFFER_WITH_PERMIT_METHOD = '1bcae916',
+};
+
+export enum TRANSACTION_TYPE  {
+  BUY,
+  CREATE ,
+  UNKNOWN,
+};
+
+

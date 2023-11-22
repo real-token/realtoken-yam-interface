@@ -1,40 +1,223 @@
 import { BigNumber } from 'bignumber.js';
 
-import { Transaction } from 'src/types/transaction/Transaction';
+import { TokenData, TransactionData } from 'src/components/Transactions/Types';
+import { AllowedToken } from 'src/types/allowedTokens';
+import { Offer } from 'src/types/offer/Offer';
 
-export function sortTransactions(transactions: Transaction[]): Transaction[] {
-  // Triez les transactions par ordre décroissant du champ timestamp
-  const copiedTransactions = [...transactions];
-  return copiedTransactions.sort((a, b) => b.timeStamp - a.timeStamp);
-}
+export const associateTransactionWithOffer = (
+  transactions: TransactionData[],
+  createOfferTransactions: TransactionData[],
+  offers: Offer[],
+  allowedTokens?: AllowedToken[]
+): {
+  transactionsWithOffers: TransactionData[];
+  createTransactionsWithOffers: TransactionData[];
+} => {
+  // Boucle à travers chaque transaction
+  const transactionsWithOffers = transactions.map((transaction) => {
+    // Trouve l'offre correspondante en utilisant offerId
+    const correspondingOffer = offers.find(
+      (offer) => offer.offerId === transaction.offerId
+    );
 
-export function getFirstsTransactions(
-  transactions: Transaction[],
-  firsts: number
-): Transaction[] {
-  // Récupérez les 10 premières transactions après le tri
-  const recentTransactions = transactions.slice(0, firsts);
+    const tokenForSaleData = getTokenInfo(
+      allowedTokens,
+      correspondingOffer?.offerTokenAddress
+    );
 
-  return recentTransactions;
-}
+    const tokenBuyWithData = getTokenInfo(
+      allowedTokens,
+      correspondingOffer?.buyerTokenAddress
+    );
 
-export function getNextTransactions(
-  transactions: Transaction[],
-  lastTimestamp: number,
-  firsts: number
-): Transaction[] {
-  // Trouvez l'index de la dernière transaction avec le timestamp donné
-  const lastIndex = transactions.findIndex(
-    (transaction) => transaction.timeStamp === lastTimestamp
+    const tokenForSale: TokenData = {
+      address: correspondingOffer?.offerTokenAddress ?? '?',
+      decimals: parseInt(correspondingOffer?.offerTokenDecimals ?? '0'),
+      name: correspondingOffer?.offerTokenName ?? '?',
+      symbol: tokenForSaleData?.symbol,
+      Logo: tokenForSaleData?.logo,
+    };
+
+    const tokenBuyWith: TokenData = {
+      address: correspondingOffer?.buyerTokenAddress ?? '?',
+      decimals: parseInt(correspondingOffer?.buyerTokenDecimals ?? '0'),
+      name: correspondingOffer?.buyerTokenName ?? '?',
+      symbol: tokenBuyWithData?.symbol,
+      Logo: tokenBuyWithData?.logo,
+    };
+
+    if (transaction.tokenForSale) {
+      const amount = new BigNumber(transaction.amountGwei).dividedBy(
+        new BigNumber(10).pow(tokenForSale.decimals)
+      );
+      transaction.amount = amount.toNumber();
+    }
+
+    if (transaction.tokenBuyWith) {
+      const price = new BigNumber(transaction.priceGwei).dividedBy(
+        new BigNumber(10).pow(tokenBuyWith.decimals)
+      );
+      transaction.price = price.toNumber();
+    }
+
+    transaction.tokenForSale = tokenForSale;
+    transaction.tokenBuyWith = tokenBuyWith;
+    transaction.offerType = correspondingOffer?.type;
+    transaction.offerTimestamp = correspondingOffer?.createdAtTimestamp;
+    transaction.currentOfferAmount = correspondingOffer?.amount
+      ? parseInt(correspondingOffer.amount)
+      : undefined;
+    transaction.initialOfferAmount = correspondingOffer?.initialAmount;
+
+    // Ajoute l'offre correspondante à la transaction
+    return {
+      ...transaction,
+    };
+  });
+
+  const createTransactionsWithOffers = createOfferTransactions.map(
+    (createofferTransaction) => {
+      // Trouve l'offre correspondante en utilisant offerId
+      const correspondingOffer = offers.find(
+        (offer) => offer.createdAtTimestamp === createofferTransaction.timeStamp
+      );
+
+      if (correspondingOffer)
+        createofferTransaction.offerId = correspondingOffer.offerId;
+
+      // Ajoute l'offre correspondante à la transaction
+      return {
+        ...createofferTransaction,
+      };
+    }
   );
 
-  // Récupérez les 10 transactions suivantes après le dernier index
-  const nextTransactions = transactions.slice(
-    lastIndex + 1,
-    lastIndex + firsts + 1
+  // Affiche le résultat dans la console
+  // console.log(
+  //   'Transactions avec offres correspondantes :',
+  //   transactionsWithOffers
+  // );
+
+  return { transactionsWithOffers, createTransactionsWithOffers };
+};
+
+export const guessCreateOfferTransactionId = (
+  transactions: TransactionData[],
+  createOfferTransactions: TransactionData[]
+): TransactionData[] => {
+  const offerIds = new Set(createOfferTransactions.map((t) => t.offerId));
+
+  // Boucle à travers chaque transaction
+  const createOfferTransactionsWithId = createOfferTransactions.map(
+    (createOfferTransaction) => {
+      // Trouve l'offre correspondante en utilisant offerId
+      const correspondingTransactions = transactions.filter((transaction) => {
+        const transactionIniAmount = transaction.initialOfferAmountGwei
+          ? transaction.initialOfferAmountGwei ===
+            createOfferTransaction.initialOfferAmountGwei
+          : true;
+
+        return (
+          transaction.blockNumber > createOfferTransaction.blockNumber &&
+          transaction.priceGwei === createOfferTransaction.priceGwei &&
+          transactionIniAmount
+        );
+      });
+
+      const correspondingIdsSet = new Set(
+        correspondingTransactions.map((c) => c.offerId)
+      );
+
+      offerIds.forEach((value) => {
+        correspondingIdsSet.delete(value);
+      });
+      const correspondingIds = [...correspondingIdsSet];
+
+      if (correspondingTransactions && correspondingIds.length === 1) {
+        // console.log(
+        //   'CHAMPAGNE',
+        //   correspondingIds[0],
+        //   [...offerIds],
+        //   createOfferTransaction.blockNumber
+        // );
+        createOfferTransaction.offerId = correspondingIds[0];
+        offerIds.add(createOfferTransaction.offerId);
+      } else if (correspondingTransactions.length > 1) {
+        // console.log(
+        //   'ALMOST CHAMPAGNE',
+        //   correspondingIds,
+        //   createOfferTransaction.blockNumber
+        // );
+      }
+
+      // Ajoute l'offre correspondante à la transaction
+      return {
+        ...createOfferTransaction,
+      };
+    }
   );
 
-  return nextTransactions;
+  // Affiche le résultat dans la console
+  // console.log(
+  //   'Transactions avec offres correspondantes :',
+  //   transactionsWithOffers
+  // );
+
+  return createOfferTransactionsWithId;
+};
+
+export const associateBuyWithCreateOfferTransaction = (
+  transactions: TransactionData[],
+  createOfferTransactions: TransactionData[]
+): TransactionData[] => {
+  // Boucle à travers chaque transaction
+  console.log(
+    'createOfferTransactions'
+    //JSON.stringify(createOfferTransactions, null, 4)
+  );
+  const transactionsWithInitData = transactions.map((transaction) => {
+    // Trouve l'offre correspondante en utilisant offerId
+    const correspondingTransaction = createOfferTransactions.find(
+      (createOfferTransaction) =>
+        createOfferTransaction.timeStamp === transaction.offerTimestamp
+    );
+
+    if (transaction.tokenForSale && correspondingTransaction) {
+      const amount = new BigNumber(
+        correspondingTransaction?.amountGwei
+      ).dividedBy(new BigNumber(10).pow(transaction.tokenForSale.decimals));
+      transaction.initialOfferAmount = amount.toNumber();
+    } else {
+      transaction.initialOfferAmount = correspondingTransaction?.amount;
+    }
+    if (correspondingTransaction) {
+      correspondingTransaction.offerId = transaction.offerId;
+    }
+
+    // Ajoute l'offre correspondante à la transaction
+    return {
+      ...transaction,
+    };
+  });
+
+  // Affiche le résultat dans la console
+  // console.log(
+  //   'Transactions avec offres correspondantes :',
+  //   transactionsWithOffers
+  // );
+
+  return transactionsWithInitData;
+};
+
+export function getTokenInfo(
+  allowedTokens: AllowedToken[] | undefined,
+  tokenAddress: string | undefined
+) {
+  return allowedTokens && tokenAddress
+    ? allowedTokens.find(
+        (t) => t.contractAddress.toLowerCase() === tokenAddress.toLowerCase()
+      )
+    : undefined;
 }
 
 export function formatTimestamp(timestamp: number): string {
@@ -76,7 +259,7 @@ export function formatTimestampHour(timestamp: number): string {
   // Retourner la date formatée
   return `${hours}:${minutes}:${seconds}`;
 }
-export function sumSpendingValues(transactions: Transaction[]): number {
+export function sumSpendingValues(transactions: TransactionData[]): number {
   return transactions.reduce((total, transaction) => {
     return new BigNumber(total)
       .plus(new BigNumber(transaction.price).times(transaction.amount))
@@ -84,7 +267,7 @@ export function sumSpendingValues(transactions: Transaction[]): number {
   }, 0);
 }
 
-export function sumAmountValues(transactions: Transaction[]): number {
+export function sumAmountValues(transactions: TransactionData[]): number {
   return transactions.reduce((total, transaction) => {
     return new BigNumber(total)
       .plus(new BigNumber(transaction.amount))
@@ -92,7 +275,7 @@ export function sumAmountValues(transactions: Transaction[]): number {
   }, 0);
 }
 
-export function getTimestampRange(transactions: Transaction[]): {
+export function getTimestampRange(transactions: TransactionData[]): {
   firstTimestamp: number | undefined;
   lastTimestamp: number | undefined;
 } {
@@ -107,7 +290,7 @@ export function getTimestampRange(transactions: Transaction[]): {
 }
 
 export function calculateAverageExpense(
-  transactions: Transaction[]
+  transactions: TransactionData[]
 ): number | undefined {
   if (transactions.length === 0) {
     return undefined;
@@ -125,7 +308,7 @@ export function calculateAverageExpense(
 }
 
 export function calculateAveragePrice(
-  transactions: Transaction[]
+  transactions: TransactionData[]
 ): number | undefined {
   if (transactions.length === 0) {
     return undefined;
@@ -143,7 +326,7 @@ export function calculateAveragePrice(
 }
 
 export function calculateExpenseStandardDeviation(
-  transactions: Transaction[]
+  transactions: TransactionData[]
 ): number | undefined {
   // Calcul de la moyenne des dépenses
   const averageExpense = calculateAverageExpense(transactions);
@@ -184,10 +367,10 @@ export function calculateExpenseStandardDeviation(
 }
 
 export function calculateAverageExpensesPerDay(
-  transactions: Transaction[]
+  transactions: TransactionData[]
 ): Map<number, number> {
   const expensesPerDay = new Map<number, number>();
-  const transactionsPerDay = new Map<number, Transaction[]>();
+  const transactionsPerDay = new Map<number, TransactionData[]>();
 
   // Group transactions by day
   transactions.forEach((transaction) => {
@@ -219,12 +402,12 @@ export function calculateAverageExpensesPerDay(
 }
 
 export function calculateExpensesPer24Hours(
-  transactions: Transaction[],
+  transactions: TransactionData[],
   t0: number,
   days = 7
 ): Map<number, number> {
   const expensesPer24Hours = new Map<number, number>();
-  const transactionsPer24Hours = new Map<number, Transaction[]>();
+  const transactionsPer24Hours = new Map<number, TransactionData[]>();
 
   // Group transactions by 24-hour periods
   transactions.forEach((transaction) => {
@@ -260,12 +443,12 @@ export function calculateExpensesPer24Hours(
 }
 
 export function calculateTransactionsPerPeriod(
-  transactions: Transaction[],
+  transactions: TransactionData[],
   t0: number,
   days = 7
 ): Map<number, number> {
   const numberOftransactionsPer24Hours = new Map<number, number>();
-  const transactionsPer24Hours = new Map<number, Transaction[]>();
+  const transactionsPer24Hours = new Map<number, TransactionData[]>();
 
   // Group transactions by 24-hour periods
   transactions.forEach((transaction) => {
@@ -301,12 +484,12 @@ export function calculateTransactionsPerPeriod(
 }
 
 export function calculatePricesPerPeriod(
-  transactions: Transaction[],
+  transactions: TransactionData[],
   t0: number,
   days = 7
 ): Map<number, number> {
   const pricesPer24Hours = new Map<number, number>();
-  const transactionPricesPer24Hours = new Map<number, Transaction[]>();
+  const transactionPricesPer24Hours = new Map<number, TransactionData[]>();
 
   // Group transactions by 24-hour periods
   transactions.forEach((transaction) => {
@@ -333,25 +516,4 @@ export function calculatePricesPerPeriod(
   });
 
   return pricesPer24Hours;
-}
-
-export function countTransactionsLast7Days(
-  transactions: Transaction[]
-): number {
-  // Obtenez la date d'aujourd'hui
-  const currentDate = new Date();
-
-  // Calculez la date d'il y a 7 jours
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(currentDate.getDate() - 7);
-
-  // Filtrez les transactions qui sont survenues au cours des 7 derniers jours
-  const transactionsLast7Days = transactions.filter(
-    (transaction) =>
-      transaction.timeStamp >=
-      new BigNumber(sevenDaysAgo.getTime()).dividedBy(1000).toNumber()
-  );
-
-  // Retournez le nombre de transactions dans la fenêtre temporelle spécifiée
-  return transactionsLast7Days.length;
 }

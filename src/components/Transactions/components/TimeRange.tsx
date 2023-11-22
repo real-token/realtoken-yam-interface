@@ -5,7 +5,7 @@ import { Group, Paper, Text, useMantineTheme } from '@mantine/core';
 
 import { TransactionData } from 'src/components/Transactions/Types';
 
-import { formatTimestamp, getTimestampRange } from '../Utils';
+import { formatTimestamp, getTimestampRange } from '../DataUtils';
 import DownloadButton from './DownloadButton';
 
 interface TimeRangeProps {

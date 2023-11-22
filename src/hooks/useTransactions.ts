@@ -6,8 +6,8 @@ import useSWRInfinite, { SWRInfiniteResponse } from 'swr/infinite';
 import { AllowedToken } from 'src/types/allowedTokens';
 import { Offer } from 'src/types/offer/Offer';
 
+import { associateTransactionWithOffer } from '../components/Transactions/DataUtils';
 import { TransactionData } from '../components/Transactions/Types';
-import { associateTransactionWithOffer } from '../components/Transactions/Utils';
 
 interface Transaction {
   blockNumber: number;

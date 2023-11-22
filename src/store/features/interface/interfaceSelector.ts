@@ -3,11 +3,14 @@ import BigNumber from 'bignumber.js';
 import { RootState } from 'src/store/store';
 import { OFFER_LOADING, Offer } from 'src/types/offer/Offer';
 import { Price } from 'src/types/price';
+import { Transaction } from 'src/types/transaction/Transaction';
 
 import { selectAddress } from '../settings/settingsSelector';
 
 export const selectOffersIsLoading = (state: RootState) =>
   state.interface.offers.isLoading;
+export const selectTransactionsIsLoading = (state: RootState) =>
+  state.interface.transactions.isLoading;
 export const selectProperties = (state: RootState) =>
   state.interface.properties.properties;
 export const selectPropertiesIsLoading = (state: RootState) =>
@@ -15,6 +18,9 @@ export const selectPropertiesIsLoading = (state: RootState) =>
 
 export const selectOffers = (state: RootState): Offer[] =>
   state.interface.offers.offers;
+
+export const selectTransactions = (state: RootState): Transaction[] =>
+  state.interface.transactions.transactions;
 
 export const selectAddressOffers = (state: RootState) => {
   const address = selectAddress(state);
@@ -57,6 +63,13 @@ export const selectPrivateOffers = (state: RootState) => {
 
   if (!address || !offers || offersIsLoading) return OFFER_LOADING;
   return offers.filter((offer: Offer) => offer.buyerAddress == address);
+};
+
+export const selectAllTransactions = (state: RootState) => {
+  const transactions = selectTransactions(state);
+  const transactionsIsLoading = selectTransactionsIsLoading(state);
+  if (!transactions || transactionsIsLoading) return [];
+  return transactions;
 };
 
 export const selectPricesIsLoading = (state: RootState): boolean => {

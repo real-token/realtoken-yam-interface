@@ -1,11 +1,12 @@
 import React, { FC, useEffect, useMemo, useRef } from 'react';
 
-import { Flex, Group, em } from '@mantine/core';
+import { Flex, Group, Space, em } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 
 import { useAtom } from 'jotai';
 
 import { MarketTableFilter } from 'src/components/Market/Filters';
+import { TransactionStatsGrid } from 'src/components/Transactions/TransactionStatsGrid';
 import { useAppSelector } from 'src/hooks/react-hooks';
 import { displayChoosedAtom } from 'src/states';
 import {
@@ -80,6 +81,8 @@ const Display: FC = () => {
 
   return (
     <div ref={displayRef}>
+      <TransactionStatsGrid></TransactionStatsGrid>
+      <Space h={'sm'}></Space>
       {!shallBuyInterfaceDisplay && (
         <>
           <Group>
@@ -92,15 +95,6 @@ const Display: FC = () => {
 
           <Flex justify={'space-between'} mb={16}>
             <MarketSort />
-            {/* {!isMobile && (
-              <Select
-                data={datas}
-                value={choosenDisplay}
-                onChange={(value) => {
-                  if (value) setChoosenDisplay(value);
-                }}
-              />
-            )} */}
           </Flex>
           {getDisplay() ? getDisplay()?.component : undefined}
         </>

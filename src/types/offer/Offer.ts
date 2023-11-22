@@ -20,9 +20,11 @@ export type Offer = {
   offerTokenName: string;
   offerTokenDecimals: string;
   offerTokenType:number;
+  offerTokenSymbol:string;
   buyerTokenAddress: string;
   buyerTokenName: string;
   buyerTokenDecimals: string;
+  buyerTokenSymbol: string;
   buyerTokenType: number;
   sellerAddress: string;
   sellerName: string;
@@ -61,10 +63,12 @@ export const DEFAULT_OFFER: Offer = {
   offerTokenName: "",
   offerTokenDecimals: "",
   offerTokenType: 0,
+  offerTokenSymbol:"",
   buyerTokenAddress: "",
   buyerTokenName: "",
   buyerTokenDecimals: "",
   buyerTokenType: 0,
+  buyerTokenSymbol: "",
   sellerAddress: "",
   sellerName: "",
   buyerAddress: "",

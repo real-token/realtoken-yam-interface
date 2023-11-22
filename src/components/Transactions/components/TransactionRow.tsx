@@ -23,7 +23,7 @@ import { TokenExchangeElement } from 'src/components/Offer/components/TokenExcha
 import { TransactionData } from 'src/components/Transactions/Types';
 import { formatSmallToken, formatToken, formatUsd } from 'src/utils/format';
 
-import { formatTimestampDay, formatTimestampHour } from '../Utils';
+import { formatTimestampDay, formatTimestampHour } from '../DataUtils';
 import { FieldPaper } from './FieldPaper';
 
 const ROW_HEIGHT = 160;

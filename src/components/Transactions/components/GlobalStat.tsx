@@ -15,7 +15,7 @@ import {
   calculatePricesPerPeriod,
   calculateTransactionsPerPeriod,
   sumSpendingValues,
-} from '../Utils';
+} from '../DataUtils';
 
 interface GlobalStatProps {
   transactions: TransactionData[];

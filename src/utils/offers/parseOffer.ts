@@ -108,10 +108,12 @@ export const parseOffer = (
           : offer.offerToken.name ?? '',
         offerTokenDecimals: offer.offerToken.decimals?.toString() ?? '',
         offerTokenType: offer.offerToken.tokenType ?? 0,
+        offerTokenSymbol: offer.offerToken.symbol,
         buyerTokenAddress: (offer.buyerToken.address as string)?.toLowerCase(),
         buyerTokenName: buyingSite
           ? buyingSite.shortName
           : offer.buyerToken.name ?? '',
+        buyerTokenSymbol: offer.buyerToken.symbol,
         buyerTokenDecimals: offer.buyerToken.decimals?.toString() ?? '',
         buyerTokenType: offer.buyerToken.tokenType ?? 0,
         sellerAddress: (offer.seller.address as string)?.toLowerCase(),

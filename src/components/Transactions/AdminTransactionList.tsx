@@ -12,7 +12,7 @@ import { selectAllOffers } from 'src/store/features/interface/interfaceSelector'
 
 import TransactionList from './TransactionList';
 
-const YamTransactionList = ({}) => {
+const AdminTransactionList = ({}) => {
   console.log('YamTransactionList rendered');
   const { t } = useTranslation('transactions', { keyPrefix: 'loader' });
 
@@ -56,4 +56,4 @@ const YamTransactionList = ({}) => {
   );
 };
 
-export default YamTransactionList;
+export default AdminTransactionList;

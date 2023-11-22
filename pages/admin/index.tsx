@@ -6,12 +6,12 @@ import { IconClick, IconFileDollar, IconList } from '@tabler/icons';
 
 import { AdminActions } from 'src/components/Admin/AdminActions';
 import { MarketTableAdmin } from 'src/components/Market/MarketTable/MarketTableAdmin';
-import YamTransactionList from 'src/components/Transactions/YamTransactionList';
+import AdminTransactionList from 'src/components/Transactions/AdminTransactionList';
 import { ConnectedProvider } from 'src/providers/ConnectProvider';
 
 export const Admin = () => {
   const { t } = useTranslation('menu', { keyPrefix: 'subMenuAdmin' });
-  const transactionPanel = useMemo(() => <YamTransactionList />, []);
+  const transactionPanel = useMemo(() => <AdminTransactionList />, []);
   return (
     <ConnectedProvider>
       <Flex direction={'column'} py={'xl'} style={{ flexGrow: 1 }}>

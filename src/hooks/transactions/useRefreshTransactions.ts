@@ -6,86 +6,77 @@ import { useWeb3React } from '@web3-react/core';
 import { ContractsID } from 'src/constants';
 import {
   selectOffersIsLoading,
-  selectPricesIsLoading,
+  selectTransactionsIsLoading,
 } from 'src/store/features/interface/interfaceSelector';
-import { fetchOffers } from 'src/store/features/interface/interfaceSlice';
+import {
+  fetchOffers,
+  fetchTransactions,
+} from 'src/store/features/interface/interfaceSlice';
 
 import { useAppDispatch, useAppSelector } from '../react-hooks';
 import { useContract } from '../useContract';
 import { usePropertiesToken } from '../usePropertiesToken';
 
-type UseRefreshOffers = (refreshOnMount: boolean) => {
-  offersIsLoading: boolean;
-  refreshOffers: () => void;
+type UseRefreshTransactions = (refreshOnMount: boolean) => {
+  transactionsIsLoading: boolean;
+  refreshTransactions: () => void;
 };
-export const useRefreshOffers: UseRefreshOffers = (refreshOnMount) => {
-  const { account, provider, chainId } = useWeb3React();
+export const useRefreshTransactions: UseRefreshTransactions = (
+  refreshOnMount
+) => {
+  const { chainId } = useWeb3React();
   const dispatch = useAppDispatch();
   const offersIsLoading = useSelector(selectOffersIsLoading);
+  const transactionsIsLoading = useSelector(selectTransactionsIsLoading);
   const [initialized, setInitialized] = useState<boolean>(false);
 
   const { propertiesToken, propertiesIsloading } = usePropertiesToken();
-
-  const pricesIsLoading = useAppSelector(selectPricesIsLoading);
 
   const realTokenYamUpgradeable = useContract(
     ContractsID.realTokenYamUpgradeable
   );
 
-  const refreshOffers = useCallback(() => {
+  const refreshTransactions = useCallback(() => {
     try {
       // console.log(!realTokenYamUpgradeable, !provider, !account, !chainId, !propertiesToken, propertiesToken.length == 0, propertiesIsloading)
       if (
-        !provider ||
-        !account ||
         !chainId ||
         !propertiesToken ||
         propertiesToken.length == 0 ||
         propertiesIsloading
       )
         return;
-      dispatch(fetchOffers(provider, account, chainId, propertiesToken));
+      dispatch(fetchTransactions(chainId));
     } catch (err) {
       console.log(err);
     }
-  }, [
-    provider,
-    account,
-    chainId,
-    propertiesToken,
-    propertiesIsloading,
-    dispatch,
-  ]);
+  }, [chainId, propertiesToken, propertiesIsloading, dispatch]);
 
   useEffect(() => {
     if (
       realTokenYamUpgradeable &&
-      provider &&
-      account &&
       refreshOnMount &&
       !initialized &&
       !propertiesIsloading &&
       propertiesToken.length > 0 &&
-      !pricesIsLoading
+      !offersIsLoading
     ) {
-      refreshOffers();
+      refreshTransactions();
       setInitialized(true);
     }
   }, [
     realTokenYamUpgradeable,
-    provider,
-    account,
     refreshOnMount,
     initialized,
     propertiesIsloading,
     propertiesToken,
-    refreshOffers,
-    pricesIsLoading,
+    refreshTransactions,
+    offersIsLoading,
   ]);
 
   // eslint-disable-next-line object-shorthand
   return {
-    offersIsLoading: offersIsLoading,
-    refreshOffers: refreshOffers,
+    transactionsIsLoading,
+    refreshTransactions,
   };
 };

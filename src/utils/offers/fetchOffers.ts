@@ -15,7 +15,10 @@ import { Offer } from 'src/types/offer/Offer';
 import { Price } from 'src/types/price';
 
 import { Offer as OfferGraphQl } from '../../../.graphclient/index';
-import { getTheGraphUrlRealtoken, getTheGraphUrlYAM } from './getClientURL';
+import {
+  getTheGraphUrlRealtoken,
+  getTheGraphUrlYAM,
+} from '../theGraph/getClientURL';
 import { getOfferQuery } from './getOfferQuery';
 import { parseOffer } from './parseOffer';
 
