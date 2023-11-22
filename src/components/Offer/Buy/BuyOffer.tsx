@@ -30,6 +30,7 @@ import { NumberInput } from 'src/components/NumberInput';
 import {
   AddErc20ToWallet,
   addErc20TokenToMetaMask,
+  isMetaMask,
 } from 'src/components/Wallet/AddTokenToWallet';
 import { ContractsID } from 'src/constants';
 import { useActiveChain, useContract } from 'src/hooks';
@@ -214,7 +215,7 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
       const onFinished = () => {
         setSubmitting(false);
         formValues.amount = 0;
-        modalFinishOpen();
+        if (isMetaMask(connector)) modalFinishOpen();
       };
       setSubmitting(true);
 
