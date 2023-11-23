@@ -18,8 +18,8 @@ import { TokenStatsCard } from './components/TokenStatsCard';
 export const TransactionStatsGrid = ({}) => {
   console.log('YamTransactionList rendered');
   const theme = useMantineTheme();
-  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`);
   const isSmall = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
+  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`);
   const { refreshTransactions } = useRefreshTransactions(false);
   const offersIsLoading = useSelector(selectOffersIsLoading);
   const allTransactions = useAppSelector(selectAllTransactions);
@@ -33,7 +33,10 @@ export const TransactionStatsGrid = ({}) => {
   return (
     <>
       {
-        <SimpleGrid cols={isSmall ? 3 : propertiesToken.length}>
+        <SimpleGrid
+          cols={isSmall ? 3 : propertiesToken.length}
+          spacing={isMobile ? 'xs' : 'xl'}
+        >
           {propertiesToken.map((token) => (
             <TokenStatsCard
               token={token}

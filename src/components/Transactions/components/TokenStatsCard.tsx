@@ -10,7 +10,9 @@ import {
   Space,
   Text,
   Tooltip,
+  useMantineTheme,
 } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import {
   IconEqual,
   IconReload,
@@ -45,7 +47,8 @@ export const TokenStatsCard: FC<TokenStatsCardProps> = ({
   token,
 }) => {
   const { t } = useTranslation('transactions', { keyPrefix: 'stats' });
-
+  const theme = useMantineTheme();
+  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`);
   const mostRecentsTransaction = getFirstsTransactions(
     transactions,
     TRANSACTION_STATS_SIZE
@@ -79,7 +82,7 @@ export const TokenStatsCard: FC<TokenStatsCardProps> = ({
     <Card
       key={token.contractAddress}
       shadow={'sm'}
-      padding={'lg'}
+      padding={isMobile ? 'xs' : 'lg'}
       radius={'md'}
       withBorder={true}
     >
@@ -87,29 +90,36 @@ export const TokenStatsCard: FC<TokenStatsCardProps> = ({
         <Group position={'apart'} align={'start'}>
           <Image
             src={'https://yam.cleansatmining.com/logo.svg'}
-            width={40}
+            width={isMobile ? 30 : 40}
             alt={'csm logo'}
             sx={{ margin: '5px' }}
           ></Image>
           <Tooltip label={'Reload'}>
             <ActionIcon variant={'transparent'}>
-              <IconReload size={'1.5rem'} />
+              <IconReload size={isMobile ? '1.5rem' : '1.5rem'} />
             </ActionIcon>
           </Tooltip>
         </Group>
       </Card.Section>
 
-      <Text weight={500} color={'dimmed'} size={'md'}>
+      <Text weight={500} color={'dimmed'} size={isMobile ? 10 : 'md'}>
         {token.shortName}
       </Text>
 
       <Space h={0}></Space>
-      <Text weight={500} size={25}>
+      <Text weight={500} size={isMobile ? 15 : 25}>
         {currentPrice ? formatUsd(currentPrice) : '-'}
       </Text>
       <Space h={5}></Space>
       <Card.Section>
-        <Group align={'end'} sx={{ marginLeft: '15px', marginBottom: '15px' }}>
+        <Group
+          align={'end'}
+          sx={{
+            marginLeft: isMobile ? '5px' : '15px',
+            marginBottom: isMobile ? '10px' : '15px',
+            marginRight: isMobile ? '5px' : '15px',
+          }}
+        >
           <Badge
             color={priceColor}
             variant={'filled'}
@@ -118,18 +128,26 @@ export const TokenStatsCard: FC<TokenStatsCardProps> = ({
                 <Icon size={'0.6rem'} />
               </Group>
             }
+            fz={isMobile ? 10 : 'sm'}
+            sx={{ padding: isMobile ? 5 : undefined }}
           >
-            {priceDiff !== undefined
-              ? formatUsd(priceDiff) +
-                ' (' +
-                formatPercent(priceDiffPercent) +
-                ')'
-              : '-'}
+            <div>
+              {priceDiff !== undefined
+                ? formatUsd(priceDiff) +
+                  ' (' +
+                  formatPercent(priceDiffPercent) +
+                  ')'
+                : '-'}
+            </div>
           </Badge>
         </Group>
         <Text
           size={'xs'}
-          sx={{ marginLeft: '15px', marginBottom: '5px', marginRight: '15px' }}
+          sx={{
+            marginLeft: isMobile ? '5px' : '15px',
+            marginBottom: '5px',
+            marginRight: isMobile ? '5px' : '15px',
+          }}
         >
           {numberOfTransaction +
             t('numberOfTransaction') +
