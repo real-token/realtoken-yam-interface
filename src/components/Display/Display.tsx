@@ -81,10 +81,10 @@ const Display: FC = () => {
 
   return (
     <div ref={displayRef}>
-      <TransactionStatsGrid></TransactionStatsGrid>
-      <Space h={'sm'}></Space>
       {!shallBuyInterfaceDisplay && (
         <>
+          <TransactionStatsGrid></TransactionStatsGrid>
+          <Space h={'sm'}></Space>
           <Group>
             {choosenDisplay !== Displays.LIST ? (
               <MarketTableFilter />
