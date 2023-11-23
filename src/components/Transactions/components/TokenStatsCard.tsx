@@ -133,13 +133,11 @@ export const TokenStatsCard: FC<TokenStatsCardProps> = ({
       </Text>
 
       <Space h={0}></Space>
-      <Tooltip
-        label={currentPrice ? t('priceExplainded') : t('noPriceExplained')}
-      >
-        <Text weight={500} size={isMobile ? 15 : 25}>
-          {currentPrice ? formatUsd(currentPrice) : '-'}
-        </Text>
-      </Tooltip>
+
+      <Text weight={500} size={isMobile ? 15 : 25}>
+        {currentPrice ? formatUsd(currentPrice) : '-'}
+      </Text>
+
       <Space h={5}></Space>
       <Card.Section>
         <Group
