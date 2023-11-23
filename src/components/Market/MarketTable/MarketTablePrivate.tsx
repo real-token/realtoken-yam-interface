@@ -13,8 +13,8 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
+import { useFilterOffers } from 'src/hooks/offers/useFilterOffers';
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
-import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
 import {
   OFFERS_TYPE,
   useRightTableColumn,
@@ -39,7 +39,7 @@ export const MarketTablePrivate: FC = () => {
 
   const privateOffers = useSelector(selectPrivateOffers);
   const { offers, sellCount, buyCount, exchangeCount } =
-    useTypedOffers(privateOffers);
+    useFilterOffers(privateOffers);
   const columns = useRightTableColumn(OFFERS_TYPE.PRIVATE);
 
   const table = useReactTable({

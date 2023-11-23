@@ -4,9 +4,12 @@ import { useSelector } from 'react-redux';
 import { SimpleGrid, useMantineTheme } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 
+import { useAtom } from 'jotai';
+
 import { useAppSelector } from 'src/hooks/react-hooks';
 import { useRefreshTransactions } from 'src/hooks/transactions/useRefreshTransactions';
 import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
+import { statesFilterTokenAtom } from 'src/states';
 import { selectAllTransactions } from 'src/store/features/interface/interfaceSelector';
 import { selectOffersIsLoading } from 'src/store/features/interface/interfaceSelector';
 
@@ -23,16 +26,20 @@ export const TransactionStatsGrid = ({}) => {
   const allTransactions = useAppSelector(selectAllTransactions);
   const { propertiesToken } = usePropertiesToken();
   const sortedTransactions = sortTransactions(allTransactions);
-  const [tokenFilterStates, setTokenFilterStates] = useState<
-    Map<string, boolean>
-  >(
-    new Map(
-      propertiesToken.map((token) => [
-        token.contractAddress.toLowerCase(),
-        true,
-      ])
-    )
+  const [tokenFilterStates, setTokenFilterStates] = useAtom(
+    statesFilterTokenAtom
   );
+
+  // useState<
+  //   Map<string, boolean>
+  // >(
+  //   new Map(
+  //     propertiesToken.map((token) => [
+  //       token.contractAddress.toLowerCase(),
+  //       true,
+  //     ])
+  //   )
+  // );
 
   useEffect(() => {
     setTokenFilterStates(
@@ -43,7 +50,7 @@ export const TransactionStatsGrid = ({}) => {
         ])
       )
     );
-  }, [propertiesToken]);
+  }, [propertiesToken, setTokenFilterStates]);
 
   useEffect(() => {
     if (!offersIsLoading) return refreshTransactions();

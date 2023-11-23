@@ -2,29 +2,46 @@ import { useCallback, useMemo } from 'react';
 
 import { useAtomValue } from 'jotai';
 
-import { tableOfferTypeAtom } from 'src/states';
+import { statesFilterTokenAtom, tableOfferTypeAtom } from 'src/states';
 import { selectOffersIsLoading } from 'src/store/features/interface/interfaceSelector';
 import { OFFER_LOADING, OFFER_TYPE, Offer } from 'src/types/offer';
 
 import { useAppSelector } from '../react-hooks';
 
-type UseTypedOffers = (offers: Offer[]) => {
+type UseFilterOffers = (offers: Offer[]) => {
   offers: Offer[];
   sellCount: number | undefined;
   buyCount: number | undefined;
   exchangeCount: number | undefined;
 };
 
-export const useTypedOffers: UseTypedOffers = (offers) => {
+export const useFilterOffers: UseFilterOffers = (offers) => {
   const offersLoading = useAppSelector<boolean>(selectOffersIsLoading);
   const tableOfferType = useAtomValue(tableOfferTypeAtom);
+  const tokenOfferFilter = useAtomValue(statesFilterTokenAtom);
 
   const getTypedOffers = useCallback(
     (type: OFFER_TYPE): Offer[] => {
       if (!offers || offersLoading) return OFFER_LOADING;
-      return offers.filter((offer: Offer) => offer.type == type);
+      return offers.filter((offer: Offer) => {
+        const hasFilter = tokenOfferFilter.keys.length > 0;
+        const offerTokenFilter = tokenOfferFilter.has(
+          offer.offerTokenAddress.toLowerCase()
+        )
+          ? tokenOfferFilter.get(offer.offerTokenAddress.toLowerCase())
+          : false;
+        const buyerTokenFilter = tokenOfferFilter.has(
+          offer.buyerTokenAddress.toLowerCase()
+        )
+          ? tokenOfferFilter.get(offer.offerTokenAddress.toLowerCase())
+          : false;
+        return (
+          offer.type == type &&
+          (hasFilter || offerTokenFilter || buyerTokenFilter)
+        );
+      });
     },
-    [offers, offersLoading]
+    [offers, offersLoading, tokenOfferFilter]
   );
 
   const sellCount: number | undefined = useMemo(() => {

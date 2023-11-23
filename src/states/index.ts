@@ -12,6 +12,7 @@ export const isRefreshedAutoAtom = atomWithStorage<boolean>(
 );
 export const nameFilterValueAtom = atom<string>('');
 export const tableOfferTypeAtom = atom<OFFER_TYPE>(OFFER_TYPE.SELL);
+export const statesFilterTokenAtom = atom<Map<string, boolean>>(new Map());
 
 // INTERFACE
 export const displayChoosedAtom = atomWithStorage<string>(

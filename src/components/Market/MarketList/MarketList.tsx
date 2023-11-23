@@ -12,7 +12,7 @@ import {
   TextInput,
   useMantineTheme,
 } from '@mantine/core';
-import { useMediaQuery, useViewportSize } from '@mantine/hooks';
+import { useViewportSize } from '@mantine/hooks';
 
 import { useAtomValue } from 'jotai';
 
@@ -25,7 +25,6 @@ import { HeaderElement } from '../../List/HeaderElement';
 import {
   Columns,
   OfferData,
-  ROW_HEIGHT,
   SCREEN_SIZE,
   SortDirection,
   getRowHeight,
@@ -43,46 +42,24 @@ interface MarketListProps {
 export const MarketList: FC<MarketListProps> = ({ offers }) => {
   const theme = useMantineTheme();
   const listOfferType = useAtomValue(tableOfferTypeAtom);
+
   const [sortedColumn, setSortedColumn] = useState('');
   const { width } = useViewportSize();
   const screenSize = getScreenSize(width);
   const rowHeight = getRowHeight(screenSize);
-  // const isLarge = SCREEN_BREAKPOINT.Large <= width; //useMediaQuery(`(min-width: 1200px)`);
-  // const isMedium =
-  //   SCREEN_BREAKPOINT.Medium <= width && width < SCREEN_BREAKPOINT.Large; //useMediaQuery(`(min-width: 685`) && !isLarge;
-  // const isMobile = width < SCREEN_BREAKPOINT.Small; //useMediaQuery(`(max-width: ${theme.breakpoints.xs})`);
-  // //const isSmallMobile = useMediaQuery(`(max-width: 510px)`);
-  // const isSmall =
-  //   SCREEN_BREAKPOINT.Small <= width && width < SCREEN_BREAKPOINT.Medium; //useMediaQuery(`(min-width: ${theme.breakpoints.xs}`) && !isMedium;
-
-  //mobile < 577         =>356
-  //577 <= small <632    =>294
-  //632 <= medium < 1200 =>219
-  //1200 <= large        =>143
-
   const { allowedTokens } = useAllowedTokens();
   const offersData: OfferData[] = offers.map((offer) =>
     mapOfferToOfferData(offer, listOfferType, allowedTokens)
   );
-  //console.log('MARKET LIST', JSON.stringify(offers, null, 4));
-  //console.log('LOAD MarketList');
   const { t: tList } = useTranslation('list');
   const { t: tOfferMode } = useTranslation(listOfferType.toLowerCase(), {
     keyPrefix: 'list',
   });
   const columnLabels = mapColumnLabels(tOfferMode);
-
   const [filterText, setFilterText] = useState('');
   const [sortedOffers, setSortedOffers] = useState(
     offersData.filter(filterByText(filterText))
   );
-  useEffect(() => {
-    const offersData: OfferData[] = offers
-      .map((offer) => mapOfferToOfferData(offer, listOfferType, allowedTokens))
-      .sort(sortColumn(Columns.createdAt, SortDirection.Desc));
-    setSortedOffers(offersData.filter(filterByText(filterText)));
-  }, [offers, filterText, allowedTokens, listOfferType]);
-
   const [selectedHeader, setSelectedHeader] = useState<Columns | null>(null);
 
   const sortOffersByColumn = (
@@ -97,6 +74,13 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
   const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFilterText(event.target.value);
   };
+
+  useEffect(() => {
+    const offersData: OfferData[] = offers
+      .map((offer) => mapOfferToOfferData(offer, listOfferType, allowedTokens))
+      .sort(sortColumn(Columns.createdAt, SortDirection.Desc));
+    setSortedOffers(offersData.filter(filterByText(filterText)));
+  }, [offers, filterText, allowedTokens, listOfferType]);
 
   const renderItem = ({ index }: { index: number }) => {
     const offer = sortedOffers[index];
@@ -237,7 +221,7 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
       >
         {renderItem}
       </List>
-      {sortedOffers[0].id === '' && (
+      {sortedOffers.length > 0 && sortedOffers[0].id === '' && (
         <Group position={'center'}>
           <Loader variant={'dots'} />
         </Group>

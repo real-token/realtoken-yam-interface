@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 
 import { Flex } from '@mantine/core';
 
-import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
+import { useFilterOffers } from 'src/hooks/offers/useFilterOffers';
 import { selectAddressOffers } from 'src/store/features/interface/interfaceSelector';
 
 import { MarketSort } from '../MarketSort/MarketSort';
@@ -12,7 +12,7 @@ import { MarketList } from './MarketList';
 export const UserMarketList: FC = () => {
   const addressOffers = useSelector(selectAddressOffers);
   const { offers, sellCount, buyCount, exchangeCount } =
-    useTypedOffers(addressOffers);
+    useFilterOffers(addressOffers);
 
   return (
     <Flex direction={'column'} gap={'sm'} mt={10}>

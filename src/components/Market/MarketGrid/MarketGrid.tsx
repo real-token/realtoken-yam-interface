@@ -16,7 +16,7 @@ import { IconAdjustmentsHorizontal } from '@tabler/icons';
 
 import { useAtomValue } from 'jotai';
 
-import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
+import { useFilterOffers } from 'src/hooks/offers/useFilterOffers';
 import { useAppSelector } from 'src/hooks/react-hooks';
 import { useFilter } from 'src/hooks/useFilter';
 import { nameFilterValueAtom } from 'src/states';
@@ -28,7 +28,7 @@ import { GridPane } from './GridPane';
 
 export const MarketGrid: FC = () => {
   const publicOffers = useAppSelector(selectPublicOffers);
-  const { offers } = useTypedOffers(publicOffers);
+  const { offers } = useFilterOffers(publicOffers);
 
   const [data, setData] = useState<string[]>(['9', '18', '36', '72']);
 
