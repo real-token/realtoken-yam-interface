@@ -14,20 +14,22 @@ import { DataRealtokenType } from 'src/types/offer/DataRealTokenType';
 import { Offer } from 'src/types/offer/Offer';
 import { Price } from 'src/types/price';
 
-import { Offer as OfferGraphQl } from '../../../.graphclient/index';
-import { getTheGraphUrlRealtoken, getTheGraphUrlYAM } from './getClientURL';
-import { getOfferQuery } from './getOfferQuery';
+import { Offer as OfferGraphQl } from 'gql/graphql';
 import { parseOffer } from './parseOffer';
 
-const nbrFirst = 600;
+const nbrFirst = 1000;
 
 export const getBigDataGraphRealtoken = async (
   chainId: number,
   client: ApolloClient<NormalizedCacheObject>,
-  realtokenAccount: string[]
+  realtokenAccount: string[],
 ) => {
-  const { address: realTokenYamUpgradeable } =
-    CHAINS[chainId as ChainsID].contracts.realTokenYamUpgradeable;
+
+  const chainConfig = CHAINS[chainId as ChainsID];
+
+  const { address: realTokenYamUpgradeable } = chainConfig.contracts.realTokenYamUpgradeable;
+
+  const graphNetworkPrefix = chainConfig.graphPrefixes.realtoken;
 
   // console.log('getBigDataGraphRealtoken', realtokenAccount.length);
 
@@ -38,17 +40,19 @@ export const getBigDataGraphRealtoken = async (
   const { data } = await client.query({
     query: gql`
       query getAccountsRealtoken {
-        accountBalances(
-          first: ${nbrFirst} 
-          where: {amount_gt: "0",id_in: [${accountRealtoken}]}
-        ) {
-          id
-          amount
-          allowances(
-            where: {spender: "${realTokenYamUpgradeable}"}
+        ${graphNetworkPrefix} {
+          accountBalances(
+            first: ${nbrFirst} 
+            where: {amount_gt: "0",id_in: [${accountRealtoken}]}
           ) {
-            allowance
             id
+            amount
+            allowances(
+              where: {spender: "${realTokenYamUpgradeable}"}
+            ) {
+              allowance
+              id
+            }
           }
         }
       }
@@ -56,7 +60,9 @@ export const getBigDataGraphRealtoken = async (
   });
   //console.log('DEBUG getBigDataGraphRealtoken data', data);
 
-  return data.accountBalances.map((accountBalance: DataRealtokenType) => {
+  const accountBalances = data[graphNetworkPrefix].accountBalances
+
+  return accountBalances.map((accountBalance: DataRealtokenType) => {
     const allowance: { id: string; allowance: string } | undefined =
       accountBalance.allowances?.find(
         (allowance: { id: string; allowance: string }) =>
@@ -86,111 +92,84 @@ export const fetchOffersTheGraph = (
 ): Promise<Offer[]> => {
   return new Promise<Offer[]>(async (resolve, reject) => {
     try {
+
+      const graphNetworkPrefix = CHAINS[chainId as ChainsID].graphPrefixes.yam;
+
       const offersData: Offer[] = [];
-      // const { data } = await execute(getOffersDocument, {}, {
-      //   source: source
-      // });
-      const clientYAM = new ApolloClient({
-        uri: getTheGraphUrlYAM(chainId),
+      
+      const client = new ApolloClient({
+        uri: "https://dev-api.realtoken.network/graphql",
         cache: new InMemoryCache(),
       });
 
-      const clientRealtoken = new ApolloClient({
-        uri: getTheGraphUrlRealtoken(chainId),
-        cache: new InMemoryCache(),
-      });
-
-      //Récupère la liste des users qui ont créer une offre et les token associer a ses offres
-      // const { data: usersDataYAM } = await clientYAM.query({
-      //   query: gql`
-      //     query getUersData {
-      //       accounts(
-      //         first: ${nbrFirst}
-      //         where: { offers_: { removedAtBlock: null } }
-      //       ) {
-      //         address
-      //         offers(first: ${nbrFirst}) {
-      //           id
-      //           offerToken {
-      //             address
-      //           }
-      //         }
-      //       }
-      //     }
-      //   `,
-      // });
-
-      const activeOfferResult = await clientYAM.query({
+      const activeOfferResult = await client.query({
         query: gql`
-          query qetActiveOfferCount {
-            global(id: "1") {
-              activeOffersCount
+          query {
+            ${graphNetworkPrefix}{
+              global(id: "1"){
+                activeOffersCount
+              }
             }
           }
         `,
       });
 
-      const offersToFetch = activeOfferResult.data.global.activeOffersCount;
-      const prom = [];
-      const q = Math.floor(offersToFetch / nbrFirst)
-      const r = offersToFetch % nbrFirst
+      const offersToFetch = activeOfferResult.data[graphNetworkPrefix].global.activeOffersCount;
+      console.log(offersToFetch)
 
-      const myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
+      const offersRes = await client.query({
+        query: gql`
+          query {
+            ${graphNetworkPrefix} {
+              offers (first: ${offersToFetch}) {
+                id
+                seller {
+                    id
+                    address
+                }
+                allowance {
+                    allowance
+                }
+                balance {
+                    amount
+                }
+                offerToken {
+                    address
+                    name
+                    decimals
+                    symbol
+                    tokenType
+                }
+                price {
+                    price
+                    amount
+                }
+                buyerToken {
+                    name
+                    symbol
+                    address
+                    decimals
+                    tokenType
+                }
+                buyer {
+                    address
+                }
+                removedAtBlock
+                availableAmount
+                createdAtTimestamp
+              }
+            }
+          }
+        `
+      })
 
-
-
-
-      const formatRequest = (first: number, skip: number) => {
-        const query =  `{\n    offers (first: ${first}, skip: ${skip}, where: { removedAtBlock: null}) {${getOfferQuery()}}}`;
-
-        const graphql = JSON.stringify({
-          query: query,
-          variables: {}
-        })
-        const requestOptions = {
-          method: 'POST',
-          headers: myHeaders,
-          body: graphql,
-          redirect: 'follow'
-        };
-        return requestOptions;
-      }
-
-      
-      const formatQuery = (first: number, skip: number) => (
-        fetch(getTheGraphUrlYAM(chainId), formatRequest(first, skip) as any)
-            .then(response => response.text())
-            .then(result => JSON.parse(result))
-            .catch(error => console.log('error', error))
-      )
-      //console.log('Debug Query usersDataYAM', usersDataYAM);
-
-      //TODO: tmp supprimer la partie false quant déploiement ok sur Eth et Gnosis, remettre en const a la place de let try = new graph, catch = old graph
-
-      // Pagination
-      let skip = 0;
-      for (let i = 0; i < q; i++) {
-        prom.push(
-          formatQuery(nbrFirst, skip),
-        )
-        skip += nbrFirst
-      } 
-
-      prom.push(formatQuery(r, skip))
-
-      const offers: OfferGraphQl[] = (await Promise.all(prom)).map(val => val.data).reduce((prev, curent, i, arr) => [...prev, ...arr[i].offers], []) as OfferGraphQl[];
+      const offers: OfferGraphQl[] = offersRes.data[graphNetworkPrefix].offers;
+      console.log(offers)
 
       const accountRealtokenDuplicates: string[] = offers.map(val => (val.seller.address + '-' + val.offerToken.address));
       const accountBalanceId = [...new Set(accountRealtokenDuplicates)]; // remove duplicates
-      //console.log('Debug liste accountBalanceId', accountBalanceId);
+      // //console.log('Debug liste accountBalanceId', accountBalanceId);
 
-      // const dataRealtoken: [DataRealtokenType] = [
-      //   {
-      //     amount: '0',
-      //     id: '0',
-      //   },
-      // ];
       const bigDataRealTokenPromises = [];
       for (let i = 0; i < accountBalanceId.length; i += nbrFirst) {
         const batch: string[] = accountBalanceId.slice(i, i + nbrFirst);
@@ -199,14 +178,13 @@ export const fetchOffersTheGraph = (
         ); */
         if (batch.length <= 0) break;
 
-        bigDataRealTokenPromises.push(getBigDataGraphRealtoken(chainId, clientRealtoken, batch));
-
+        bigDataRealTokenPromises.push(getBigDataGraphRealtoken(chainId, client, batch));
         //console.log('DEBUG for realtokenData', i, batchSize, realtokenData);
       }
 
       const dataRealtoken = (await Promise.all(bigDataRealTokenPromises)).flat() as DataRealtokenType[]
 
-      //console.log('Debug Query dataRealtoken', dataRealtoken);
+      // //console.log('Debug Query dataRealtoken', dataRealtoken);
 
       const promises = offers.map(
         (offer: OfferGraphQl) =>
@@ -243,7 +221,7 @@ export const fetchOffersTheGraph = (
       const parsedOffers = await Promise.all(promises);
 
       offersData.push(...parsedOffers);
-      // console.log('Offers formated', offersData.length);
+      // // console.log('Offers formated', offersData.length);
 
       resolve(offersData);
     } catch (err) {

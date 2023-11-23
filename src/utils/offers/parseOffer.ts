@@ -5,7 +5,7 @@ import { DataRealtokenType } from 'src/types/offer/DataRealTokenType';
 import { Offer } from 'src/types/offer/Offer';
 import { OFFER_TYPE } from 'src/types/offer/OfferType';
 import { Price } from 'src/types/price';
-import { Offer as OfferGraphQl } from '../../../.graphclient/index';
+import { Offer as OfferGraphQl } from '../../../gql/graphql';
 import { getBuyPriceInDollar, getPriceInDollar } from '../price';
 
 // TOKEN TYPE

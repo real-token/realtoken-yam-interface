@@ -3,7 +3,7 @@ import { DataRealtokenType } from "src/types/offer/DataRealTokenType";
 import { PropertiesToken } from "src/types/PropertiesToken";
 import { getBigDataGraphRealtoken } from "./fetchOffers";
 import { parseOffer } from "./parseOffer";
-import { Offer as OfferGraphQl } from '../../../.graphclient/index';
+import { Offer as OfferGraphQl } from '../../../gql/graphql';
 import { getRealTokenClient, getYamClient } from "./getClientURL";
 import { gql } from "@apollo/client";
 import { getOfferQuery } from "./getOfferQuery";
