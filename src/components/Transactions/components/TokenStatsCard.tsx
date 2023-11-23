@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { TFunction, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import {
   ActionIcon,
@@ -10,7 +10,6 @@ import {
   Space,
   Text,
   Tooltip,
-  useMantineTheme,
 } from '@mantine/core';
 import {
   IconEqual,
@@ -23,16 +22,12 @@ import { BigNumber } from 'bignumber.js';
 
 import { PropertiesToken } from 'src/types';
 import { Transaction } from 'src/types/transaction/Transaction';
-import {
-  formatPercent,
-  formatSmallToken,
-  formatToken,
-  formatUsd,
-} from 'src/utils/format';
+import { formatPercent, formatUsd } from 'src/utils/format';
 
 import {
   calculateAveragePrice,
-  countTransactionsLast7Days,
+  countTransactionsOfLastDays,
+  formatPeriod,
   getFirstsTransactions,
   getNextTransactions,
 } from '../Utils';
@@ -42,24 +37,27 @@ interface TokenStatsCardProps {
   token: PropertiesToken;
 }
 
-const TRANSACTION_SIZE = 10;
+const TRANSACTION_STATS_SIZE = 10;
+const TRANSACTION_STATS_DAYS = 7;
 
 export const TokenStatsCard: FC<TokenStatsCardProps> = ({
   transactions,
   token,
 }) => {
-  const theme = useMantineTheme();
-  const { t } = useTranslation('transactions', { keyPrefix: 'loader' });
+  const { t } = useTranslation('transactions', { keyPrefix: 'stats' });
 
   const mostRecentsTransaction = getFirstsTransactions(
     transactions,
-    TRANSACTION_SIZE
+    TRANSACTION_STATS_SIZE
   );
   const nextTransactions: Transaction[] = getNextTransaction(
     mostRecentsTransaction,
     transactions
   );
-  const numberOfTransaction = countTransactionsLast7Days(transactions);
+  const numberOfTransaction = countTransactionsOfLastDays(
+    transactions,
+    TRANSACTION_STATS_DAYS
+  );
   const currentPrice = calculateAveragePrice(mostRecentsTransaction);
   const formerPrice = calculateAveragePrice(nextTransactions);
   const { priceColor, priceDiff, priceDiffPercent, Icon } = getPriceEvolution(
@@ -129,8 +127,13 @@ export const TokenStatsCard: FC<TokenStatsCardProps> = ({
               : '-'}
           </Badge>
         </Group>
-        <Text size={'xs'} sx={{ marginLeft: '15px', marginBottom: '5px' }}>
-          {numberOfTransaction + ' transactions sur 7 jours'}
+        <Text
+          size={'xs'}
+          sx={{ marginLeft: '15px', marginBottom: '5px', marginRight: '15px' }}
+        >
+          {numberOfTransaction +
+            t('numberOfTransaction') +
+            formatPeriod(TRANSACTION_STATS_DAYS, t)}
         </Text>
       </Card.Section>
     </Card>
@@ -142,13 +145,13 @@ function getNextTransaction(
   transactions: Transaction[]
 ) {
   let nextTransactions: Transaction[] = [];
-  if (mostRecentsTransaction.length === TRANSACTION_SIZE) {
+  if (mostRecentsTransaction.length === TRANSACTION_STATS_SIZE) {
     const lastTimestamp =
-      mostRecentsTransaction[TRANSACTION_SIZE - 1].timeStamp;
+      mostRecentsTransaction[TRANSACTION_STATS_SIZE - 1].timeStamp;
     nextTransactions = getNextTransactions(
       transactions,
       lastTimestamp,
-      TRANSACTION_SIZE
+      TRANSACTION_STATS_SIZE
     );
   }
   return nextTransactions;

@@ -2,7 +2,8 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
-import { SimpleGrid } from '@mantine/core';
+import { SimpleGrid, useMantineTheme } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 
 import { useAppSelector } from 'src/hooks/react-hooks';
 import { useRefreshTransactions } from 'src/hooks/transactions/useRefreshTransactions';
@@ -16,7 +17,9 @@ import { TokenStatsCard } from './components/TokenStatsCard';
 
 export const TransactionStatsGrid = ({}) => {
   console.log('YamTransactionList rendered');
-  const { t } = useTranslation('transactions', { keyPrefix: 'loader' });
+  const theme = useMantineTheme();
+  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`);
+  const isSmall = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
   const { refreshTransactions } = useRefreshTransactions(false);
   const offersIsLoading = useSelector(selectOffersIsLoading);
   const allTransactions = useAppSelector(selectAllTransactions);
@@ -30,7 +33,7 @@ export const TransactionStatsGrid = ({}) => {
   return (
     <>
       {
-        <SimpleGrid cols={propertiesToken.length}>
+        <SimpleGrid cols={isSmall ? 3 : propertiesToken.length}>
           {propertiesToken.map((token) => (
             <TokenStatsCard
               token={token}

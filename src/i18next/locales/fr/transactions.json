@@ -24,7 +24,8 @@
     "volume": "Volume",
     "transactions": "Transactions",
     "expense":"Dépense moyenne",
-    "price": "Prix"
+    "price": "Prix",
+    "numberOfTransaction": " transaction(s) sur "
   },
   "list": {
     "search": "Rechercher",

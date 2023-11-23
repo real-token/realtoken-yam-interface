@@ -1,3 +1,5 @@
+import { TFunction } from 'react-i18next';
+
 import { BigNumber } from 'bignumber.js';
 
 import { Transaction } from 'src/types/transaction/Transaction';
@@ -335,23 +337,31 @@ export function calculatePricesPerPeriod(
   return pricesPer24Hours;
 }
 
-export function countTransactionsLast7Days(
-  transactions: Transaction[]
+export function countTransactionsOfLastDays(
+  transactions: Transaction[],
+  days: number
 ): number {
   // Obtenez la date d'aujourd'hui
   const currentDate = new Date();
 
-  // Calculez la date d'il y a 7 jours
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(currentDate.getDate() - 7);
+  // Calculez la date d'il y a 'days' jours
+  const numberOfDaysAgo = new Date();
+  numberOfDaysAgo.setDate(currentDate.getDate() - days);
 
-  // Filtrez les transactions qui sont survenues au cours des 7 derniers jours
-  const transactionsLast7Days = transactions.filter(
+  // Filtrez les transactions qui sont survenues au cours des 'days' derniers jours
+  const transactionsLastDays = transactions.filter(
     (transaction) =>
       transaction.timeStamp >=
-      new BigNumber(sevenDaysAgo.getTime()).dividedBy(1000).toNumber()
+      new BigNumber(numberOfDaysAgo.getTime()).dividedBy(1000).toNumber()
   );
 
   // Retournez le nombre de transactions dans la fenêtre temporelle spécifiée
-  return transactionsLast7Days.length;
+  return transactionsLastDays.length;
+}
+
+export function formatPeriod(
+  days: number,
+  t: TFunction<'transactions', 'stats'>
+): string {
+  return days === 1 ? '24h' : days + ' ' + t('day') + 's';
 }

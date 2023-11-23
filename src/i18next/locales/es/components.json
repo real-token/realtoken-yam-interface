@@ -1,11 +1,12 @@
 {
     "walletBalance": {
-        "title": "Wallet balance"
+      "title": "Saldo de billetera"
     },
     "shield": {
-        "shieldExplanations": "Security shield is a fonctionnality",
-        "shieldTitle": "Security shield",
-        "shieldActivate": "Activate",
-        "shieldRate": "Price difference"
+      "shieldExplanations": "El escudo de seguridad es una funcionalidad",
+      "shieldTitle": "Escudo de seguridad",
+      "shieldActivate": "Activar",
+      "shieldRate": "Diferencia de precio"
     }
-}
+  }
+  

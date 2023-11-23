@@ -23,14 +23,15 @@
     "volume": "Volumen",
     "transactions": "Transacciones",
     "expense": "Gasto promedio",
-    "price": "Precio"
+    "price": "Precio",
+    "numberOfTransaction": " transacción(es) en "
   },
   "list": {
     "search": "Buscar",
     "buyingDate": "Fecha de compra",
     "tokenAmount": "Cantidad",
     "usdAmount": "Monto",
-    "offerDate": "Creación de oferta",
+    "offerDate": "Fecha de oferta",
     "offerPrice": "Precio",
     "amountLeft": "Cantidad restante"
   }

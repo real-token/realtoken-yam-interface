@@ -23,7 +23,8 @@
     "volume": "Volume",
     "transactions": "Transactions",
     "expense": "Average Expense",
-    "price": "Price"
+    "price": "Price",
+    "numberOfTransaction": " transaction(s) on "
   },
   "list": {
     "search": "Search",

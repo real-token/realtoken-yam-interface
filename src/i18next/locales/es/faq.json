@@ -1,10 +1,11 @@
 {
-    "title": "HELP",
+    "title": "AYUDA",
     "createOffer": {
-        "title": "How to use YAM ?",
-        "answer": "A tutorial has been written by the community. You can find it",
-        "here": "here",
-        "link": "/tutos/Tuto_Yam_v5_EN.pdf",
-        "thanks": "Thanks to @Phil0_0 for tutorial."
+      "title": "¿Cómo usar YAM?",
+      "answer": "Un tutorial ha sido creado por la comunidad. Puedes encontrarlo",
+      "here": "aquí",
+      "link": "/tutos/Tuto_Yam_v5_ES.pdf",
+      "thanks": "Gracias a @Phil0_0 por el tutorial."
     }
-}
+  }
+  
