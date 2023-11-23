@@ -1,5 +1,6 @@
 import { BigNumber } from 'bignumber.js';
 
+import { CsmSvg } from 'src/assets/currency/Csm';
 import { TokenData, TransactionData } from 'src/components/Transactions/Types';
 import { AllowedToken } from 'src/types/allowedTokens';
 import { Offer } from 'src/types/offer/Offer';
@@ -34,16 +35,16 @@ export const associateTransactionWithOffer = (
       address: correspondingOffer?.offerTokenAddress ?? '?',
       decimals: parseInt(correspondingOffer?.offerTokenDecimals ?? '0'),
       name: correspondingOffer?.offerTokenName ?? '?',
-      symbol: tokenForSaleData?.symbol,
-      Logo: tokenForSaleData?.logo,
+      symbol: tokenForSaleData?.symbol ?? correspondingOffer?.offerTokenSymbol,
+      Logo: tokenForSaleData?.logo ?? CsmSvg,
     };
 
     const tokenBuyWith: TokenData = {
       address: correspondingOffer?.buyerTokenAddress ?? '?',
       decimals: parseInt(correspondingOffer?.buyerTokenDecimals ?? '0'),
       name: correspondingOffer?.buyerTokenName ?? '?',
-      symbol: tokenBuyWithData?.symbol,
-      Logo: tokenBuyWithData?.logo,
+      symbol: tokenBuyWithData?.symbol ?? correspondingOffer?.buyerTokenSymbol,
+      Logo: tokenBuyWithData?.logo ?? CsmSvg,
     };
 
     if (transaction.tokenForSale) {
