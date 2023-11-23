@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -7,6 +7,7 @@ import {
   Card,
   Group,
   Image,
+  Overlay,
   Space,
   Text,
   Tooltip,
@@ -37,6 +38,8 @@ import {
 interface TokenStatsCardProps {
   transactions: Transaction[];
   token: PropertiesToken;
+  tokenFilterStates?: Map<string, boolean>;
+  handleTokenFilter?: (contractAddress: string) => void;
   refreshTransactions?: () => void;
 }
 
@@ -46,11 +49,14 @@ const TRANSACTION_STATS_DAYS = 7;
 export const TokenStatsCard: FC<TokenStatsCardProps> = ({
   transactions,
   token,
+  tokenFilterStates,
+  handleTokenFilter,
   refreshTransactions,
 }) => {
   const { t } = useTranslation('transactions', { keyPrefix: 'stats' });
   const theme = useMantineTheme();
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`);
+
   const mostRecentsTransaction = getFirstsTransactions(
     transactions,
     TRANSACTION_STATS_SIZE
@@ -70,6 +76,14 @@ export const TokenStatsCard: FC<TokenStatsCardProps> = ({
     currentPrice
   );
 
+  const tokenEnabled =
+    tokenFilterStates &&
+    tokenFilterStates.has(token.contractAddress.toLowerCase())
+      ? tokenFilterStates.get(token.contractAddress.toLowerCase())
+      : true;
+
+  //console.log('Token filter display', token.contractAddress, tokenEnabled);
+
   return (
     <Card
       key={token.contractAddress}
@@ -78,6 +92,11 @@ export const TokenStatsCard: FC<TokenStatsCardProps> = ({
       radius={'md'}
       withBorder={true}
       style={{ cursor: 'pointer' }}
+      onClick={() => {
+        if (handleTokenFilter && tokenFilterStates) {
+          handleTokenFilter(token.contractAddress.toLowerCase());
+        }
+      }}
     >
       <Card.Section>
         <Group position={'apart'} align={'start'}>
@@ -99,7 +118,16 @@ export const TokenStatsCard: FC<TokenStatsCardProps> = ({
           )}
         </Group>
       </Card.Section>
-
+      {!tokenEnabled && (
+        <Overlay
+          color={
+            theme.colorScheme === 'dark'
+              ? theme.colors.dark[6]
+              : theme.colors.gray[3]
+          }
+          opacity={0.9}
+        />
+      )}
       <Text weight={500} color={'dimmed'} size={isMobile ? 10 : 'md'}>
         {token.shortName}
       </Text>

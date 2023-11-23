@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { SimpleGrid, useMantineTheme } from '@mantine/core';
@@ -10,7 +9,6 @@ import { useRefreshTransactions } from 'src/hooks/transactions/useRefreshTransac
 import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
 import { selectAllTransactions } from 'src/store/features/interface/interfaceSelector';
 import { selectOffersIsLoading } from 'src/store/features/interface/interfaceSelector';
-import { Transaction } from 'src/types/transaction/Transaction';
 
 import { sortTransactions } from './Utils';
 import { TokenStatsCard } from './components/TokenStatsCard';
@@ -25,10 +23,76 @@ export const TransactionStatsGrid = ({}) => {
   const allTransactions = useAppSelector(selectAllTransactions);
   const { propertiesToken } = usePropertiesToken();
   const sortedTransactions = sortTransactions(allTransactions);
+  const [tokenFilterStates, setTokenFilterStates] = useState<
+    Map<string, boolean>
+  >(
+    new Map(
+      propertiesToken.map((token) => [
+        token.contractAddress.toLowerCase(),
+        true,
+      ])
+    )
+  );
+
+  useEffect(() => {
+    setTokenFilterStates(
+      new Map(
+        propertiesToken.map((token) => [
+          token.contractAddress.toLowerCase(),
+          true,
+        ])
+      )
+    );
+  }, [propertiesToken]);
 
   useEffect(() => {
     if (!offersIsLoading) return refreshTransactions();
   }, [offersIsLoading, refreshTransactions]);
+
+  const handleTokenFilter = (contractAddress: string) => {
+    let allSelected = true;
+    let noneSelected = true;
+    for (const [token, state] of tokenFilterStates) {
+      //console.log('Token filter search', `Token: ${token}, State: ${state}`);
+      allSelected = allSelected && state;
+      if (contractAddress !== token) noneSelected = noneSelected && !state;
+    }
+
+    if (allSelected) {
+      // laisser le filtre activé pour le token donné et et désactivé les autres filtres
+      //console.log('Token filter allSelected');
+
+      for (const [token] of tokenFilterStates) {
+        if (token !== contractAddress) {
+          setTokenFilterStates((prev) => {
+            const newFilterStates = new Map(prev);
+            newFilterStates.set(token, false);
+            return newFilterStates;
+          });
+        }
+      }
+    } else if (noneSelected) {
+      // laisser le filtre activé pour le token donné et et activé les autres filtres
+      // console.log('Token filter noneSelected');
+
+      for (const [token] of tokenFilterStates) {
+        if (token !== contractAddress) {
+          setTokenFilterStates((prev) => {
+            const newFilterStates = new Map(prev);
+            newFilterStates.set(token, true);
+            return newFilterStates;
+          });
+        }
+      }
+    } else {
+      // changer l'etat du filtre donnée
+      setTokenFilterStates((prev) => {
+        const newFilterStates = new Map(prev);
+        newFilterStates.set(contractAddress, !prev.get(contractAddress));
+        return newFilterStates;
+      });
+    }
+  };
 
   return (
     <>
@@ -47,6 +111,8 @@ export const TransactionStatsGrid = ({}) => {
                   t.tokenBuyWith?.address.toLowerCase() ===
                     token.contractAddress.toLowerCase()
               )}
+              handleTokenFilter={handleTokenFilter}
+              tokenFilterStates={tokenFilterStates}
               key={token.contractAddress}
             ></TokenStatsCard>
           ))}
