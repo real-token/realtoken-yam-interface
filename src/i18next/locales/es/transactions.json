@@ -19,12 +19,15 @@
   },
   "stats": {
     "day": "día",
-    "heure": "hora",
+    "hour": "hora",
     "volume": "Volumen",
     "transactions": "Transacciones",
     "expense": "Gasto promedio",
     "price": "Precio",
-    "numberOfTransaction": " transacción(es) en "
+    "numberOfTransaction": " transacción(es) en ",
+    "update": "Actualizar",
+    "priceExplainded": "Precio promedio en las últimas transacciones",
+    "noPriceExplained": "Número de transacciones demasiado bajo"
   },
   "list": {
     "search": "Buscar",

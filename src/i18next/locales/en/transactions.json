@@ -19,12 +19,15 @@
   },
   "stats": {
     "day": "day",
-    "heure": "hour",
+    "hour": "hour",
     "volume": "Volume",
     "transactions": "Transactions",
     "expense": "Average Expense",
     "price": "Price",
-    "numberOfTransaction": " transaction(s) on "
+    "numberOfTransaction": " transaction(s) over ",
+    "update": "Update",
+    "priceExplainded": "Average price over the last transactions",
+    "noPriceExplained": "Transaction count too low"
   },
   "list": {
     "search": "Search",

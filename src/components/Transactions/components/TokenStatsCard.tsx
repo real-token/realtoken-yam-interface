@@ -37,6 +37,7 @@ import {
 interface TokenStatsCardProps {
   transactions: Transaction[];
   token: PropertiesToken;
+  refreshTransactions?: () => void;
 }
 
 const TRANSACTION_STATS_SIZE = 10;
@@ -45,6 +46,7 @@ const TRANSACTION_STATS_DAYS = 7;
 export const TokenStatsCard: FC<TokenStatsCardProps> = ({
   transactions,
   token,
+  refreshTransactions,
 }) => {
   const { t } = useTranslation('transactions', { keyPrefix: 'stats' });
   const theme = useMantineTheme();
@@ -68,16 +70,6 @@ export const TokenStatsCard: FC<TokenStatsCardProps> = ({
     currentPrice
   );
 
-  console.log(
-    'getPriceEvolution',
-    token.shortName,
-    currentPrice,
-    formerPrice,
-    priceDiff,
-    priceDiffPercent,
-    priceColor
-  );
-
   return (
     <Card
       key={token.contractAddress}
@@ -85,6 +77,7 @@ export const TokenStatsCard: FC<TokenStatsCardProps> = ({
       padding={isMobile ? 'xs' : 'lg'}
       radius={'md'}
       withBorder={true}
+      style={{ cursor: 'pointer' }}
     >
       <Card.Section>
         <Group position={'apart'} align={'start'}>
@@ -94,11 +87,16 @@ export const TokenStatsCard: FC<TokenStatsCardProps> = ({
             alt={'csm logo'}
             sx={{ margin: '5px' }}
           ></Image>
-          <Tooltip label={'Reload'}>
-            <ActionIcon variant={'transparent'}>
-              <IconReload size={isMobile ? '1.5rem' : '1.5rem'} />
-            </ActionIcon>
-          </Tooltip>
+          {refreshTransactions && (
+            <Tooltip label={t('update')}>
+              <ActionIcon
+                variant={'transparent'}
+                onClick={() => refreshTransactions()}
+              >
+                <IconReload size={isMobile ? '1.5rem' : '1.5rem'} />
+              </ActionIcon>
+            </Tooltip>
+          )}
         </Group>
       </Card.Section>
 
@@ -107,16 +105,20 @@ export const TokenStatsCard: FC<TokenStatsCardProps> = ({
       </Text>
 
       <Space h={0}></Space>
-      <Text weight={500} size={isMobile ? 15 : 25}>
-        {currentPrice ? formatUsd(currentPrice) : '-'}
-      </Text>
+      <Tooltip
+        label={currentPrice ? t('priceExplainded') : t('noPriceExplained')}
+      >
+        <Text weight={500} size={isMobile ? 15 : 25}>
+          {currentPrice ? formatUsd(currentPrice) : '-'}
+        </Text>
+      </Tooltip>
       <Space h={5}></Space>
       <Card.Section>
         <Group
           align={'end'}
           sx={{
             marginLeft: isMobile ? '5px' : '15px',
-            marginBottom: isMobile ? '10px' : '15px',
+            marginBottom: isMobile ? '5px' : '15px',
             marginRight: isMobile ? '5px' : '15px',
           }}
         >
@@ -129,9 +131,15 @@ export const TokenStatsCard: FC<TokenStatsCardProps> = ({
               </Group>
             }
             fz={isMobile ? 10 : 'sm'}
-            sx={{ padding: isMobile ? 5 : undefined }}
+            sx={{ padding: isMobile ? 2 : undefined }}
+            styles={() => ({
+              leftSection: {
+                marginRight: isMobile ? '2px' : undefined,
+                marginBottom: '-2px',
+              },
+            })}
           >
-            <div>
+            <div style={{ marginLeft: isMobile ? '0px' : undefined }}>
               {priceDiff !== undefined
                 ? formatUsd(priceDiff) +
                   ' (' +
@@ -142,7 +150,7 @@ export const TokenStatsCard: FC<TokenStatsCardProps> = ({
           </Badge>
         </Group>
         <Text
-          size={'xs'}
+          size={isMobile ? 10 : 'xs'}
           sx={{
             marginLeft: isMobile ? '5px' : '15px',
             marginBottom: '5px',

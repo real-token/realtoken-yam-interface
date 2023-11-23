@@ -25,7 +25,10 @@
     "transactions": "Transactions",
     "expense":"Dépense moyenne",
     "price": "Prix",
-    "numberOfTransaction": " transaction(s) sur "
+    "numberOfTransaction": " transaction(s) sur ",
+    "update": "Mettre à jour",
+    "priceExplainded": "Prix moyen sur les dernières transactions",
+    "noPriceExplained": "Nombre de transaction trop faible"
   },
   "list": {
     "search": "Rechercher",
