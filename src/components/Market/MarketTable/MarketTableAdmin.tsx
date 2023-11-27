@@ -16,8 +16,8 @@ import {
 import { Table } from '../../Table';
 import { MarketSubRow } from '../MarketSubRow';
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
-import { selectPublicOffers } from 'src/store/features/interface/interfaceSelector';
-import { adminActionsColumn, adminAmount, adminHeader, buyerTokenNameColumn, buyShortTokenNameColumn, exchangeBuyShortTokenNameColumn, exchangeOfferShortTokenNameColumn, idColumn, offerDateColumn, offerShortTokenNameColumn, offerTokenNameColumn, priceColumn, priceDeltaColumn, sellerAddressColumn, yieldDeltaColumn } from 'src/hooks/column';
+import { selectPublicOffers,selectAllPublicOffers } from 'src/store/features/interface/interfaceSelector';
+import { adminActionsColumn, adminAmount,adminAllowance,adminWalletBlanace, adminHeader, buyerTokenNameColumn, buyShortTokenNameColumn, exchangeBuyShortTokenNameColumn, exchangeOfferShortTokenNameColumn, idColumn, offerDateColumn, offerShortTokenNameColumn, offerTokenNameColumn, priceColumn, priceDeltaColumn, sellerAddressColumn, yieldDeltaColumn } from 'src/hooks/column';
 import React from 'react';
 import { Offer, OFFER_TYPE } from 'src/types/offer';
 import { useModals } from '@mantine/modals';
@@ -47,11 +47,12 @@ export const MarketTableAdmin: FC = () => {
   const { t: t2 } = useTranslation('table', { keyPrefix: 'filters' });
 
   const [rowSelection, setRowSelection] = useState<{ [key: number]: boolean }>({});
-
-  const publicOffers = useAppSelector(selectPublicOffers);
-  const { offers } = useTypedOffers(publicOffers);
-
+  
   const { role } = useRole();
+  
+  const publicOffers = useAppSelector(selectPublicOffers);
+  const allPublicOffers = useAppSelector(selectAllPublicOffers);
+  const { offers } = useTypedOffers(role == USER_ROLE.ADMIN ? allPublicOffers : publicOffers);
 
   const modals = useModals();
   const { t: t3 } = useTranslation('modals');
@@ -118,17 +119,19 @@ export const MarketTableAdmin: FC = () => {
       {
           id: 'title',
           header: ({ table }) => adminHeader(role == USER_ROLE.ADMIN, table, rowSelection, deleteSelectedOffers, { title: t('title') }),
-          meta: { colSpan: 15 },
+          meta: { colSpan: 17 },
           columns: [
             checkboxColumn,
             idColumn(t,1),
-            offerShortTokenNameColumn(t,2),
-            buyerTokenNameColumn(t,2),
+            offerShortTokenNameColumn(t,1),
+            buyerTokenNameColumn(t,1),
             yieldDeltaColumn(t,1),
             sellerAddressColumn(t,1),
             priceColumn(t,1),
             priceDeltaColumn(t,1),
-            adminAmount(t,1),
+            adminAmount(t,2),
+            adminWalletBlanace(t,2),
+            adminAllowance(t,2),
             offerDateColumn(t,1),
             adminActionsColumn(t,1)
           ]
@@ -138,17 +141,19 @@ export const MarketTableAdmin: FC = () => {
     {
         id: 'title',
         header: ({ table }) => adminHeader(role == USER_ROLE.ADMIN,table, rowSelection, deleteSelectedOffers, { title: t('title') }),
-        meta: { colSpan: 15 },
+        meta: { colSpan: 16 },
         columns: [
           checkboxColumn,
           idColumn(t,1),
-          offerTokenNameColumn(t,2),
-          buyShortTokenNameColumn(t,2),
+          offerTokenNameColumn(t,1),
+          buyShortTokenNameColumn(t,1),
           yieldDeltaColumn(t,1),
           sellerAddressColumn(t,1),
           priceColumn(t,1),
           priceDeltaColumn(t,1),
-          adminAmount(t,1),
+          adminAmount(t,2),
+          adminWalletBlanace(t,2),
+          adminAllowance(t,2),
           offerDateColumn(t,1),
           adminActionsColumn(t,1)
         ]
@@ -158,15 +163,17 @@ export const MarketTableAdmin: FC = () => {
     {
         id: 'title',
         header: ({ table }) => adminHeader(role == USER_ROLE.ADMIN,table, rowSelection, deleteSelectedOffers, { title: t('title') }),
-        meta: { colSpan: 15 },
+        meta: { colSpan: 16 },
         columns: [
           checkboxColumn,
           idColumn(t,1),
-          exchangeOfferShortTokenNameColumn(t,2),
-          exchangeBuyShortTokenNameColumn(t,2),
+          exchangeOfferShortTokenNameColumn(t,1),
+          exchangeBuyShortTokenNameColumn(t,1),
           sellerAddressColumn(t,1),
           priceColumn(t,1),
-          adminAmount(t,1),
+          adminAmount(t,2),
+          adminWalletBlanace(t,2),
+          adminAllowance(t,2),
           offerDateColumn(t,1),
           adminActionsColumn(t,1)
         ]
