@@ -27,7 +27,7 @@ const coinBridgeTokenPermitSignature = async (
 
     const domain = {
       name: contractName,
-      version: 3, //(await contract.VERSION()).toString(), // get version of token since RealToken is upgraded to V2, otherwise wrong signature
+      version: (await contract.VERSION()).toString(), // get version of token since RealToken is upgraded to V2, otherwise wrong signature
       chainId: library.network.chainId,
       verifyingContract: contract.address,
     };
