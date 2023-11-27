@@ -56,7 +56,9 @@ export const buy = async (
         );
 
         console.log(connector)
-        if(connector == "gnosisSafe"){
+        if(connector == "gnosisSafe" || connector == 'walletConnect'){
+
+          console.log('TEST')
             
           // TokenType = 3: ERC20 Without Permit, do Approve/buy
           const approveTx = await buyerToken.approve(
