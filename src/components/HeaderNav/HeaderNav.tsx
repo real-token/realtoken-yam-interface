@@ -15,7 +15,7 @@ export const HeaderNav: FC = () => {
   const { role } = useRole();
 
   return (
-      <Flex sx={styles.container} gap={100}>
+      <Flex sx={styles.container} gap={100} justify={'center'}>
         <Text
           size={'xl'}
           weight={700}
