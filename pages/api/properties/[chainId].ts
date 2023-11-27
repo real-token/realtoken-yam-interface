@@ -195,6 +195,10 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
         });
     }
 
+    return propertiesNonFiltered;
+
+    console.log(propertiesNonFiltered)
+
     const onlyWLProperties = propertiesNonFiltered.filter(
         (property) => !!wlProperties.find((wlProperty) => wlProperty.contractAddress.toLowerCase() == property.contractAddress.toLowerCase())
     );
@@ -215,12 +219,10 @@ const handler: NextApiHandler = async (req: NextApiRequest, res: NextApiResponse
 
         // const [communityApiToken,wlTokens] = await Promise.all([getTokenFromCommunityAPI,getWhitelistedProperties(parseInt(chainId))]);
         const [communityApiToken] = await Promise.all([getTokenFromCommunityAPI]);
-
         const tokens = getTokens(parseInt(chainId), communityApiToken, []);
 
         return res
-            // .setHeader('cache-control', 'public, s-maxage=1200, stale-while-revalidate=600')
-            .setHeader('cache-control', 'no-store, max-age=0')
+            .setHeader('cache-control', 'public, s-maxage=1200, stale-while-revalidate=600')
             .status(200)
             .json(tokens);
   

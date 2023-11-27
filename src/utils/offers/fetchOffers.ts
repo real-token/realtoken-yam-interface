@@ -98,7 +98,7 @@ export const fetchOffersTheGraph = (
       const offersData: Offer[] = [];
       
       const client = new ApolloClient({
-        uri: "https://dev-api.realtoken.network/graphql",
+        uri: "https://staging-api.realtoken.network/graphql",
         cache: new InMemoryCache(),
       });
 
