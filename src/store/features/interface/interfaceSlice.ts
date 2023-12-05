@@ -171,7 +171,7 @@ export function fetchTransactions(chainId: number) {
     dispatch({ type: transactionsIsLoadingDispatchType, payload: false });
   };
 }
-export function fetchProperties(chainId: number) {
+export function fetchProperties(chainId?: number) {
   return async function fetchPropertiesThunk(dispatch: AppDispatch) {
     try {
       const response = await fetch(`/tokens.json`, {

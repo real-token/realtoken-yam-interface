@@ -8,6 +8,7 @@ import { getOfferPropertyAddress } from 'src/components/Offer/Utils';
 import { useAppDispatch } from 'src/hooks/react-hooks';
 import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
 import { buyOfferClose } from 'src/store/features/buyOffer/buyOfferSlice';
+import { fetchProperties } from 'src/store/features/interface/interfaceSlice';
 import { OFFER_TYPE, Offer } from 'src/types/offer';
 import { calcRem } from 'src/utils/style';
 
@@ -55,6 +56,9 @@ export const OfferContainer: FC<OfferContainerProps> = ({
   const [backgroundImage, setBackgroundImage] = useState<string>(
     offerProperty ? offerProperty.imageLink[0] : ''
   );
+  if (offerProperty?.location === undefined) {
+    dispatch(fetchProperties());
+  }
 
   useEffect(() => {
     if (!offer || propertiesIsloading) return;
@@ -100,9 +104,11 @@ export const OfferContainer: FC<OfferContainerProps> = ({
           header={
             <OfferHeader
               image={backgroundImage}
-              title={offerProperty?.location.aera ?? ''}
-              country={offerProperty ? offerProperty.location.country : ''}
-              energy={offerProperty ? offerProperty.energy.join(', ') : ''}
+              title={offerProperty?.location?.aera ?? ''}
+              country={offerProperty ? offerProperty.location?.country : ''}
+              energy={
+                offerProperty ? offerProperty.energy?.join(', ') ?? '' : ''
+              }
               offerTokenAddress={offer.offerTokenAddress}
               offerTokenName={offer.offerTokenName}
               buyerTokenAddress={offer.buyerTokenAddress}

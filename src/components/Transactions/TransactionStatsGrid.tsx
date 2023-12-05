@@ -17,7 +17,7 @@ import { sortTransactions } from './Utils';
 import { TokenStatsCard } from './components/TokenStatsCard';
 
 export const TransactionStatsGrid = ({}) => {
-  console.log('YamTransactionList rendered');
+  //console.log('YamTransactionList rendered');
   const theme = useMantineTheme();
   const isSmall = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`);

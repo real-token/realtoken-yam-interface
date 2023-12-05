@@ -207,7 +207,7 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
 
   const connector = useAtomValue(providerAtom);
 
-  console.log('connector', connector);
+  //console.log('connector', connector);
 
   const onHandleSubmit = useCallback(
     async (formValues: BuyOfferFormValues) => {

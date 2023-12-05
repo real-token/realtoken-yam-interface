@@ -61,9 +61,9 @@ export function mapOfferToOfferData(
         shortName: allowedTokenBuy
           ? allowedTokenBuy.symbol
           : offer.buyerTokenName,
-        aera: offer.sites.buying.location.aera,
-        country: offer.sites.buying.location.country,
-        energy: offer.sites.buying.energy,
+        aera: offer.sites.buying.location?.aera ?? '',
+        country: offer.sites.buying.location?.country ?? '',
+        energy: offer.sites.buying.energy ?? '',
         image: offer.sites.buying.imageLink,
         electricityPrice: offer.sites.buying.electricityPrice,
         tokenOfficialPrice: offer.sites.buying.tokenOfficialPrice,
@@ -74,9 +74,9 @@ export function mapOfferToOfferData(
         shortName: allowedTokenOffer
           ? allowedTokenOffer.symbol
           : offer.offerTokenName,
-        aera: offer.sites.selling.location.aera,
-        country: offer.sites.selling.location.country,
-        energy: offer.sites.selling.energy,
+        aera: offer.sites.selling.location?.aera ?? '',
+        country: offer.sites.selling.location?.country ?? '',
+        energy: offer.sites.selling.energy ?? '',
         image: offer.sites.selling.imageLink,
         electricityPrice: offer.sites.selling.electricityPrice,
         tokenOfficialPrice: offer.sites.selling.tokenOfficialPrice,
