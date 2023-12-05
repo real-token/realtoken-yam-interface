@@ -1,43 +1,24 @@
 import React, { FC, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import {
-  Card,
-  Grid,
-  Group,
-  Progress,
-  RingProgress,
-  Skeleton,
-  Stack,
-  Text,
-  useMantineTheme,
-} from '@mantine/core';
+import { Card, Grid, Group, Stack, Text, useMantineTheme } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
-
-import { BigNumber } from 'bignumber.js';
 
 import { OfferBadgeAbsolute } from 'src/components/Offer/components/OfferTypeBadge';
 import { useOffer } from 'src/hooks/offers/useOffer';
 import { useAppDispatch } from 'src/hooks/react-hooks';
-import { useAppSelector } from 'src/hooks/react-hooks';
 import { buyOfferOpen } from 'src/store/features/buyOffer/buyOfferSlice';
-import { selectPrices } from 'src/store/features/interface/interfaceSelector';
 import { Offer } from 'src/types/offer';
-import { OFFER_TYPE } from 'src/types/offer/OfferType';
-import { Price } from 'src/types/price';
-import {
-  formatPercent,
-  formatTimestampDay,
-  formatTimestampHour,
-  formatToken,
-  formatUsd,
-} from 'src/utils/format';
 
 import { LINK_ACCESS_KEY, SPOT_ACCESS_KEY } from '../Constants';
 import { Columns, OfferData } from '../Types';
-import { mapColumnLabels, truncateInMiddle } from '../Utils';
+import { mapColumnLabels } from '../Utils';
 import { SiteElement } from './SiteElement';
 import { TokensTradedElement } from './TokensTradedElement';
+import { OfferAmount } from './widgets/OfferAmount';
+import { OfferDate } from './widgets/OfferDate';
+import { OfferPrice } from './widgets/OfferPrice';
+import { OfferSeller } from './widgets/OfferSeller';
 
 interface ItemElementProps {
   offer: OfferData;
@@ -46,15 +27,16 @@ interface ItemElementProps {
 export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
   const theme = useMantineTheme();
   const dispatch = useAppDispatch();
-  const isLarge = useMediaQuery(`(min-width: ${theme.breakpoints.lg})`);
-  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`);
+  const isLargeBk = useMediaQuery(`(min-width: ${theme.breakpoints.lg})`);
+  const isMobileBk = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`);
+  const isLarge = isLargeBk ?? true;
+  const isMobile = isMobileBk ?? false;
   //const isSmallMobile = useMediaQuery(`(max-width: 300px`);
   const { offer: offerAction } = useOffer(parseInt(offer.id));
   const { t } = useTranslation(offer.type.toLowerCase(), { keyPrefix: 'list' });
-  const { t: t2 } = useTranslation('list');
   const columnLabels = mapColumnLabels(t);
   //console.log('ITEM OFFER', JSON.stringify(offer, null, 4));
-  const prices: Price = useAppSelector(selectPrices);
+
   const lastCardStyle = isLastItem
     ? {
         marginTop: '-1px',
@@ -74,16 +56,6 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             : theme.colors.gray[0],
       };
 
-  const priceDelta = calculatePriceDelta(offer, prices);
-
-  const priceDeltaColor =
-    priceDelta === 0
-      ? 'dimmed'
-      : (priceDelta < 0 && offer.type === OFFER_TYPE.BUY) ||
-        (priceDelta > 0 && offer.type !== OFFER_TYPE.BUY)
-      ? 'red'
-      : 'teal';
-
   const onOpenOffer = useCallback(
     (offerAction: Offer) => {
       dispatch({ type: buyOfferOpen, payload: offerAction });
@@ -102,6 +74,8 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
         : console.warn('Offer not loaded ' + offer.id);
     }
   };
+
+  console.log('ITEM is large ?', isLarge);
 
   return (
     <Card
@@ -139,7 +113,14 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             paddingBottom: isMobile ? 0 : undefined,
           }}
         >
-          {!isMobile && stackSeller()}
+          {!isMobile && (
+            <OfferSeller
+              offer={offer}
+              label={columnLabels[Columns.requesterName]}
+              isLarge={isLarge}
+              textAlignRight={false}
+            ></OfferSeller>
+          )}
         </Grid.Col>
         <Grid.Col
           xl={3}
@@ -152,7 +133,14 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             paddingBottom: isMobile ? 0 : undefined,
           }}
         >
-          {!isMobile && stackTokenPrice()}
+          {!isMobile && (
+            <OfferPrice
+              offer={offer}
+              label={columnLabels[Columns.requestedPrice]}
+              isLarge={isLarge}
+              textAlignRight={false}
+            ></OfferPrice>
+          )}
         </Grid.Col>
         <Grid.Col
           xl={3}
@@ -165,7 +153,14 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             paddingBottom: isMobile ? 0 : undefined,
           }}
         >
-          {!isMobile && stackOfferDate()}
+          {!isMobile && (
+            <OfferDate
+              offer={offer}
+              label={columnLabels[Columns.createdAt]}
+              isLarge={isLarge}
+              textAlignRight={false}
+            ></OfferDate>
+          )}
         </Grid.Col>
         <Grid.Col
           xl={3}
@@ -178,7 +173,14 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             paddingBottom: isMobile ? 0 : undefined,
           }}
         >
-          {!isMobile && stackAmountForSale(true)}
+          {!isMobile && (
+            <OfferAmount
+              offer={offer}
+              label={columnLabels[Columns.requestedAmount]}
+              isLarge={isLarge}
+              textAlignRight={true}
+            ></OfferAmount>
+          )}
         </Grid.Col>
 
         <Grid.Col
@@ -190,12 +192,39 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
           {isMobile && (
             <Stack>
               <Group position={'apart'}>
-                {stackSeller()}
-                {stackOfferDate(true)}
+                {
+                  <OfferSeller
+                    offer={offer}
+                    label={columnLabels[Columns.requesterName]}
+                    isLarge={isLarge}
+                    textAlignRight={true}
+                  ></OfferSeller>
+                }
+
+                <OfferDate
+                  offer={offer}
+                  label={columnLabels[Columns.createdAt]}
+                  isLarge={isLarge}
+                  textAlignRight={true}
+                ></OfferDate>
               </Group>
               <Group position={'apart'}>
-                {stackTokenPrice()}
-                {stackAmountForSale(true)}
+                {
+                  <OfferPrice
+                    offer={offer}
+                    label={columnLabels[Columns.requestedPrice]}
+                    isLarge={isLarge}
+                    textAlignRight={true}
+                  ></OfferPrice>
+                }
+                {
+                  <OfferAmount
+                    offer={offer}
+                    label={columnLabels[Columns.requestedAmount]}
+                    isLarge={isLarge}
+                    textAlignRight={true}
+                  ></OfferAmount>
+                }
               </Group>
             </Stack>
           )}
@@ -203,226 +232,6 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
       </Grid>
     </Card>
   );
-
-  function stackAmountForSale(textAlignRight = false) {
-    return (
-      <Stack
-        h={'100%'}
-        align={'stretch'}
-        justify={
-          offer.id === '' ? 'center' : isLarge ? 'flex-end' : 'flex-start'
-        }
-        spacing={0}
-      >
-        {!isLarge && (
-          <Text
-            fz={'md'}
-            ta={textAlignRight ? 'right' : 'left'}
-            color={'dimmed'}
-          >
-            {columnLabels[Columns.requestedAmount]}
-          </Text>
-        )}
-        {!isLarge && (
-          <>
-            {offer.id !== '' ? (
-              <div>
-                <Group position={'right'}>
-                  <Text size={'xs'} align={'center'}>
-                    {formatToken(offer.requestedAmount ?? 0) +
-                      ' / ' +
-                      formatToken(offer.initialAmount)}
-                  </Text>
-                </Group>
-                <Progress
-                  color={'yellow'}
-                  value={
-                    ((offer.requestedAmount ?? 0) / offer.initialAmount) * 100
-                  }
-                />
-                <Group position={'right'}>
-                  <Text size={'xs'} align={'center'}>
-                    {formatPercent(
-                      (offer.requestedAmount ?? 0) / offer.initialAmount
-                    )}
-                  </Text>
-                </Group>
-              </div>
-            ) : (
-              <Group position={'right'}>
-                {' '}
-                <Skeleton height={12} radius={'xl'} width={100} />
-              </Group>
-            )}
-          </>
-        )}
-
-        {isLarge && (
-          <Group w={'100%'} position={textAlignRight ? 'right' : 'left'}>
-            {offer.id !== '' ? (
-              <div>
-                <RingProgress
-                  size={100}
-                  label={
-                    <Text size={'xs'} align={'center'}>
-                      {formatToken(offer.requestedAmount ?? 0) +
-                        ' / ' +
-                        formatToken(offer.initialAmount)}
-                    </Text>
-                  }
-                  sections={[
-                    {
-                      value:
-                        ((offer.requestedAmount ?? 0) / offer.initialAmount) *
-                        100,
-                      color: 'yellow',
-                    },
-                  ]}
-                />
-                <Text
-                  fz={isLarge ? 'xs' : 'xs'}
-                  color={'dimmed'}
-                  ta={isLarge || textAlignRight ? 'center' : 'left'}
-                  sx={{ marginTop: '-10px' }}
-                >
-                  {formatUsd(
-                    (offer.requestedAmount ?? 0) * (offer.requestedPrice ?? 0)
-                  )}
-                </Text>
-              </div>
-            ) : (
-              <Group position={isLarge ? 'right' : 'left'}>
-                {' '}
-                <Skeleton height={12} radius={'xl'} width={100} />
-              </Group>
-            )}
-          </Group>
-        )}
-      </Stack>
-    );
-  }
-
-  function stackOfferDate(textAlignRight = false) {
-    return (
-      <Stack
-        h={'100%'}
-        align={'stretch'}
-        justify={isLarge ? 'center' : 'flex-start'}
-        spacing={0}
-      >
-        {!isLarge && (
-          <Text
-            fz={'md'}
-            ta={textAlignRight ? 'right' : 'left'}
-            color={'dimmed'}
-          >
-            {columnLabels[Columns.createdAt]}
-          </Text>
-        )}
-        {offer.id !== '' ? (
-          <div>
-            <Text
-              fz={'md'}
-              ta={isLarge || textAlignRight ? 'right' : 'left'}
-              fw={500}
-            >
-              {formatTimestampDay(offer.createdAt)}
-            </Text>
-            <Text
-              fz={'xs'}
-              color={'dimmed'}
-              ta={isLarge || textAlignRight ? 'right' : 'left'}
-            >
-              {formatTimestampHour(offer.createdAt)}
-            </Text>
-          </div>
-        ) : (
-          <Group position={isLarge ? 'right' : 'left'}>
-            {' '}
-            <Skeleton height={12} radius={'xl'} width={100} />
-          </Group>
-        )}
-      </Stack>
-    );
-  }
-
-  function stackTokenPrice() {
-    return (
-      <Stack
-        h={'100%'}
-        align={'stretch'}
-        justify={isLarge ? 'center' : 'flex-start'}
-        spacing={0}
-      >
-        {!isLarge && (
-          <Text fz={'md'} ta={'left'} color={'dimmed'}>
-            {columnLabels[Columns.requestedPrice]}
-          </Text>
-        )}
-        {offer.id !== '' ? (
-          <div>
-            <Text
-              fz={isLarge ? 'md' : 'md'}
-              ta={isLarge ? 'right' : 'left'}
-              fw={500}
-            >
-              {formatUsd(
-                offer.requestedPrice ?? offer.initialSellingPrice ?? 0
-              )}
-            </Text>
-            <Text
-              fz={isLarge ? 'xs' : 'xs'}
-              color={priceDeltaColor}
-              ta={isLarge ? 'right' : 'left'}
-            >
-              {(priceDelta > 0 ? '+' : '') + formatPercent(priceDelta)}
-            </Text>
-          </div>
-        ) : (
-          <Group position={isLarge ? 'right' : 'left'}>
-            {' '}
-            <Skeleton height={12} radius={'xl'} width={100} />
-          </Group>
-        )}
-      </Stack>
-    );
-  }
-
-  function stackSeller() {
-    return (
-      <Stack
-        h={'100%'}
-        align={'stretch'}
-        justify={isLarge ? 'center' : 'flex-start'}
-        spacing={0}
-      >
-        {!isLarge && (
-          <Text fz={'md'} ta={'left'} color={'dimmed'}>
-            {columnLabels[Columns.requesterName]}
-          </Text>
-        )}
-        {offer.id !== '' ? (
-          <div>
-            <Text fz={'md'} ta={isLarge ? 'right' : 'left'}>
-              {t2(offer.requesterName)}
-            </Text>
-            <Text
-              fz={isLarge ? 'xs' : 'xs'}
-              color={'dimmed'}
-              ta={isLarge ? 'right' : 'left'}
-            >
-              {truncateInMiddle(offer.requesterAddress)}
-            </Text>
-          </div>
-        ) : (
-          <Group position={isLarge ? 'right' : 'left'}>
-            {' '}
-            <Skeleton height={12} radius={'xl'} width={100} />
-          </Group>
-        )}
-      </Stack>
-    );
-  }
 };
 
 export const ItemEmptyElement: FC = () => {
@@ -445,68 +254,3 @@ export const ItemEmptyElement: FC = () => {
     </Card>
   );
 };
-function calculatePriceDelta(offer: OfferData, prices: Price) {
-  let priceDelta = offer.priceDelta;
-
-  if (!priceDelta) {
-    if (offer.initialSellingPrice) {
-      const usdInitPerTokenForSale = new BigNumber(
-        offer.sites.transfered.tokenOfficialPrice
-      );
-      const usdInitPerTokenBuyWith = new BigNumber(
-        offer.sites.requested.tokenOfficialPrice
-      );
-
-      const numberOfTokenForSalePerTokenBuyWith = new BigNumber(1).dividedBy(
-        offer.requestedRate
-      );
-
-      const usdPerTokenForSale = usdInitPerTokenBuyWith.dividedBy(
-        numberOfTokenForSalePerTokenBuyWith
-      );
-
-      const usdDeltaPerTokenForSale = usdPerTokenForSale.minus(
-        usdInitPerTokenForSale
-      );
-
-      priceDelta = usdDeltaPerTokenForSale
-        .dividedBy(usdInitPerTokenForSale)
-        .toNumber();
-
-      // console.log(
-      //   'WARNING CALC',
-      //   offer.id,
-      //   'numberOfTokenForSalePerTokenBuyWith',
-      //   numberOfTokenForSalePerTokenBuyWith.toNumber()
-      // );
-      // console.log(
-      //   'WARNING CALC',
-      //   offer.id,
-      //   'usdPerTokenForSale',
-      //   usdPerTokenForSale.toNumber()
-      // );
-      // console.log(
-      //   'WARNING CALC',
-      //   offer.id,
-      //   'usdInitPerTokenForSale',
-      //   usdInitPerTokenForSale.toNumber()
-      // );
-    } else {
-      const p1 = new BigNumber(
-        prices[offer.requestedTokenAddress.toLowerCase()]
-      );
-
-      const p2 = new BigNumber(
-        prices[offer.transferedTokenAddress.toLowerCase()]
-      );
-
-      priceDelta = p2
-        .times(offer.requestedPrice)
-        .minus(p1)
-        .dividedBy(p2)
-        .toNumber();
-    }
-  }
-
-  return priceDelta;
-}
