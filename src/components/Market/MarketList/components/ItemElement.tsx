@@ -75,8 +75,6 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
     }
   };
 
-  console.log('ITEM is large ?', isLarge);
-
   return (
     <Card
       withBorder={true}
