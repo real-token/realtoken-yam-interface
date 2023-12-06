@@ -557,14 +557,22 @@ export const adminAmount: ColumnFn<string> = (t,span) => {
     id: 'admin-amount',
     accessorKey: 'amount',
     header: t('amount'),
-    cell: ({ row }) => {
-      const offer:Offer = row.original;
-      return(
-        <Flex justify={"center"} direction={"column"}>
-          <Text>{offer.amount}</Text>              
-        </Flex>
-      )
-    },
+    cell: ({ getValue }) => (
+      <Text
+            size={'sm'}
+            sx={{
+              textAlign: 'right',
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+            }}
+          >
+        { getValue() ?
+          <Text>{getValue()}</Text>
+        :
+        <Skeleton height={15} />
+        }
+      </Text>
+    ),
     enableSorting: true,
     meta: { colSpan: span },
   }
@@ -573,38 +581,53 @@ export const adminAmount: ColumnFn<string> = (t,span) => {
 export const adminWalletBlanace: ColumnFn<string> = (t,span) => {
   return{
     id: 'admin-wallet-balance',
-    accessorKey: 'adminWalletBalance',
+    accessorKey: 'balanceWallet',
     header: t('walletBalance'),
-    cell: ({ row }) => {
-      const offer:Offer = row.original;
-      return(
-        <Flex justify={"center"} direction={"column"}>
-          <Text>{offer.balanceWallet}</Text>     
-        </Flex>
-      )
-    },
-    enableSorting: true,
-    meta: { colSpan: span },
-  }
-}
-export const adminAllowance: ColumnFn<string> = (t,span) => {
-  return{
-    id: 'admin-allowance',
-    accessorKey: 'adminAlowwance',
-    header: t('allowance'),
-    cell: ({ row }) => {
-      const offer:Offer = row.original;
-      return(
-        <Flex justify={"center"} direction={"column"}>
-          <Text>{offer.allowanceToken}</Text>              
-        </Flex>
-      )
-    },
+    cell: ({ getValue }) => (
+      <Text
+            size={'sm'}
+            sx={{
+              textAlign: 'right',
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+            }}
+          >
+        { getValue() ?
+          <Text>{getValue()}</Text>
+        :
+        <Skeleton height={15} />
+        }
+      </Text>
+    ),
     enableSorting: true,
     meta: { colSpan: span },
   }
 }
 
+export const adminAllowance: ColumnFn<number> = (t,span) => {
+  return{
+    id: 'admin-allowance',
+    accessorKey: "allowanceToken",
+    header: t("allowance"),
+    cell: ({ getValue }) => (
+      <Text
+            size={'sm'}
+            sx={{
+              textAlign: 'right',
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+            }}
+          >
+        { getValue() ?
+          <Text>{getValue()}</Text>
+        :
+        <Skeleton height={15} />
+        }
+      </Text>
+    ),
+    meta: { colSpan: span },
+  }
+}
 function setCopySuccess(arg0: boolean): any {
   throw new Error("Function not implemented.")
 }

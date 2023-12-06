@@ -1,7 +1,7 @@
-import { CodegenConfig } from '@graphql-codegen/cli'
- 
+import { CodegenConfig } from '@graphql-codegen/cli';
+
 const config: CodegenConfig = {
-  schema: 'https://dev-api.realtoken.network/graphql',
+  schema: 'https://staging-api.realtoken.network/graphql',
   documents: ['src/**/*.tsx'],
   generates: {
     './gql/': {
@@ -9,10 +9,10 @@ const config: CodegenConfig = {
       plugins: [],
       presetConfig: {
         gqlTagName: 'gql',
-      }
-    }
+      },
+    },
   },
   ignoreNoDocuments: true,
-}
- 
-export default config
+};
+
+export default config;
