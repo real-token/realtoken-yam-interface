@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -13,9 +13,15 @@ import {
   Title,
 } from '@mantine/core';
 
-import { addErc20TokenToMetaMask } from 'src/components/Wallet/AddTokenToWallet';
+import { useAtomValue } from 'jotai';
+
+import {
+  addErc20TokenToMetaMask,
+  isMetaMask,
+} from 'src/components/Wallet/AddTokenToWallet';
 import { UrlDashboard } from 'src/constants/urlExternal';
-import { formatToken } from 'src/utils/format';
+import { providerAtom } from 'src/states';
+import { formatSmallToken } from 'src/utils/format';
 import { openInNewTab } from 'src/utils/window';
 
 interface ModalSuccessProps {
@@ -36,6 +42,9 @@ export const ModalSuccess: FC<ModalSuccessProps> = ({
   modalFinishOpened,
   modalFinishClose,
 }) => {
+  const [amount, setAmount] = useState<number>(buyAmount);
+  const connector = useAtomValue(providerAtom);
+  const isMetamask = isMetaMask(connector);
   const { t } = useTranslation('buy', {
     keyPrefix: 'success',
   });
@@ -56,81 +65,94 @@ export const ModalSuccess: FC<ModalSuccessProps> = ({
       erc20TokenImage
     );
   };
+
+  useEffect(() => {
+    setAmount(buyAmount);
+  }, [buyAmount]);
+
   return (
-    <Modal
-      opened={modalFinishOpened}
-      onClose={modalFinishClose}
-      title={<Title order={3}>{t1('title')}</Title>}
-      centered={true}
-      size={500}
-      radius={'lg'}
-    >
-      <Text fw={'400'}>
-        {t1('message') + formatToken(buyAmount, offerTokenSymbol) + '.'}
-      </Text>
-      <Space h={20}></Space>
-      <Card withBorder={true}>
-        <Text ta={'center'} fw={'400'}>
-          {t1('question')}
+    <>
+      {/* {<Text>{formatSmallToken(amount, offerTokenSymbol)}</Text>} */}
+      <Modal
+        opened={modalFinishOpened}
+        onClose={modalFinishClose}
+        title={<Title order={3}>{t1('title')}</Title>}
+        centered={true}
+        size={500}
+        radius={'lg'}
+      >
+        <Text fw={'400'}>
+          {t1('message') + formatSmallToken(amount, offerTokenSymbol) + '.'}
+        </Text>
+
+        {isMetamask && (
+          <>
+            <Space h={20}></Space>
+            <Card withBorder={true}>
+              <Text ta={'center'} fw={'400'}>
+                {t1('question')}
+              </Text>
+              <Space h={'xl'}></Space>
+              <Group position={'center'}>
+                {/* <Button radius={'xl'} color={'red'} onClick={modalFinishClose}>
+          {t('noThanks')}
+        </Button> */}
+                <Button
+                  color={'blue'}
+                  //variant={'outline'}
+                  leftIcon={
+                    <ActionIcon size={16} variant={'transparent'}>
+                      <Image
+                        src={
+                          'https://static.coingecko.com/s/metamask_fox-99d631a5c38b5b392fdb2edd238a525ba0657bc9ce045077c4bae090cfc5b90a.svg'
+                        }
+                        alt={'nft'}
+                        height={16}
+                      ></Image>
+                    </ActionIcon>
+                  }
+                  radius={'xl'}
+                  onClick={() =>
+                    handleAddErc20ToWallet(
+                      offerTokenAddress,
+                      offerTokenSymbol,
+                      offerTokenDecimals,
+                      offerTokenLogoUrl
+                    )
+                  }
+                  //style={{ backgroundColor: theme.colors.brand[5] }}
+                >
+                  {t('add')}
+                </Button>
+              </Group>
+            </Card>
+          </>
+        )}
+        <Space h={20}></Space>
+        <Text fw={'400'} ta={'center'}>
+          {t('message')}
         </Text>
         <Space h={'xl'}></Space>
         <Group position={'center'}>
           {/* <Button radius={'xl'} color={'red'} onClick={modalFinishClose}>
-          {t('noThanks')}
+          {'Fermer'}
         </Button> */}
           <Button
-            color={'blue'}
             //variant={'outline'}
             leftIcon={
-              <ActionIcon size={16} variant={'transparent'}>
-                <Image
-                  src={
-                    'https://static.coingecko.com/s/metamask_fox-99d631a5c38b5b392fdb2edd238a525ba0657bc9ce045077c4bae090cfc5b90a.svg'
-                  }
-                  alt={'nft'}
-                  height={16}
-                ></Image>
+              <ActionIcon size={25} variant={'transparent'}>
+                <Image src={getLogUrl()} alt={'nft'} height={25}></Image>
               </ActionIcon>
             }
             radius={'xl'}
-            onClick={() =>
-              handleAddErc20ToWallet(
-                offerTokenAddress,
-                offerTokenSymbol,
-                offerTokenDecimals,
-                offerTokenLogoUrl
-              )
-            }
+            onClick={() => openInNewTab(UrlDashboard.url)}
             //style={{ backgroundColor: theme.colors.brand[5] }}
           >
-            {t('add')}
+            {t('accessDashboard')}
           </Button>
         </Group>
-      </Card>
-      <Space h={20}></Space>
-      <Text fw={'400'} ta={'center'}>
-        {t('message')}
-      </Text>
-      <Space h={'xl'}></Space>
-      <Group position={'center'}>
-        {/* <Button radius={'xl'} color={'red'} onClick={modalFinishClose}>
-          {'Fermer'}
-        </Button> */}
-        <Button
-          //variant={'outline'}
-          leftIcon={
-            <ActionIcon size={25} variant={'transparent'}>
-              <Image src={getLogUrl()} alt={'nft'} height={25}></Image>
-            </ActionIcon>
-          }
-          radius={'xl'}
-          onClick={() => openInNewTab(UrlDashboard.url)}
-          //style={{ backgroundColor: theme.colors.brand[5] }}
-        >
-          {t('accessDashboard')}
-        </Button>
-      </Group>
-    </Modal>
+      </Modal>
+    </>
   );
 };
 

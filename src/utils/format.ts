@@ -219,6 +219,8 @@ export function formatSmallToken(num: number, symbol = '', digit = -1) {
     maxDp = 1;
   } else if (num > 1 && digit === -1) {
     maxDp = 2;
+  } else if (num < 1 && digit === -1) {
+    maxDp = 6;
   } else if (digit >= 0) {
     maxDp = digit;
   }

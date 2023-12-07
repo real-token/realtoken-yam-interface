@@ -14,10 +14,7 @@ import { useAtomValue } from 'jotai';
 
 import { Erc20, Erc20ABI } from 'src/abis';
 import { NumberInput } from 'src/components/NumberInput';
-import {
-  AddErc20ToWallet,
-  isMetaMask,
-} from 'src/components/Wallet/AddTokenToWallet';
+import { AddErc20ToWallet } from 'src/components/Wallet/AddTokenToWallet';
 import { ContractsID } from 'src/constants';
 import { useActiveChain, useContract } from 'src/hooks';
 import { useAppSelector } from 'src/hooks/react-hooks';
@@ -191,10 +188,11 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
   const onHandleSubmit = useCallback(
     async (formValues: BuyOfferFormValues) => {
       setBuyAmount(formValues.amount);
+      console.log('setBuyAmount', formValues.amount);
       const onFinished = () => {
         setSubmitting(false);
         formValues.amount = 0;
-        if (isMetaMask(connector)) modalFinishOpen();
+        modalFinishOpen();
       };
       setSubmitting(true);
 
@@ -272,7 +270,7 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
   } = offerPrices(offer, buyTokenSymbol, prices);
 
   return (
-    <form onSubmit={onSubmit(onHandleSubmit)}>
+    <>
       <ModalSuccess
         buyAmount={buyAmount}
         offerTokenAddress={offer.offerTokenAddress}
@@ -286,134 +284,141 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
         modalFinishClose={modalFinishClose}
         modalFinishOpened={modalFinishOpened}
       ></ModalSuccess>
+      <form onSubmit={onSubmit(onHandleSubmit)}>
+        <Stack justify={'center'} align={'stretch'}>
+          <Flex direction={'column'} gap={'sm'}>
+            <Flex direction={'column'} gap={8}>
+              <Flex direction={'row'} gap={16}>
+                <Text className={classes.textLabel}>{t('offerTokenName')}</Text>
+                <Group spacing={5}>
+                  <Text className={classes.textValue}>{offerTokenName}</Text>
+                  <AddErc20ToWallet
+                    erc20TokenAddress={offer.offerTokenAddress}
+                    erc20TokenSymbol={offerTokenSymbol ?? offer.offerTokenName}
+                    erc20TokenImage={offerTokenLogo}
+                    erc20TokenDecimal={
+                      offerTokenDecimals
+                        ? parseInt(offerTokenDecimals)
+                        : parseInt(offer.offerTokenDecimals)
+                    }
+                  ></AddErc20ToWallet>
+                </Group>
+              </Flex>
+              <Flex direction={'row'} gap={16}>
+                <Text className={classes.textLabel}>{t3('sellerName')}</Text>
+                <Text className={classes.textValue}>
+                  {t3(offer.sellerName)}
+                </Text>
+              </Flex>
+              <Flex direction={'row'} gap={16} align={'center'}>
+                <Text className={classes.textLabel}>{t('sellerAddress')}</Text>
+                <Text
+                  fz={isMobile ? 11 : undefined}
+                  className={classes.textValue}
+                >
+                  {offer.sellerAddress}
+                </Text>
+              </Flex>
+              <Flex direction={'row'} gap={16}>
+                <Text className={classes.textLabel}>
+                  {offer.type ? amountTranslation.get(offer.type) : ''}
+                </Text>
+                <Text className={classes.textValue}>
+                  {BigNumber.minimum(
+                    offer.amount,
+                    offerTokenSellerBalance!
+                  ).toString()}
+                </Text>
+              </Flex>
+              <Flex direction={'row'} gap={16}>
+                <Text className={classes.textLabel}>
+                  {offer.type
+                    ? priceTranslation.get(offer.type)
+                    : 'Price/token'}
+                </Text>
+                <Text className={classes.textValue}>{offerPrice}</Text>
+              </Flex>
+              {initialPrice && (
+                <Flex direction={'row'} gap={16}>
+                  <Text className={classes.textLabel}>
+                    {offer.type
+                      ? initialPriceTranslation.get(offer.type)
+                      : 'Initial price/token'}
+                  </Text>
+                  <Text className={classes.stressValue}>{initialPrice}</Text>
+                </Flex>
+              )}
+              {priceDelta && (
+                <Flex direction={'row'} gap={16}>
+                  <Text className={classes.textLabel}>
+                    {offer.type
+                      ? deltaPriceTranslation.get(offer.type)
+                      : 'Delta price/token'}
+                  </Text>
+                  <Text className={classes.textValue} color={priceColor}>
+                    {priceDelta}
+                  </Text>
+                </Flex>
+              )}
+            </Flex>
+          </Flex>
 
-      <Stack justify={'center'} align={'stretch'}>
-        <Flex direction={'column'} gap={'sm'}>
-          <Flex direction={'column'} gap={8}>
-            <Flex direction={'row'} gap={16}>
-              <Text className={classes.textLabel}>{t('offerTokenName')}</Text>
-              <Group spacing={5}>
-                <Text className={classes.textValue}>{offerTokenName}</Text>
-                <AddErc20ToWallet
-                  erc20TokenAddress={offer.offerTokenAddress}
-                  erc20TokenSymbol={offerTokenSymbol ?? offer.offerTokenName}
-                  erc20TokenImage={offerTokenLogo}
-                  erc20TokenDecimal={
-                    offerTokenDecimals
-                      ? parseInt(offerTokenDecimals)
-                      : parseInt(offer.offerTokenDecimals)
+          <Divider />
+
+          <WalletERC20Balance
+            tokenAddress={offer.buyerTokenAddress}
+            tokenDecimals={offer.buyerTokenDecimals}
+          />
+
+          <Flex direction={'column'} gap={'sm'}>
+            <Text size={'md'} ta={'left'}>
+              {t1('sell')}
+            </Text>
+            <Flex direction={'column'} gap={8}>
+              <NumberInput
+                label={t('amount')}
+                required={true}
+                min={0}
+                max={maxTokenBuy}
+                showMax={true}
+                placeholder={t('amount')}
+                sx={{ flexGrow: 1 }}
+                groupMarginBottom={16}
+                setFieldValue={setFieldValue}
+                {...getInputProps('amount')}
+              />
+
+              <Text size={'md'}>{t('summary')}</Text>
+              <Text mb={10}>
+                {` ${t('summaryText1')} ${
+                  values?.amount
+                } ${offerTokenSymbol} ${t('summaryText2')} ${cleanNumber(
+                  values?.price
+                )} ${buyTokenSymbol} ${t(
+                  'summaryText3'
+                )} ${total} ${buyTokenSymbol}`}
+              </Text>
+
+              <Group grow={true} sx={{ padding: '0 50px 0 50px' }}>
+                <Button
+                  type={'submit'}
+                  radius={'xl'}
+                  loading={isSubmitting}
+                  aria-label={t('confirm')}
+                  disabled={
+                    process.env.NEXT_PUBLIC_ENV === 'development'
+                      ? false
+                      : values?.amount == 0 || !values.amount
                   }
-                ></AddErc20ToWallet>
+                >
+                  {t('confirm')}
+                </Button>
               </Group>
             </Flex>
-            <Flex direction={'row'} gap={16}>
-              <Text className={classes.textLabel}>{t3('sellerName')}</Text>
-              <Text className={classes.textValue}>{t3(offer.sellerName)}</Text>
-            </Flex>
-            <Flex direction={'row'} gap={16} align={'center'}>
-              <Text className={classes.textLabel}>{t('sellerAddress')}</Text>
-              <Text
-                fz={isMobile ? 11 : undefined}
-                className={classes.textValue}
-              >
-                {offer.sellerAddress}
-              </Text>
-            </Flex>
-            <Flex direction={'row'} gap={16}>
-              <Text className={classes.textLabel}>
-                {offer.type ? amountTranslation.get(offer.type) : ''}
-              </Text>
-              <Text className={classes.textValue}>
-                {BigNumber.minimum(
-                  offer.amount,
-                  offerTokenSellerBalance!
-                ).toString()}
-              </Text>
-            </Flex>
-            <Flex direction={'row'} gap={16}>
-              <Text className={classes.textLabel}>
-                {offer.type ? priceTranslation.get(offer.type) : 'Price/token'}
-              </Text>
-              <Text className={classes.textValue}>{offerPrice}</Text>
-            </Flex>
-            {initialPrice && (
-              <Flex direction={'row'} gap={16}>
-                <Text className={classes.textLabel}>
-                  {offer.type
-                    ? initialPriceTranslation.get(offer.type)
-                    : 'Initial price/token'}
-                </Text>
-                <Text className={classes.stressValue}>{initialPrice}</Text>
-              </Flex>
-            )}
-            {priceDelta && (
-              <Flex direction={'row'} gap={16}>
-                <Text className={classes.textLabel}>
-                  {offer.type
-                    ? deltaPriceTranslation.get(offer.type)
-                    : 'Delta price/token'}
-                </Text>
-                <Text className={classes.textValue} color={priceColor}>
-                  {priceDelta}
-                </Text>
-              </Flex>
-            )}
           </Flex>
-        </Flex>
-
-        <Divider />
-
-        <WalletERC20Balance
-          tokenAddress={offer.buyerTokenAddress}
-          tokenDecimals={offer.buyerTokenDecimals}
-        />
-
-        <Flex direction={'column'} gap={'sm'}>
-          <Text size={'md'} ta={'left'}>
-            {t1('sell')}
-          </Text>
-          <Flex direction={'column'} gap={8}>
-            <NumberInput
-              label={t('amount')}
-              required={true}
-              min={0}
-              max={maxTokenBuy}
-              showMax={true}
-              placeholder={t('amount')}
-              sx={{ flexGrow: 1 }}
-              groupMarginBottom={16}
-              setFieldValue={setFieldValue}
-              {...getInputProps('amount')}
-            />
-
-            <Text size={'md'}>{t('summary')}</Text>
-            <Text mb={10}>
-              {` ${t('summaryText1')} ${values?.amount} ${offerTokenSymbol} ${t(
-                'summaryText2'
-              )} ${cleanNumber(values?.price)} ${buyTokenSymbol} ${t(
-                'summaryText3'
-              )} ${total} ${buyTokenSymbol}`}
-            </Text>
-
-            <Group grow={true} sx={{ padding: '0 50px 0 50px' }}>
-              <Button
-                type={'submit'}
-                radius={'xl'}
-                loading={isSubmitting}
-                aria-label={t('confirm')}
-                disabled={
-                  process.env.NEXT_PUBLIC_ENV === 'development'
-                    ? false
-                    : values?.amount == 0 || !values.amount
-                }
-              >
-                {t('confirm')}
-              </Button>
-            </Group>
-          </Flex>
-        </Flex>
-      </Stack>
-    </form>
+        </Stack>
+      </form>
+    </>
   );
 };
 function offerPrices(
