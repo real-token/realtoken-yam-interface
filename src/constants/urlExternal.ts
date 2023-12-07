@@ -21,3 +21,9 @@ export const UrlForms: UrlExternal = {
   url: 'https://forms.gle/QvfMfRELQDss6NAZ8',
   keyword: 'form',
 };
+
+export const UrlDashboard: UrlExternal = {
+  name: 'Dashboard',
+  url: 'https://dashboard.cleansatmining.net',
+  keyword: 'dashboard',
+};

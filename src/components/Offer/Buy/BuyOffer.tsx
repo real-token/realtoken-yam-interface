@@ -3,20 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Web3Provider } from '@ethersproject/providers';
 import { createStyles, em } from '@mantine/core';
-import {
-  ActionIcon,
-  Button,
-  Divider,
-  Flex,
-  Group,
-  Image,
-  Modal,
-  Space,
-  Stack,
-  Text,
-  Title,
-  useMantineTheme,
-} from '@mantine/core';
+import { Button, Divider, Flex, Group, Stack, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useMediaQuery } from '@mantine/hooks';
 import { useDisclosure } from '@mantine/hooks';
@@ -29,7 +16,6 @@ import { Erc20, Erc20ABI } from 'src/abis';
 import { NumberInput } from 'src/components/NumberInput';
 import {
   AddErc20ToWallet,
-  addErc20TokenToMetaMask,
   isMetaMask,
 } from 'src/components/Wallet/AddTokenToWallet';
 import { ContractsID } from 'src/constants';
@@ -42,17 +28,13 @@ import { selectPrices } from 'src/store/features/interface/interfaceSelector';
 import { OFFER_TYPE, Offer } from 'src/types/offer';
 import { Price } from 'src/types/price';
 import { getContract } from 'src/utils';
-import {
-  formatBigDecimals,
-  formatPercent,
-  formatToken,
-  formatUsd,
-} from 'src/utils/format';
+import { formatBigDecimals, formatPercent, formatUsd } from 'src/utils/format';
 import { cleanNumber } from 'src/utils/number';
 import { calcRem } from 'src/utils/style';
 import { buy } from 'src/utils/tx/buy';
 
 import { OfferContainer } from '../components/OfferContainer';
+import { ModalSuccess } from './ModalSuccess';
 
 const useStyle = createStyles((theme) => ({
   center: {
@@ -135,7 +117,7 @@ export const BuyOffer: FC<BuyOffertProps> = ({ offer }) => {
 export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
   const isMobile = useMediaQuery(`(max-width: ${em(750)})`);
   const { classes } = useStyle();
-  const theme = useMantineTheme();
+
   const [
     modalFinishOpened,
     { open: modalFinishOpen, close: modalFinishClose },
@@ -196,9 +178,6 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
   const { t } = useTranslation('modals', { keyPrefix: 'buy' });
   const { t: t1 } = useTranslation('modals', { keyPrefix: 'sell' });
   const { t: t3 } = useTranslation('buy', { keyPrefix: 'table' });
-  const { t: t4 } = useTranslation('notifications', {
-    keyPrefix: 'buyOfferFinish',
-  });
 
   const { balance, WalletERC20Balance } =
     useWalletERC20Balance(buyerTokenAddress);
@@ -233,21 +212,6 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
     },
     [account, provider, activeChain, realTokenYamUpgradeable, offer, connector]
   );
-
-  const handleAddErc20ToWallet = (
-    erc20TokenAddress: string,
-    erc20TokenSymbol: string,
-    erc20TokenDecimal: number,
-    erc20TokenImage: string
-  ) => {
-    addErc20TokenToMetaMask(
-      erc20TokenAddress,
-      erc20TokenSymbol,
-      erc20TokenDecimal,
-      erc20TokenImage
-    );
-    modalFinishClose();
-  };
 
   const maxTokenBuy: number | undefined = useMemo(() => {
     if (!balance || !offer.price) return undefined;
@@ -309,56 +273,20 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
 
   return (
     <form onSubmit={onSubmit(onHandleSubmit)}>
-      <Modal
-        opened={modalFinishOpened}
-        onClose={modalFinishClose}
-        title={<Title order={3}>{t4('title')}</Title>}
-        centered={true}
-        size={'auto'}
-        radius={'lg'}
-      >
-        <Text fw={'400'}>
-          {t4('message') +
-            formatToken(buyAmount, offerTokenSymbol ?? offer.offerTokenName) +
-            '.'}
-        </Text>
-        <Space h={5}></Space>
-        <Text fw={'400'}>{t4('question')}</Text>
-        <Space h={'xl'}></Space>
-        <Group position={'center'}>
-          <Button radius={'xl'} color={'red'} onClick={modalFinishClose}>
-            {'Non merci'}
-          </Button>
-          <Button
-            variant={'filled'}
-            leftIcon={
-              <ActionIcon size={16} variant={'transparent'}>
-                <Image
-                  src={
-                    'https://static.coingecko.com/s/metamask_fox-99d631a5c38b5b392fdb2edd238a525ba0657bc9ce045077c4bae090cfc5b90a.svg'
-                  }
-                  alt={'nft'}
-                  height={16}
-                ></Image>
-              </ActionIcon>
-            }
-            radius={'xl'}
-            onClick={() =>
-              handleAddErc20ToWallet(
-                offer.offerTokenAddress,
-                offerTokenSymbol ?? offer.offerTokenName,
-                offerTokenDecimals
-                  ? parseInt(offerTokenDecimals)
-                  : parseInt(offer.offerTokenDecimals),
-                offerTokenLogo ?? ''
-              )
-            }
-            style={{ backgroundColor: theme.colors.brand[5] }}
-          >
-            {'Ajouter'}
-          </Button>
-        </Group>
-      </Modal>
+      <ModalSuccess
+        buyAmount={buyAmount}
+        offerTokenAddress={offer.offerTokenAddress}
+        offerTokenDecimals={
+          offerTokenDecimals
+            ? parseInt(offerTokenDecimals)
+            : parseInt(offer.offerTokenDecimals)
+        }
+        offerTokenSymbol={offerTokenSymbol ?? offer.offerTokenName}
+        offerTokenLogoUrl={offerTokenLogo ?? ''}
+        modalFinishClose={modalFinishClose}
+        modalFinishOpened={modalFinishOpened}
+      ></ModalSuccess>
+
       <Stack justify={'center'} align={'stretch'}>
         <Flex direction={'column'} gap={'sm'}>
           <Flex direction={'column'} gap={8}>

@@ -87,7 +87,7 @@ export const useERC20TokenInfo: UseERC20TokenInfo = (tokenAddress) => {
   };
 };
 
-function getImageUrl(symbol: string): string | undefined {
+export function getImageUrl(symbol: string): string | undefined {
   const domaineDuSite = window.location.origin;
 
   if (symbol.toLowerCase().includes('csm')) {
