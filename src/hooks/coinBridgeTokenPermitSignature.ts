@@ -14,8 +14,9 @@ const coinBridgeTokenPermitSignature = async (
   library: Web3Provider
 ) => {
   try {
-    const nonce = await contract.nonces(owner);
+    const nonce = await contract.nonces(owner); //BigNumber.from('2'); //await contract.nonces(owner);
     const contractName = await contract.name();
+    //console.log('nonce contract: ', contractName, nonce);
 
     const EIP712Domain = [
       { name: 'name', type: 'string' },
@@ -30,7 +31,7 @@ const coinBridgeTokenPermitSignature = async (
       chainId: library.network.chainId,
       verifyingContract: contract.address,
     };
-    // console.log('domain: ', domain);
+    //console.log('domain: ', domain);
 
     const Permit = [
       { name: 'owner', type: 'address' },
@@ -48,7 +49,7 @@ const coinBridgeTokenPermitSignature = async (
       nonce: nonce.toHexString(),
       deadline: transactionDeadline,
     };
-    // console.log('message: ', message);
+    //console.log('message: ', message);
 
     // eslint-disable-next-line object-shorthand
     const data = JSON.stringify({
@@ -60,8 +61,11 @@ const coinBridgeTokenPermitSignature = async (
       primaryType: 'Permit',
       message,
     });
+    //console.log('data: ', data);
 
     const signature = await library.send('eth_signTypedData_v4', [owner, data]);
+    //console.log('signature: ', signature);
+
     const signData = utils.splitSignature(signature as string);
     const { r, s, v } = signData;
     return {

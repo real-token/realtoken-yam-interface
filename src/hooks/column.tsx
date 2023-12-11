@@ -1,5 +1,5 @@
 import { ActionIcon, Group, Title, Text, Flex, Button, Skeleton, Badge } from "@mantine/core"
-import { IconChevronDown, IconChevronUp, IconTrash } from "@tabler/icons"
+import { IconChevronDown, IconChevronUp, IconTrash,IconCopy } from "@tabler/icons"
 import { ColumnDef, RowSelectionState, Table } from "@tanstack/react-table"
 import BigNumber from "bignumber.js"
 import { TFunction } from "react-i18next"
@@ -184,6 +184,11 @@ export const buyerTokenNameColumn: ColumnFn<string> = (t,span) => {
 }
 
 export const sellerAddressColumn: ColumnFn<string> = (t,span) => {
+  const handleCopyClick = (textToCopy: string) => {
+    navigator.clipboard.writeText(textToCopy)
+      .then(() => setCopySuccess(true))
+      .catch((err) => console.error('Error copying text: ', err));
+  };
     return {
         id: 'sellerAddress',
         accessorKey: 'sellerAddress',
@@ -197,7 +202,12 @@ export const sellerAddressColumn: ColumnFn<string> = (t,span) => {
               overflow: 'hidden',
             }}
           >
+            <Flex>
             {getReduceAddress(getValue())}
+            <ActionIcon variant={"transparent"} color={"blue"} onClick={() => handleCopyClick(getValue())}>
+              <IconCopy size={18} />
+            </ActionIcon>
+            </Flex>
           </Text>
         ),
         enableSorting: true,
@@ -547,17 +557,77 @@ export const adminAmount: ColumnFn<string> = (t,span) => {
     id: 'admin-amount',
     accessorKey: 'amount',
     header: t('amount'),
-    cell: ({ row }) => {
-      const offer:Offer = row.original;
-      return(
-        <Flex justify={"center"} direction={"column"}>
-          <Text>{`Amount: ${offer.amount}`}</Text>              
-          <Text>{`Wallet balance: ${offer.balanceWallet}`}</Text>     
-          <Text>{`Allowance: ${offer.allowanceToken}`}</Text>              
-        </Flex>
-      )
-    },
+    cell: ({ getValue }) => (
+      <Text
+            size={'sm'}
+            sx={{
+              textAlign: 'right',
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+            }}
+          >
+        { getValue() ?
+          <Text>{getValue()}</Text>
+        :
+        <Skeleton height={15} />
+        }
+      </Text>
+    ),
     enableSorting: true,
     meta: { colSpan: span },
+  }
 }
+
+export const adminWalletBlanace: ColumnFn<string> = (t,span) => {
+  return{
+    id: 'admin-wallet-balance',
+    accessorKey: 'balanceWallet',
+    header: t('walletBalance'),
+    cell: ({ getValue }) => (
+      <Text
+            size={'sm'}
+            sx={{
+              textAlign: 'right',
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+            }}
+          >
+        { getValue() ?
+          <Text>{getValue()}</Text>
+        :
+        <Skeleton height={15} />
+        }
+      </Text>
+    ),
+    enableSorting: true,
+    meta: { colSpan: span },
+  }
+}
+
+export const adminAllowance: ColumnFn<number> = (t,span) => {
+  return{
+    id: 'admin-allowance',
+    accessorKey: "allowanceToken",
+    header: t("allowance"),
+    cell: ({ getValue }) => (
+      <Text
+            size={'sm'}
+            sx={{
+              textAlign: 'right',
+              textOverflow: 'ellipsis',
+              overflow: 'hidden',
+            }}
+          >
+        { getValue() ?
+          <Text>{getValue()}</Text>
+        :
+        <Skeleton height={15} />
+        }
+      </Text>
+    ),
+    meta: { colSpan: span },
+  }
+}
+function setCopySuccess(arg0: boolean): any {
+  throw new Error("Function not implemented.")
 }
