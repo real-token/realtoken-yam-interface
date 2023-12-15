@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client';
 
 import { CHAINS, ChainsID } from 'src/constants';

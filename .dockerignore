@@ -6,3 +6,5 @@ README.md
 .next
 .git
 next.tar
+.yalc
+yalc.lock

@@ -14,7 +14,7 @@ const useStyle = createStyles((theme, { offerTypeColor } : StyleProps) => ({
         backgroundColor: offerTypeColor,
         borderRadius: theme.radius.md,
         fontWeight: 700,
-        padding: `0 ${theme.spacing.sm}px`,
+        padding: `0 ${theme.spacing.sm}`,
         color: "white"
     },
 }));

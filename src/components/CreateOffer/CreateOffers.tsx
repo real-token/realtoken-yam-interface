@@ -5,7 +5,7 @@ import BigNumber from "bignumber.js";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CoinBridgeToken, coinBridgeTokenABI, Erc20, Erc20ABI } from "src/abis";
-import { ContractsID, NOTIFICATIONS, NotificationsID } from "src/constants";
+import { Chain, ContractsID, NOTIFICATIONS, NotificationsID } from "src/constants";
 import { useActiveChain, useContract } from "src/hooks";
 import { useRefreshOffers } from "src/hooks/offers/useRefreshOffers";
 import { useAppDispatch, useAppSelector } from "src/hooks/react-hooks";
@@ -14,11 +14,86 @@ import { createOfferResetDispatchType } from "src/store/features/createOffers/cr
 import { CreatedOffer } from "src/types/offer/CreatedOffer";
 import { getContract } from "src/utils";
 import { CreateOfferPane } from "./CreateOfferPane";
-import { BigNumber as BigN } from "ethers";
-import { approveOffer } from "../Modals/CreateOfferModal/CreateOfferModal";
 import erc20PermitSignature from "../../hooks/erc20PermitSignature";
 import coinBridgeTokenPermitSignature from "../../hooks/coinBridgeTokenPermitSignature";
-import { Token } from "graphql";
+import { Web3Provider } from "@ethersproject/providers";
+import { Contract } from "ethers";
+import { useAtomValue } from "jotai";
+import { providerAtom } from "../../states";
+
+const approveOffer = (
+    offerTokenAddress: string, 
+    amountToApprove: BigNumber,
+    provider: Web3Provider|undefined, 
+    account: string|undefined, 
+    realTokenYamUpgradeable: Contract|undefined, 
+    setSubmitting: (status: boolean) => void, 
+    activeChain: Chain|undefined
+  ): Promise<void> => {
+    return new Promise<void>(async (resolve,reject) => {
+      if(!provider || !realTokenYamUpgradeable || !account || !amountToApprove || !offerTokenAddress) return;
+      try{
+        setSubmitting(true);
+        const offerToken = getContract<CoinBridgeToken>(
+        offerTokenAddress,
+          coinBridgeTokenABI,
+          provider,
+          account
+        );
+  
+        if (!offerToken) {
+          console.log('offerToken not found');
+          return;
+        }
+  
+        const oldAllowance = await offerToken.allowance(account,realTokenYamUpgradeable.address);
+        const amountInWeiToPermit = amountToApprove.plus(new BigNumber(oldAllowance.toString())).toString(10);
+  
+        console.log("amountInWei: ", amountToApprove.toString())
+        console.log("oldAllowance: ", oldAllowance.toString())
+        console.log("amountInWeiToPermit: ", amountInWeiToPermit)
+  
+        // TokenType = 3: ERC20 Without Permit, do Approve/CreateOffer
+        BigNumber.set({EXPONENTIAL_AT: 35});
+        const approveTx = await offerToken.approve(
+          realTokenYamUpgradeable.address,
+          amountInWeiToPermit
+        );
+  
+        const notificationApprove = {
+          key: approveTx.hash,
+          href: `${activeChain?.blockExplorerUrl}tx/${approveTx.hash}`,
+          hash: approveTx.hash,
+        };
+  
+        showNotification(
+          NOTIFICATIONS[NotificationsID.approveOfferLoading](
+            notificationApprove
+          )
+        );
+  
+        approveTx
+          .wait()
+          .then(({ status }) =>
+            updateNotification(
+              NOTIFICATIONS[
+                status === 1
+                  ? NotificationsID.approveOfferSuccess
+                  : NotificationsID.approveOfferError
+              ](notificationApprove)
+            )
+          );
+  
+        await approveTx.wait(1);
+  
+        resolve();
+  
+      }catch(err){
+        setSubmitting(false);
+        reject(err)
+      }
+    });
+}
 
 const useStyles = createStyles((theme) => ({
     container:{
@@ -58,6 +133,27 @@ export const CreateOffer = () => {
 
     const dispatch = useAppDispatch();
 
+    const connector = useAtomValue(providerAtom);
+    
+    // Group approves for same token in unique approve tx to reduce gas consumption
+    const createApproves = async () => {
+        const approves: { [key: string]: BigNumber } = {}
+        offers.forEach((offer) => {
+            if(!offer.amount) return;
+            const approveForOfferToken = approves[offer.offerTokenAddress];
+            if(approves[offer.offerTokenAddress]){
+                 approves[offer.offerTokenAddress] = approveForOfferToken.plus(offer.amount)
+            }else{
+                approves[offer.offerTokenAddress] = offer.amount;
+            }
+        });
+
+        for await (const approveKey of Object.keys(approves)){
+            const amountToApprove = approves[approveKey];
+            await approveOffer(approveKey,amountToApprove,provider,account,realTokenYamUpgradeable,setLoading,activeChain);
+        }
+    }
+
     const createOffers = async () => {
 
         try{
@@ -93,9 +189,13 @@ export const CreateOffer = () => {
                 const priceInWei = new BigNumber(offer.price.toString()).shiftedBy(Number(buyerTokenDecimals)).toString(10);
                 const transactionDeadline = Math.floor(Date.now() / 1000) + 3600;
 
-                let permitAnswer: any;
-                if(offerTokenType == 1){
+                const isSafe = connector == "gnosis-safe";
+
+                let permitAnswer: any|undefined = undefined;
+                let needPermit = false;
+                if(offerTokenType == 1 && !isSafe){
                     // TokenType = 1: RealToken
+                    needPermit = true;
                     permitAnswer = await coinBridgeTokenPermitSignature(
                         account,
                         realTokenYamUpgradeable.address,
@@ -104,8 +204,9 @@ export const CreateOffer = () => {
                         offerToken,
                         provider
                     );
-                }else if(offerTokenType == 2){
+                }else if(offerTokenType == 2 && !isSafe){
                     // TokenType = 2: ERC20 With Permit
+                    needPermit = true;
                     permitAnswer = await erc20PermitSignature(
                         account,
                         realTokenYamUpgradeable.address,
@@ -114,12 +215,17 @@ export const CreateOffer = () => {
                         offerToken,
                         provider
                     );
-                }else if(offerTokenType == 3){
-                    await approveOffer(offer,provider,account,realTokenYamUpgradeable,setLoading,activeChain);
+                }else if(offerTokenType == 3 || isSafe){
+                    await approveOffer(offer.offerTokenAddress, offer.amount,provider,account,realTokenYamUpgradeable,setLoading,activeChain);
                 }
 
+                if(needPermit && !permitAnswer){
+                    setLoading(false);
+                    return;
+                };
+
                 let createOfferTx;
-                if(offerTokenType == 1 || offerTokenType == 2){
+                if((offerTokenType == 1 || offerTokenType == 2) && !isSafe){
                     const { r, s, v} = permitAnswer;
                     createOfferTx = await realTokenYamUpgradeable.createOfferWithPermit(
                         offer.offerTokenAddress,
@@ -134,6 +240,7 @@ export const CreateOffer = () => {
                         s,
                     )
                 }else{
+                    console.log('TEST 1')
                     createOfferTx = await realTokenYamUpgradeable.createOffer(
                         offer.offerTokenAddress,
                         offer.buyerTokenAddress,
@@ -143,7 +250,10 @@ export const CreateOffer = () => {
                     )
                 }
                 
-                if(!createOfferTx) return;
+                if(!createOfferTx){
+                    setLoading(false);
+                    return;
+                };
 
                 const notificationPayload = {
                     key: createOfferTx.hash,
@@ -180,17 +290,15 @@ export const CreateOffer = () => {
             }else{
 
                 // WANT TO CREATE MULTI OFFERS
-
                 const _offerTokens = [];
                 const _buyerTokens = [];
                 const _buyers = [];
                 const _prices = [];
                 const _amounts = [];
 
-                // Need to approve the first token
-                const offer = offers[0];
-                await approveOffer(offer,provider,account,realTokenYamUpgradeable,setLoading,activeChain);
-
+                // approve 
+                await createApproves();
+                
                 for await(const createdOffer of offers){
 
                     const offerToken = getContract<CoinBridgeToken>(
@@ -216,11 +324,9 @@ export const CreateOffer = () => {
                         return;
                     }
 
-                    BigNumber.set({EXPONENTIAL_AT: 25});
+                    BigNumber.set({EXPONENTIAL_AT: 37});
 
                     const priceInWei = new BigNumber(createdOffer.price.toString()).shiftedBy(Number(buyerTokenDecimals)).toString(10);
-
-                    console.log(priceInWei)
 
                     _offerTokens.push(createdOffer.offerTokenAddress);
                     _buyerTokens.push(createdOffer.buyerTokenAddress);

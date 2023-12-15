@@ -1,5 +1,4 @@
 import { ApolloClient, InMemoryCache, NormalizedCacheObject } from "@apollo/client";
-
 export const getTheGraphUrlYAM = (chainId: number): string => {
   switch (chainId) {
     case 1:
@@ -7,7 +6,7 @@ export const getTheGraphUrlYAM = (chainId: number): string => {
     case 5:
       return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-goerli';
     case 100:
-      return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-gnosis';
+      return 'https://gnosis-mainnet.graph-eu.p2pify.com/144b769c6a2babc002760ad88a90ba24/Yam-Gnosis';
     default:
       return '';
   }

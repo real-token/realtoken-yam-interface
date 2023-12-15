@@ -1,7 +1,6 @@
 import type { Web3Provider } from '@ethersproject/providers';
-
-import type { Contract } from 'ethers';
-import { utils } from 'ethers';
+import { Contract, utils } from 'ethers';
+import { gnosisAllowedTokens } from '../constants/allowedBuyTokens';
 
 // This function is used for general tokens with permit function
 const erc20PermitSignature = async (
@@ -14,8 +13,42 @@ const erc20PermitSignature = async (
 ) => {
   try {
     // const transactionDeadline = Date.now() + 3600; // permit valable during 1h
-    const nonce = await contract.nonces(owner);
+
+    let nonce;
+    if(contract.address.toLowerCase() == gnosisAllowedTokens[2].contractAddress.toLowerCase()){
+      nonce = await contract._nonces(owner);
+    }else{
+      nonce = await contract.nonces(owner);
+    }
+
+    console.log(contract.address)
+    
+    let version = undefined;
+    try{
+      version = await contract.version();
+    }catch(e){
+      console.log('No version function in contract.', e)
+    }
+
+    let VERSION = undefined;
+    try{
+      VERSION = await contract.VERSION();
+    }catch(e){
+      console.log('No VERSION function in contract.', e)
+    }
+
+    let revision = undefined;
+    try{
+      revision = await contract.EIP712_REVISION();
+    }catch(e){
+      console.log('No EIP712_REVISION function in contract.', e)
+    }
+
+    if(!version && !VERSION && !revision) throw Error("Cannot get permit version from contract.");
+
     const contractName = await contract.name();
+    const rightVersion = version ?? VERSION ?? revision;
+
     const EIP712Domain = [
       { name: 'name', type: 'string' },
       { name: 'version', type: 'string' },
@@ -24,10 +57,11 @@ const erc20PermitSignature = async (
     ];
     const domain = {
       name: contractName,
-      version: '1',
+      version: rightVersion.toString(),
       chainId: library.network.chainId,
       verifyingContract: contract.address,
     };
+    console.log(domain)
     const Permit = [
       { name: 'owner', type: 'address' },
       { name: 'spender', type: 'address' },
@@ -43,6 +77,9 @@ const erc20PermitSignature = async (
       nonce: nonce.toHexString(),
       deadline: transactionDeadline,
     };
+
+    console.log(message)
+
     // eslint-disable-next-line object-shorthand
     const data = JSON.stringify({
       types: {

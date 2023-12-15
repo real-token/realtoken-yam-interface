@@ -1,11 +1,12 @@
-import { useMemo } from 'react';
+// @ts-nocheck
 
+import { useMemo } from 'react';
 import { useWeb3React } from '@web3-react/core';
 
 import { ContractsID, TypedContract } from 'src/constants';
 import { getContract } from 'src/utils';
-
 import { useActiveChain } from './useActiveChain';
+
 
 export const useContract = <T extends ContractsID>(contractId: T) => {
   const { account, provider } = useWeb3React();

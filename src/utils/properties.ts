@@ -1,4 +1,4 @@
-import { Token } from ".graphclient";
+import { Token } from "../../gql/graphql";
 import { gql } from "@apollo/client";
 import { ShortProperty } from "src/types";
 import { Offer, OFFER_TYPE } from "src/types/offer";
@@ -9,28 +9,35 @@ export const getWhitelistedProperties = async (chainId: number): Promise<ShortPr
         try{
 
             const client = getYamClient(chainId);
-            const { data } = await client.query({ query: gql`
+            await client.query({ query: gql`
                 query GetWLProperties {
                     tokens(first: 1000, where: {tokenType: 1, name_not: null}) {
-                    name
-                    tokenType
-                    address
+                        name
+                        tokenType
+                        address
                     }
                 }
-            `});
+            `}).then((data) => {
+                // console.log(data)
 
-            if(data.tokens){
-                const propertiesToken: ShortProperty[] = []; 
-                data.tokens.forEach((token: Token) => {
-                    propertiesToken.push({
-                        contractAddress: token.address,
-                        name: token.name ?? ""
-                    })
-                })
-                resolove(propertiesToken);
-            }else{
-                resolove([])
-            }
+                // if(data.tokens){
+                //     const propertiesToken: ShortProperty[] = [];
+                //     // console.log("lenght: ", data.tokens.length);
+                //     data.tokens.forEach((token: Token) => {
+                //         // if(token.name?.toLowerCase().includes('19003')){
+                //         //     console.log(token)
+                //         // }
+                //         propertiesToken.push({
+                //             contractAddress: token.address,
+                //             name: token.name ?? ""
+                //         })
+                //     })
+                //     resolove(propertiesToken);
+                // }else{
+                //     resolove([])
+                // }
+            })
+            
             
         }catch(err){
             console.log("Failed to get propertieqs from YAM TheGraph: ", err);

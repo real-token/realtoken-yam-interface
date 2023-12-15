@@ -1,23 +1,22 @@
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import { APIPropertiesToken, PropertiesToken, ShortProperty } from "src/types";
 import { getWhitelistedProperties } from "src/utils/properties";
+import axios from "axios";
 
 const getTokenFromCommunityAPI = new Promise<APIPropertiesToken[]>( async (resolve, reject) => {
     try{
-        const response = await fetch("https://api.realt.community/v1/token",{
-            method: "GET",
+
+        const response = await axios.get<APIPropertiesToken[]>("https://api.realt.community/v1/token", {
             headers: {
                 "X-AUTH-REALT-TOKEN": process.env.COMMUNITY_API_KEY ?? ""
             }
         });
 
-        if(response.ok){
-            const tokens: APIPropertiesToken[] = await response.json();
-            resolve(tokens);
-        }else{
-            reject("Failed to fetch properties from community")
-        } 
+        const tokens: APIPropertiesToken[] = response.data;
+        resolve(tokens);
+
     }catch(err){
+        console.log("Failed to fetch properties from community")
         reject(err);
     }
 }) 
@@ -196,6 +195,10 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
         });
     }
 
+    return propertiesNonFiltered;
+
+    console.log(propertiesNonFiltered)
+
     const onlyWLProperties = propertiesNonFiltered.filter(
         (property) => !!wlProperties.find((wlProperty) => wlProperty.contractAddress.toLowerCase() == property.contractAddress.toLowerCase())
     );
@@ -203,7 +206,7 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
     return onlyWLProperties;
 }
 
-const handler: NextApiHandler = async (req: NextApiRequest,res: NextApiResponse) => {
+const handler: NextApiHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     try{
 
@@ -214,16 +217,18 @@ const handler: NextApiHandler = async (req: NextApiRequest,res: NextApiResponse)
             return res.status(400).json({ "error": "ChainId is missing." });
         }
 
-        const [communityApiToken,wlTokens] = await Promise.all([getTokenFromCommunityAPI,getWhitelistedProperties(parseInt(chainId))]);
+        // const [communityApiToken,wlTokens] = await Promise.all([getTokenFromCommunityAPI,getWhitelistedProperties(parseInt(chainId))]);
+        const [communityApiToken] = await Promise.all([getTokenFromCommunityAPI]);
+        const tokens = getTokens(parseInt(chainId), communityApiToken, []);
 
-        const tokens = getTokens(parseInt(chainId), communityApiToken, wlTokens);
-
-        return res.status(200).json(tokens);
+        return res
+            .setHeader('cache-control', 'public, s-maxage=1200, stale-while-revalidate=600')
+            .status(200)
+            .json(tokens);
   
       }catch(err){
         console.log(err);
-        res.status(500).json({error: "Failed to fetch properties"});
+        return res.status(500).json({error: "Failed to fetch properties"});
       }
 }
-
 export default handler;

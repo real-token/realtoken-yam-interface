@@ -131,14 +131,14 @@ export function fetchAddressWlProperties(address: string, chainId: number){
         query fetchWlToken{
           account(id: "${address.toLowerCase()}") {
             id
-            userId {
+            userIds {
               attributeKeys
             }
           }
         }
       `});
 
-      const wlTokenIds: string[] = data.account.userId.attributeKeys;
+      const wlTokenIds: string[] | undefined = data.account?.userIds?.[0]?.attributeKeys;
 
       // console.log(wlTokenIds)
 
@@ -148,8 +148,8 @@ export function fetchAddressWlProperties(address: string, chainId: number){
         dispatch({ type: wlPropertiesIdIsloadingChangedDispatchType, payload: false });
       }
 
-    }catch(err){
-      console.log("Failed to fetch wl properties for connected address.")
+    } catch(err){
+      console.log("Failed to fetch wl properties for connected address.", err)
     }
   }
 }

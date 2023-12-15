@@ -65,8 +65,8 @@ export const PropertyCard = ({ propertyToken, offer }: PropertyCardProps) => {
                         { offer ?
                             <OfferDeltaTable 
                                 offer={offer}
-                                offerPrice={undefined}
-                                offerYield={undefined}
+                                offerPrice={offer.offerPrice}
+                                offerYield={offer.offerYield}
                                 officialPrice={propertyToken.officialPrice}
                                 officialYield={propertyToken.annualYield ? propertyToken.annualYield*100 : 0}
                             />

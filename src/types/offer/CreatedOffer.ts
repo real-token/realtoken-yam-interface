@@ -7,7 +7,7 @@ export interface CreatedOffer{
     offerTokenAddress: string;
     buyerTokenAddress: string;
     price: number|undefined;
-    amount: number|undefined;
+    amount: BigNumber|undefined;
     buyerAddress: string;
     isPrivateOffer: boolean;
 }

@@ -5,7 +5,7 @@ import { DataRealtokenType } from 'src/types/offer/DataRealTokenType';
 import { Offer } from 'src/types/offer/Offer';
 import { OFFER_TYPE } from 'src/types/offer/OfferType';
 import { Price } from 'src/types/price';
-import { Offer as OfferGraphQl } from '../../../.graphclient/index';
+import { Offer as OfferGraphQl } from '../../../gql/graphql';
 import { getBuyPriceInDollar, getPriceInDollar } from '../price';
 
 // TOKEN TYPE
@@ -79,7 +79,7 @@ export const parseOffer = (
             'YAM autorisé': offer.availableAmount,
           }); */
         }
-  
+
         const o: Offer = {
           offerId: BigNumber(offer.id).toString(),
           offerTokenAddress: (offer.offerToken.address as string)?.toLowerCase(),
@@ -95,9 +95,9 @@ export const parseOffer = (
           price: offer.price.price.toString(),
           amount:
             BigNumber.minimum(
-              offer.availableAmount,
-              balanceWallet,
-              allowance
+              offer.availableAmount, //5.4
+              balanceWallet, // 0
+              allowance //0
             ).toString(10) ?? '0',
           availableAmount: offer.availableAmount.toString(),
           balanceWallet: balanceWallet ?? '0',
@@ -114,6 +114,14 @@ export const parseOffer = (
           offerYield: undefined,
           yieldDelta: undefined
         };
+
+        if(o.offerId == "13773"){
+          console.log(
+            offer.availableAmount,
+            balanceWallet,
+            allowance
+          )
+        }
 
         o.type = getOfferType(o.offerTokenType,o.buyerTokenType);
 
@@ -149,7 +157,7 @@ const getOfficialPrice = (propertyToken: PropertiesToken|undefined): number|unde
     const buyPrice = propertyToken.officialPrice;
     return buyPrice;
   }else{
-    return undefined;
+    return 0;
   }
 }
 
@@ -159,7 +167,7 @@ const getOfficialYield = (propertyToken: PropertiesToken|undefined): number|unde
     const originalYield = propertyToken.annualYield ? propertyToken.annualYield*100 : 0;
     return originalYield;
   }else{
-    return undefined;
+    return 0;
   }
 }
 
@@ -169,7 +177,7 @@ const getOfferYield = (prices: Price, offer: Offer, propertyToken: PropertiesTok
     const offerAdjusted = new BigNumber(propertyToken.netRentYearPerToken).dividedBy(tokenPriceInDollar);
     return parseFloat(offerAdjusted.multipliedBy(100).toString());
   }else{
-    return undefined;
+    return 0;
   }
 }
 
@@ -181,21 +189,31 @@ const getYieldDelta = (offer: Offer): number|undefined => {
   return offerYield && officialYield ? 
     parseFloat(new BigNumber(offerYield).multipliedBy(new BigNumber(1)).dividedBy(new BigNumber(officialYield)).minus(1).toString()) 
     : 
-    undefined;
+    0;
 
 }
 
 const getPriceDelta = (prices: Price, offer: Offer): number|undefined => {
 
   const tokenPriceInDollar = getPriceInDollar(prices,offer);
-  const buyTokenPriceInDollar = getBuyPriceInDollar(prices, offer);
   const officialPrice = offer.officialPrice;
 
   if(offer.type == OFFER_TYPE.SELL){
     return officialPrice && tokenPriceInDollar ? parseFloat(new BigNumber(tokenPriceInDollar).dividedBy(new BigNumber(officialPrice)).minus(1).toString()) : undefined
   }
-  if(offer.type == OFFER_TYPE.BUY && buyTokenPriceInDollar){
-    return tokenPriceInDollar ? parseFloat(new BigNumber(tokenPriceInDollar).dividedBy(new BigNumber(buyTokenPriceInDollar)).minus(1).toString()) : undefined
+  if(offer.type == OFFER_TYPE.BUY && officialPrice){
+
+    const tokenInDollar = 1/parseFloat(offer.price.toString());
+    const ratio = officialPrice/tokenInDollar;
+
+    // if(offer.offerId == "135"){
+    //   console.log("offer price: ", offer.price.toString())
+    //   console.log("officialPrice: ", officialPrice)
+    //   console.log("tokenInDollar: ", tokenInDollar) 
+    //   console.log("ratio: ", ratio)
+    // }
+
+    return 1-ratio;
   }
 
 }
