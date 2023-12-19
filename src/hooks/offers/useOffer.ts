@@ -25,12 +25,12 @@ export const useOffer: UseOfferProps = (offerId: number) => {
     const fetch = useCallback(async (provider: Web3Provider, chainId: number, offerId: number) => {
         if(!account || pricesIsLoading) return;
         fetchOffer(provider, account, chainId,offerId, propertiesToken,prices)
-            .then((offer: Offer) => { 
+            .then((offer: Offer) => {
                 setOffer(offer);
                 setIsLoading(false);
             })
             .catch(err => console.log(err))
-    },[account, pricesIsLoading, propertiesToken, prices])
+    },[account, pricesIsLoading, propertiesToken, prices]);
 
     useEffect(() => {
         if(offerId && chainId && provider && account && propertiesToken && !propertiesIsloading && propertiesToken.length > 0) fetch(provider,chainId, offerId);

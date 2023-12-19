@@ -4,34 +4,44 @@ import { PropertiesToken } from "src/types/PropertiesToken";
 import { getBigDataGraphRealtoken } from "./fetchOffers";
 import { parseOffer } from "./parseOffer";
 import { Offer as OfferGraphQl } from '../../../gql/graphql';
-import { getRealTokenClient, getYamClient } from "./getClientURL";
-import { gql } from "@apollo/client";
+import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 import { getOfferQuery } from "./getOfferQuery";
 import { Web3Provider } from "@ethersproject/providers";
 import { Price } from "src/types/price";
+import { CHAINS, ChainsID } from "../../constants";
 
 export const fetchOffer = (provider: Web3Provider, account: string, chainId: number, offerId: number, propertiesToken: PropertiesToken[], prices: Price): Promise<Offer> => {
     return new Promise(async (resolve,reject) => {
       try{
 
-        const clientYam = getYamClient(chainId);
-        const clientRealToken = getRealTokenClient(chainId);
+        const client = new ApolloClient({
+          uri: "https://staging-api.realtoken.network/graphql",
+          cache: new InMemoryCache(),
+        });
+
+        const graphNetworkPrefix = CHAINS[chainId as ChainsID].graphPrefixes.yam;
       
-        const { data } = await clientYam.query({query: gql`
-          query MyQuery($id: String!) {
-            offer(id: $id) {
-              ${getOfferQuery()}
+        const { data } = await client.query({
+          query: gql`
+            query MyQuery($id: ID!) {
+              ${graphNetworkPrefix} {
+                offer(id: $id) {
+                  ${getOfferQuery()}
+                }
+              }
             }
-          }`
-          , variables: {
+          `,  
+          variables: {
             "id": `0x${offerId.toString(16)}`
           }}
         );
 
-        const offerFromTheGraph: OfferGraphQl = data.offer;
+        console.log(data)
+
+        const offerFromTheGraph: OfferGraphQl = data[graphNetworkPrefix].offer;
 
         const batch = [`${offerFromTheGraph.seller.address}-${offerFromTheGraph.offerToken.address}`]
-        const realtokenData: [DataRealtokenType] = await getBigDataGraphRealtoken(chainId, clientRealToken, batch);
+        const realtokenData: [DataRealtokenType] = await getBigDataGraphRealtoken(chainId, client, batch);
 
         const accountUser = realtokenData[0];
         const offer = await parseOffer(provider, account, offerFromTheGraph,accountUser,propertiesToken, prices);
