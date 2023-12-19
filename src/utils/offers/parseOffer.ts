@@ -46,7 +46,6 @@ export const parseOffer = (
             accountUserRealtoken != undefined
           ) {
             balanceWallet = accountUserRealtoken.amount ?? '0';
-  
             allowance = accountUserRealtoken.allowance ?? '0';
   
             // logLabel = 'parseOffer type 1 blance/allowance';
@@ -115,7 +114,7 @@ export const parseOffer = (
           yieldDelta: undefined
         };
 
-        if(o.offerId == "13773"){
+        if(offer.id == "0x5fe1"){
           console.log(
             offer.availableAmount,
             balanceWallet,

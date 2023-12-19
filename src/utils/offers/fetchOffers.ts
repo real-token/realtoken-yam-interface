@@ -115,7 +115,7 @@ export const fetchOffersTheGraph = (
       });
 
       const offersToFetch = activeOfferResult.data[graphNetworkPrefix].global.activeOffersCount;
-      console.log(offersToFetch)
+      console.log('Amount of offersToFetch: ', offersToFetch)
 
       const offersRes = await client.query({
         query: gql`

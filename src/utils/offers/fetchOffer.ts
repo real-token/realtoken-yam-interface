@@ -36,8 +36,6 @@ export const fetchOffer = (provider: Web3Provider, account: string, chainId: num
           }}
         );
 
-        console.log(data)
-
         const offerFromTheGraph: OfferGraphQl = data[graphNetworkPrefix].offer;
 
         const batch = [`${offerFromTheGraph.seller.address}-${offerFromTheGraph.offerToken.address}`]
