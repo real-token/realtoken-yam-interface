@@ -9,14 +9,10 @@ const getTokenFromCommunityAPI = new Promise<APIPropertiesToken[]>( async (resol
                 "X-AUTH-REALT-TOKEN": process.env.COMMUNITY_API_KEY ?? ""
             }
         });
-
-        if(response.ok){
-            const tokens: APIPropertiesToken[] = await response.json();
-            resolve(tokens);
-        }else{
-            reject("Failed to fetch properties from community")
-        } 
+        const tokens: APIPropertiesToken[] = await response.json();
+        resolve(tokens);
     }catch(err){
+        console.log("Failed to fetch properties from community")
         reject(err);
     }
 }) 
