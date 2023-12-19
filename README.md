@@ -13,9 +13,9 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center" id="about-the-project">
-  <a href="https://github.com/real-token/realtoken-yam-interface">
+  <!-- <a href="https://github.com/real-token/realtoken-yam-interface">
     <img src="logo.svg" alt="Logo" width="80" height="80">
-  </a>
+  </a> -->
 
 <h3 align="center">RealToken YAM interface</h3>
 
