@@ -4,24 +4,20 @@ import { PropertiesToken } from "src/types/PropertiesToken";
 import { getBigDataGraphRealtoken } from "./fetchOffers";
 import { parseOffer } from "./parseOffer";
 import { Offer as OfferGraphQl } from '../../../gql/graphql';
-import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
+import { gql } from "@apollo/client";
 import { getOfferQuery } from "./getOfferQuery";
 import { Web3Provider } from "@ethersproject/providers";
 import { Price } from "src/types/price";
 import { CHAINS, ChainsID } from "../../constants";
+import { apiClient } from "./getClientURL";
 
 export const fetchOffer = (provider: Web3Provider, account: string, chainId: number, offerId: number, propertiesToken: PropertiesToken[], prices: Price): Promise<Offer> => {
     return new Promise(async (resolve,reject) => {
       try{
 
-        const client = new ApolloClient({
-          uri: "https://staging-api.realtoken.network/graphql",
-          cache: new InMemoryCache(),
-        });
-
         const graphNetworkPrefix = CHAINS[chainId as ChainsID].graphPrefixes.yam;
       
-        const { data } = await client.query({
+        const { data } = await apiClient.query({
           query: gql`
             query MyQuery($id: ID!) {
               ${graphNetworkPrefix} {
@@ -39,7 +35,7 @@ export const fetchOffer = (provider: Web3Provider, account: string, chainId: num
         const offerFromTheGraph: OfferGraphQl = data[graphNetworkPrefix].offer;
 
         const batch = [`${offerFromTheGraph.seller.address}-${offerFromTheGraph.offerToken.address}`]
-        const realtokenData: [DataRealtokenType] = await getBigDataGraphRealtoken(chainId, client, batch);
+        const realtokenData: [DataRealtokenType] = await getBigDataGraphRealtoken(chainId, apiClient, batch);
 
         const accountUser = realtokenData[0];
         const offer = await parseOffer(provider, account, offerFromTheGraph,accountUser,propertiesToken, prices);

@@ -16,6 +16,7 @@ import { Price } from 'src/types/price';
 
 import { Offer as OfferGraphQl } from 'gql/graphql';
 import { parseOffer } from './parseOffer';
+import { apiClient } from './getClientURL';
 
 const nbrFirst = 1000;
 
@@ -96,13 +97,8 @@ export const fetchOffersTheGraph = (
       const graphNetworkPrefix = CHAINS[chainId as ChainsID].graphPrefixes.yam;
 
       const offersData: Offer[] = [];
-      
-      const client = new ApolloClient({
-        uri: "https://staging-api.realtoken.network/graphql",
-        cache: new InMemoryCache(),
-      });
 
-      const activeOfferResult = await client.query({
+      const activeOfferResult = await apiClient.query({
         query: gql`
           query {
             ${graphNetworkPrefix}{
@@ -117,7 +113,7 @@ export const fetchOffersTheGraph = (
       const offersToFetch = activeOfferResult.data[graphNetworkPrefix].global.activeOffersCount;
       console.log('Amount of offersToFetch: ', offersToFetch)
 
-      const offersRes = await client.query({
+      const offersRes = await apiClient.query({
         query: gql`
           query {
             ${graphNetworkPrefix} {
@@ -178,7 +174,7 @@ export const fetchOffersTheGraph = (
         ); */
         if (batch.length <= 0) break;
 
-        bigDataRealTokenPromises.push(getBigDataGraphRealtoken(chainId, client, batch));
+        bigDataRealTokenPromises.push(getBigDataGraphRealtoken(chainId, apiClient, batch));
         //console.log('DEBUG for realtokenData', i, batchSize, realtokenData);
       }
 
