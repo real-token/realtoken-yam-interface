@@ -46,7 +46,6 @@ export const parseOffer = (
             accountUserRealtoken != undefined
           ) {
             balanceWallet = accountUserRealtoken.amount ?? '0';
-  
             allowance = accountUserRealtoken.allowance ?? '0';
   
             // logLabel = 'parseOffer type 1 blance/allowance';
@@ -114,14 +113,6 @@ export const parseOffer = (
           offerYield: undefined,
           yieldDelta: undefined
         };
-
-        if(o.offerId == "13805"){
-          console.log(
-            offer.availableAmount,
-            balanceWallet,
-            allowance
-          )
-        }
 
         o.type = getOfferType(o.offerTokenType,o.buyerTokenType);
 

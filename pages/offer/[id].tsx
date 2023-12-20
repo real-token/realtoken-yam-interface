@@ -89,7 +89,7 @@ const ShowOfferPage: FC = () => {
     const { getPropertyToken, propertiesIsloading } = usePropertiesToken();
 
     useEffect(() => {
-        if(!offer || propertiesIsloading || propertyTokens.length > 0) return undefined;
+        if(!offer || propertiesIsloading || propertyTokens.length > 0) return undefined;
 
         if(offer.buyerTokenType == 1){
             const token = getPropertyToken(offer.buyerTokenAddress);
@@ -112,7 +112,7 @@ const ShowOfferPage: FC = () => {
     
     const isAccountOffer: boolean = useMemo(() => {
     if(!offer || !account) return false;
-    return offer.sellerAddress == account.toLowerCase()
+        return offer.sellerAddress == account.toLowerCase()
     },[offer, account])
 
     const onOpenBuyModal = useCallback(

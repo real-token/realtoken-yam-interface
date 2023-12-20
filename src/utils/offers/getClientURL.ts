@@ -38,3 +38,8 @@ export const getRealTokenClient = (chainId: number): ApolloClient<NormalizedCach
       cache: new InMemoryCache(),
   });
 }
+
+export const apiClient = new ApolloClient({
+  uri: "https://staging-api.realtoken.network/graphql",
+  cache: new InMemoryCache(),
+});
