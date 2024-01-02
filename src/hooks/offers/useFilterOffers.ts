@@ -33,7 +33,7 @@ export const useFilterOffers: UseFilterOffers = (offers) => {
         const buyerTokenFilter = tokenOfferFilter.has(
           offer.buyerTokenAddress.toLowerCase()
         )
-          ? tokenOfferFilter.get(offer.offerTokenAddress.toLowerCase())
+          ? tokenOfferFilter.get(offer.buyerTokenAddress.toLowerCase())
           : false;
         return (
           offer.type == type &&
