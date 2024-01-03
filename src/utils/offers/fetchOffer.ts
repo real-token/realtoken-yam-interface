@@ -11,7 +11,7 @@ import { Price } from "src/types/price";
 import { CHAINS, ChainsID } from "../../constants";
 import { apiClient } from "./getClientURL";
 
-export const fetchOffer = (provider: Web3Provider, account: string, chainId: number, offerId: number, propertiesToken: PropertiesToken[], prices: Price): Promise<Offer> => {
+export const fetchOffer = (provider: Web3Provider, account: string, chainId: number, offerId: number, propertiesToken: PropertiesToken[], prices: Price): Promise<Offer|undefined> => {
     return new Promise(async (resolve,reject) => {
       try{
 
@@ -32,7 +32,9 @@ export const fetchOffer = (provider: Web3Provider, account: string, chainId: num
           }}
         );
 
-        const offerFromTheGraph: OfferGraphQl = data[graphNetworkPrefix].offer;
+        const offerFromTheGraph: OfferGraphQl = data[graphNetworkPrefix]?.offer;
+
+        if(!offerFromTheGraph) resolve(undefined);
 
         const batch = [`${offerFromTheGraph.seller.address}-${offerFromTheGraph.offerToken.address}`]
         const realtokenData: [DataRealtokenType] = await getBigDataGraphRealtoken(chainId, apiClient, batch);
