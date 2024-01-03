@@ -1,5 +1,5 @@
-import { Flex, Text, createStyles, Skeleton, ActionIcon, Title, Divider, useMantineTheme } from "@mantine/core";
-import { IconExternalLink, IconShoppingCart } from "@tabler/icons";
+import { Flex, Text, createStyles, Skeleton, ActionIcon, Title, Divider } from "@mantine/core";
+import { IconError404, IconShoppingCart } from "@tabler/icons";
 import { useRouter } from "next/router"
 import { FC, useCallback, useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next";
@@ -124,7 +124,7 @@ const ShowOfferPage: FC = () => {
 
     return(
         <ConnectedProvider>
-            <Flex direction={"column"} mt={"xl"}>
+            <Flex direction={"column"} mt={"xl"} h={offer == undefined ? '100%': 'unset'}>
             { 
                 isLoading || offer !== undefined ? (
                     <Flex gap={"md"}>
@@ -188,7 +188,16 @@ const ShowOfferPage: FC = () => {
                 )
                 :
                 (
-                    <div>{"Offer doesn't exist :/"}</div>
+                    <Flex
+                        h={'100%'}
+                        w={'100%'}
+                        justify={'center'}
+                        align={'center'}
+                        direction={'column'}
+                    >
+                        <IconError404 size={'200px'} color="#AE740A"/>
+                        <Text size={'xl'}>{"Offer don't exists"}</Text>
+                    </Flex>
                 )
             }
             </Flex>
