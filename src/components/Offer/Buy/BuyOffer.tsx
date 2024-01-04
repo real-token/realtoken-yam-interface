@@ -327,7 +327,7 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
                   {BigNumber.minimum(
                     offer.amount,
                     offerTokenSellerBalance!
-                  ).toString()}
+                  ).toString() + ' ' + offerTokenSymbol}
                 </Text>
               </Flex>
               <Flex direction={'row'} gap={16}>

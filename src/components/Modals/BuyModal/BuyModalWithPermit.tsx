@@ -229,13 +229,15 @@ export const BuyModalWithPermit: FC<
             </Flex>
             <Flex direction={'row'} gap={16}>
               <Text className={classes.textHeader}>
-                {offer.type ? amountTranslation.get(offer.type) : ''}
+                {offer.type
+                  ? amountTranslation.get(offer.type) 
+                  : ''}
               </Text>
               <Text className={classes.textValue}>
                 {BigNumber.minimum(
                   offer.amount,
                   offerTokenSellerBalance!
-                ).toString()}
+                ).toString() + " " + offerTokenSymbol}
               </Text>
             </Flex>
             <Flex direction={'row'} gap={16}>
