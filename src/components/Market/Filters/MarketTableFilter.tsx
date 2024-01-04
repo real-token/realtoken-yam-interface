@@ -1,4 +1,4 @@
-import { Flex, Grid, Input, Text, TextInput } from "@mantine/core";
+import { Flex, Text, TextInput } from "@mantine/core";
 import { useAtom } from "jotai";
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
