@@ -1,43 +1,80 @@
 {
+  "list": {
+    "requesterName": "Comprador",
+    "requesterAddress": "Dirección",
+    "requestedPrice": "Precio (USD)",
+    "requestedAmount": "Cantidad",
+    "createdAt": "Creado el"
+  },
+
+  "success": {
+    "noThanks": "No, Gracias",
+    "add": "Agregar a Metamask",
+    "accessDashboard": "Acceder al Panel de Control",
+    "message": "¡Ahora puedes seguir tu inversión en el panel CleanSat Mining!"
+  },
+
   "table": {
-    "market": "Market",
-    "title": "RealToken YAM (You And Me)",
-    "offerId": "Offer ID",
-    "offerTokenAddress": "Sell Token Address",
-    "offerTokenName": "Offer Token",
-    "buyerTokenAddress": "Buyer Token Address",
-    "buyerTokenName": "Buyer Token",
-    "sellerAddress": "Seller Address",
-    "price": "Price/token",
-    "amount": "Available quantity",
-    "allowance": "Allowance",
-    "walletBalance": "Wallet balance",
-    "address": "Address",
-    "actionEdit": "Edit",
-    "actionDelete": "Delete",
-    "buy": "Buy",
-    "privateTexte": "private",
-    "onMarketSince": "On market since"
+    "market": "Mercado",
+    "title": "CleanSatMining YAM (Tú y Yo)",
+    "offerId": "ID de la Oferta",
+    "offerTokenAddress": "Dirección del Token en Venta",
+    "offerTokenName": "En Venta",
+    "buyerTokenAddress": "Dirección del Token del Comprador",
+    "buyerTokenName": "Token del Comprador",
+    "sellerAddress": "Dirección del Vendedor",
+    "sellerName": "Vendedor",
+    "sellDate": "Fecha de Venta",
+    "UNKNOWN": "Desconocido",
+    "CSM": "✅ CSM",
+    "price": "Precio de Venta",
+    "amount": "Cantidad Disponible",
+    "allowance": "Asignación",
+    "walletBalance": "Saldo de la Billetera",
+    "address": "Dirección",
+    "actionEdit": "Editar",
+    "actionDelete": "Eliminar",
+    "buy": "Comprar",
+    "privateTexte": "Privado",
+    "onMarketSince": "Fecha de Creación"
   },
+
   "grid": {
-    "buy": "Buy",
-    "sell": "Sell",
-    "exchange": "Exchange"
+    "buy": "Compra",
+    "sell": "Venta",
+    "exchange": "Intercambio"
   },
+  "card": {
+    "sellToken": "Token en Venta",
+    "sellerAddress": "Dirección del Vendedor",
+    "sellerName": "Vendedor",
+    "sellAmount": "Cantidad de Token en Venta",
+    "sellPrice": "Precio/Token (Cantidad de Tokens CSM por Token en Venta)",
+
+    "buyToken": "Token de Compra",
+    "buyerAddress": "Dirección del Comprador",
+    "buyerName": "Comprador",
+    "buyAmount": "Cantidad de Token a Comprar",
+    "buyPrice": "Precio/Token (Cantidad de Tokens del Comprador por Token CSM)",
+
+    "exchangeToken": "Token de Intercambio"
+  },
+
+
   "subRow": {
-    "offerId": "Offer ID",
-    "offerTokenAddress": "Sell Token Address",
-    "offerTokenName": "Offer Token",
-    "buyerTokenAddress": "Buyer Token Address",
-    "buyerTokenName": "Buyer Token",
-    "sellerAddress": "Seller Address",
-    "price": "Price/token",
-    "officialPrice": "Official price (RealT)",
-    "offerPrice": "Offer Price",
-    "priceDifference": "Price Difference",
-    "amount": "Available quantity",
-    "address": "Address",
-    "name": "Name",
-    "value": "Value (~)"
+    "offerId": "ID de la Oferta",
+    "offerTokenAddress": "Dirección del Token en Oferta",
+    "offerTokenName": "Token de la Oferta",
+    "buyerTokenAddress": "Dirección del Token del Comprador",
+    "buyerTokenName": "Token del Comprador",
+    "sellerAddress": "Dirección del Vendedor",
+    "price": "Precio de Venta",
+    "officialPrice": "Precio Oficial (CSM)",
+    "offerPrice": "Precio Ofrecido",
+    "priceDifference": "Diferencia de Precio",
+    "amount": "Cantidad Disponible",
+    "address": "Dirección",
+    "name": "Nombre",
+    "value": "Valor (~)"
   }
 }

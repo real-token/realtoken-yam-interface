@@ -5,6 +5,7 @@ import { RealTokenYamUpgradeable } from 'src/abis';
 
 export enum ContractsID {
   realTokenYamUpgradeable = 'realTokenYamUpgradeable',
+  //complianceRegistry = 'complianceRegistry',
 }
 
 type Metadata<T extends ContractsID> =
@@ -21,9 +22,11 @@ export type TypedContract<T extends ContractsID> = Metadata<T> &
     ? RealTokenYamUpgradeable
     : Contract);
 
+export type ContractCSM = {
+  abi: ReadonlyArray<JsonFragment>;
+  address: string;
+};
+
 export type Contracts = {
-  [contract in ContractsID]: {
-    abi: ReadonlyArray<JsonFragment>;
-    address: string;
-  } & Metadata<contract>;
+  [contract in ContractsID]: ContractCSM & Metadata<contract>;
 };

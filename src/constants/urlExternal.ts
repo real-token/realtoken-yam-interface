@@ -6,12 +6,24 @@ export type UrlExternal = {
 
 export const UrlMtPelerin: UrlExternal = {
   name: 'Mont Pelerin',
-  url: 'https://www.mtpelerin.com/fr/bridge-wallet',
+  url: 'https://www.mtpelerin.com/join?rfr=cleansatmining',
   keyword: 'Mt Pelerin',
 };
 
 export const UrlContactUs: UrlExternal = {
   name: 'CleanSat Mining, contact us',
-  url: 'https://cleansatmining.com/contactez-nous',
+  url: 'contact@cleansatmining.com',
   keyword: 'contact',
+};
+
+export const UrlForms: UrlExternal = {
+  name: 'Google forms',
+  url: 'https://forms.gle/QvfMfRELQDss6NAZ8',
+  keyword: 'form',
+};
+
+export const UrlDashboard: UrlExternal = {
+  name: 'Dashboard',
+  url: 'https://dashboard.cleansatmining.net',
+  keyword: 'dashboard',
 };

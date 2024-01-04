@@ -15,20 +15,13 @@ export const theme: MantineThemeOverride = {
       '#B7CC41',
     ],
   },
-  white: '#F3F3F3',
+  white: '#FAFAFA',
   primaryColor: 'brand',
   defaultGradient: { deg: 90, from: '#BBCB40', to: '#88992A' },
   defaultRadius: 'md',
   cursorType: 'pointer',
   components: {
     ActionIcon: { defaultProps: { variant: 'filled' } },
-  },
-  fontSizes: {
-    // xs: '12px',
-    // sm: '13px',
-    // md: '14px',
-    // lg: '16px',
-    // xl: '18px',
   },
   other: {
     border: (theme: MantineTheme) =>
@@ -65,42 +58,3 @@ export const modalStyles: ModalProps['styles'] = {
     maxHeight: 'calc(100vh - (3vh * 2)) !important',
   },
 };
-/* export const modalStyles: ModalProps['styles'] = {
-  header: {
-    justifyContent: 'center',
-    //borderRadius: '25px',
-    //padding: '20px',
-    overflow: 'hidden',
-    padding: 0,
-  },
-  body: {
-    marginTop: '1rem',
-    padding: '1rem',
-    width: 'auto',
-    //maxWidth: '800px',
-    //minWidth: '700px',
-    //maxHeight: 'calc(100vh - (3vh * 2))',
-    //overflow: 'auto',
-    borderRadius: '25px',
-  },
-  root: {
-    //zIndex: 10,
-    borderRadius: '25px',
-    padding: '1rem',
-  },
-  overlay: {
-    //zIndex: 10,
-  },
-  inner: {
-    //zIndex: 10,
-    borderRadius: '25px',
-    width: '100%',
-    height: '100%',
-  },
-  content: {
-    //minWidth: '650px',
-    //overflowY: 'unset !important' as 'unset',
-    //maxHeight: 'calc(100vh - (3vh * 2)) !important',
-    borderRadius: '25px',
-  },
-}; */

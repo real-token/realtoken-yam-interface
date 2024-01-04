@@ -11,7 +11,7 @@ import { PropertiesToken } from 'src/types';
 import { Offer } from 'src/types/offer';
 import { openInNewTab } from 'src/utils/window';
 
-import { PropertyImage } from './Image/PropertyImage';
+import { PropertyImage } from '../Image/PropertyImage';
 
 const useStyle = createStyles((theme) => ({
   container: {

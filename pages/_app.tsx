@@ -3,7 +3,8 @@ import { Provider as ReduxProvide } from 'react-redux';
 
 import type { AppProps as NextAppProps } from 'next/app';
 
-import { ColorScheme, Image } from '@mantine/core';
+import { ColorScheme, Image, em } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import {
   ChainSelectConfig,
   Head,
@@ -14,6 +15,7 @@ import {
   Web3Providers,
   Websites,
   getConnectors,
+  getReadOnlyConnector,
   getWalletConnectV2,
   gnosisHooks,
   gnosisSafe,
@@ -41,14 +43,13 @@ export const i18n = initLanguage(resources);
 const customChains: ChainSelectConfig<CustomChain> = {
   allowedChains: parseAllowedChain(ChainsID),
   chainsConfig: CHAINS,
-  defaultChainId: 100,
 };
 
 const showAllNetworks = true;
 
 const env = process.env.NEXT_PUBLIC_ENV ?? 'development';
 const walletConnectKey = process.env.NEXT_PUBLIC_WALLET_CONNECT_KEY ?? '';
-//console.log("wallet connect key: ", walletConnectKey)
+console.log('key: ', walletConnectKey);
 
 const [walletConnectV2, walletConnectV2Hooks] = getWalletConnectV2<CustomChain>(
   customChains,
@@ -56,18 +57,21 @@ const [walletConnectV2, walletConnectV2Hooks] = getWalletConnectV2<CustomChain>(
   walletConnectKey,
   showAllNetworks
 );
+const [readOnly, readOnlyHooks] = getReadOnlyConnector(customChains);
 
-const libraryConnectors = getConnectors(
-  [metaMask, metaMaskHooks],
-  [gnosisSafe, gnosisHooks],
-  [walletConnectV2, walletConnectV2Hooks]
-);
+const libraryConnectors = getConnectors({
+  metamask: [metaMask, metaMaskHooks],
+  gnosisSafe: [gnosisSafe, gnosisHooks],
+  walletConnectV2: [walletConnectV2, walletConnectV2Hooks],
+  readOnly: [readOnly, readOnlyHooks],
+});
 
 type AppProps = NextAppProps & { colorScheme: ColorScheme; locale: string };
 
-const queryClient = new QueryClient({});
+const queryClient = new QueryClient();
 
 const App = ({ Component, pageProps }: AppProps) => {
+  const isMobile = useMediaQuery(`(max-width: ${em(750)})`);
   return (
     <QueryClientProvider client={queryClient}>
       <JotaiProvider>
@@ -85,13 +89,15 @@ const App = ({ Component, pageProps }: AppProps) => {
                     chains={customChains}
                     head={
                       <Head
-                        title={'CleanSatMining YAM'}
-                        description={'CleanSatMining YAM'}
+                        title={isMobile ? 'CSM YAM' : 'CleanSatMining YAM'}
+                        description={
+                          isMobile ? 'CSM YAM' : 'CleanSatMining YAM'
+                        }
                       />
                     }
                     headerNav={<HeaderNav />}
                     newWebsite={{
-                      name: 'CleanSatMining YAM',
+                      name: isMobile ? 'CSM YAM' : 'CleanSatMining YAM',
                       url: '/',
                       logo: () => (
                         <Image src={Logo.src} alt={'CSM Logo'} width={36} />
@@ -100,7 +106,7 @@ const App = ({ Component, pageProps }: AppProps) => {
                     }}
                     disableHeaderMultisite={true}
                     footerParam={{
-                      name: 'CleanSatMining',
+                      name: isMobile ? 'CSM YAM' : 'CleanSatMining YAM',
                       copyright: `CleanSatMining SA, All rights reserved @${new Date().getFullYear()}, power by Realt.co`,
                       logo: () => (
                         <Image src={Logo.src} alt={'CSM Logo'} width={36} />

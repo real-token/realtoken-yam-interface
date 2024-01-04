@@ -11,7 +11,7 @@ import {
 } from '@mantine/core';
 import { useColorScheme } from '@mantine/hooks';
 
-import { OfferTypeBadge } from 'src/components/Offer/OfferTypeBadge';
+import { OfferTypeBadge } from 'src/components/Offer/components/OfferTypeBadge';
 import { OfferDeltaTable } from 'src/components/Table/OfferDeltaTable/OfferDeltaTable';
 import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
 import { PropertiesToken } from 'src/types';
@@ -179,6 +179,12 @@ export const GridPane: FC<GridPaneProps> = ({ offer }) => {
             className={classes.content}
           >
             <Flex direction={'column'} mb={10} className={classes.data}>
+              <Flex direction={'column'} fz={'sm'} sx={{ marginBottom: '6px' }}>
+                <Text fz={'sm'}>{t('sellerName')}</Text>
+                <Text fw={700} fz={'sm'} truncate={true}>
+                  {t(offer.sellerName)}
+                </Text>
+              </Flex>
               <Flex direction={'column'} fz={'sm'} sx={{ marginBottom: '6px' }}>
                 <Text fz={'sm'}>{t('sellerAddress')}</Text>
                 <Text fw={700} fz={'sm'} truncate={true}>

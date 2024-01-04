@@ -24,6 +24,7 @@ import {
   adminHeader,
   buyShortTokenNameColumn,
   buyerTokenNameColumn,
+  electricityPriceColumn,
   exchangeBuyShortTokenNameColumn,
   exchangeOfferShortTokenNameColumn,
   idColumn,
@@ -33,10 +34,9 @@ import {
   priceColumn,
   priceDeltaColumn,
   sellerAddressColumn,
-  yieldDeltaColumn,
 } from 'src/hooks/column';
+import { useFilterOffers } from 'src/hooks/offers/useFilterOffers';
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
-import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
 import { useAppSelector } from 'src/hooks/react-hooks';
 import { useContextModals } from 'src/hooks/useModals';
 import { useRole } from 'src/hooks/useRole';
@@ -70,7 +70,7 @@ export const MarketTableAdmin: FC = () => {
   );
 
   const publicOffers = useAppSelector(selectPublicOffers);
-  const { offers } = useTypedOffers(publicOffers);
+  const { offers } = useFilterOffers(publicOffers);
 
   const { role } = useRole();
 
@@ -140,7 +140,7 @@ export const MarketTableAdmin: FC = () => {
           idColumn(t, 1),
           offerShortTokenNameColumn(t, 2),
           buyerTokenNameColumn(t, 2),
-          yieldDeltaColumn(t, 1),
+          electricityPriceColumn(t, 1),
           sellerAddressColumn(t, 1),
           priceColumn(t, 1),
           priceDeltaColumn(t, 1),
@@ -171,7 +171,7 @@ export const MarketTableAdmin: FC = () => {
           idColumn(t, 1),
           offerTokenNameColumn(t, 2),
           buyShortTokenNameColumn(t, 2),
-          yieldDeltaColumn(t, 1),
+          electricityPriceColumn(t, 1),
           sellerAddressColumn(t, 1),
           priceColumn(t, 1),
           priceDeltaColumn(t, 1),

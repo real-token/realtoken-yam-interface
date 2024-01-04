@@ -1,7 +1,6 @@
 import { FC, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
 
-import { ActionIcon, Group, Title } from '@mantine/core';
+import { ActionIcon, Group } from '@mantine/core';
 import { IconTrash } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
 
@@ -18,8 +17,6 @@ export const DeleteActions: FC<DeleteActions> = ({ deleteOffer }) => {
   const modals = useContextModals();
 
   const { refreshOffers } = useRefreshOffers(false);
-
-  const { t } = useTranslation('modals');
 
   const onOpenDeleteModal = useCallback(
     (offer: Offer) => {

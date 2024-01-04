@@ -1,6 +1,6 @@
 import { Translation } from 'react-i18next';
 
-import { Anchor, Stack, Text } from '@mantine/core';
+import { Accordion, Anchor, Stack, Text } from '@mantine/core';
 import { NextLink } from '@mantine/next';
 import { NotificationProps } from '@mantine/notifications';
 import { IconCheck, IconX } from '@tabler/icons';
@@ -28,9 +28,9 @@ export enum NotificationsID {
   createOfferInvalid = 'createOfferInvalid',
   buyOfferInvalid = 'buyOfferInvalid',
 
-  grantRoleLoading = "grantRoleLoading",
-  grantRoleSuccess = "grantRoleSuccess",
-  grantRoleInvalid = "grantRoleInvalid",
+  grantRoleLoading = 'grantRoleLoading',
+  grantRoleSuccess = 'grantRoleSuccess',
+  grantRoleInvalid = 'grantRoleInvalid',
 }
 
 export const NOTIFICATIONS = asConst<
@@ -564,7 +564,7 @@ export const NOTIFICATIONS = asConst<
     ),
   }),
 
-  [NotificationsID.buyOfferInvalid]: () => ({
+  [NotificationsID.buyOfferInvalid]: (error: string) => ({
     id: `buy-offer-invalid`,
     color: 'red',
     icon: <IconX size={14} />,
@@ -575,7 +575,17 @@ export const NOTIFICATIONS = asConst<
     ),
     message: (
       <Translation ns={'notifications'}>
-        {(t) => <Stack spacing={1}>{`${t('buyOfferInvalid.message')}`}</Stack>}
+        {(t) => (
+          <Stack spacing={1}>
+            {`${t('buyOfferInvalid.message')}`}
+            <Accordion>
+              <Accordion.Item value={'detail'}>
+                <Accordion.Control>{'Detail'}</Accordion.Control>
+                <Accordion.Panel>{error}</Accordion.Panel>
+              </Accordion.Item>
+            </Accordion>
+          </Stack>
+        )}
       </Translation>
     ),
   }),

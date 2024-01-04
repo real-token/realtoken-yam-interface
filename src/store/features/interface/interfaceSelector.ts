@@ -1,11 +1,16 @@
 import BigNumber from 'bignumber.js';
-import { Offer, OFFER_LOADING } from 'src/types/offer/Offer';
+
 import { RootState } from 'src/store/store';
-import { selectAddress } from '../settings/settingsSelector';
+import { OFFER_LOADING, Offer } from 'src/types/offer/Offer';
 import { Price } from 'src/types/price';
+import { Transaction } from 'src/types/transaction/Transaction';
+
+import { selectAddress } from '../settings/settingsSelector';
 
 export const selectOffersIsLoading = (state: RootState) =>
   state.interface.offers.isLoading;
+export const selectTransactionsIsLoading = (state: RootState) =>
+  state.interface.transactions.isLoading;
 export const selectProperties = (state: RootState) =>
   state.interface.properties.properties;
 export const selectPropertiesIsLoading = (state: RootState) =>
@@ -14,15 +19,22 @@ export const selectPropertiesIsLoading = (state: RootState) =>
 export const selectOffers = (state: RootState): Offer[] =>
   state.interface.offers.offers;
 
+export const selectTransactions = (state: RootState): Transaction[] =>
+  state.interface.transactions.transactions;
+
 export const selectAddressOffers = (state: RootState) => {
   const address = selectAddress(state);
   const offers = selectOffers(state);
 
-  if (!address || !offers)
-    return OFFER_LOADING;
-    return offers.filter(
-      (offer: Offer) => offer.sellerAddress == address
-    );
+  if (!address || !offers) return OFFER_LOADING;
+  return offers.filter((offer: Offer) => offer.sellerAddress == address);
+};
+
+export const selectIsOwnOffer = (state: RootState, offer: Offer) => {
+  const address = selectAddress(state);
+
+  if (!address) return OFFER_LOADING;
+  return offer.sellerAddress === address;
 };
 
 export const selectPublicOffers = (state: RootState) => {
@@ -32,9 +44,16 @@ export const selectPublicOffers = (state: RootState) => {
   return offers.filter(
     (offer: Offer) =>
       !offer.buyerAddress &&
-      BigNumber(offer.amount).isPositive() &&
-      !BigNumber(offer.amount).isZero()
+      BigNumber(offer.amount).times(offer.price).gt(0.01) &&
+      offer.removed === false
   );
+};
+
+export const selectAllOffers = (state: RootState) => {
+  const offers = selectOffers(state);
+  const offersIsLoading = selectOffersIsLoading(state);
+  if (!offers || offersIsLoading) return OFFER_LOADING;
+  return offers;
 };
 
 export const selectPrivateOffers = (state: RootState) => {
@@ -43,15 +62,20 @@ export const selectPrivateOffers = (state: RootState) => {
   const offersIsLoading = selectOffersIsLoading(state);
 
   if (!address || !offers || offersIsLoading) return OFFER_LOADING;
-  return offers.filter(
-    (offer: Offer) => offer.buyerAddress == address
-  );
+  return offers.filter((offer: Offer) => offer.buyerAddress == address);
+};
+
+export const selectAllTransactions = (state: RootState) => {
+  const transactions = selectTransactions(state);
+  const transactionsIsLoading = selectTransactionsIsLoading(state);
+  if (!transactions || transactionsIsLoading) return [];
+  return transactions;
 };
 
 export const selectPricesIsLoading = (state: RootState): boolean => {
   return state.interface.prices.isLoading;
-}
+};
 
 export const selectPrices = (state: RootState): Price => {
   return state.interface.prices.prices;
-}
+};

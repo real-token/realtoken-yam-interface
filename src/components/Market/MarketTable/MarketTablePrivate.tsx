@@ -1,9 +1,8 @@
-import { FC, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { FC, useState } from 'react';
+import { useSelector } from 'react-redux';
 
-import { Flex, Group, MantineSize, Text, Title } from '@mantine/core';
+import { Flex, MantineSize } from '@mantine/core';
 import {
-  ColumnDef,
   ExpandedState,
   PaginationState,
   SortingState,
@@ -14,19 +13,19 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
-import { Offer } from 'src/types/offer/Offer';
-import { Table } from '../../Table';
-import { BuyActionsWithPermit } from '../BuyActions';
-import { MarketSubRow } from '../MarketSubRow';
+import { useFilterOffers } from 'src/hooks/offers/useFilterOffers';
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
-import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
-import { OFFERS_TYPE, useRightTableColumn } from 'src/hooks/useRightTableColumns';
+import {
+  OFFERS_TYPE,
+  useRightTableColumn,
+} from 'src/hooks/useRightTableColumns';
 import { selectPrivateOffers } from 'src/store/features/interface/interfaceSelector';
-import { useSelector } from 'react-redux';
+
+import { Table } from '../../Table';
 import { MarketSort } from '../MarketSort/MarketSort';
+import { MarketSubRow } from '../MarketSubRow';
 
 export const MarketTablePrivate: FC = () => {
-  
   const { refreshOffers, offersIsLoading } = useRefreshOffers(false);
 
   const [sorting, setSorting] = useState<SortingState>([
@@ -39,7 +38,8 @@ export const MarketTablePrivate: FC = () => {
   const [expanded, setExpanded] = useState<ExpandedState>({});
 
   const privateOffers = useSelector(selectPrivateOffers);
-  const { offers, sellCount, buyCount, exchangeCount } = useTypedOffers(privateOffers)
+  const { offers, sellCount, buyCount, exchangeCount } =
+    useFilterOffers(privateOffers);
   const columns = useRightTableColumn(OFFERS_TYPE.PRIVATE);
 
   const table = useReactTable({
@@ -57,8 +57,8 @@ export const MarketTablePrivate: FC = () => {
   });
 
   return (
-    <Flex direction={"column"} gap={"sm"} mt={10}>
-      <MarketSort 
+    <Flex direction={'column'} gap={'sm'} mt={10}>
+      <MarketSort
         sellCount={sellCount}
         buyCount={buyCount}
         exchangeCount={exchangeCount}
@@ -76,7 +76,10 @@ export const MarketTablePrivate: FC = () => {
           }),
         }}
         table={table}
-        tablecaptionOptions={{ refreshState: [offersIsLoading, refreshOffers], visible: true }}
+        tablecaptionOptions={{
+          refreshState: [offersIsLoading, refreshOffers],
+          visible: true,
+        }}
         TableSubRow={MarketSubRow}
       />
     </Flex>

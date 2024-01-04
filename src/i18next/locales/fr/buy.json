@@ -1,4 +1,20 @@
 {
+
+  "list": {
+    "requesterName": "Acheteur",
+    "requesterAddress": "Adresse",
+    "requestedPrice": "Prix (usd)",
+    "requestedAmount": "Quantité",
+    "createdAt": "Créée le"
+  },
+
+  "success": {
+    "noThanks": "Non merci",
+    "add": "Ajouter à Metamask",
+    "accessDashboard": "Accéder au dashboard",
+    "message": "Vous pouvez maintenant suivre votre investissement sur le dashboard CleanSat Mining !"
+  },
+
   "table": {
     "market": "Marché",
     "title": "CleanSatMining YAM (You And Me)",
@@ -8,6 +24,10 @@
     "buyerTokenAddress": "Adresse du jeton d'achat",
     "buyerTokenName": "Jeton d'achat",
     "sellerAddress": "Adresse du vendeur",
+    "sellerName": "Vendeur",
+    "sellDate": "Date de vente",
+    "UNKNOWN":"inconnu",
+    "CSM":"✅ CSM",
     "price": "Prix de vente",
     "amount": "Quantité disponible",
     "allowance": "Allowance",
@@ -19,11 +39,29 @@
     "privateTexte": "privée",
     "onMarketSince": "Date de création"
   },
+
   "grid": {
     "buy": "Achat",
     "sell": "Vente",
     "exchange": "Echange"
   },
+  "card": {
+    "sellToken": "Jeton en vente",
+    "sellerAddress": "Adresse du vendeur",
+    "sellerName": "Vendeur",
+    "sellAmount": "Quantité de jeton en vente",
+    "sellPrice": "Prix/Jeton (Nb de jeton CSM par jeton en vente)",
+
+    "buyToken": "Jeton d'achat",
+    "buyerAddress": "Adresse du vendeur",
+    "buyerName": "Vendeur",
+    "buyAmount": "Quantité de jeton en achat",
+    "buyPrice": "Prix/Jeton (Nb de jeton d'achat par jeton CSM)",
+
+    "exchangeToken": "Jeton d'échange"
+  },
+
+
   "subRow": {
     "offerId": "ID de l'offre",
     "offerTokenAddress": "Adresse du jeton en vente",

@@ -1,96 +1,109 @@
 {
   "kycRequired": {
-    "title": "Warning",
-    "contact": "contact",
-    "message": "Dear users,\n\nIn accordance with legal requirements, all users are required to complete the KYC process on the Mt Pelerin platform before being able to make purchases within our application. Please note that CSM tokens have a whitelist of approved addresses for interaction. Any transaction of these tokens to a non-whitelisted address will fail. We kindly request you to register on Mt Pelerin and complete your KYC, and then contact the CleanSat Mining support team for validation. If you have any questions or encounter any difficulties, please do not hesitate to reach out to us.\n\nWe appreciate your understanding and cooperation.\n\nThe CleanSat Mining Team"
+    "title": "Advertencia",
+    "contact": "haga clic aquí",
+    "form": "formulario",
+    "message": "Estimados usuarios,\n\nPueden comprar tokens de Clean Sat Mining después de completar los siguientes dos pasos:\n\n1) De acuerdo con los requisitos legales, todos los usuarios deben completar primero el proceso KYC en la plataforma Mt Pelerin antes de realizar compras dentro de nuestra aplicación. Les invitamos a registrarse en Mt Pelerin y completar su KYC.\n\n2) Tenga en cuenta que los tokens CSM están sujetos a una lista blanca de direcciones aprobadas para interacciones. Cualquier transacción de estos tokens a una dirección no autorizada fallará. Le invitamos a completar este formulario. Se le enviará un correo electrónico una vez que su dirección esté en la lista blanca, lo que puede demorar unos días.\n\n⚠️ MUY IMPORTANTE ⚠️\nPor favor, tenga cuidado con el precio al que está comprando los tokens CSM. CleanSat Mining no se hace responsable de las ofertas en línea. Puede ver en la tabla a continuación el precio inicial al que se vendieron los tokens y el precio propuesto por el vendedor. Por favor, tómelo en cuenta antes de invertir en cualquier proyecto de CSM.\n\nPara contactarnos, haga clic aquí (dirección de correo electrónico contact@cleansatmining.com).\n\nEl equipo de CleanSat Mining"
+  },
+  "warning": {
+    "title": "⚠️ MUY IMPORTANTE ⚠️",
+    "message": "Por favor, tenga cuidado con el precio al que está comprando los tokens CSM. CleanSat Mining no se hace responsable de las ofertas en línea. Puede ver en la tabla a continuación el precio inicial al que se vendieron los tokens y el precio propuesto por el vendedor. Por favor, tómelo en cuenta antes de invertir en cualquier proyecto de CSM."
+  },
+  "kycCheck": {
+    "verified": "Dirección verificada",
+    "invalid": "Dirección no verificada"
   },
   "grantRoleLoading": {
-    "title": "Waiting",
-    "message": "Your transaction is being validated."
+    "title": "Esperando",
+    "message": "Su transacción está siendo validada."
   },
   "grantRoleSuccess": {
-    "title": "Success",
-    "message": "User grant role transaction succeed."
+    "title": "Éxito",
+    "message": "La transacción de otorgar rol al usuario ha tenido éxito."
   },
   "grantRoleInvalid": {
     "title": "Error",
-    "message": "User grant role transaction failed."
+    "message": "La transacción de otorgar rol al usuario ha fallado."
   },
-
   "userCopied": {
-    "title": "Copied 🎉",
-    "message": "Your address have been copied to clipboard."
+    "title": "Copiado 🎉",
+    "message": "Su dirección ha sido copiada al portapapeles."
   },
   "usersNotFound": {
     "title": "Error",
-    "message": "{{ usersNotFound }} users couldn't be retrieved. Check your RPC or refresh the table."
+    "message": "{{ usersNotFound }} usuarios no se pudieron recuperar. Verifique su RPC o actualice la tabla."
   },
   "createOfferLoading": {
-    "title": "Waiting",
-    "message": "Your transaction is being validated."
+    "title": "Esperando",
+    "message": "Su transacción está siendo validada."
   },
   "createOfferSuccess": {
-    "title": "Success",
-    "message": "Your transaction has been validated."
+    "title": "Éxito",
+    "message": "Su transacción ha sido validada."
   },
   "createOfferError": {
     "title": "Error",
-    "message": "Your transaction has been rejected."
+    "message": "Su transacción ha sido rechazada."
   },
   "buyOfferLoading": {
-    "title": "Waiting",
-    "message": "Your transaction is being validated."
+    "title": "Esperando",
+    "message": "Su transacción está siendo validada."
+  },
+  "buyOfferFinish": {
+    "title": "¡Felicidades 🎉",
+    "message": "Ha recibido ",
+    "question": "¿Desea agregar este token a Metamask?"
   },
   "buyOfferSuccess": {
-    "title": "Success",
-    "message": "Your transaction has been validated."
+    "title": "Éxito",
+    "message": "Su transacción ha sido validada."
   },
   "buyOfferError": {
     "title": "Error",
-    "message": "Your transaction has been rejected."
+    "message": "Su transacción ha sido rechazada."
   },
   "approveOfferLoading": {
-    "title": "Waiting",
-    "message": "Your transaction is being validated."
+    "title": "Esperando",
+    "message": "Su transacción está siendo validada."
   },
   "approveOfferSuccess": {
-    "title": "Success",
-    "message": "Your transaction has been validated."
+    "title": "Éxito",
+    "message": "Su transacción ha sido validada."
   },
   "approveOfferError": {
     "title": "Error",
-    "message": "Your transaction has been rejected."
+    "message": "Su transacción ha sido rechazada."
   },
   "updateOfferLoading": {
-    "title": "Waiting",
-    "message": "Your transaction is being validated."
+    "title": "Esperando",
+    "message": "Su transacción está siendo validada."
   },
   "updateOfferSuccess": {
-    "title": "Success",
-    "message": "Your transaction has been validated."
+    "title": "Éxito",
+    "message": "Su transacción ha sido validada."
   },
   "updateOfferError": {
     "title": "Error",
-    "message": "Your transaction has been rejected."
+    "message": "Su transacción ha sido rechazada."
   },
   "deleteOfferLoading": {
-    "title": "Waiting",
-    "message": "Your transaction is being validated."
+    "title": "Esperando",
+    "message": "Su transacción está siendo validada."
   },
   "deleteOfferSuccess": {
-    "title": "Success",
-    "message": "Your transaction has been validated."
+    "title": "Éxito",
+    "message": "Su transacción ha sido validada."
   },
   "deleteOfferError": {
     "title": "Error",
-    "message": "Your transaction has been rejected."
+    "message": "Su transacción ha sido rechazada."
   },
   "createOfferInvalid": {
     "title": "Error",
-    "message": "You can not create this offer. Please make sure: You are whitelisted for the offer token, the offer token is whitelisted and not in locking periode, you have the offer token in your wallet."
+    "message": "No puede crear esta oferta. Asegúrese de que: Está en la lista blanca para el token de oferta, el token de oferta está en la lista blanca y no está en período de bloqueo, tiene el token de oferta en su billetera."
   },
   "buyOfferInvalid": {
     "title": "Error",
-    "message": "You can not buy this offer. Please make sure: You are whitelisted for the offer token, the offer token is not in locking periode, you have enough buyer token balance in your wallet to pay the offer."
+    "message": "No puede comprar esta oferta. Asegúrese de que: Está en la lista blanca para el token de oferta, el token de oferta no está en período de bloqueo, tiene suficiente saldo de token comprador en su billetera para pagar la oferta."
   }
 }

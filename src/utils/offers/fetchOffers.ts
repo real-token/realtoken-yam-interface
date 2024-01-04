@@ -4,17 +4,23 @@ import {
   NormalizedCacheObject,
   gql,
 } from '@apollo/client';
-import BigNumber from 'bignumber.js';
-import { CHAINS, ChainsID } from 'src/constants';
-import { Offer } from 'src/types/offer/Offer';
-import { Offer as OfferGraphQl } from '../../../.graphclient/index';
-import { parseOffer } from './parseOffer';
-import { getTheGraphUrlYAM, getTheGraphUrlRealtoken } from './getClientURL';
-import { getOfferQuery } from './getOfferQuery';
-import { DataRealtokenType } from 'src/types/offer/DataRealTokenType';
-import { PropertiesToken } from 'src/types';
 import { Web3Provider } from '@ethersproject/providers';
+
+import BigNumber from 'bignumber.js';
+
+import { CHAINS, ChainsID } from 'src/constants';
+import { PropertiesToken } from 'src/types';
+import { DataRealtokenType } from 'src/types/offer/DataRealTokenType';
+import { Offer } from 'src/types/offer/Offer';
 import { Price } from 'src/types/price';
+
+import { Offer as OfferGraphQl } from '../../../.graphclient/index';
+import {
+  getTheGraphUrlRealtoken,
+  getTheGraphUrlYAM,
+} from '../theGraph/getClientURL';
+import { getOfferQuery } from './getOfferQuery';
+import { parseOffer } from './parseOffer';
 
 export const getBigDataGraphRealtoken = async (
   chainId: number,
@@ -23,8 +29,6 @@ export const getBigDataGraphRealtoken = async (
 ) => {
   const { address: realTokenYamUpgradeable } =
     CHAINS[chainId as ChainsID].contracts.realTokenYamUpgradeable;
-
-  console.log('getBigDataGraphRealtoken', realtokenAccount.length);
 
   const accountRealtoken: string =
     '"' + realtokenAccount.map((account: string) => account).join('","') + '"';
@@ -104,7 +108,7 @@ export const fetchOffersTheGraph = (
               where: { offers_: { removedAtBlock: null } }
             ) {
               address
-              offers(first: 1000){
+              offers(first: 1000) {
                 id
                 offerToken {
                   address
@@ -118,40 +122,38 @@ export const fetchOffersTheGraph = (
       //console.log('Debug Query usersDataYAM', usersDataYAM);
 
       //TODO: tmp supprimer la partie false quant déploiement ok sur Eth et Gnosis, remettre en const a la place de let try = new graph, catch = old graph
-      
+
       // Pagination
-      const offers: OfferGraphQl[]  = [];
+      const offers: OfferGraphQl[] = [];
       let skip = 0;
       let stop = false;
-      while(!stop){
+      while (!stop) {
         const { data } = await clientYAM.query({
           query: gql`
             query getOffers {
-              offers(first: 1000, skip: ${skip}, where: { removedAtBlock: null }) {
+              offers(first: 1000, skip: ${skip}) {
                 ${getOfferQuery()}
               }
             }
           `,
-        });
+        }); //, where: { removedAtBlock: null }) {
 
-        if(data.offers && data.offers.length > 0){
-          skip+=1000;
-
-          console.log(data.offers)
+        if (data.offers && data.offers.length > 0) {
+          skip += 1000;
 
           offers.push(...data.offers);
 
           // Avoid one request more
-          if(data.offers.length < 1000) stop = true;
-        }else{
+          if (data.offers.length < 1000) stop = true;
+        } else {
           stop = true;
         }
       }
 
-      console.log('Query dataYAM', offers.length);
-
-      const accountRealtoken: string[] = usersDataYAM.accounts.map((account: { address: string; offers: [] }) =>
-          account.offers.map((offer: { id: string; offerToken: { address: string } }) =>
+      const accountRealtoken: string[] = usersDataYAM.accounts.map(
+        (account: { address: string; offers: [] }) =>
+          account.offers.map(
+            (offer: { id: string; offerToken: { address: string } }) =>
               account.address + '-' + offer.offerToken.address
           )
       );
@@ -172,7 +174,8 @@ export const fetchOffersTheGraph = (
         ); */
         if (batch.length <= 0) break;
 
-        const realtokenData: [DataRealtokenType] = await getBigDataGraphRealtoken(chainId, clientRealtoken, batch);
+        const realtokenData: [DataRealtokenType] =
+          await getBigDataGraphRealtoken(chainId, clientRealtoken, batch);
 
         //console.log('DEBUG for realtokenData', i, batchSize, realtokenData);
         dataRealtoken.push(...realtokenData);
@@ -180,38 +183,47 @@ export const fetchOffersTheGraph = (
 
       //console.log('Debug Query dataRealtoken', dataRealtoken);
 
-      const promises = offers.map( (offer: OfferGraphQl) => new Promise<Offer>(async (resolve,reject) => {
-        try{
-          const accountUserRealtoken: DataRealtokenType = dataRealtoken.find(
-            (accountBalance: DataRealtokenType): boolean =>
-              accountBalance.id ===
-              offer.seller.address + '-' + offer.offerToken.address
-          )!;
+      const promises = offers.map(
+        (offer: OfferGraphQl) =>
+          new Promise<Offer>(async (resolve, reject) => {
+            try {
+              const accountUserRealtoken: DataRealtokenType =
+                dataRealtoken.find(
+                  (accountBalance: DataRealtokenType): boolean =>
+                    accountBalance.id ===
+                    offer.seller.address + '-' + offer.offerToken.address
+                )!;
 
-          const offerData: Offer = await parseOffer(
-            provider,
-            account,
-            offer,
-            accountUserRealtoken,
-            propertiesToken,
-            prices
-          );
+              const offerData: Offer = await parseOffer(
+                provider,
+                account,
+                offer,
+                accountUserRealtoken,
+                propertiesToken,
+                prices
+              );
 
-          offerData.hasPropertyToken =
-            BigNumber(offerData.buyerTokenType).eq(1) ||
-            BigNumber(offerData.offerTokenType).eq(1);
+              offerData.hasPropertyToken =
+                BigNumber(offerData.buyerTokenType).eq(1) ||
+                BigNumber(offerData.offerTokenType).eq(1);
 
-          resolve(offerData)
-        }catch(err){
-          console.log("Error when parsingOffer: ", err);
-          reject(err);
-        }
-    }));
+              resolve(offerData);
+            } catch (err) {
+              console.log('Error when parsingOffer: ', err);
+              reject(err);
+            }
+          })
+      );
 
-    const parsedOffers = await Promise.all(promises);
+      const parsedOffers = await Promise.all(promises);
 
-      offersData.push(...parsedOffers)
-      console.log('Offers formated', offersData.length);
+      // console.log(
+      //   'Query dataYAM',
+      //   parsedOffers.length,
+      //   parsedOffers.map((o) => o.offerId)
+      // );
+
+      offersData.push(...parsedOffers);
 
       resolve(offersData);
     } catch (err) {

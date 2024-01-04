@@ -2,8 +2,17 @@
   
   "kycRequired": {
     "title": "Attention",
-    "contact": "contacter",
-    "message": "Chers utilisateurs,\n\nConformément aux exigences légales, tous les utilisateurs doivent préalablement compléter le processus KYC sur la plateforme Mt Pelerin avant de pouvoir effectuer des achats au sein de notre application. Veuillez noter que les tokens CSM sont soumis à une liste blanche d'adresses approuvées pour les interactions. Toute transaction de ces tokens vers une adresse non autorisée échouera. Nous vous invitons donc à vous inscrire sur Mt Pelerin et à finaliser votre KYC, puis à contacter l'équipe de support de CleanSat Mining pour la validation. Si vous avez des questions ou rencontrez des difficultés, n'hésitez pas à nous contacter.\n\nNous vous remercions pour votre compréhension et votre coopération.\n\nL'équipe CleanSat Mining"
+    "contact": "cliquez ici",
+    "form": "formulaire",
+    "message": "Chers utilisateurs,\n\nVous pouvez acheter des tokens Clean Sat Mining après avoir effectué les deux étapes suivantes :\n\n1) Conformément aux exigences légales, tous les utilisateurs doivent préalablement compléter le processus KYC sur la plateforme Mt Pelerin avant de pouvoir effectuer des achats au sein de notre application. Nous vous invitons donc à vous inscrire sur Mt Pelerin et à finaliser votre KYC\n\n2) Veuillez noter que les tokens CSM sont soumis à une liste blanche d'adresses approuvées pour les interactions. Toute transaction de ces tokens vers une adresse non autorisée échouera. Nous vous invitons à compléter ce formulaire. Un email vous sera envoyé lorsque votre adresse sera whitelistée, cela prendra quelques jours. \n\n\n⚠️ TRÈS IMPORTANT ⚠️\nFaites attention au prix auquel vous achetez les tokens CSM. CleanSat Mining n'est pas responsable des offres en lignes. Vous pouvez voir dans le tableau ci-dessous le prix initial auquel les tokens ont été vendus, et le prix proposé par le vendeur. Prenez cela en compte avant d'investir dans un des projets CSM.\n\nPour nous contacter cliquez ici (adresse email contact@cleansatmining.com)\n\nL'équipe CleanSat Mining"
+  },
+  "kycCheck": {
+    "verified": "Adresse verifiée",
+    "invalid": "Adresse non verifiée"
+  },
+  "warning": {
+    "title": "⚠️ TRÈS IMPORTANT ⚠️",
+    "message": "Faites attention au prix auquel vous achetez les tokens CSM. CleanSat Mining n'est pas responsable des offres en lignes. Vous pouvez voir dans le tableau ci-dessous le prix initial auquel les tokens ont été vendus, et le prix proposé par le vendeur. Prenez cela en compte avant d'investir dans un des projets CSM."
   },
   "grantRoleLoading": {
     "title": "Veuillez patienter",
@@ -40,6 +49,11 @@
   "buyOfferLoading": {
     "title": "Veuillez patienter",
     "message": "Votre transaction est en cours de validation."
+  },
+  "buyOfferFinish": {
+    "title": "Félicitation 🎉",
+    "message": "Vous avez reçu ",
+    "question":"Voulez vous ajouter ce token à Metamask ?"
   },
   "buyOfferSuccess": {
     "title": "Réussi",

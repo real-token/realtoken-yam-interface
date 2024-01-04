@@ -3,3 +3,8 @@ export enum OFFER_TYPE{
     SELL = "SELL",
     EXCHANGE = "EXCHANGE"
 }
+
+export enum OFFER_SELLER{
+    CSM = "CSM",
+    UNKNOWN = "UNKNOWN",
+}

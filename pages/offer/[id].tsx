@@ -11,16 +11,15 @@ import {
   Text,
   Title,
   createStyles,
-  useMantineTheme,
 } from '@mantine/core';
 import { useModals } from '@mantine/modals';
-import { IconExternalLink, IconShoppingCart } from '@tabler/icons';
+import { IconShoppingCart } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
 
 import BigNumber from 'bignumber.js';
 
-import { OfferText } from 'src/components/Offer/OfferText';
-import { PropertyCard } from 'src/components/Offer/PropertyCard';
+import { OfferText } from 'src/components/Offer/components/OfferText';
+import { PropertyCard } from 'src/components/Offer/components/PropertyCard';
 import { useOffer } from 'src/hooks/offers/useOffer';
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 import { usePropertiesToken } from 'src/hooks/usePropertiesToken';

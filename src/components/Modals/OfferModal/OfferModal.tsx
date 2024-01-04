@@ -16,12 +16,14 @@ import { useWeb3React } from '@web3-react/core';
 
 import BigNumber from 'bignumber.js';
 
-import { OfferText } from 'src/components/Offer/OfferText';
+import { OfferText } from 'src/components/Offer/components/OfferText';
 import { TextUrl } from 'src/components/TextUrl/TextUrl';
 import { useOffer } from 'src/hooks/offers/useOffer';
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
+import { useAppDispatch } from 'src/hooks/react-hooks';
 import { useContextModals } from 'src/hooks/useModals';
 import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
+import { buyOfferOpen } from 'src/store/features/buyOffer/buyOfferSlice';
 import { PropertiesToken } from 'src/types';
 import { Offer } from 'src/types/offer';
 
@@ -100,7 +102,7 @@ export const OfferModal: FC<ContextModalProps<OfferModalProps>> = ({
   innerProps: { offerId },
 }) => {
   const { classes } = useStyle();
-
+  const dispatch = useAppDispatch();
   const { account } = useWeb3React();
   const { offer, isLoading } = useOffer(offerId);
 
@@ -140,7 +142,9 @@ export const OfferModal: FC<ContextModalProps<OfferModalProps>> = ({
 
   const onOpenBuyModal = useCallback(
     (offer: Offer) => {
-      modals.openBuyModal(offer, refreshOffers);
+      dispatch({ type: buyOfferOpen, payload: offer });
+      context.closeModal(id);
+      //modals.openBuyModal(offer, refreshOffers);
     },
     [modals, refreshOffers]
   );
@@ -222,17 +226,6 @@ export const OfferModal: FC<ContextModalProps<OfferModalProps>> = ({
               )}
             </ActionIcon>
           </Group>
-          {/*  <Flex direction={'column'} gap={'md'} align={'center'}>
-            {propertyTokens && offer && propertyTokens.length > 0
-              ? propertyTokens.map((token) => (
-                  <PropertyCard
-                    key={token.contractAddress}
-                    propertyToken={token}
-                    offer={offer}
-                  />
-                ))
-              : undefined}
-          </Flex> */}
         </Flex>
       ) : (
         <div>{"Offer doesn't exist :/"}</div>

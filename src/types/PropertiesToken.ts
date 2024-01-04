@@ -33,10 +33,15 @@ export type PropertiesToken = {
     tokenIdRules: number
     netRentYearPerToken: number
     annualYield?: number
-    //
+    energy: string[]
     electricityPrice: number
+    electricitySpotPriceUrl: string
     sellDate: string
     miningSite: string
+    location: {
+        aera: string;
+        country: string;
+    }
 }
 
 export type RmmPropertiesToken = {

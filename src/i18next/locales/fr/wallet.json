@@ -1,0 +1,9 @@
+{
+  "metamask": {
+    "seeOnGnosisscan": "Voir sur Gnosisscan",
+    "copy": "Copier",
+    "copied": "Copié",
+    "addTokenToMetaMask": "Ajouter le token à Metamask",
+    "addNFTToMetaMask": "Ajouter le NFT à Metamask"
+  }
+}

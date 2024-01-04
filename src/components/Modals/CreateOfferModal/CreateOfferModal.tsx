@@ -27,9 +27,9 @@ import BigNumber from 'bignumber.js';
 import { Contract } from 'ethers';
 
 import { CoinBridgeToken, coinBridgeTokenABI } from 'src/abis';
-import { OfferTypeBadge } from 'src/components/Offer/OfferTypeBadge';
+import { OfferTypeBadge } from 'src/components/Offer/components/OfferTypeBadge';
 import { Shield } from 'src/components/Shield/Shield';
-import { WalletERC20Balance } from 'src/components/WalletBalance/WalletERC20Balance';
+import { WalletERC20Balance } from 'src/components/Wallet/WalletERC20Balance';
 import { Chain, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { ZERO_ADDRESS } from 'src/constants';
 import { useAppDispatch, useAppSelector } from 'src/hooks/react-hooks';
@@ -167,8 +167,13 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         buyerTokenAddress: offer?.buyerTokenAddress ?? '',
         price: offer?.price ?? undefined,
         amount:
-          isModification && offer.amount && offer.price
-            ? parseInt(offer.amount.toString()) / offer.price
+          isModification &&
+          offer.amount &&
+          offer.price &&
+          offer.offerTokenDecimal
+            ? new BigNumber(offer.amount)
+                .shiftedBy(-offer.offerTokenDecimal)
+                .toNumber() / offer.price
             : undefined,
         buyerAddress: offer?.buyerAddress ?? ZERO_ADDRESS,
         isPrivateOffer: offer?.isPrivateOffer ?? false,
@@ -300,13 +305,19 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
       const createdOffer: CreatedOffer = {
         offerType: offer.offerType,
         offerId: offers.length,
-        offerTokenAddress: formValues.offerTokenAddress,
-        buyerTokenAddress: formValues.buyerTokenAddress,
+        offerTokenAddress: formValues.offerTokenAddress.toLowerCase(),
+        offerTokenDecimal: offerTokenDecimals,
+        buyerTokenAddress: formValues.buyerTokenAddress.toLowerCase(),
         price: price ? parseFloat(price.toFixed(6)) : 0,
-        amount: amountInWei,
-        buyerAddress: formValues.buyerAddress,
+        amount: amountInWei.toString(),
+        buyerAddress: formValues.buyerAddress.toLowerCase(),
         isPrivateOffer: formValues.isPrivateOffer,
       };
+
+      // console.log(
+      //   'createOffer/createOfferAdded',
+      //   JSON.stringify(createdOffer, null, 4)
+      // );
 
       dispatch({ type: createOfferAddedDispatchType, payload: createdOffer });
 
@@ -699,15 +710,6 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
 
           {privateOffer()}
 
-          <MatchedOffers
-            offerType={offer.offerType}
-            offerTokenAddress={values.offerTokenAddress}
-            buyerTokenAddress={values.buyerTokenAddress}
-            price={values.price}
-            amount={values.amount}
-            closeModal={closeModal}
-          />
-
           <Group position={'left'} mt={'md'}>
             <>
               {summary()}
@@ -723,6 +725,14 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
           </Group>
         </Stack>
       </form>
+      <MatchedOffers
+        offerType={offer.offerType}
+        offerTokenAddress={values.offerTokenAddress}
+        buyerTokenAddress={values.buyerTokenAddress}
+        price={values.price}
+        amount={values.amount}
+        closeModal={closeModal}
+      />
     </Flex>
   );
 };

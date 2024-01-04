@@ -1,0 +1,9 @@
+{
+  "list": {
+    "requesterName": "Vendeur",
+    "requesterAddress": "Adresse",
+    "requestedPrice": "Prix (usd)",
+    "requestedAmount": "Quantité",
+    "createdAt": "Créée le"
+  }
+}
