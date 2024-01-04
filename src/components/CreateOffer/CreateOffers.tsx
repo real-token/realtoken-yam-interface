@@ -189,7 +189,7 @@ export const CreateOffer = () => {
                 const priceInWei = new BigNumber(offer.price.toString()).shiftedBy(Number(buyerTokenDecimals)).toString(10);
                 const transactionDeadline = Math.floor(Date.now() / 1000) + 3600;
 
-                const isSafe = connector == "gnosis-safe";
+                const isSafe = connector == "gnosisSafe";
 
                 let permitAnswer: any|undefined = undefined;
                 let needPermit = false;
