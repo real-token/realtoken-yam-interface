@@ -30,6 +30,8 @@ import { cleanNumber } from 'src/utils/number';
 
 import { NumberInput } from '../../NumberInput';
 import { ethers } from 'ethers';
+import { useAtomValue } from 'jotai';
+import { providerAtom } from '../../../states';
 
 type UpdateModalProps = {
   offer: Offer;
@@ -95,9 +97,15 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amountMax]);
 
+  const connector = useAtomValue(providerAtom);
+
   const onHandleSubmit = useCallback(
     async (formValues: UpdateFormValues) => {
       try {
+
+        console.log(formValues)
+
+
         if (
           !account ||
           !provider ||
@@ -129,7 +137,6 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           await realTokenYamUpgradeable.getInitialOffer(offer.offerId);
 
         const oldAmountInWei = BigNumber(amount._hex);
-        offerToken.decimals();
         const newAmountInWei = new BigNumber(formValues.amount).multipliedBy(
           10 ** (await offerToken.decimals())
         );
@@ -155,9 +162,11 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           formValues.offerTokenAddress
         );
 
+        const isSafe = connector == "gnosisSafe";
+
         // APPROVE OR PERMIT
         let signature: any;
-        if (offerTokenType === 1) {
+        if (offerTokenType === 1 && !isSafe) {
           // TokenType = 1: RealToken
           signature = await coinBridgeTokenPermitSignature(
             account,
@@ -168,7 +177,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
             provider
           );
 
-        } else if (offerTokenType === 2) {
+        } else if (offerTokenType === 2 && !isSafe) {
           // TokenType = 2: ERC20 With Permit
           signature = await erc20PermitSignature(
             account,
@@ -179,7 +188,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
             provider
           );
 
-        } else if (offerTokenType === 3) {
+        } else if (offerTokenType === 3 || isSafe) {
           // TokenType = 3: ERC20 Without Permit, do Approve/buy
           const approveTx = await offerToken.approve(
             realTokenYamUpgradeable.address,
@@ -214,14 +223,14 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           
         }
 
-        // UPDATE OFFER TX
-        const { v, r, s } = signature;
-
         const price = new BigNumber(formValues.price.toString()).shiftedBy(parseFloat(offer.buyerTokenDecimals)).toString(10);
         const amountUpdate = BigNumber(formValues.amount).shiftedBy(parseFloat(offer.offerTokenDecimals)).toString(10);
         
         let updateTx: ethers.providers.TransactionResponse|undefined = undefined;
-        if (offerTokenType === 1) {
+        if (offerTokenType === 1 && !isSafe) {
+
+          const { v, r, s } = signature;
+
           updateTx = await realTokenYamUpgradeable.updateOfferWithPermit(
             offer.offerId,
             price,
@@ -233,7 +242,10 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
             s
           );
 
-        }else if(offerTokenType === 2){
+        }else if(offerTokenType === 2&& !isSafe){
+
+          const { v, r, s } = signature;
+
           updateTx = await realTokenYamUpgradeable.updateOfferWithPermit(
             formValues.offerId,
             price,
@@ -245,7 +257,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
             s
           );
 
-        }else if(offerTokenType === 3){
+        }else if(offerTokenType === 3 || isSafe){
           updateTx = await realTokenYamUpgradeable.updateOffer(
             formValues.offerId,
             price,
@@ -291,7 +303,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
         setSubmitting(false);
       }
     },
-    [account, provider, realTokenYamUpgradeable, offer.offerTokenAddress, offer.offerId, offer.buyerTokenDecimals, offer.offerTokenDecimals, activeChain?.blockExplorerUrl, triggerTableRefresh, onClose]
+    [account, provider,connector, realTokenYamUpgradeable, offer.offerTokenAddress, offer.offerId, offer.buyerTokenDecimals, offer.offerTokenDecimals, activeChain?.blockExplorerUrl, triggerTableRefresh, onClose]
   );
 
   const [offerTokenSymbol, setOfferTokenSymbol] = useState<string | undefined>(

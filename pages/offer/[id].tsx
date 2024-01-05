@@ -1,5 +1,5 @@
 import { Flex, Text, createStyles, Skeleton, ActionIcon, Title, Divider } from "@mantine/core";
-import { IconError404, IconShoppingCart } from "@tabler/icons";
+import { IconError404, IconExclamationCircle, IconFaceIdError, IconShoppingCart } from "@tabler/icons";
 import { useRouter } from "next/router"
 import { FC, useCallback, useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next";
@@ -71,7 +71,7 @@ const ShowOfferPage: FC = () => {
     const offerId: number = parseInt(id as string);
 
     const { account } = useWeb3React();
-    const { offer, isLoading } = useOffer(offerId);
+    const { offer, isLoading, hasError } = useOffer(offerId);
 
     const { refreshOffers } = useRefreshOffers(false);
 
@@ -195,8 +195,18 @@ const ShowOfferPage: FC = () => {
                         align={'center'}
                         direction={'column'}
                     >
-                        <IconError404 size={'200px'} color="#AE740A"/>
-                        <Text size={'xl'}>{"Offer don't exists"}</Text>
+                        {hasError ? (
+                            <>
+                            <IconExclamationCircle size={'200px'} color="#AE740A"/>
+                            <Text size={'xl'}>{"An error hapenned while loading offer"}</Text>
+                            </>
+                        ):(
+                            <>
+                            <IconError404 size={'200px'} color="#AE740A"/>
+                            <Text size={'xl'}>{"Offer don't exists"}</Text>
+                            </>
+                        )}
+                        
                     </Flex>
                 )
             }
