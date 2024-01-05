@@ -9,6 +9,7 @@ import {
   Text,
 } from '@mantine/core';
 
+import { OFFER_TYPE } from 'src/types/offer';
 import { formatPercent, formatToken, formatUsd } from 'src/utils/format';
 
 import { OfferData } from '../../Types';
@@ -25,6 +26,15 @@ export const OfferAmount: FC<OfferAmountProps> = ({
   isLarge,
   textAlignRight,
 }) => {
+  const offerTokenAmount =
+    offer.type === OFFER_TYPE.BUY
+      ? (offer.requestedAmount ?? 0) / offer.requestedPrice
+      : offer.requestedAmount ?? 0;
+  const offerTokenAmountInitial =
+    offer.type === OFFER_TYPE.BUY
+      ? (offer.initialAmount ?? 0) / offer.requestedPrice
+      : offer.initialAmount ?? 0;
+
   return (
     <Stack
       h={'100%'}
@@ -43,22 +53,18 @@ export const OfferAmount: FC<OfferAmountProps> = ({
             <div>
               <Group position={'right'}>
                 <Text size={'xs'} align={'center'}>
-                  {formatToken(offer.requestedAmount ?? 0) +
+                  {formatToken(offerTokenAmount) +
                     ' / ' +
-                    formatToken(offer.initialAmount)}
+                    formatToken(offerTokenAmountInitial)}
                 </Text>
               </Group>
               <Progress
                 color={'yellow'}
-                value={
-                  ((offer.requestedAmount ?? 0) / offer.initialAmount) * 100
-                }
+                value={(offerTokenAmount / offerTokenAmountInitial) * 100}
               />
               <Group position={'right'}>
                 <Text size={'xs'} align={'center'}>
-                  {formatPercent(
-                    (offer.requestedAmount ?? 0) / offer.initialAmount
-                  )}
+                  {formatPercent(offerTokenAmount / offerTokenAmountInitial)}
                 </Text>
               </Group>
             </div>
@@ -80,16 +86,14 @@ export const OfferAmount: FC<OfferAmountProps> = ({
                 size={100}
                 label={
                   <Text size={'xs'} align={'center'}>
-                    {formatToken(offer.requestedAmount ?? 0) +
+                    {formatToken(offerTokenAmount) +
                       ' / ' +
-                      formatToken(offer.initialAmount)}
+                      formatToken(offerTokenAmountInitial)}
                   </Text>
                 }
                 sections={[
                   {
-                    value:
-                      ((offer.requestedAmount ?? 0) / offer.initialAmount) *
-                      100,
+                    value: (offerTokenAmount / offerTokenAmountInitial) * 100,
                     color: 'yellow',
                   },
                 ]}
@@ -100,9 +104,7 @@ export const OfferAmount: FC<OfferAmountProps> = ({
                 ta={isLarge || textAlignRight ? 'center' : 'left'}
                 sx={{ marginTop: '-10px' }}
               >
-                {formatUsd(
-                  (offer.requestedAmount ?? 0) * (offer.requestedPrice ?? 0)
-                )}
+                {formatUsd(offerTokenAmount * (offer.requestedPrice ?? 0))}
               </Text>
             </div>
           ) : (
