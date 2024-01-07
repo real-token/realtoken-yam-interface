@@ -33,6 +33,8 @@ const Display: FC = () => {
   const [choosenDisplay, setChoosenDisplay] = useAtom(displayChoosedAtom);
   const displayRef = useRef<HTMLDivElement | null>(null);
 
+  console.log('DISPLAY', JSON.stringify(offerToBuy, null, 4));
+
   const availableDisplays = useMemo(() => {
     return new Map<Displays, Display>([
       [
@@ -81,7 +83,9 @@ const Display: FC = () => {
 
   return (
     <div ref={displayRef}>
-      {!shallBuyInterfaceDisplay && (
+      {(!shallBuyInterfaceDisplay ||
+        !offerToBuy ||
+        offerToBuy.offerId === '') && (
         <>
           <TransactionStatsGrid></TransactionStatsGrid>
           <Space h={'sm'}></Space>
@@ -99,7 +103,7 @@ const Display: FC = () => {
           {getDisplay() ? getDisplay()?.component : undefined}
         </>
       )}
-      {shallBuyInterfaceDisplay && offerToBuy && (
+      {shallBuyInterfaceDisplay && offerToBuy && offerToBuy.offerId !== '' && (
         <BuyOffer offer={offerToBuy}></BuyOffer>
       )}
     </div>

@@ -1,0 +1,27 @@
+{
+  "pay": "Payer",
+  "receive": "Recevoir",
+  "offerPrice": "*Prix ​​de l'offre",
+  "deltaPrice": "*Delta prix lancement",
+  "tokenForSale": "Token à vendre",
+  "sellerAddress": "Adresse du vendeur",
+  "initialPrice": "Prix ​​de lancement",
+  "stock": "Disponible",
+  "copyAddress": "Copier l'adresse",
+  "copy": "Copier",
+  "copySuccessfully": "Copié avec succès",
+  "summaryText1": "Vous vendez",
+  "summaryText2": "avec un prix unitaire de",
+  "summaryText3": "et pour un total de",
+  "summary": "Résumé de la transaction",
+  "confirm": "Confirmer",
+  "sellerName": "Vendeur",
+  "UNKNOWN": "inconnu",
+  "CSM": "✅ CSM",
+  "sell": {
+    "summaryText1": "Vous acheter"
+  },
+  "buy": {
+    "summaryText1": "Vous vendez"
+  }
+}

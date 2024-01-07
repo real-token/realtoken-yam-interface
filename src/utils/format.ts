@@ -30,14 +30,18 @@ export const formatUsd = (
   const prefix = symbol;
   const digitSmallNumber = digit === 0 ? 2 : digit;
 
+  let sign = '';
+  if (num < 0) sign = '-';
+
   return num < 999
-    ? prefix + num.toFixed(digitSmallNumber) + unitToDisplay
-    : tvl.toLocaleString('en-US', {
-        style: 'currency',
-        currency: currency,
-        maximumFractionDigits: digit,
-        minimumFractionDigits: digit,
-      });
+    ? sign + prefix + Math.abs(num).toFixed(digitSmallNumber) + unitToDisplay
+    : sign +
+        Math.abs(tvl).toLocaleString('en-US', {
+          style: 'currency',
+          currency: currency,
+          maximumFractionDigits: digit,
+          minimumFractionDigits: digit,
+        });
 };
 
 export const formatSimpleUsd = (

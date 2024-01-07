@@ -1,0 +1,27 @@
+{
+  "pay": "Pay",
+  "receive": "Receive",
+  "offerPrice": "*Offer Price",
+  "deltaPrice": "*Launch Delta Price",
+  "tokenForSale": "Token for Sale",
+  "sellerAddress": "Seller's Address",
+  "initialPrice": "Initial Price",
+  "stock": "Stock",
+  "copyAddress": "Copy Address",
+  "copy": "Copy",
+  "copySuccessfully": "Copied Successfully",
+  "summaryText1": "You are selling",
+  "summaryText2": "with a unit price of",
+  "summaryText3": "and for a total of",
+  "summary": "Transaction Summary",
+  "confirm": "Confirm",
+  "sellerName": "Seller",
+  "UNKNOWN": "Unknown",
+  "CSM": "✅ CSM",
+  "sell": {
+    "summaryText1": "You are buying"
+  },
+  "buy": {
+    "summaryText1": "You are selling"
+  }
+}

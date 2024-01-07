@@ -7,6 +7,10 @@ import { AllowedToken } from 'src/types/allowedTokens';
 import { Offer } from 'src/types/offer';
 import { OFFER_TYPE } from 'src/types/offer/OfferType';
 
+import {
+  getTokenOffer,
+  getTokenToBuyWith,
+} from '../../../utils/offers/TokenOffer';
 import { OfferData } from './Types';
 
 export function mapOfferToOfferData(
@@ -14,21 +18,9 @@ export function mapOfferToOfferData(
   offerType: OFFER_TYPE,
   allowedTokens?: AllowedToken[]
 ): OfferData {
-  const allowedTokenOffer = allowedTokens
-    ? allowedTokens.find(
-        (t) =>
-          t.contractAddress.toLowerCase() ===
-          offer.offerTokenAddress.toLowerCase()
-      )
-    : undefined;
+  const allowedTokenOffer = getTokenOffer(allowedTokens, offer);
 
-  const allowedTokenBuy = allowedTokens
-    ? allowedTokens.find(
-        (t) =>
-          t.contractAddress.toLowerCase() ===
-          offer.buyerTokenAddress.toLowerCase()
-      )
-    : undefined;
+  const allowedTokenBuy = getTokenToBuyWith(allowedTokens, offer);
 
   const requestedUsdPrice =
     offer.offerPrice ??
