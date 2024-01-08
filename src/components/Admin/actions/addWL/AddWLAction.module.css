@@ -1,0 +1,7 @@
+.addButton {
+    &:hover {
+        border-radius: var(--mantine-radius-sm);
+        cursor: pointer;
+        background-color: var(--mantine-color-brand-9);
+    }
+}

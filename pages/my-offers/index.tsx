@@ -18,16 +18,22 @@ const TransfersPage = () => {
       >
         <Tabs color={"brand"} variant={"pills"} defaultValue={'myOffers'}>
           <Tabs.List>
-            <Tabs.Tab value={'myOffers'} icon={<IconList size={18} />}>
+            <Tabs.Tab 
+              value={'myOffers'} 
+              rightSection={<IconList size={18} />}
+            >
               {menu.t('myOffers')}
             </Tabs.Tab>
             <Tabs.Tab
               value={'privateOffers'}
-              icon={<IconFingerprint size={18} />}
+              rightSection={<IconFingerprint size={18} />}
             >
               {menu.t('privateOffers')}
             </Tabs.Tab>
-            <Tabs.Tab value={'addOffer'} icon={<IconPlus size={18} />}>
+            <Tabs.Tab 
+              value={'addOffer'} 
+              rightSection={<IconPlus size={18} />}
+            >
               {menu.t('addOffer')}
             </Tabs.Tab>
           </Tabs.List>

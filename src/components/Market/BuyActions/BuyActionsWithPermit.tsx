@@ -60,7 +60,7 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
     <>
       { !offersIsLoading ? 
         (
-          <Group position={'center'} className={groupClassName ?? ""}>
+          <Group justify={'center'} className={groupClassName ?? ""}>
             { !isAccountOffer ?
               <ActionIcon
                 color={'green'}

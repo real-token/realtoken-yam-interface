@@ -1,8 +1,7 @@
 import { ActionIcon, Group, Text } from '@mantine/core';
 import { IconChevronDown, IconChevronUp, IconSelector } from '@tabler/icons';
 import { Header, flexRender } from '@tanstack/react-table';
-
-import { styles } from './TableHeader.styles';
+import classes from './TableHeader.module.css';
 
 type TableHeaderProps<T> = {
   header: Header<T, unknown>;
@@ -14,17 +13,17 @@ export const TableHeader = <T,>({ header }: TableHeaderProps<T>) => {
   return header.isPlaceholder ? null : (
     <>
       {!canSort ? (
-        <Text sx={styles.text}>
+        <Text className={classes.text}>
           {flexRender(header.column.columnDef.header, header.getContext())}
         </Text>
       ) : (
         <Group
-          noWrap={true}
-          position={'center'}
+          wrap={"nowrap"}
+          justify={'center'}
           onClick={header.column.getToggleSortingHandler()}
-          sx={(theme) => styles.caption(theme, { canSort })}
+          className={classes.caption}
         >
-          <Text sx={styles.text} lineClamp={1}>
+          <Text className={classes.text} lineClamp={1}>
             {flexRender(header.column.columnDef.header, header.getContext())}
           </Text>
           {canSort && (

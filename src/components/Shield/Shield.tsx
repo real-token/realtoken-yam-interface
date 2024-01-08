@@ -1,30 +1,13 @@
-import { Checkbox, createStyles, Flex, Menu, NumberInput, Text, Tooltip } from "@mantine/core"
+import { Checkbox, Flex, Menu, NumberInput, Text, Tooltip } from "@mantine/core"
 import { useDisclosure } from "@mantine/hooks";
 import { IconPercentage, IconShieldCheck, IconShieldX } from "@tabler/icons";
 import { useAtom } from "jotai";
 import { useTranslation } from "react-i18next";
 import { shieldDisabledAtom, shieldValueAtom } from "src/states";
-
-const useStyles = createStyles((theme) => ({
-    container: {
-        display: "flex",
-        flexDirection: "row",
-        height: "35px",
-        gap: theme.spacing.xs,
-        alignItems: "center",
-        backgroundColor: theme.colors.dark[4],
-        padding: theme.spacing.sm,
-        borderRadius: theme.radius.md,
-        '&:hover': {
-            cursor: "pointer",
-            backgroundColor: theme.colors.dark[5]
-        }
-    }
-}));
+import classes from './Shield.module.css';
 
 export const Shield = () => {
 
-    const { classes } = useStyles();
     const [isOpen, handlers] = useDisclosure(false);
 
     const [isDisabled,setIsDisabled] = useAtom(shieldDisabledAtom);
@@ -66,9 +49,9 @@ export const Shield = () => {
                         value={value*100}
                         min={0}
                         max={100}
-                        precision={0}
-                        icon={<IconPercentage size={16}/>}
-                        onChange={(value) => setValue(value ? value/100 : 0.05)}
+                        decimalScale={0}
+                        rightSection={<IconPercentage size={16}/>}
+                        onChange={(value) => setValue(value ? Number(value)/100 : 0.05)}
                     />
                 </Flex>
             </Menu.Dropdown>

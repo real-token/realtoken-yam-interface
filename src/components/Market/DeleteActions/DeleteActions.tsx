@@ -45,7 +45,7 @@ export const DeleteActions: FC<DeleteActions> = ({
   }, [modals, t]);
 
   return (
-    <Group position={'center'}>
+    <Group justify={'center'}>
       {
         <ActionIcon
           color={'red'}

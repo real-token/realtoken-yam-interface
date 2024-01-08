@@ -1,0 +1,8 @@
+.caption{
+  cursor: pointer;
+}
+
+.text{
+  text-overflow: ellipsis;
+  overflow: hidden;
+}

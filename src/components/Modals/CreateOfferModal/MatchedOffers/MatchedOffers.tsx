@@ -1,4 +1,4 @@
-import { createStyles, Divider, Flex, Loader, MantineTheme } from "@mantine/core"
+import { Divider, Flex, Loader, MantineTheme } from "@mantine/core"
 import { IconSwitchHorizontal } from "@tabler/icons";
 import { FC } from "react";
 import { useMatchedOffers } from "../../../../hooks/useMatchedOffers";
@@ -7,27 +7,7 @@ import { MatchedOffer } from "./MatchedOffer";
 import { MultiPath } from "./MultiPath";
 import { useTranslation } from "react-i18next";
 import { OFFER_BEST_TYPE } from "../../../../hooks/useMatchedOfferBestType";
-
-const useStyles = createStyles((theme: MantineTheme) => ({
-    container: {
-        position: 'absolute',
-        top: 0,
-        left: '105%',
-        borderRadius: '8px',
-        width: '70%',
-        backgroundColor: '#1A1B1E',
-        overflow: 'hidden',
-        maxHeight: '70%'
-    },
-    header: {
-        backgroundColor: theme.colors.brand,
-        padding: '20px',
-    },
-    body: {
-        padding: '20px',
-        overflowY: 'scroll'
-    }
-}));
+import classes from './MatchedOffers.module.css';
 
 interface MatchedOffersProps{
     offerType: OFFER_TYPE;
@@ -41,7 +21,6 @@ export const MatchedOffers: FC<MatchedOffersProps> = ({ offerType, offerTokenAdd
 
     const { t } = useTranslation('modals', { keyPrefix: "offerMatching" })
 
-    const { classes } = useStyles();
     const { 
         bestPrice, 
         multiPath,

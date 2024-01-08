@@ -1,0 +1,30 @@
+.container {
+    align-items: start;
+    width: 50%;
+}
+
+.propertyInfosContainer {
+    display: flex;
+    border-style: solid;
+    border-width: 3px;
+    border-color: var(--mantine-color-brand-9);
+    border-radius: var(--mantine-radius-md);
+    padding: var(--mantine-radius-lg);
+    gap: var(--mantine-spacing-md);
+}
+
+.propertyNameContainer {
+    display: flex;
+    justify-content: start;
+    margin-bottom:  var(--mantine-spacing-sm);
+}
+
+.propertyName {
+    border-bottom-style: solid;
+    border-bottom-width: 2px;
+    border-bottom-color: transparent;
+    &:hover {
+        border-bottom-color: var(--mantine-color-brand-9);
+        cursor: pointer;
+    }
+}

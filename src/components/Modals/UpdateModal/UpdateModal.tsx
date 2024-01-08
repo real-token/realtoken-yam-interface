@@ -183,7 +183,7 @@ export const UpdateModal: FC<ContextModalProps<UpdateModalProps>> = ({
           // step={amountMax}
           showMax={true}
           placeholder={t('price')}
-          sx={{ flexGrow: 1 }}
+          style={{ flexGrow: 1 }}
           {...getInputProps('price')}
         />
         <NumberInput
@@ -195,7 +195,7 @@ export const UpdateModal: FC<ContextModalProps<UpdateModalProps>> = ({
           step={amountMax}
           showMax={true}
           placeholder={t('amount')}
-          sx={{ flexGrow: 1 }}
+          style={{ flexGrow: 1 }}
           {...getInputProps('amount')}
         />
         <Group grow={true}>

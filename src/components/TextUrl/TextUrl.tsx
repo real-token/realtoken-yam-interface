@@ -1,35 +1,31 @@
-import { createStyles, Flex, Text } from "@mantine/core";
+import { Flex, Text } from "@mantine/core";
 import { IconExternalLink } from "@tabler/icons";
 import { openInNewTab } from "src/utils/window";
+import styled from "styled-components";
 
-const useStyle = createStyles((theme) => ({
-    container: {
-        display: "flex",
-        gap: theme.spacing.sm,
-        borderBottomStyle: "solid",
-        borderBottomWidth: "2px",
-        borderBottomColor: "transparent",
-        alignItems: "center",
-        justifyContent: "start",
-        '&:hover': {
-            borderBottomColor: theme.colors.brand,
-            cursor: "pointer"
-        }
+const Container = styled.div`
+    display: flex;
+    gap: var(--mantine-spacing-md);
+    border-bottom-style: solid;
+    border-bottom-width: 2px;
+    border-bottom-color: transparent;
+    align-items: center;
+    justify-content: start;
+    &:hover{
+        borderBottomColor: var(--mantine-color-brand-9);
+        cursor: pointer;
     }
-}));
+`;
 
 interface TextUrlProps{
     url: string;
     children: React.ReactNode;
 }
 export const TextUrl = ({ url, children } : TextUrlProps) => {
-
-    const { classes } = useStyle();
-
     return(
-        <Flex className={classes.container} onClick={() => openInNewTab(url)}>
+        <Container onClick={() => openInNewTab(url)}>
             <Text>{children}</Text>
             <IconExternalLink size={16}/>
-        </Flex>
+        </Container>
     )
 }

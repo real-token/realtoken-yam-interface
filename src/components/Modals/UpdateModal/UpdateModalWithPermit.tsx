@@ -380,7 +380,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           required={true}
           min={0}
           placeholder={t('price')}
-          sx={{ flexGrow: 1 }}
+          style={{ flexGrow: 1 }}
           {...getInputProps('price')}
         />
         <NumberInput
@@ -388,7 +388,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           required={true}
           min={0}
           placeholder={t('amount')}
-          sx={{ flexGrow: 1 }}
+          style={{ flexGrow: 1 }}
           {...getInputProps('amount')}
         />
 

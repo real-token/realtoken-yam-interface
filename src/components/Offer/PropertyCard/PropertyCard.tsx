@@ -1,41 +1,11 @@
-import { createStyles, Flex, Skeleton, Text, useMantineTheme } from "@mantine/core"
+import { Flex, Skeleton, Text, useMantineTheme } from "@mantine/core"
 import { IconExternalLink } from "@tabler/icons"
 import { PropertiesToken } from "src/types"
 import { Offer } from "src/types/offer"
 import { openInNewTab } from "src/utils/window"
-import { OfferDeltaTable } from "../Table/OfferDeltaTable/OfferDeltaTable"
-import { PropertyImage } from "./Image/PropertyImage"
-
-const useStyle = createStyles((theme) => ({
-    container: {
-        alignItems: "start",
-        width: "50%"
-    },
-    propertyInfosContainer: {
-        display: "flex",
-        borderStyle: "solid",
-        borderWidth: "3px",
-        borderColor: theme.colors.brand,
-        borderRadius: theme.radius.md,
-        padding: theme.radius.lg,
-        gap: theme.spacing.md
-    },
-    propertyNameContainer: {
-        display: "flex",
-        justifyContent: "start",
-        marginBottom: theme.spacing.sm
-    },
-    propertyName: {
-        borderBottomStyle: "solid",
-        borderBottomWidth: "2px",
-        borderBottomColor: "transparent",
-        '&:hover': {
-            borderBottomColor: theme.colors.brand,
-            cursor: "pointer"
-        },
-    }
-}));
-
+import { OfferDeltaTable } from "../../Table/OfferDeltaTable/OfferDeltaTable"
+import { PropertyImage } from "../Image/PropertyImage"
+import classes from './PropertyCard.module.css';
 
 interface PropertyCardProps{
     propertyToken: PropertiesToken,
@@ -43,7 +13,6 @@ interface PropertyCardProps{
 }
 export const PropertyCard = ({ propertyToken, offer }: PropertyCardProps) => {
 
-    const { classes } = useStyle();
     const { colors } = useMantineTheme();
 
     return(

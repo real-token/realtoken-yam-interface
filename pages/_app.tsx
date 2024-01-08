@@ -1,5 +1,4 @@
 import type { AppProps as NextAppProps } from 'next/app';
-import { ColorScheme } from '@mantine/core';
 import store from 'src/store/store';
 import 'src/i18next';
 import InitStoreProvider from 'src/providers/InitStoreProvider';
@@ -29,7 +28,8 @@ import { resources } from 'src/i18next';
 import { CHAINS, Chain as CustomChain, ChainsID } from '../src/constants';
 import { modals } from '../src/components';
 import { HeaderNav } from '../src/components/HeaderNav';
-import { modalStyles } from '../src/theme';
+import { modalStyles, theme } from '../src/theme';
+import '@mantine/core/styles.css';
 
 export const i18n = initLanguage(resources);
 
@@ -54,7 +54,7 @@ const libraryConnectors = getConnectors({
   readOnly: [readOnly, readOnlyHooks]
 });
 
-type AppProps = NextAppProps & { colorScheme: ColorScheme; locale: string };
+type AppProps = NextAppProps;
 
 const queryClient = new QueryClient({});
 
@@ -66,7 +66,7 @@ const App = ({ Component, pageProps }: AppProps) => {
           <ReduxProvide store={store}>
             <Web3Providers libraryConnectors={libraryConnectors}>
               <InitStoreProvider>
-                <MantineProviders modals={modals} modalStyles={modalStyles}>
+                <MantineProviders modals={modals} modalStyles={modalStyles} theme={theme}>
                     <LanguageInit i={i18n} />
                     <Layout
                       currentWebsite={Websites.YAM}

@@ -1,0 +1,13 @@
+.container {
+    display: flex;
+    justify-content: center;
+    border-color: var(--mantine-color-brand-9);
+    border-width: 2px;
+    border-style: solid;
+    border-radius: var(--mantine-radius-md);
+    padding: var(--mantine-spacing-xs);
+    font-weight: 700;
+    font-size: var(--mantine-font-xl);
+    height: 100px;
+    width: 100px;
+}

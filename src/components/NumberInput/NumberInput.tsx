@@ -6,9 +6,10 @@ import {
   NumberInput as MantineInput,
   NumberInputProps as MantineNumberInputProps,
   NumberInputHandlers,
-  MantineNumberSize,
   Flex,
   Loader,
+  StyleProp,
+  MantineSpacing
 } from '@mantine/core';
 
 import { FRC } from 'src/types';
@@ -23,7 +24,7 @@ type NumberInputProps = {
   showMax?: boolean | undefined;
   showMin?: boolean | undefined;
   controlsProps?: ButtonProps;
-  groupMarginBottom?: MantineNumberSize;
+  groupMarginBottom?: StyleProp<MantineSpacing>;
   setFieldValue?: SetFieldValue<any>;
   width?: string;
 } & MantineNumberInputProps;
@@ -43,7 +44,7 @@ export const NumberInput: FRC<NumberInputProps, HTMLInputElement> = forwardRef(
         <MantineInput
           hideControls={true}
           handlersRef={handlers}
-          precision={6}
+          decimalScale={6}
           disabled={disabled}
           {...props}
           ref={ref}

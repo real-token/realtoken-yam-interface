@@ -1,24 +1,14 @@
-import { createStyles, Flex, Text } from "@mantine/core";
+import { Flex, Text } from "@mantine/core";
 import { IconArrowRight, IconMoneybag } from "@tabler/icons";
 import { FC } from "react";
 import { Offer } from "src/types/offer";
-
-const useStyle = createStyles((theme) => ({
-    container: {
-        borderColor: theme.colors.brand,
-        borderSize: "2px",
-        borderStyle: "solid",
-        borderRadius: theme.radius.md,
-    }
-}));
+import classes from "./OfferPrices.module.css";
 
 interface OfferPricesProps{
     offer: Offer | undefined
 }
 
 export const OfferPrices : FC<OfferPricesProps> = ({ offer }) => {
-
-    const { classes } = useStyle();
     
     return(
         <Flex direction={"column"}>

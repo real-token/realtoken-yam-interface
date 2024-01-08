@@ -6,20 +6,21 @@ import {
   Checkbox,
   Grid,
   Group,
-  MediaQuery,
   Menu,
   Pagination,
   PaginationProps,
   Select,
 } from '@mantine/core';
-import { range, useDisclosure } from '@mantine/hooks';
+import { range, useDisclosure, useMediaQuery } from '@mantine/hooks';
 import { IconAdjustmentsHorizontal, IconRefresh } from '@tabler/icons';
 import { Table } from '@tanstack/react-table';
 
-import { styles } from './TableCaption.styles';
 import { useAtom } from 'jotai';
 import { isRefreshedAutoAtom } from 'src/states';
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
+
+import classes from "./TableCaption.module.css"
+import { SelectCreatable } from '../../CreatableSelect/CreatableSelect';
 
 export type TableCaptionOptions = {
   visible?: boolean;
@@ -53,6 +54,7 @@ export const TableCaption = <T,>({
     siblings: 0,
     onChange: (page) => table.setPageIndex(page - 1),
   };
+  const mediaQuery = useMediaQuery('(max-width: 720px)');
 
   const { t } = useTranslation('table', { keyPrefix: 'caption' });
 
@@ -60,11 +62,13 @@ export const TableCaption = <T,>({
 
   return (
     <Group
-      position={'center'}
+      justify={'center'}
       align={'center'}
-      spacing={8}
+      gap={8}
       p={'sm'}
-      sx={styles.caption}
+      style={(theme) => ({
+        borderTop: theme.other.border(theme)
+      })}
     >
 
     <ActionIcon
@@ -77,13 +81,7 @@ export const TableCaption = <T,>({
         <IconRefresh size={16}/>
       </ActionIcon>
 
-      <MediaQuery smallerThan={'xs'} styles={{ display: 'none' }}>
-        <Pagination {...paginationProps} boundaries={1} />
-      </MediaQuery>
-
-      <MediaQuery largerThan={'xs'} styles={{ display: 'none' }}>
-        <Pagination {...paginationProps} boundaries={0} />
-      </MediaQuery>
+      <Pagination {...paginationProps} boundaries={mediaQuery ? 1 : 0} />
 
       <Menu
         position={'top'}
@@ -99,29 +97,16 @@ export const TableCaption = <T,>({
         </Menu.Target>
         <Menu.Dropdown>
           <Menu.Label pb={0}>{t('lineNumber')}</Menu.Label>
-          <Select
-            p={5}
-            searchable={true}
-            creatable={true}
-            getCreateLabel={(value) =>
-              Number.isInteger(Number(value)) &&
-              Number(value) > 0
-                ? value
-                : null
-            }
-            onCreate={(newData) => {
-              setData((current) => [...current, newData]);
-              return { value: newData };
-            }}
-            value={table.getState().pagination.pageSize.toString()}
-            onChange={(value) => table.setPageSize(Number(value))}
+          <SelectCreatable
             data={data}
+            value={table.getState().pagination.pageSize.toString()}
+            setValue={(value) => table.setPageSize(Number(value))}
           />
           <Menu.Label pb={0}>{t('goTo')}</Menu.Label>
           <Select
             p={5}
             searchable={true}
-            nothingFound={t('noOption')}
+            nothingFoundMessage={t('noOption')}
             value={paginationProps.page?.toString()}
             onChange={(value) => paginationProps.onChange!(Number(value))}
             data={[

@@ -1,17 +1,17 @@
-import { ActionIcon, Flex, Grid, Group, MediaQuery, Menu, Pagination, PaginationProps, Select } from "@mantine/core";
-import { range, useDisclosure } from "@mantine/hooks";
+import { ActionIcon, Flex, Grid, Group, Menu, Pagination, Select } from "@mantine/core";
+import { range, useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { IconAdjustmentsHorizontal } from "@tabler/icons";
 import { FC, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Offer } from "src/types/offer";
 import { GridPane } from "./GridPane";
-import { styles } from '../../Table/TableCaption/TableCaption.styles';
 import { useTypedOffers } from "src/hooks/offers/useTypedOffers";
 import { useAppSelector } from "src/hooks/react-hooks";
 import { selectPublicOffers } from "src/store/features/interface/interfaceSelector";
 import { nameFilterValueAtom } from "src/states";
 import { useAtomValue } from "jotai";
 import { useFilter } from "src/hooks/useFilter";
+import { SelectCreatable } from "../../CreatableSelect/CreatableSelect";
 
 export const MarketGrid: FC = () => {
 
@@ -37,6 +37,8 @@ export const MarketGrid: FC = () => {
         onChange: (page: number) => setPage(page),
     };
 
+    const mediaQuery = useMediaQuery('(max-width: 720px)');
+
     const [isOpen, handlers] = useDisclosure(false);
     const { t } = useTranslation('table', { keyPrefix: 'caption' });
 
@@ -51,7 +53,7 @@ export const MarketGrid: FC = () => {
 
     return(
         <Flex gap={"md"} direction={"column"} align={"center"}>
-            <Grid gutterMd={25} style={{ width: "100%" }}>
+            <Grid gutter={25} style={{ width: "100%" }}>
                 {   offers.length > 0 ? 
                         paginationOffers.map((offer: Offer, index: number) => (
                             <Grid.Col span={4} key={`grid-${index}`}>
@@ -64,21 +66,16 @@ export const MarketGrid: FC = () => {
                 }
             </Grid>
             <Group
-                position={'center'}
+                justify={'center'}
                 align={'center'}
-                spacing={8}
+                gap={8}
                 p={'sm'}
-                sx={styles.caption}
-                style={{ width: "100%" }}
+                style={(theme) => ({
+                    borderTop: theme.other.border,
+                    width: '100%'
+                })}
             >
-                <MediaQuery smallerThan={'xs'} styles={{ display: 'none' }}>
-                    <Pagination {...paginationProps} boundaries={1} />
-                </MediaQuery>
-
-                <MediaQuery largerThan={'xs'} styles={{ display: 'none' }}>
-                    <Pagination {...paginationProps} boundaries={0} />
-                </MediaQuery>
-
+                <Pagination {...paginationProps} boundaries={mediaQuery ? 1 : 0} />
                 <Menu
                     position={'top'}
                     closeOnItemClick={false}
@@ -93,31 +90,16 @@ export const MarketGrid: FC = () => {
                     </Menu.Target>
                     <Menu.Dropdown>
                         <Menu.Label pb={0}>{t('lineNumber')}</Menu.Label>
-                        <Select
-                            p={5}
-                            searchable={true}
-                            creatable={true}
-                            getCreateLabel={(value) =>
-                            Number.isInteger(Number(value)) &&
-                            Number(value) > 0 &&
-                            Number(value) <= 500
-                                ? value
-                                : null
-                            }
-                            onCreate={(newData) => {
-                                setData((current) => [...current, newData]);
-                                return { value: newData };
-                            }}
-                            nothingFound={t('noOption')}
+                        <SelectCreatable 
                             value={pageSize.toString()}
-                            onChange={(value) => setPageSize(Number(value))}
+                            setValue={(value) => setPageSize(Number(value))}
                             data={data}
                         />
                         <Menu.Label pb={0}>{t('goTo')}</Menu.Label>
                             <Select
                                 p={5}
                                 searchable={true}
-                                nothingFound={t('noOption')}
+                                nothingFoundMessage={t('noOption')}
                                 value={paginationProps.page?.toString()}
                                 onChange={(value) => paginationProps.onChange!(Number(value))}
                                 data={[

@@ -1,0 +1,9 @@
+.offerType {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--mantine-radius-md);
+    font-weight: 700;
+    padding: 0 var(--mantine-spacing-md);
+    color: white;
+}

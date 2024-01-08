@@ -181,7 +181,7 @@ export const BuyModal: FC<ContextModalProps<BuyModalProps>> = ({
           step={amountMax}
           showMax={true}
           placeholder={t('amount')}
-          sx={{ flexGrow: 1 }}
+          style={{ flexGrow: 1 }}
           {...getInputProps('amount')}
         />
         <Group grow={true}>

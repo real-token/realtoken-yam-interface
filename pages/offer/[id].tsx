@@ -1,5 +1,5 @@
-import { Flex, Text, createStyles, Skeleton, ActionIcon, Title, Divider } from "@mantine/core";
-import { IconError404, IconExclamationCircle, IconFaceIdError, IconShoppingCart } from "@tabler/icons";
+import { Flex, Text, Skeleton, ActionIcon, Title, Divider } from "@mantine/core";
+import { IconError404, IconExclamationCircle, IconShoppingCart } from "@tabler/icons";
 import { useRouter } from "next/router"
 import { FC, useCallback, useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next";
@@ -12,58 +12,11 @@ import { useWeb3React } from "@web3-react/core";
 import { Offer } from "src/types/offer";
 import { useRefreshOffers } from "src/hooks/offers/useRefreshOffers";
 import BigNumber from "bignumber.js";
-import { PropertyCard } from "src/components/Offer/PropertyCard";
+import { PropertyCard } from "src/components/Offer/PropertyCard/PropertyCard";
 import { ConnectedProvider } from "src/providers/ConnectProvider";
-
-const useStyle = createStyles((theme) => ({
-    container: {
-        alignItems: "start",
-        width: "50%"
-    },
-    propertyInfosContainer: {
-        display: "flex",
-        borderStyle: "solid",
-        borderWidth: "3px",
-        borderColor: theme.colors.brand,
-        borderRadius: theme.radius.md,
-        padding: theme.radius.lg,
-        gap: theme.spacing.md
-    },
-    offerId: {
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: theme.colors.brand,
-        borderRadius: theme.radius.md,
-        height: "40px",
-        padding: `0 ${10}px`,
-        // color: theme.colors.brand,
-        fontWeight: 700,
-        fontSize: theme.fontSizes.xl
-    },
-    buyButton: {
-        width: "125px",
-        height: "50px"
-    },
-    propertyNameContainer: {
-        display: "flex",
-        justifyContent: "start",
-        marginBottom: theme.spacing.sm
-    },
-    propertyName: {
-        borderBottomStyle: "solid",
-        borderBottomWidth: "2px",
-        borderBottomColor: "transparent",
-        '&:hover': {
-            borderBottomColor: theme.colors.brand,
-            cursor: "pointer"
-        },
-    }
-}));
+import classes from './Offer.module.css';
 
 const ShowOfferPage: FC = () => {
-
-    const { classes } = useStyle();
 
     const router = useRouter();
     const { id } = router.query;
@@ -171,7 +124,7 @@ const ShowOfferPage: FC = () => {
                                 onClick={() => account && offer ? onOpenBuyModal(offer) : onOpenWalletModal() }
                             >
                                 { isAccountOffer ? 
-                                    <Text fz={"sm"} align={"center"} p={6}>{"Cannot buy your own offer"}</Text> 
+                                    <Text fz={"sm"} style={{ textAlign: 'center' }} p={6}>{"Cannot buy your own offer"}</Text> 
                                     : 
                                     <IconShoppingCart size={24} aria-label={'Buy'} /> 
                                 }

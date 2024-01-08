@@ -66,7 +66,6 @@ export const MarketTable: FC = () => {
       const value = row.getValue(columnId);
       if(value == undefined) return false;
       const safeValue: string = (() => {
-        
         return typeof value === 'number' ? String(value) : value as string;
       })();
       return safeValue.toLowerCase().includes(filterValue.toLowerCase());
@@ -89,11 +88,12 @@ export const MarketTable: FC = () => {
         highlightOnHover: true,
         verticalSpacing: 'sm',
         horizontalSpacing: 'xs',
-        sx: (theme) => ({
-          border: theme.other.border(theme),
-          borderRadius: theme.radius[theme.defaultRadius as MantineSize],
-          borderCollapse: 'separate',
-          borderSpacing: 0,
+        style: (theme) => ({
+          // border: theme.other.border(theme),
+          // borderRadius: theme.radius[theme.defaultRadius as MantineSize],
+          // borderCollapse: 'separate',
+          overflow: 'hidden',
+          // borderSpacing: 0,
         }),
       }}
       table={table}

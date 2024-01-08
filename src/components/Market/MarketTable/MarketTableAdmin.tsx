@@ -223,7 +223,7 @@ export const MarketTableAdmin: FC = () => {
           highlightOnHover: true,
           verticalSpacing: 'sm',
           horizontalSpacing: 'xs',
-          sx: (theme) => ({
+          style: (theme) => ({
             border: theme.other.border(theme),
             borderRadius: theme.radius[theme.defaultRadius as MantineSize],
             borderCollapse: 'separate',

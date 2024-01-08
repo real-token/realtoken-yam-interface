@@ -1,0 +1,27 @@
+.container{
+    position: relative;
+    border: 2px solid var(--mantine-color-brand-0);
+    padding: var(--mantine-spacing-md);
+    border-radius: var(--mantine-spacing-md);
+}
+
+.floatingButton{
+    display: flex;
+    justify-self: right;
+    justify-content: center;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    margin-top: var(--mantine-spacing-md);
+}
+
+.offerId{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--mantine-color-brand-9);
+    border-radius: var(--mantine-radius-md);
+    height: 40px;
+    padding: 0 10px;
+    font-weight: 700;
+    font-size: var(--mantine-font-xl);
+}

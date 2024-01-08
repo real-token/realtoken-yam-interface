@@ -161,7 +161,7 @@ export const BuyModalWithPermit: FC<
   ]);
 
   return (
-    <form onSubmit={onSubmit(onHandleSubmit)} style={{ width: calcRem(500) }}>
+    <form onSubmit={onSubmit(onHandleSubmit)} style={{ paddingBottom: calcRem(40) }}>
       <Stack justify={'center'} align={'stretch'}>
         <Flex direction={"column"} gap={"sm"}>
           <Text size={"xl"}>{t('selectedOffer')}</Text>
@@ -207,7 +207,7 @@ export const BuyModalWithPermit: FC<
               max={maxTokenBuy}
               showMax={true}
               placeholder={t('amount')}
-              sx={{ flexGrow: 1 }}
+              style={{ flexGrow: 1 }}
               groupMarginBottom={16}
               setFieldValue={setFieldValue}
               {...getInputProps('amount')}

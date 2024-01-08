@@ -1,11 +1,12 @@
 import { Translation } from 'react-i18next';
 
 import { Anchor, Stack, Text } from '@mantine/core';
-import { NextLink } from '@mantine/next';
-import { NotificationProps } from '@mantine/notifications';
+// import { Link } from '@mantine/next';
+import { NotificationData } from '@mantine/notifications';
 import { IconCheck, IconX } from '@tabler/icons';
 
 import { asConst, shortenString } from 'src/utils';
+import { Link } from '@realtoken/realt-commons';
 
 export enum NotificationsID {
   userCopied = 'userCopied',
@@ -37,7 +38,7 @@ export const NOTIFICATIONS = asConst<
   Record<
     NotificationsID,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    NotificationProps | ((payload: any) => NotificationProps)
+    NotificationData | ((payload: any) => NotificationData)
   >
 >()({
   [NotificationsID.grantRoleLoading]: (payload: {
@@ -57,9 +58,9 @@ export const NOTIFICATIONS = asConst<
     message: (
       <Translation ns={'notifications'}>
         {(t) => (
-          <Stack spacing={1}>
+          <Stack gap={1}>
             {`${t('grantRoleLoading.message')}`}
-            <Anchor component={NextLink} href={payload.href} target={'_blank'}>
+            <Anchor component={Link} href={payload.href} target={'_blank'}>
               <Text>{`(${shortenString(payload.hash)})`}</Text>
             </Anchor>
           </Stack>
@@ -84,9 +85,9 @@ export const NOTIFICATIONS = asConst<
     message: (
       <Translation ns={'notifications'}>
         {(t) => (
-          <Stack spacing={1}>
+          <Stack gap={1}>
             {`${t('grantRoleSuccess.message')}`}
-            <Anchor component={NextLink} href={payload.href} target={'_blank'}>
+            <Anchor component={Link} href={payload.href} target={'_blank'}>
               <Text>{`(${shortenString(payload.hash)})`}</Text>
             </Anchor>
           </Stack>
@@ -111,9 +112,9 @@ export const NOTIFICATIONS = asConst<
     message: (
       <Translation ns={'notifications'}>
         {(t) => (
-          <Stack spacing={1}>
+          <Stack gap={1}>
             {`${t('grantRoleInvalid.message')}`}
-            <Anchor component={NextLink} href={payload.href} target={'_blank'}>
+            <Anchor component={Link} href={payload.href} target={'_blank'}>
               <Text>{`(${shortenString(payload.hash)})`}</Text>
             </Anchor>
           </Stack>
@@ -168,9 +169,9 @@ export const NOTIFICATIONS = asConst<
     message: (
       <Translation ns={'notifications'}>
         {(t) => (
-          <Stack spacing={1}>
+          <Stack gap={1}>
             {`${t('createOfferLoading.message')}`}
-            <Anchor component={NextLink} href={payload.href} target={'_blank'}>
+            <Anchor component={Link} href={payload.href} target={'_blank'}>
               <Text>{`(${shortenString(payload.hash)})`}</Text>
             </Anchor>
           </Stack>
@@ -194,9 +195,9 @@ export const NOTIFICATIONS = asConst<
     message: (
       <Translation ns={'notifications'}>
         {(t) => (
-          <Stack spacing={1}>
+          <Stack gap={1}>
             {`${t('createOfferSuccess.message')}`}
-            <Anchor component={NextLink} href={payload.href} target={'_blank'}>
+            <Anchor component={Link} href={payload.href} target={'_blank'}>
               <Text>{`(${shortenString(payload.hash)})`}</Text>
             </Anchor>
           </Stack>
@@ -220,9 +221,9 @@ export const NOTIFICATIONS = asConst<
     message: (
       <Translation ns={'notifications'}>
         {(t) => (
-          <Stack spacing={1}>
+          <Stack gap={1}>
             {`${t('createOfferError.message')}`}
-            <Anchor component={NextLink} href={payload.href} target={'_blank'}>
+            <Anchor component={Link} href={payload.href} target={'_blank'}>
               <Text>{`(${shortenString(payload.hash)})`}</Text>
             </Anchor>
           </Stack>
@@ -247,9 +248,9 @@ export const NOTIFICATIONS = asConst<
     message: (
       <Translation ns={'notifications'}>
         {(t) => (
-          <Stack spacing={1}>
+          <Stack gap={1}>
             {`${t('buyOfferLoading.message')}`}
-            <Anchor component={NextLink} href={payload.href} target={'_blank'}>
+            <Anchor component={Link} href={payload.href} target={'_blank'}>
               <Text>{`(${shortenString(payload.hash)})`}</Text>
             </Anchor>
           </Stack>
@@ -273,9 +274,9 @@ export const NOTIFICATIONS = asConst<
     message: (
       <Translation ns={'notifications'}>
         {(t) => (
-          <Stack spacing={1}>
+          <Stack gap={1}>
             {`${t('buyOfferSuccess.message')}`}
-            <Anchor component={NextLink} href={payload.href} target={'_blank'}>
+            <Anchor component={Link} href={payload.href} target={'_blank'}>
               <Text>{`(${shortenString(payload.hash)})`}</Text>
             </Anchor>
           </Stack>
@@ -299,9 +300,9 @@ export const NOTIFICATIONS = asConst<
     message: (
       <Translation ns={'notifications'}>
         {(t) => (
-          <Stack spacing={1}>
+          <Stack gap={1}>
             {`${t('buyOfferError.message')}`}
-            <Anchor component={NextLink} href={payload.href} target={'_blank'}>
+            <Anchor component={Link} href={payload.href} target={'_blank'}>
               <Text>{`(${shortenString(payload.hash)})`}</Text>
             </Anchor>
           </Stack>
@@ -326,9 +327,9 @@ export const NOTIFICATIONS = asConst<
     message: (
       <Translation ns={'notifications'}>
         {(t) => (
-          <Stack spacing={1}>
+          <Stack gap={1}>
             {`${t('approveOfferLoading.message')}`}
-            <Anchor component={NextLink} href={payload.href} target={'_blank'}>
+            <Anchor component={Link} href={payload.href} target={'_blank'}>
               <Text>{`(${shortenString(payload.hash)})`}</Text>
             </Anchor>
           </Stack>
@@ -352,9 +353,9 @@ export const NOTIFICATIONS = asConst<
     message: (
       <Translation ns={'notifications'}>
         {(t) => (
-          <Stack spacing={1}>
+          <Stack gap={1}>
             {`${t('approveOfferSuccess.message')}`}
-            <Anchor component={NextLink} href={payload.href} target={'_blank'}>
+            <Anchor component={Link} href={payload.href} target={'_blank'}>
               <Text>{`(${shortenString(payload.hash)})`}</Text>
             </Anchor>
           </Stack>
@@ -378,9 +379,9 @@ export const NOTIFICATIONS = asConst<
     message: (
       <Translation ns={'notifications'}>
         {(t) => (
-          <Stack spacing={1}>
+          <Stack gap={1}>
             {`${t('approveOfferError.message')}`}
-            <Anchor component={NextLink} href={payload.href} target={'_blank'}>
+            <Anchor component={Link} href={payload.href} target={'_blank'}>
               <Text>{`(${shortenString(payload.hash)})`}</Text>
             </Anchor>
           </Stack>
@@ -405,9 +406,9 @@ export const NOTIFICATIONS = asConst<
     message: (
       <Translation ns={'notifications'}>
         {(t) => (
-          <Stack spacing={1}>
+          <Stack gap={1}>
             {`${t('updateOfferLoading.message')}`}
-            <Anchor component={NextLink} href={payload.href} target={'_blank'}>
+            <Anchor component={Link} href={payload.href} target={'_blank'}>
               <Text>{`(${shortenString(payload.hash)})`}</Text>
             </Anchor>
           </Stack>
@@ -431,9 +432,9 @@ export const NOTIFICATIONS = asConst<
     message: (
       <Translation ns={'notifications'}>
         {(t) => (
-          <Stack spacing={1}>
+          <Stack gap={1}>
             {`${t('updateOfferSuccess.message')}`}
-            <Anchor component={NextLink} href={payload.href} target={'_blank'}>
+            <Anchor component={Link} href={payload.href} target={'_blank'}>
               <Text>{`(${shortenString(payload.hash)})`}</Text>
             </Anchor>
           </Stack>
@@ -457,9 +458,9 @@ export const NOTIFICATIONS = asConst<
     message: (
       <Translation ns={'notifications'}>
         {(t) => (
-          <Stack spacing={1}>
+          <Stack gap={1}>
             {`${t('updateOfferError.message')}`}
-            <Anchor component={NextLink} href={payload.href} target={'_blank'}>
+            <Anchor component={Link} href={payload.href} target={'_blank'}>
               <Text>{`(${shortenString(payload.hash)})`}</Text>
             </Anchor>
           </Stack>
@@ -484,9 +485,9 @@ export const NOTIFICATIONS = asConst<
     message: (
       <Translation ns={'notifications'}>
         {(t) => (
-          <Stack spacing={1}>
+          <Stack gap={1}>
             {`${t('deleteOfferLoading.message')}`}
-            <Anchor component={NextLink} href={payload.href} target={'_blank'}>
+            <Anchor component={Link} href={payload.href} target={'_blank'}>
               <Text>{`(${shortenString(payload.hash)})`}</Text>
             </Anchor>
           </Stack>
@@ -510,9 +511,9 @@ export const NOTIFICATIONS = asConst<
     message: (
       <Translation ns={'notifications'}>
         {(t) => (
-          <Stack spacing={1}>
+          <Stack gap={1}>
             {`${t('deleteOfferSuccess.message')}`}
-            <Anchor component={NextLink} href={payload.href} target={'_blank'}>
+            <Anchor component={Link} href={payload.href} target={'_blank'}>
               <Text>{`(${shortenString(payload.hash)})`}</Text>
             </Anchor>
           </Stack>
@@ -536,9 +537,9 @@ export const NOTIFICATIONS = asConst<
     message: (
       <Translation ns={'notifications'}>
         {(t) => (
-          <Stack spacing={1}>
+          <Stack gap={1}>
             {`${t('deleteOfferError.message')}`}
-            <Anchor component={NextLink} href={payload.href} target={'_blank'}>
+            <Anchor component={Link} href={payload.href} target={'_blank'}>
               <Text>{`(${shortenString(payload.hash)})`}</Text>
             </Anchor>
           </Stack>
@@ -558,7 +559,7 @@ export const NOTIFICATIONS = asConst<
     message: (
       <Translation ns={'notifications'}>
         {(t) => (
-          <Stack spacing={1}>{`${t('createOfferInvalid.message')}`}</Stack>
+          <Stack gap={1}>{`${t('createOfferInvalid.message')}`}</Stack>
         )}
       </Translation>
     ),
@@ -575,7 +576,7 @@ export const NOTIFICATIONS = asConst<
     ),
     message: (
       <Translation ns={'notifications'}>
-        {(t) => <Stack spacing={1}>{`${t('buyOfferInvalid.message')}`}</Stack>}
+        {(t) => <Stack gap={1}>{`${t('buyOfferInvalid.message')}`}</Stack>}
       </Translation>
     ),
   }),

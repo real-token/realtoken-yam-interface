@@ -1,41 +1,26 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-
-import { Web3Provider } from '@ethersproject/providers';
-import {
-  Button,
-  Divider,
-  Flex,
-  Notification,
-  createStyles,
-} from '@mantine/core';
-import { showNotification, updateNotification } from '@mantine/notifications';
-import { IconX } from '@tabler/icons';
-import { useWeb3React } from '@web3-react/core';
-
-import BigNumber from 'bignumber.js';
-import { Contract } from 'ethers';
-import { useAtomValue } from 'jotai';
-
-import { CoinBridgeToken, Erc20, Erc20ABI, coinBridgeTokenABI } from 'src/abis';
-import {
-  Chain,
-  ContractsID,
-  NOTIFICATIONS,
-  NotificationsID,
-} from 'src/constants';
-import { useActiveChain, useContract } from 'src/hooks';
-import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
-import { useAppDispatch, useAppSelector } from 'src/hooks/react-hooks';
-import { selectCreateOffers } from 'src/store/features/createOffers/createOffersSelector';
-import { createOfferResetDispatchType } from 'src/store/features/createOffers/createOffersSlice';
-import { CreatedOffer } from 'src/types/offer/CreatedOffer';
-import { getContract } from 'src/utils';
-
-import coinBridgeTokenPermitSignature from '../../hooks/coinBridgeTokenPermitSignature';
-import erc20PermitSignature from '../../hooks/erc20PermitSignature';
-import { providerAtom } from '../../states';
-import { CreateOfferPane } from './CreateOfferPane';
+import { Button, Divider, Flex } from "@mantine/core"
+import { showNotification, updateNotification } from "@mantine/notifications";
+import { useWeb3React } from "@web3-react/core";
+import BigNumber from "bignumber.js";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { CoinBridgeToken, coinBridgeTokenABI, Erc20, Erc20ABI } from "src/abis";
+import { Chain, ContractsID, NOTIFICATIONS, NotificationsID } from "src/constants";
+import { useActiveChain, useContract } from "src/hooks";
+import { useRefreshOffers } from "src/hooks/offers/useRefreshOffers";
+import { useAppDispatch, useAppSelector } from "src/hooks/react-hooks";
+import { selectCreateOffers } from "src/store/features/createOffers/createOffersSelector";
+import { createOfferResetDispatchType } from "src/store/features/createOffers/createOffersSlice";
+import { CreatedOffer } from "src/types/offer/CreatedOffer";
+import { getContract } from "src/utils";
+import { CreateOfferPane } from "./CreateOfferPane";
+import erc20PermitSignature from "../../hooks/erc20PermitSignature";
+import coinBridgeTokenPermitSignature from "../../hooks/coinBridgeTokenPermitSignature";
+import { Web3Provider } from "@ethersproject/providers";
+import { Contract } from "ethers";
+import { useAtomValue } from "jotai";
+import { providerAtom } from "../../states";
+import classes from './CreateOffer.module.css';
 
 const approveOffer = (
   offerTokenAddress: string,
@@ -120,34 +105,12 @@ const approveOffer = (
   });
 };
 
-const useStyles = createStyles((theme) => ({
-  container: {
-    display: 'flex',
-    width: '33%',
-    borderStyle: 'solid',
-    borderColor: theme.colors.brand,
-    borderWidth: '2px',
-    borderRadius: theme.spacing.sm,
-    padding: theme.spacing.md,
-    height: '40vh',
-
-    [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
-      width: '100%',
-    },
-  },
-  offersContainer: {
-    overflowY: 'scroll',
-    // paddingRight: "20px"
-  },
-}));
-
 export const CreateOffer = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [notification, setNotification] = useState<boolean>(false);
 
   const { refreshOffers } = useRefreshOffers(false);
 
-  const { classes } = useStyles();
   const offers = useAppSelector(selectCreateOffers);
 
   const { t } = useTranslation('modals', { keyPrefix: 'sell' });
@@ -190,7 +153,7 @@ export const CreateOffer = () => {
       );
     }
   };
-
+  
   const createOffers = async () => {
     try {
       if (!account || !provider || !realTokenYamUpgradeable) return;
@@ -440,6 +403,7 @@ export const CreateOffer = () => {
     }
   };
 
+
   return (
     <Flex direction={'column'} align={'center'}>
       <h3>{'Create offer(s)'}</h3>
@@ -465,7 +429,7 @@ export const CreateOffer = () => {
         {offers.length > 0 ? <Divider /> : undefined}
         <CreateOfferPane isCreating={true} />
       </Flex>
-      {notification && (
+      {/* {notification && (
         <Notification
           icon={<IconX size={'1.1rem'} />}
           color={'red'}
@@ -476,7 +440,7 @@ export const CreateOffer = () => {
         >
           {'Error ! Offer(s) not created. Please retry.'}
         </Notification>
-      )}
+      )} */}
       <Button
         disabled={offers.length == 0 || loading}
         onClick={() => createOffers()}

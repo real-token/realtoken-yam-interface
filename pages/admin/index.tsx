@@ -18,10 +18,10 @@ export const Admin = () => {
                 >
                 <Tabs color={"brand"} variant={"pills"} defaultValue={'adminMarketTable'}>
                     <Tabs.List>
-                        <Tabs.Tab value={'adminMarketTable'} icon={<IconList size={18} />}>
+                        <Tabs.Tab value={'adminMarketTable'} rightSection={<IconList size={18} />}>
                             {t('adminMarketTable')}
                         </Tabs.Tab>
-                        <Tabs.Tab value={'adminActions'} icon={<IconClick size={18} />}>
+                        <Tabs.Tab value={'adminActions'} rightSection={<IconClick size={18} />}>
                             {t('adminActions')}
                         </Tabs.Tab>
                     </Tabs.List>
