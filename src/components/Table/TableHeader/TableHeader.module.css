@@ -4,5 +4,6 @@
 
 .text{
   text-overflow: ellipsis;
-  overflow: hidden;
+  overflow: unset !important;
+  display: block !important;
 }
