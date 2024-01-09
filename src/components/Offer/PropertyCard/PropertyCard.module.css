@@ -23,8 +23,9 @@
     border-bottom-style: solid;
     border-bottom-width: 2px;
     border-bottom-color: transparent;
-    &:hover {
-        border-bottom-color: var(--mantine-color-brand-9);
-        cursor: pointer;
-    }
+}
+
+.propertyName:hover {
+    border-bottom-color: var(--mantine-color-brand-9);
+    cursor: pointer;
 }
