@@ -89,6 +89,7 @@ export function mapOfferToOfferData(
     priceDelta: offer.priceDelta,
     initialAmount: offer.initialAmount,
     createdAt: offer.createdAtTimestamp,
+    removed: offer.removed,
   };
 }
 

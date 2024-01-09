@@ -4,7 +4,8 @@
     "requesterAddress": "Dirección",
     "requestedPrice": "Precio (USD)",
     "requestedAmount": "Cantidad",
-    "createdAt": "Creado el"
+    "createdAt": "Creado el",
+    "deleted": "Eliminado"
   },
 
   "success": {
@@ -59,7 +60,6 @@
 
     "exchangeToken": "Token de Intercambio"
   },
-
 
   "subRow": {
     "offerId": "ID de la Oferta",

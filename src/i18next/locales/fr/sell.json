@@ -4,6 +4,7 @@
     "requesterAddress": "Adresse",
     "requestedPrice": "Prix (usd)",
     "requestedAmount": "Quantité",
-    "createdAt": "Créée le"
+    "createdAt": "Créée le",
+    "deleted": "Offre supprimée"
   }
 }

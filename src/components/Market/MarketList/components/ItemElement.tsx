@@ -1,10 +1,22 @@
 import React, { FC, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Card, Grid, Group, Stack, Text, useMantineTheme } from '@mantine/core';
+import {
+  Badge,
+  Card,
+  Grid,
+  Group,
+  Stack,
+  Text,
+  useMantineTheme,
+} from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
+import { IconTrash } from '@tabler/icons';
 
-import { OfferBadgeAbsolute } from 'src/components/Offer/components/OfferTypeBadge';
+import {
+  OfferBadgeAbsolute,
+  OfferTextAbsolute,
+} from 'src/components/Offer/components/OfferTypeBadge';
 import { useOffer } from 'src/hooks/offers/useOffer';
 import { useAppDispatch } from 'src/hooks/react-hooks';
 import { buyOfferOpen } from 'src/store/features/buyOffer/buyOfferSlice';
@@ -89,10 +101,39 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             id={offer.id}
           ></OfferBadgeAbsolute>
 
-          {isLarge && <TokensTradedElement offer={offer}></TokensTradedElement>}
+          {isLarge && (
+            <>
+              <TokensTradedElement offer={offer}></TokensTradedElement>
+              {offer.removed && (
+                <OfferTextAbsolute top={'100px'} left={'60px'}>
+                  <Badge
+                    color={'red'}
+                    variant={'outline'}
+                    pl={3}
+                    leftSection={<IconTrash size={16}></IconTrash>}
+                  >
+                    {t('deleted')}
+                  </Badge>
+                </OfferTextAbsolute>
+              )}
+            </>
+          )}
+
           {!isLarge && (
             <Group spacing={10} position={'left'}>
               <TokensTradedElement offer={offer}></TokensTradedElement>
+              {offer.removed && (
+                <OfferTextAbsolute top={'5px'} left={'150px'}>
+                  <Badge
+                    color={'red'}
+                    variant={'outline'}
+                    pl={3}
+                    leftSection={<IconTrash size={16}></IconTrash>}
+                  >
+                    {offer.removed ? 'Offre supprimée' : ''}
+                  </Badge>
+                </OfferTextAbsolute>
+              )}
               <SiteElement offer={offer}></SiteElement>
             </Group>
           )}

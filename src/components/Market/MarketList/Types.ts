@@ -29,6 +29,7 @@ export type OfferData = {
   initialAmount: number;
   image: string;
   type: OFFER_TYPE;
+  removed: boolean;
 };
 
 export type SiteData = {

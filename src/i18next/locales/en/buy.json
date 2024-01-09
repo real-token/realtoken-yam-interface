@@ -4,7 +4,8 @@
     "requesterAddress": "Address",
     "requestedPrice": "Price (USD)",
     "requestedAmount": "Quantity",
-    "createdAt": "Created at"
+    "createdAt": "Created at",
+    "deleted": "Offer deleted"
   },
 
   "success": {
@@ -59,7 +60,6 @@
 
     "exchangeToken": "Exchange Token"
   },
-
 
   "subRow": {
     "offerId": "Offer ID",

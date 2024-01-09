@@ -159,32 +159,49 @@ const ViewOfferForms: FC<ComponentOfferProps> = ({ offer, onEdit }) => {
 
   return (
     <div>
-      <Group>
-        <Button
-          leftIcon={<IconEdit size={'1rem'} />}
-          radius={'xl'}
-          color={'green'}
-          style={{
-            backgroundColor: `${theme.colors.brand[5]}0F`,
-            color: theme.colors.brand[5],
-          }}
-          onClick={() => onEdit(true)}
-        >
-          {'Edit offer'}
-        </Button>
-        <Button
-          leftIcon={<IconTrash size={'1rem'} />}
-          radius={'xl'}
-          color={'green'}
-          onClick={() => onOpenDeleteModal(offer)}
-          style={{
-            backgroundColor: `${theme.colors.brand[5]}0F`,
-            color: theme.colors.brand[5],
-          }}
-        >
-          {'Delete offer'}
-        </Button>
-      </Group>
+      {offer.removed ? (
+        <Group>
+          <Button
+            leftIcon={<IconTrash size={'1rem'} />}
+            radius={'xl'}
+            color={'red'}
+            disabled={true}
+            style={{
+              backgroundColor: `${theme.colors.red[6]}1F`,
+              color: theme.colors.red[7],
+            }}
+          >
+            {t('deleted')}
+          </Button>
+        </Group>
+      ) : (
+        <Group>
+          <Button
+            leftIcon={<IconEdit size={'1rem'} />}
+            radius={'xl'}
+            color={'green'}
+            style={{
+              backgroundColor: `${theme.colors.brand[5]}0F`,
+              color: theme.colors.brand[5],
+            }}
+            onClick={() => onEdit(true)}
+          >
+            {t('edit')}
+          </Button>
+          <Button
+            leftIcon={<IconTrash size={'1rem'} />}
+            radius={'xl'}
+            color={'green'}
+            onClick={() => onOpenDeleteModal(offer)}
+            style={{
+              backgroundColor: `${theme.colors.brand[5]}0F`,
+              color: theme.colors.brand[5],
+            }}
+          >
+            {t('delete')}
+          </Button>
+        </Group>
+      )}
       <Space h={'md'}></Space>
       <Flex direction={'column'} gap={'md'}>
         <div className={classes.title}>

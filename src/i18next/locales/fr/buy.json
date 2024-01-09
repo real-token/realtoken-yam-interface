@@ -1,11 +1,11 @@
 {
-
   "list": {
     "requesterName": "Acheteur",
     "requesterAddress": "Adresse",
     "requestedPrice": "Prix (usd)",
     "requestedAmount": "Quantité",
-    "createdAt": "Créée le"
+    "createdAt": "Créée le",
+    "deleted": "Offre supprimée"
   },
 
   "success": {
@@ -26,8 +26,8 @@
     "sellerAddress": "Adresse du vendeur",
     "sellerName": "Vendeur",
     "sellDate": "Date de vente",
-    "UNKNOWN":"inconnu",
-    "CSM":"✅ CSM",
+    "UNKNOWN": "inconnu",
+    "CSM": "✅ CSM",
     "price": "Prix de vente",
     "amount": "Quantité disponible",
     "allowance": "Allowance",
@@ -60,7 +60,6 @@
 
     "exchangeToken": "Jeton d'échange"
   },
-
 
   "subRow": {
     "offerId": "ID de l'offre",

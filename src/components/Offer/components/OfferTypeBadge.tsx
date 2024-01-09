@@ -98,6 +98,30 @@ export const OfferBadgeAbsolute = ({
   );
 };
 
+interface TextProps {
+  sx?: Sx;
+  children: React.ReactNode;
+  top?: string;
+  left?: string;
+}
+export const OfferTextAbsolute = ({
+  children,
+  top = '0px',
+  left = '0px',
+}: TextProps) => {
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        top: top,
+        left: left,
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
 export const OfferText = ({
   offerType,
   textSize,

@@ -44,7 +44,10 @@
     "txExchangeSummary": "Vous souhaitez échanger jusqu'a {{amount}} \"{{buyTokenSymbol}}\" avec un prix unitaire de {{price}} \"{{offerTokenSymbol}}\" et pour un total de {{total}} \"{{offerTokenSymbol}}\".",
     "summaryText1": "Vous vendez",
     "summaryText2": "avec un prix unitaire de",
-    "summaryText3": "et pour un total de"
+    "summaryText3": "et pour un total de",
+    "deleted": "Offre supprimée",
+    "delete": "Supprimer l'offre",
+    "edit": "Modifier l'offre"
   },
   "buy": {
     "title": "Acheter",
@@ -74,7 +77,10 @@
     "summary": "Résumé de la transaction",
     "summaryText1": "Vous achetez",
     "summaryText2": "avec un prix unitaire de",
-    "summaryText3": "et pour un total de"
+    "summaryText3": "et pour un total de",
+    "deleted": "Offre supprimée",
+    "delete": "Supprimer l'offre",
+    "edit": "Modifier l'offre"
   },
   "delete": {
     "title": "Supprimer",
@@ -132,7 +138,7 @@
     "sellTypeExplain": "Choisissez le type d'offre \"{{ offerType }}\" si vous souhaitez vendre un token CSM contre un autre token non CSM (WXDAI, USDC etc...)",
     "exchangeTypeExplain": "Choisissez le type d'offre \"{{ offerType }}\" si vous souhaitez échanger deux tokens CSM entre eux ou des tokens non CSM (WXDAI, USDC etc...) entre eux."
   },
-  "offer":{
+  "offer": {
     "title": "Offre",
     "close": "Fermer"
   }

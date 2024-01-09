@@ -21,7 +21,7 @@
     "realtTokenType": "Token RealT",
     "otherTokenType": "Otros (USDC, XDAI, etc...)",
     "amount": "Cantidad",
-    "exchangeAmount": "Cantidad de tokens vendidos para intercambiar", 
+    "exchangeAmount": "Cantidad de tokens vendidos para intercambiar",
     "cancel": "Cancelar",
     "confirm": "Confirmar",
     "labelPrivateBuyerAddress": "Dirección del comprador (solo para ofertas privadas)",
@@ -44,7 +44,10 @@
     "txExchangeSummary": "Deseas intercambiar hasta {{amount}} tokens \"{{buyTokenSymbol}}\" con un precio unitario de {{price}} \"{{offerTokenSymbol}}\" y un total de {{total}} \"{{offerTokenSymbol}}\".",
     "summaryText1": "Vas a vender",
     "summaryText2": "con un precio unitario de",
-    "summaryText3": "y un total de"
+    "summaryText3": "y un total de",
+    "deleted": "Oferta eliminada",
+    "delete": "Eliminar oferta",
+    "edit": "Editar oferta"
   },
   "buy": {
     "title": "Comprar Oferta",
@@ -75,7 +78,10 @@
     "summary": "Resumen de la transacción",
     "summaryText1": "Vas a comprar",
     "summaryText2": "con un precio unitario de",
-    "summaryText3": "y un total de"
+    "summaryText3": "y un total de",
+    "deleted": "Oferta eliminada",
+    "delete": "Eliminar oferta",
+    "edit": "Editar oferta"
   },
   "delete": {
     "title": "Eliminar Oferta",
