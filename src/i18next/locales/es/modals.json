@@ -47,7 +47,10 @@
     "summaryText3": "y un total de",
     "deleted": "Oferta eliminada",
     "delete": "Eliminar oferta",
-    "edit": "Editar oferta"
+    "edit": "Editar oferta",
+    "createOffer": "Crear oferta",
+    "createOffers": "Crear ofertas",
+    "addOffer": "Agregar oferta"
   },
   "buy": {
     "title": "Comprar Oferta",

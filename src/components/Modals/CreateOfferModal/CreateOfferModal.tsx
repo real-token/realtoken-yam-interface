@@ -314,11 +314,6 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         isPrivateOffer: formValues.isPrivateOffer,
       };
 
-      // console.log(
-      //   'createOffer/createOfferAdded',
-      //   JSON.stringify(createdOffer, null, 4)
-      // );
-
       dispatch({ type: createOfferAddedDispatchType, payload: createdOffer });
 
       context.closeModal(id);

@@ -3,21 +3,34 @@ import { useTranslation } from 'react-i18next';
 
 import {
   ActionIcon,
+  Avatar,
   Flex,
+  Group,
   Skeleton,
+  Space,
   Text,
   clsx,
   createStyles,
 } from '@mantine/core';
 import { openConfirmModal } from '@mantine/modals';
-import { IconEdit, IconPlus, IconTrash } from '@tabler/icons';
+import {
+  IconCoins,
+  IconEdit,
+  IconPlus,
+  IconTrash,
+  IconTrendingUp,
+} from '@tabler/icons';
+
+import BigNumber from 'bignumber.js';
 
 import { useAppDispatch } from 'src/hooks/react-hooks';
 import { useCreatedOffer } from 'src/hooks/useCreatedOffer';
 import { useContextModals } from 'src/hooks/useModals';
 import { createOfferRemovedDispatchType } from 'src/store/features/createOffers/createOffersSlice';
+import { OFFER_TYPE } from 'src/types/offer';
 import { CreatedOffer } from 'src/types/offer/CreatedOffer';
 import { hexToRgb } from 'src/utils/color';
+import { formatBigDecimals } from 'src/utils/format';
 
 import { OfferTypeBadge } from '../Offer/components/OfferTypeBadge';
 
@@ -103,6 +116,40 @@ export const CreateOfferPane: FC<CreateOfferPaneProps> = ({
   const { offerTokenSymbol, buyTokenSymbol } = useCreatedOffer(offer);
   const { t } = useTranslation('modals', { keyPrefix: 'sell' });
 
+  const offerTokenDecimal = offer?.offerTokenDecimal ?? 0;
+  //const offerTokenDecimal = offer?.de ?? 0;
+
+  const rate =
+    offer?.offerType === OFFER_TYPE.BUY
+      ? new BigNumber(1).div(offer?.price ?? 1).toNumber()
+      : new BigNumber(offer?.price ?? 0).toNumber();
+
+  const currencyAmount =
+    offer?.offerType === OFFER_TYPE.BUY
+      ? new BigNumber(offer.amount ?? 0)
+          .shiftedBy(-offerTokenDecimal)
+          .toNumber()
+      : new BigNumber(offer?.amount ?? 0)
+          .shiftedBy(-offerTokenDecimal)
+          .times(offer?.price ?? 0)
+          .toNumber();
+
+  const tokenAmount =
+    offer?.offerType === OFFER_TYPE.BUY
+      ? new BigNumber(offer?.amount ?? 0)
+          .shiftedBy(-offerTokenDecimal)
+          .times(offer?.price ?? 1)
+          .toNumber()
+      : new BigNumber(offer?.amount ?? 0)
+          .shiftedBy(-offerTokenDecimal)
+          .toNumber();
+
+  const currencySymbol =
+    offer?.offerType === OFFER_TYPE.BUY ? offerTokenSymbol : buyTokenSymbol;
+
+  const tokenSymbol =
+    offer?.offerType === OFFER_TYPE.BUY ? buyTokenSymbol : offerTokenSymbol;
+
   return (
     <>
       {isCreating ? (
@@ -136,21 +183,71 @@ export const CreateOfferPane: FC<CreateOfferPaneProps> = ({
             </div>
           ) : undefined}
           <Flex direction={'column'} p={'sm'} align={'start'}>
-            <OfferTypeBadge offerType={offer.offerType} />
-            <Text fw={700}>
-              {offerTokenSymbol ? (
-                offerTokenSymbol
-              ) : (
-                <Skeleton height={35} width={'100%'} />
-              )}
-            </Text>
-            <Text fs={'italic'} fw={500} color={'gray'}>
-              {buyTokenSymbol ? (
-                buyTokenSymbol
-              ) : (
-                <Skeleton height={35} width={'100%'} />
-              )}
-            </Text>
+            <Flex direction={'row'} p={0} align={'start'} gap={10}>
+              <OfferTypeBadge offerType={offer.offerType} />
+              <Space h={10}></Space>
+              <Text fw={700}>
+                {offerTokenSymbol ? (
+                  offerTokenSymbol
+                ) : (
+                  <Skeleton height={35} width={'100%'} />
+                )}
+              </Text>
+              <Avatar
+                radius={'xl'}
+                size={'sm'}
+                variant={'filled'}
+                color={'brand'}
+              >
+                {'VS'}
+              </Avatar>
+              <Text fs={'italic'} fw={500} color={'gray'}>
+                {buyTokenSymbol ? (
+                  buyTokenSymbol
+                ) : (
+                  <Skeleton height={35} width={'100%'} />
+                )}
+              </Text>
+            </Flex>
+            <Space h={15}></Space>
+            <Flex direction={'column'} p={0} align={'start'}>
+              <Group spacing={35}>
+                <IconTrendingUp size={20}></IconTrendingUp>
+                <Text fw={700}>
+                  {offerTokenSymbol ? (
+                    formatBigDecimals(1) +
+                    ' ' +
+                    tokenSymbol +
+                    ' = ' +
+                    formatBigDecimals(rate) +
+                    ' ' +
+                    currencySymbol
+                  ) : (
+                    <Skeleton height={35} width={'100%'} />
+                  )}
+                </Text>
+              </Group>
+              <Space h={5}></Space>
+              <Group spacing={20}>
+                <IconCoins size={34} />
+                <Flex direction={'column'} p={0} align={'start'}>
+                  <Text fw={700}>
+                    {offerTokenSymbol ? (
+                      formatBigDecimals(tokenAmount) + ' ' + tokenSymbol
+                    ) : (
+                      <Skeleton height={35} width={'100%'} />
+                    )}
+                  </Text>
+                  <Text fs={'italic'} fw={500} color={'gray'} fz={'sm'}>
+                    {buyTokenSymbol ? (
+                      formatBigDecimals(currencyAmount) + ' ' + currencySymbol
+                    ) : (
+                      <Skeleton height={35} width={'100%'} />
+                    )}
+                  </Text>
+                </Flex>
+              </Group>
+            </Flex>
           </Flex>
         </Flex>
       ) : undefined}

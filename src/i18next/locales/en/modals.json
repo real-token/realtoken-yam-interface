@@ -47,7 +47,10 @@
     "summaryText3": "and for a total of",
     "deleted": "Offer deleted",
     "delete": "Delete offer",
-    "edit": "Edit offer"
+    "edit": "Edit offer",
+    "createOffer": "Create offer",
+    "createOffers": "Create offers",
+    "addOffer": "Add offer"
   },
   "buy": {
     "title": "Buy Offer",

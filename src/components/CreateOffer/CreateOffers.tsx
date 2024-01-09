@@ -123,7 +123,8 @@ const approveOffer = (
 const useStyles = createStyles((theme) => ({
   container: {
     display: 'flex',
-    width: '33%',
+    width: '600px',
+
     borderStyle: 'solid',
     borderColor: theme.colors.brand,
     borderWidth: '2px',
@@ -131,7 +132,7 @@ const useStyles = createStyles((theme) => ({
     padding: theme.spacing.md,
     height: '40vh',
 
-    [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
+    [`@media (max-width: 600px)`]: {
       width: '100%',
     },
   },
@@ -450,7 +451,7 @@ export const CreateOffer = () => {
 
   return (
     <Flex direction={'column'} align={'center'}>
-      <h3>{'Create offer(s)'}</h3>
+      <h3>{t('createOffer')}</h3>
       <Flex
         direction={'column'}
         className={classes.container}
@@ -491,7 +492,7 @@ export const CreateOffer = () => {
         onClick={() => createOffers()}
         loading={loading}
       >
-        {offers.length == 0
+        {offers.length <= 1
           ? t('buttonCreateOffer')
           : t('buttonCreateOfferWithNumber', { nbr: offers.length })}
       </Button>
