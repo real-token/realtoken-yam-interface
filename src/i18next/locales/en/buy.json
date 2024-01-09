@@ -17,7 +17,8 @@
     "actionDelete": "Delete",
     "buy": "Buy",
     "privateTexte": "private",
-    "onMarketSince": "On market since"
+    "onMarketSince": "On market since",
+    "notWhitelisted": "You are not whitelisted on following tokens:"
   },
   "grid": {
     "buy": "Buy",

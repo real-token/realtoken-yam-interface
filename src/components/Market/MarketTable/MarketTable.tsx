@@ -10,11 +10,12 @@ import {
   getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
+  ColumnFiltersState,
 } from '@tanstack/react-table';
 import { Table } from '../../Table';
 import { MarketSubRow } from '../MarketSubRow';
-import { useAtom } from 'jotai';
-import { nameFilterValueAtom } from 'src/states';
+import { useAtom, useAtomValue } from 'jotai';
+import { nameFilterValueAtom, showOnlyWhitelistedAtom } from 'src/states';
 import React from 'react';
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 import { OFFERS_TYPE, useRightTableColumn } from 'src/hooks/useRightTableColumns';
@@ -26,6 +27,20 @@ export const MarketTable: FC = () => {
 
   const { refreshOffers, offersIsLoading } = useRefreshOffers(false);
   const [nameFilterValue,setNamefilterValue] = useAtom(nameFilterValueAtom);
+
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
+  const showOnlyWhitelisted = useAtomValue(showOnlyWhitelistedAtom);
+  useEffect(() => {
+    if(showOnlyWhitelisted && !offersIsLoading){
+      setColumnFilters([{
+        id: 'whitelisted',
+        value: 'true'
+      }]);
+    }else{
+      setColumnFilters([])
+    }
+  }, [showOnlyWhitelisted, offersIsLoading])
   
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'offer-id', desc: false },
@@ -59,7 +74,11 @@ export const MarketTable: FC = () => {
       sorting: sorting, 
       pagination: pagination, 
       expanded: expanded, 
-      globalFilter: nameFilterValue, 
+      globalFilter: nameFilterValue,
+      columnFilters: columnFilters,
+      columnVisibility: {
+        whitelisted: false
+      }
     },
     //Trick to convert every value to string. Needed for comparison
     globalFilterFn: (row, columnId, filterValue) => {
@@ -70,6 +89,7 @@ export const MarketTable: FC = () => {
       })();
       return safeValue.toLowerCase().includes(filterValue.toLowerCase());
     },
+    onColumnFiltersChange: setColumnFilters,
     onSortingChange: setSorting,
     onGlobalFilterChange: setNamefilterValue,
     onPaginationChange: setPagination,

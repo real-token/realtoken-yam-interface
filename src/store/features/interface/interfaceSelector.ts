@@ -62,3 +62,9 @@ export const selectPricesIsLoading = (state: RootState): boolean => {
 export const selectPrices = (state: RootState): Price => {
   return state.interface.prices.prices;
 };
+
+export const selectPropertiesWhitelisted = (state: RootState): number[] | undefined => {
+  return state.interface.wlProperties.wlPropertiesId;
+}
+
+export const selectAskForOfferRefresh = (state: RootState): boolean => state.interface.offers.askForOfferRefresh;

@@ -89,10 +89,13 @@ export const fetchOffersTheGraph = (
   account: string,
   chainId: number,
   propertiesToken: PropertiesToken[],
+  wlProperties: number[],
   prices: Price
 ): Promise<Offer[]> => {
   return new Promise<Offer[]>(async (resolve, reject) => {
     try {
+
+      console.log('wlProperties: ', wlProperties)
 
       const graphNetworkPrefix = CHAINS[chainId as ChainsID].graphPrefixes.yam;
 
@@ -160,7 +163,6 @@ export const fetchOffersTheGraph = (
       })
 
       const offers: OfferGraphQl[] = offersRes.data[graphNetworkPrefix].offers;
-      console.log(offers)
 
       const accountRealtokenDuplicates: string[] = offers.map(val => (val.seller.address + '-' + val.offerToken.address));
       const accountBalanceId = [...new Set(accountRealtokenDuplicates)]; // remove duplicates
@@ -193,12 +195,14 @@ export const fetchOffersTheGraph = (
                     offer.seller.address + '-' + offer.offerToken.address
                 )!;
 
+              // console.log('wlProperties: ', wlProperties)
               const offerData: Offer = await parseOffer(
                 provider,
                 account,
                 offer,
                 accountUserRealtoken,
                 propertiesToken,
+                wlProperties,
                 prices
               );
 

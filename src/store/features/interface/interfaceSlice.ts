@@ -8,13 +8,15 @@ import { AllowedToken } from 'src/types/allowedTokens';
 import { OFFER_LOADING, Offer } from 'src/types/offer/Offer';
 import { Price } from 'src/types/price';
 import { fetchOffersTheGraph } from 'src/utils/offers/fetchOffers';
-import { getRealTokenClient } from 'src/utils/offers/getClientURL';
+import { apiClient } from 'src/utils/offers/getClientURL';
 import { getPrice } from 'src/utils/price';
 import { Price as P } from "src/utils/price";
+import { CHAINS, ChainsID } from '../../../constants';
 
 interface InterfaceInitialStateType {
   offers: {
     isLoading: boolean;
+    askForOfferRefresh: boolean;
     offers: Offer[];
   };
   privateOffers: Offer[];
@@ -24,7 +26,7 @@ interface InterfaceInitialStateType {
   };
   wlProperties: {
     isloading: boolean;
-    wlPropertiesId: number[]
+    wlPropertiesId: number[] | undefined
   };
   prices: {
     isLoading: boolean;
@@ -35,6 +37,7 @@ interface InterfaceInitialStateType {
 const interfaceInitialState: InterfaceInitialStateType = {
   offers: {
     isLoading: true,
+    askForOfferRefresh: false,
     offers: OFFER_LOADING,
   },
   privateOffers: [],
@@ -44,7 +47,7 @@ const interfaceInitialState: InterfaceInitialStateType = {
   },
   wlProperties: {
     isloading: true,
-    wlPropertiesId: []
+    wlPropertiesId: undefined
   },
   prices: {
     isLoading: true,
@@ -63,6 +66,7 @@ export const wlPropertiesIdChangedDispatchType = "interface/wlPropertiesIdChange
 export const wlPropertiesIdIsloadingChangedDispatchType = "interface/wlPropertiesIdIsloadingChanged";
 export const pricesIsLoadingChangedDispatchType = "interface/pricesIsLoadingChanged";
 export const pricesChangedDispatchType = "interface/pricesChanged";
+export const askForOfferRefreshChangedDispatchType = "interface/askForOffersRefresh";
 
 //ACTIONS
 export const offersChanged = createAction<Offer[]>(offersChangedDispatchType);
@@ -74,15 +78,16 @@ export const wlPropertiesIdChanged = createAction<number[]>(wlPropertiesIdChange
 export const wlPropertiesIdIsloading = createAction<boolean>(wlPropertiesIdIsloadingChangedDispatchType);
 export const pricesIsLoadingChanged = createAction<boolean>(pricesIsLoadingChangedDispatchType);
 export const pricesChanged = createAction<Price>(pricesChangedDispatchType);
+export const askForOfferRefreshChanged = createAction<boolean>(askForOfferRefreshChangedDispatchType);
 
 // THUNKS
 export function fetchOffers(
   provider: Web3Provider,
   account: string,
   chainId: number,
-  properties: PropertiesToken[]
+  properties: PropertiesToken[],
+  wlProperties: number[]
 ) {
-  // TODO: look for type
   return async function fetchOffersThunk(dispatch: AppDispatch, getState: () => RootState) {
     dispatch({ type: offersResetDispatchType });
     dispatch({ type: offersIsLoadingDispatchType, payload: true });
@@ -92,7 +97,7 @@ export function fetchOffers(
     let offersData;
     if (chainId == 1 || chainId == 100 || chainId == 5) {
       //offersData = await fetchOfferTheGraph(chainId,properties);
-      offersData = await fetchOffersTheGraph(provider,account,chainId, properties, prices);
+      offersData = await fetchOffersTheGraph(provider,account,chainId, properties, wlProperties, prices);
     }
     // else{
     //   offersData = await fetchOffersBasic(realTokenYamUpgradeable,provider,account,properties);
@@ -123,31 +128,38 @@ export function fetchProperties(chainId: number) {
 export function fetchAddressWlProperties(address: string, chainId: number){
   return async function fetchAddressWlPropertiesThunk(dispatch: AppDispatch){
     try{
-
-      const realTokenGraphClient = getRealTokenClient(chainId);
-
-      //TODO: finish query
-      const { data } = await realTokenGraphClient.query({query: gql`
-        query fetchWlToken{
-          account(id: "${address.toLowerCase()}") {
-            id
-            userIds {
-              attributeKeys
+     
+      const prefix = CHAINS[chainId as ChainsID].graphPrefixes.realtoken;
+      
+      const { data } = await apiClient.query({query: gql`
+        query getWlProperties{
+          ${prefix}{
+            account(id: "${address.toLowerCase()}") {
+              userIds{
+                userId
+                attributeKeys
+                trustedIntermediary{
+                  address 
+                  weight
+                }
+              }
             }
           }
         }
       `});
 
-      const wlTokenIds: string[] | undefined = data.account?.userIds?.[0]?.attributeKeys;
+      const userIds = data[prefix]?.account?.userIds;
 
-      // console.log(wlTokenIds)
-
-      if(wlTokenIds){
-        const numberWlTokenIds = wlTokenIds.map(str => parseInt(str));
-        dispatch({ type: wlPropertiesIdChangedDispatchType, payload: numberWlTokenIds });
-        dispatch({ type: wlPropertiesIdIsloadingChangedDispatchType, payload: false });
+      let wlTokenIds: string[] | undefined = undefined;
+      if(userIds){
+        wlTokenIds = userIds[0].attributeKeys;
       }
 
+      dispatch({ type: wlPropertiesIdChangedDispatchType, payload: wlTokenIds ? wlTokenIds.map(str => parseInt(str)) : []});
+      dispatch({ type: wlPropertiesIdIsloadingChangedDispatchType, payload: false });
+
+      console.log('FINISH TO FETCH WL ADDRESSE PROPERTIES')
+      
     } catch(err){
       console.log("Failed to fetch wl properties for connected address.", err)
     }
@@ -202,6 +214,9 @@ export const interfaceReducers = createReducer(
       })
       .addCase(pricesIsLoadingChanged, (state, action) => {
         state.prices.isLoading = action.payload;
+      })
+      .addCase(askForOfferRefreshChanged, (state, action) => {
+        state.offers.askForOfferRefresh = action.payload;
       });
   }
 );

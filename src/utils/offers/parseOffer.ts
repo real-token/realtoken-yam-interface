@@ -7,6 +7,7 @@ import { OFFER_TYPE } from 'src/types/offer/OfferType';
 import { Price } from 'src/types/price';
 import { Offer as OfferGraphQl } from '../../../gql/graphql';
 import { getBuyPriceInDollar, getPriceInDollar } from '../price';
+import { getNotWhitelistedTokens } from '../whitelist';
 
 // TOKEN TYPE
 // 1 = RealToken
@@ -27,6 +28,7 @@ export const parseOffer = (
     offer: OfferGraphQl,
     accountUserRealtoken: DataRealtokenType,
     propertiesToken: PropertiesToken[],
+    wlPropertiesId: number[],
     prices: Price
   ): Promise<Offer> => {
     return new Promise<Offer>(async (resolve, reject) => {
@@ -111,7 +113,8 @@ export const parseOffer = (
           priceDelta: undefined,
           officialYield: undefined,
           offerYield: undefined,
-          yieldDelta: undefined
+          yieldDelta: undefined,
+          accountWhitelisted: false
         };
 
         if(offer.id == "0x5fe1"){
@@ -137,6 +140,7 @@ export const parseOffer = (
         o.offerYield = getOfferYield(prices,o,propertyToken);
         o.yieldDelta = getYieldDelta(o);
         o.priceDelta = getPriceDelta(prices,o);
+        o.accountWhitelisted = getNotWhitelistedTokens(wlPropertiesId, o, propertiesToken).length == 0;
 
         // console.log(offer.availableAmount, balanceWallet, allowance)
         resolve(o);

@@ -104,6 +104,22 @@ export const idColumn: ColumnFn<OFFER_TYPE> = (t,span) => {
     }
 }
 
+export const whitelistedColumn: ColumnFn<OFFER_TYPE> = (t,span) => {
+  return{
+    id: 'whitelisted',
+    accessorFn: (offer) => offer.accountWhitelisted.toString(),
+    header: "Whitelisted",
+    enableColumnFilter: true,
+    filterFn: 'equals',
+    cell: ({ row }) => (
+      <Flex>
+        {/* {row.original.accountWhitelisted ? <Text>Yes</Text> : <Text>No</Text>} */}
+        {row.original.accountWhitelisted.toString()}
+      </Flex>
+    )
+  } as ColumnDef<Offer,OFFER_TYPE>
+}
+
 export const idPrivateColumn: ColumnFn<OFFER_TYPE> = (t,span) => {
   return{
       id: 'offer-id',

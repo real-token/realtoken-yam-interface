@@ -17,7 +17,8 @@
     "actionDelete": "Supprimer",
     "buy": "Acheter",
     "privateTexte": "privée",
-    "onMarketSince": "Date de création"
+    "onMarketSince": "Date de création",
+    "notWhitelisted": "Vous n'êtes pas sur la liste blanche pour les propriétés suivantes:"
   },
   "grid": {
     "buy": "Achat",

@@ -6,6 +6,7 @@ import { DEFAULT_WL_TOKEN, WLToken } from "src/types/WlToken";
 
 // MARKET
 export const isRefreshedAutoAtom = atomWithStorage<boolean>("isRefreshedAuto",false);
+export const showOnlyWhitelistedAtom = atom<boolean>(false);
 export const nameFilterValueAtom = atom<string>("");
 export const tableOfferTypeAtom = atom<OFFER_TYPE>(OFFER_TYPE.SELL)
 

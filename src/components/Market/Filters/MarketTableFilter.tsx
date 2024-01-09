@@ -1,14 +1,14 @@
-import { Flex, Text, TextInput } from "@mantine/core";
+import { Flex, Text, TextInput, Checkbox } from "@mantine/core";
 import { useAtom } from "jotai";
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
-import { nameFilterValueAtom } from "src/states";
-
+import { nameFilterValueAtom, showOnlyWhitelistedAtom } from "src/states";
 
 export const MarketTableFilter: FC = () => {
 
     const { t } = useTranslation('table', { keyPrefix: 'filters' });
     const [nameFilterValue,setNamefilterValue] = useAtom(nameFilterValueAtom);
+    const [showOnlyWhitelisted, setShowOnlyWhitelisted] = useAtom(showOnlyWhitelistedAtom);
     
     return(
         <Flex
@@ -25,6 +25,11 @@ export const MarketTableFilter: FC = () => {
                 placeholder={t('nameFilterPlaceholder')}
                 value={nameFilterValue}
                 onChange={(event) => setNamefilterValue(event.currentTarget.value)}
+            />
+            <Checkbox
+                label={t('showOnlyWhitelisted')}
+                checked={showOnlyWhitelisted}
+                onChange={(event) => setShowOnlyWhitelisted(event.currentTarget.checked)}
             />
         </Flex>
     )

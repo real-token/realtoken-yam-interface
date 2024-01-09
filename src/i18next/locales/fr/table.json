@@ -10,6 +10,7 @@
   },
   "filters": {
     "title": "Filtres",
-    "nameFilterPlaceholder": "Recherche"
+    "nameFilterPlaceholder": "Recherche",
+    "showOnlyWhitelisted": "Afficher uniquement les offers de propriétés pour lequelle vous êtes sur liste blanche"
   }
 }
