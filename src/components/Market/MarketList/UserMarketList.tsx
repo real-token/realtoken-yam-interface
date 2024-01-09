@@ -14,8 +14,6 @@ export const UserMarketList: FC = () => {
   const { offers, sellCount, buyCount, exchangeCount } =
     useFilterOffers(addressOffers);
 
-  console.log('USER MARKET LIST', JSON.stringify(offers, null, 4));
-
   return (
     <Flex direction={'column'} gap={'sm'} mt={10}>
       <MarketSort

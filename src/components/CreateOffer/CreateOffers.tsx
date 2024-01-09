@@ -470,8 +470,8 @@ export const CreateOffer = () => {
             />
           ))}
         </Flex>
-        {offers.length > 0 ? <Divider /> : undefined}
-        <CreateOfferPane isCreating={true} />
+        {false && offers.length > 0 ? <Divider /> : undefined}
+        {offers.length === 0 && <CreateOfferPane isCreating={true} />}
       </Flex>
       {errorNotification && (
         <Notification

@@ -124,9 +124,9 @@ export const CreateOfferPane: FC<CreateOfferPaneProps> = ({
         >
           {hovered ? (
             <div className={classes.offerActions}>
-              <ActionIcon color={'green'} onClick={() => modifyCreateOffer()}>
+              {/* <ActionIcon color={'green'} onClick={() => modifyCreateOffer()}>
                 <IconEdit size={16} aria-label={'Buy'} />
-              </ActionIcon>
+              </ActionIcon> */}
               <ActionIcon
                 color={'red'}
                 onClick={() => openConfirmDeleteModal()}
