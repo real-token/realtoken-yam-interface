@@ -1,5 +1,4 @@
 import { FC, useEffect, useState } from 'react';
-import { MantineSize } from '@mantine/core';
 import {
   ExpandedState,
   PaginationState,
@@ -17,7 +16,6 @@ import { MarketSubRow } from '../MarketSubRow';
 import { useAtom, useAtomValue } from 'jotai';
 import { nameFilterValueAtom, showOnlyWhitelistedAtom } from 'src/states';
 import React from 'react';
-import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 import { OFFERS_TYPE, useRightTableColumn } from 'src/hooks/useRightTableColumns';
 import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
 import { useRootStore } from '../../../zustandStore/store';

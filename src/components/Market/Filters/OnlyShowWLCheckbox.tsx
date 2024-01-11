@@ -15,7 +15,6 @@ export const ShowOnlyWlCheckbox: FC = () => {
             label={t('showOnlyWhitelisted')}
             checked={showOnlyWhitelisted}
             onChange={(event) => {
-                console.log('TESTTTTT')
                 setShowOnlyWhitelisted(event.currentTarget.checked)
             }}
         />
