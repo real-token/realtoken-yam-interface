@@ -1,11 +1,14 @@
-import { Flex, Text} from "@mantine/core";
+import { Flex, Text, TextInput } from "@mantine/core";
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { ShowOnlyWlCheckbox } from "./OnlyShowWLCheckbox";
+import { useAtom } from "jotai";
+import { nameFilterValueAtom } from "../../../states";
 
 export const MarketTableFilter: FC = () => {
 
     const { t } = useTranslation('table', { keyPrefix: 'filters' });
+    const [nameFilterValue,setNamefilterValue] = useAtom(nameFilterValueAtom);
     
     return(
         <Flex
@@ -18,6 +21,11 @@ export const MarketTableFilter: FC = () => {
             <Text size={'xl'}>
                 {t('title')}
             </Text>
+            <TextInput 
+                placeholder={t('nameFilterPlaceholder')}
+                value={nameFilterValue}
+                onChange={(event) => setNamefilterValue(event.currentTarget.value)}
+            />
             <ShowOnlyWlCheckbox />
         </Flex>
     )
