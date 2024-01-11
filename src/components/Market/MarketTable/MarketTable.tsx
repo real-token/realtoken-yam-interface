@@ -19,14 +19,17 @@ import { nameFilterValueAtom, showOnlyWhitelistedAtom } from 'src/states';
 import React from 'react';
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 import { OFFERS_TYPE, useRightTableColumn } from 'src/hooks/useRightTableColumns';
-import { selectPublicOffers } from 'src/store/features/interface/interfaceSelector';
-import { useAppSelector } from 'src/hooks/react-hooks';
 import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
+import { useRootStore } from '../../../zustandStore/store';
+import { selectPublicOffers } from '../../../zustandStore/selectors';
 
 export const MarketTable: FC = () => {
 
-  const { refreshOffers, offersIsLoading } = useRefreshOffers(false);
+  // const { refreshOffers, offersIsLoading } = useRefreshOffers();
   const [nameFilterValue,setNamefilterValue] = useAtom(nameFilterValueAtom);
+
+  const offersIsLoading = false;
+  const refreshOffers = () => {};
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
@@ -63,7 +66,7 @@ export const MarketTable: FC = () => {
     }
   },[nameFilterValue])
 
-  const publicOffers = useAppSelector(selectPublicOffers);
+  const publicOffers = useRootStore(selectPublicOffers);
   const { offers: data } = useTypedOffers(publicOffers);
   const columns = useRightTableColumn(OFFERS_TYPE.PUBLIC);
 
@@ -77,6 +80,7 @@ export const MarketTable: FC = () => {
       globalFilter: nameFilterValue,
       columnFilters: columnFilters,
       columnVisibility: {
+        offerId: false,
         whitelisted: false
       }
     },

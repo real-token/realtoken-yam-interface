@@ -22,8 +22,6 @@ import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { useActiveChain, useContract } from 'src/hooks';
 import coinBridgeTokenPermitSignature from 'src/hooks/coinBridgeTokenPermitSignature';
 import erc20PermitSignature from 'src/hooks/erc20PermitSignature';
-import { useAppSelector } from 'src/hooks/react-hooks';
-import { selectPublicOffers } from 'src/store/features/interface/interfaceSelector';
 import { Offer } from 'src/types/offer/Offer';
 import { getContract } from 'src/utils';
 import { cleanNumber } from 'src/utils/number';

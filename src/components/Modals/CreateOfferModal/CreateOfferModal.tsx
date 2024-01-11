@@ -13,10 +13,7 @@ import { NumberInput, truncDigits } from '../../NumberInput';
 import { cleanNumber } from 'src/utils/number';
 import { useWeb3React } from '@web3-react/core';
 import { ContextModalProps } from '@mantine/modals';
-import { useAppDispatch, useAppSelector } from 'src/hooks/react-hooks';
-import { createOfferAddedDispatchType } from 'src/store/features/createOffers/createOffersSlice';
 import { CreatedOffer } from 'src/types/offer/CreatedOffer';
-import { selectCreateOffers } from 'src/store/features/createOffers/createOffersSelector';
 import { useCreateOfferTokens } from 'src/hooks/useCreateOfferTokens';
 import { OfferTypeBadge } from 'src/components/Offer/OfferTypeBadge/OfferTypeBadge';
 import { OFFER_TYPE } from 'src/types/offer';
@@ -30,6 +27,7 @@ import { WalletERC20Balance } from 'src/components/WalletBalance/WalletERC20Bala
 import { Contract } from 'ethers';
 import { Web3Provider } from '@ethersproject/providers';
 import { MatchedOffers } from './MatchedOffers/MatchedOffers';
+import { useRootStore } from '../../../zustandStore/store';
 
 export const approveOffer = (
   createdOffer: CreatedOffer, 
@@ -161,13 +159,11 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
       },
     });
 
-    const realT = t("realtTokenType");
-    const others = t("otherTokenType");
-    const data = [{ value: realT, label: realT },{ value: others, label: others }];
+  const realT = t("realtTokenType");
+  const others = t("otherTokenType");
+  const data = [{ value: realT, label: realT },{ value: others, label: others }];
 
-  const dispatch = useAppDispatch();
-
-  const offers = useAppSelector(selectCreateOffers);
+  const [offers, addOffer] = useRootStore(state => [state.offersToCreate, state.addOffer]);
   const [exchangeType,setExchangeType] = useState<string|null>(null);
 
   const privateOffer = () => {
@@ -251,7 +247,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         JSON.stringify(createdOffer, null, 4)
       );
 
-      dispatch({ type: createOfferAddedDispatchType, payload: createdOffer });
+      addOffer(createdOffer);
 
       context.closeModal(id)
 

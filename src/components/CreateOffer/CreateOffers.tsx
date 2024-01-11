@@ -8,9 +8,6 @@ import { CoinBridgeToken, coinBridgeTokenABI, Erc20, Erc20ABI } from "src/abis";
 import { Chain, ContractsID, NOTIFICATIONS, NotificationsID } from "src/constants";
 import { useActiveChain, useContract } from "src/hooks";
 import { useRefreshOffers } from "src/hooks/offers/useRefreshOffers";
-import { useAppDispatch, useAppSelector } from "src/hooks/react-hooks";
-import { selectCreateOffers } from "src/store/features/createOffers/createOffersSelector";
-import { createOfferResetDispatchType } from "src/store/features/createOffers/createOffersSlice";
 import { CreatedOffer } from "src/types/offer/CreatedOffer";
 import { getContract } from "src/utils";
 import { CreateOfferPane } from "./CreateOfferPane";
@@ -21,6 +18,7 @@ import { Contract } from "ethers";
 import { useAtomValue } from "jotai";
 import { providerAtom } from "../../states";
 import classes from './CreateOffer.module.css';
+import { useRootStore } from "../../zustandStore/store";
 
 const approveOffer = (
   offerTokenAddress: string,
@@ -109,9 +107,9 @@ export const CreateOffer = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [notification, setNotification] = useState<boolean>(false);
 
-  const { refreshOffers } = useRefreshOffers(false);
+  const { refreshOffers } = useRefreshOffers();
 
-  const offers = useAppSelector(selectCreateOffers);
+  const [offers, resetOffers] = useRootStore(state => [state.offersToCreate, state.resetOffers]);
 
   const { t } = useTranslation('modals', { keyPrefix: 'sell' });
 
@@ -120,8 +118,6 @@ export const CreateOffer = () => {
   );
   const { account, provider } = useWeb3React();
   const activeChain = useActiveChain();
-
-  const dispatch = useAppDispatch();
 
   const connector = useAtomValue(providerAtom);
 
@@ -307,7 +303,7 @@ export const CreateOffer = () => {
           );
 
           if (status == 1) {
-            dispatch({ type: createOfferResetDispatchType });
+            resetOffers()
             refreshOffers();
           }
           setLoading(false);
@@ -390,7 +386,7 @@ export const CreateOffer = () => {
           );
 
           if (status == 1) {
-            dispatch({ type: createOfferResetDispatchType });
+            resetOffers()
             refreshOffers();
           }
           setLoading(false);

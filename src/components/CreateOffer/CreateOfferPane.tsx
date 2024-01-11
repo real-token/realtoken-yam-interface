@@ -3,14 +3,12 @@ import { openConfirmModal, useModals } from "@mantine/modals"
 import { IconEdit, IconPlus, IconTrash } from "@tabler/icons"
 import { FC, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { useAppDispatch } from "src/hooks/react-hooks"
 import { useCreatedOffer } from "src/hooks/useCreatedOffer"
-import { createOfferRemovedDispatchType } from "src/store/features/createOffers/createOffersSlice"
 import { CreatedOffer } from "src/types/offer/CreatedOffer"
-import { hexToRgb } from "src/utils/color"
 import { OfferTypeBadge } from "../Offer/OfferTypeBadge/OfferTypeBadge"
 import classes from "./CreateOfferPane.module.css"
 import clsx from "clsx"
+import { useRootStore } from "../../zustandStore/store"
 
 interface CreateOfferPaneProps{
     isCreating: boolean
@@ -20,7 +18,7 @@ interface CreateOfferPaneProps{
 export const CreateOfferPane: FC<CreateOfferPaneProps> = ({ isCreating, offer }) => {
 
     const [hovered,setHovered] = useState<boolean>(false);
-    const dispatch = useAppDispatch();
+    const [removeOffer] = useRootStore(state => [state.removeOffer])
 
     const modals = useModals();
 
@@ -33,7 +31,7 @@ export const CreateOfferPane: FC<CreateOfferPaneProps> = ({ isCreating, offer })
     }
 
     const deleteOffer = () => {
-        if(offer) dispatch({ type: createOfferRemovedDispatchType, payload: offer.offerId })
+        if(offer) removeOffer(offer.offerId)
     }
 
     const openConfirmDeleteModal = () => openConfirmModal({

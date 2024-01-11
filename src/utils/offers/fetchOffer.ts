@@ -11,7 +11,15 @@ import { Price } from "src/types/price";
 import { CHAINS, ChainsID } from "../../constants";
 import { apiClient } from "./getClientURL";
 
-export const fetchOffer = (provider: Web3Provider, account: string, chainId: number, offerId: number, propertiesToken: PropertiesToken[], prices: Price): Promise<Offer|undefined> => {
+export const fetchOffer = (
+  provider: Web3Provider, 
+  account: string, 
+  chainId: number, 
+  offerId: number, 
+  propertiesToken: PropertiesToken[],
+  wlProperties: number[],
+  prices: Price
+): Promise<Offer|undefined> => {
     return new Promise(async (resolve,reject) => {
 
       const graphNetworkPrefix = CHAINS[chainId as ChainsID].graphPrefixes.yam;
@@ -39,7 +47,7 @@ export const fetchOffer = (provider: Web3Provider, account: string, chainId: num
       const realtokenData: [DataRealtokenType] = await getBigDataGraphRealtoken(chainId, apiClient, batch);
 
       const accountUser = realtokenData[0];
-      const offer = await parseOffer(provider, account, offerFromTheGraph,accountUser,propertiesToken, prices);
+      const offer = await parseOffer(provider, account, offerFromTheGraph,accountUser, propertiesToken, wlProperties, prices);
 
       const hasPropertyToken = propertiesToken.find(propertyToken => (propertyToken.contractAddress == offer.buyerTokenAddress || propertyToken.contractAddress == offer.offerTokenAddress));
       offer.hasPropertyToken = hasPropertyToken ? true : false;

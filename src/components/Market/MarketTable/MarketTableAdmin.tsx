@@ -16,7 +16,6 @@ import {
 import { Table } from '../../Table';
 import { MarketSubRow } from '../MarketSubRow';
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
-import { selectPublicOffers,selectAllPublicOffers } from 'src/store/features/interface/interfaceSelector';
 import { adminActionsColumn, adminAmount,adminAllowance,adminWalletBlanace, adminHeader, buyerTokenNameColumn, buyShortTokenNameColumn, exchangeBuyShortTokenNameColumn, exchangeOfferShortTokenNameColumn, idColumn, offerDateColumn, offerShortTokenNameColumn, offerTokenNameColumn, priceColumn, priceDeltaColumn, sellerAddressColumn, yieldDeltaColumn } from 'src/hooks/column';
 import React from 'react';
 import { Offer, OFFER_TYPE } from 'src/types/offer';
@@ -27,11 +26,12 @@ import { tableOfferTypeAtom } from 'src/states';
 import { useRole } from 'src/hooks/useRole';
 import { USER_ROLE } from 'src/types/admin';
 import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
-import { useAppSelector } from 'src/hooks/react-hooks';
+import { selectAllPublicOffers, selectPublicOffers } from '../../../zustandStore/selectors';
+import { useRootStore } from '../../../zustandStore/store';
 
 export const MarketTableAdmin: FC = () => {
 
-  const { refreshOffers, offersIsLoading } = useRefreshOffers(false);
+  const { refreshOffers, offersIsLoading } = useRefreshOffers();
 
   const [globalFilter,setGlobalFilter] = useState<string>("");
   const [sorting, setSorting] = useState<SortingState>([
@@ -50,8 +50,7 @@ export const MarketTableAdmin: FC = () => {
   
   const { role } = useRole();
   
-  const publicOffers = useAppSelector(selectPublicOffers);
-  const allPublicOffers = useAppSelector(selectAllPublicOffers);
+  const [publicOffers, allPublicOffers] = useRootStore((state) => [selectPublicOffers(state), selectAllPublicOffers(state)]);
   const { offers } = useTypedOffers(role == USER_ROLE.ADMIN ? allPublicOffers : publicOffers);
 
   const modals = useModals();

@@ -1,11 +1,11 @@
 import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Flex, Text } from '@mantine/core';
-import { useRouter } from 'next/router';
 import { useRole } from 'src/hooks/useRole';
 import { isRole, USER_ROLE } from 'src/types/admin';
 import classes from './HeaderNav.module.css';
-import { Link } from '@realtoken/realt-commons';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 export const HeaderNav: FC = () => {
   const { t } = useTranslation('header');
@@ -22,7 +22,6 @@ export const HeaderNav: FC = () => {
           component={Link}
           href={'/'}
           c={router.pathname === '/' ? colorSelected : ''}
-          target={'_self'}
         >
           {t('titleCat1')}
         </Text>
@@ -32,7 +31,6 @@ export const HeaderNav: FC = () => {
           component={Link}
           href={'/my-offers'}
           c={router.pathname === '/my-offers' ? colorSelected : ''}
-          target={'_self'}
         >
           {t('titleCat2')}
         </Text>
@@ -43,7 +41,6 @@ export const HeaderNav: FC = () => {
             component={Link}
             href={'/admin'}
             c={router.pathname === '/admin' ? colorSelected : ''}
-            target={'_self'}
           >
             {t('titleAdmin')}
           </Text>

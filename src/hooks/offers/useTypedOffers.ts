@@ -1,9 +1,9 @@
 import { useAtomValue } from "jotai"
 import { useCallback, useMemo } from "react"
 import { tableOfferTypeAtom } from "src/states"
-import { selectOffersIsLoading } from "src/store/features/interface/interfaceSelector"
 import { Offer, OFFER_LOADING, OFFER_TYPE } from "src/types/offer"
-import { useAppSelector } from "../react-hooks"
+import { useRootStore } from "../../zustandStore/store"
+import { selectOffersIsLoading } from "../../zustandStore/selectors"
 
 type UseTypedOffers = (offers: Offer[]) => {
     offers: Offer[];
@@ -14,7 +14,7 @@ type UseTypedOffers = (offers: Offer[]) => {
 
 export const useTypedOffers: UseTypedOffers = (offers)  => {
 
-    const offersLoading = useAppSelector(selectOffersIsLoading);
+    const offersLoading = useRootStore(selectOffersIsLoading);
     const tableOfferType = useAtomValue(tableOfferTypeAtom);
 
     const getTypedOffers = useCallback((type: OFFER_TYPE): Offer[] => {

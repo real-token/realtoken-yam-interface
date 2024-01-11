@@ -1,12 +1,10 @@
-import { Web3Provider } from "@ethersproject/providers";
 import { useWeb3React } from "@web3-react/core";
-import { useCallback, useEffect, useState } from "react"
-import { selectPrices, selectPricesIsLoading } from "src/store/features/interface/interfaceSelector";
+import { useState } from "react"
 import { fetchOffer } from "src/utils/offers/fetchOffer";
 import { Offer, DEFAULT_OFFER } from '../../types/offer/Offer';
-import { useAppSelector } from "../react-hooks";
 import { usePropertiesToken } from '../usePropertiesToken';
 import { useQuery } from "react-query";
+import { useRootStore } from "../../zustandStore/store";
 
 type UseOfferProps  = (offerId: number) => {
     offer: Offer | undefined
@@ -23,14 +21,13 @@ export const useOffer: UseOfferProps = (offerId: number) => {
 
     const { propertiesToken, propertiesIsloading } = usePropertiesToken();
 
-    const pricesIsLoading = useAppSelector(selectPricesIsLoading);
-    const prices = useAppSelector(selectPrices)
+    const [prices, wlProperties] = useRootStore((state) => [state.prices, state.wlProperties])
 
     const { } = useQuery({
         queryKey: [offerId],
         // @ts-ignore
-        queryFn: () => fetchOffer(provider, account, chainId,offerId, propertiesToken,prices),
-        enabled: !!offerId && !!chainId && !!provider && !!account && !!propertiesToken && !propertiesIsloading && propertiesToken.length > 0,
+        queryFn: () => fetchOffer(provider, account, chainId,offerId, propertiesToken, wlProperties, prices),
+        enabled: !!offerId && !!chainId && !!provider && !!account && !!propertiesToken && !propertiesIsloading && propertiesToken.length > 0 && wlProperties !== undefined,
         onSuccess: (offer: Offer|undefined) => {
             if(offer){
                 setOffer(offer);

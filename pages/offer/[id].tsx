@@ -26,7 +26,7 @@ const ShowOfferPage: FC = () => {
     const { account } = useWeb3React();
     const { offer, isLoading, hasError } = useOffer(offerId);
 
-    const { refreshOffers } = useRefreshOffers(false);
+    const { refreshOffers } = useRefreshOffers();
 
     const { t } = useTranslation('modals', { keyPrefix: 'buy' });
     const { t: t2 } = useTranslation('modals');

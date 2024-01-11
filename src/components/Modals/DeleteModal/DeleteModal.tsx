@@ -37,7 +37,7 @@ export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
 
   const [isSubmitting, setSubmitting] = useState<boolean>(false);
   
-  const { refreshOffers } = useRefreshOffers(false);
+  const { refreshOffers } = useRefreshOffers();
 
   const activeChain = useActiveChain();
   const realTokenYamUpgradeable = useContract(

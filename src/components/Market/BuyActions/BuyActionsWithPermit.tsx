@@ -7,11 +7,10 @@ import { IconShoppingCart } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
 
 import { Offer } from 'src/types/offer/Offer';
-import { useSelector } from 'react-redux';
-import { selectOffersIsLoading, selectProperties, selectPropertiesWhitelisted } from 'src/store/features/interface/interfaceSelector';
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 import { PropertiesToken } from '../../../types';
 import { getNotWhitelistedTokens } from '../../../utils/whitelist';
+import { useRootStore } from '../../../zustandStore/store';
 
 type BuyActions = {
   buyOffer: Offer;
@@ -27,15 +26,20 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
   const { account } = useWeb3React();
   const modals = useModals();
 
-  const wlProperties = useSelector(selectPropertiesWhitelisted);
-  const properties = useSelector(selectProperties);
+  const [
+    wlProperties,
+    properties,
+    offersAreLoading
+  ] = useRootStore((state) => [
+    state.wlProperties,
+    state.properties,
+    state.offersAreLoading
+  ])
 
   const { t } = useTranslation('modals');
   const { t: t1 } = useTranslation('buy', { keyPrefix: 'table' });
 
-  const offersIsLoading = useSelector(selectOffersIsLoading);
-
-  const { refreshOffers } = useRefreshOffers(false);
+  const { refreshOffers } = useRefreshOffers();
 
   const onOpenBuyModal = useCallback(
     (offer: Offer) => {
@@ -75,7 +79,7 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
 
   return (
     <>
-      { !offersIsLoading ? 
+      { !offersAreLoading ? 
         (
           <Popover 
             opened={opened}

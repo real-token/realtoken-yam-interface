@@ -14,18 +14,18 @@ import {
 import { Table } from '../../Table';
 import { MarketSubRow } from '../MarketSubRow';
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
-import { selectAddressOffers } from 'src/store/features/interface/interfaceSelector';
-import { useSelector } from 'react-redux';
 import { MarketSort } from '../MarketSort/MarketSort';
 import { OFFERS_TYPE, useRightTableColumn } from 'src/hooks/useRightTableColumns';
 import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
 import { useTranslation } from 'react-i18next';
+import { selectAddressOffers } from '../../../zustandStore/selectors';
+import { useRootStore } from '../../../zustandStore/store';
 
 export const MarketTableUser: FC = () => {
 
   const { t } = useTranslation('table', { keyPrefix: 'filters' });
 
-  const { refreshOffers, offersIsLoading } = useRefreshOffers(false);
+  const { refreshOffers, offersIsLoading } = useRefreshOffers();
 
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'offer-id', desc: false },
@@ -36,7 +36,7 @@ export const MarketTableUser: FC = () => {
   });
   const [expanded, setExpanded] = useState<ExpandedState>({});
 
-  const addressOffers = useSelector(selectAddressOffers);
+  const addressOffers = useRootStore(selectAddressOffers);
   const { offers, sellCount, buyCount, exchangeCount } = useTypedOffers(addressOffers);
   const columns = useRightTableColumn(OFFERS_TYPE.ADDRESS);
 

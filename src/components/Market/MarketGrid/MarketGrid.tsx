@@ -6,16 +6,16 @@ import { useTranslation } from "react-i18next";
 import { Offer } from "src/types/offer";
 import { GridPane } from "./GridPane";
 import { useTypedOffers } from "src/hooks/offers/useTypedOffers";
-import { useAppSelector } from "src/hooks/react-hooks";
-import { selectPublicOffers } from "src/store/features/interface/interfaceSelector";
 import { nameFilterValueAtom } from "src/states";
 import { useAtomValue } from "jotai";
 import { useFilter } from "src/hooks/useFilter";
 import { SelectCreatable } from "../../CreatableSelect/CreatableSelect";
+import { useRootStore } from "../../../zustandStore/store";
+import { selectPublicOffers } from "../../../zustandStore/selectors";
 
 export const MarketGrid: FC = () => {
 
-    const publicOffers = useAppSelector(selectPublicOffers);
+    const publicOffers = useRootStore(state => selectPublicOffers(state));
     const { offers } = useTypedOffers(publicOffers);
 
     const [data,setData] = useState<string[]>([

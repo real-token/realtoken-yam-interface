@@ -17,8 +17,8 @@ import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { useActiveChain, useContract } from 'src/hooks';
 import { NumberInput } from '../../NumberInput';
 import { useWeb3React } from '@web3-react/core';
-import { selectPublicOffers } from 'src/store/features/interface/interfaceSelector';
-import { useAppSelector } from 'src/hooks/react-hooks';
+import { useRootStore } from '../../../zustandStore/store';
+import { selectPublicOffers } from '../../../zustandStore/selectors';
 
 type BuyModalProps = {
   offerId: string;
@@ -70,7 +70,7 @@ export const BuyModal: FC<ContextModalProps<BuyModalProps>> = ({
     ContractsID.realTokenYamUpgradeable
   );
 
-  const offers = useAppSelector(selectPublicOffers);
+  const offers = useRootStore(selectPublicOffers);
 
   const { t } = useTranslation('modals', { keyPrefix: 'buy' });
 

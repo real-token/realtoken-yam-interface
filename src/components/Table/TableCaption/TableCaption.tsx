@@ -58,7 +58,7 @@ export const TableCaption = <T,>({
 
   const { t } = useTranslation('table', { keyPrefix: 'caption' });
 
-  const { refreshOffers, offersIsLoading } = useRefreshOffers(false);
+  const { refreshOffers, offersIsLoading } = useRefreshOffers();
 
   return (
     <Group

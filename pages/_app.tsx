@@ -1,9 +1,7 @@
 import type { AppProps as NextAppProps } from 'next/app';
-import store from 'src/store/store';
 import 'src/i18next';
 import InitStoreProvider from 'src/providers/InitStoreProvider';
 import { Provider as JotaiProvider} from 'jotai';
-import { Provider as ReduxProvide } from 'react-redux';
 import { QueryClient, QueryClientProvider } from "react-query";
 import { 
   ChainSelectConfig, 
@@ -29,13 +27,15 @@ import { CHAINS, Chain as CustomChain, ChainsID } from '../src/constants';
 import { modals } from '../src/components';
 import { HeaderNav } from '../src/components/HeaderNav';
 import { modalStyles, theme } from '../src/theme';
+import { ReactQueryDevtools } from 'react-query/devtools'
 import '@mantine/core/styles.css';
 
 export const i18n = initLanguage(resources);
 
 const customChains: ChainSelectConfig<CustomChain> = {
   allowedChains: parseAllowedChain(ChainsID),
-  chainsConfig: CHAINS
+  chainsConfig: CHAINS,
+  defaultChainId: ChainsID.Gnosis
 }
 
 const showAllNetworks = true;
@@ -56,30 +56,36 @@ const libraryConnectors = getConnectors({
 
 type AppProps = NextAppProps;
 
-const queryClient = new QueryClient({});
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+    }
+  }
+});
 
 const App = ({ Component, pageProps }: AppProps) => {
   return (
     <QueryClientProvider client={queryClient}>
       <JotaiProvider>
         <RealtProvider value={{ env, showAllNetworks }}>
-          <ReduxProvide store={store}>
-            <Web3Providers libraryConnectors={libraryConnectors}>
-              <InitStoreProvider>
-                <MantineProviders modals={modals} modalStyles={modalStyles} theme={theme}>
-                    <LanguageInit i={i18n} />
-                    <Layout
-                      currentWebsite={Websites.YAM}
-                      chains={customChains}
-                      head={<Head title='Realtoken YAM (You And Me)' description='Realtoken YAM (You And Me)'/>}
-                      headerNav={<HeaderNav/>}
-                    >
-                      <Component {...pageProps} />
-                    </Layout>
-                </MantineProviders>
-              </InitStoreProvider>
-            </Web3Providers>
-          </ReduxProvide>
+          <Web3Providers libraryConnectors={libraryConnectors}>
+            <InitStoreProvider>
+              <MantineProviders modals={modals} modalStyles={modalStyles} theme={theme}>
+                  <LanguageInit i={i18n} />
+                  <Layout
+                    currentWebsite={Websites.YAM}
+                    chains={customChains}
+                    head={<Head title='Realtoken YAM (You And Me)' description='Realtoken YAM (You And Me)'/>}
+                    headerNav={<HeaderNav/>}
+                  >
+                    <ReactQueryDevtools/>
+                    <Component {...pageProps} />
+                  </Layout>
+              </MantineProviders>
+            </InitStoreProvider>
+          </Web3Providers>
         </RealtProvider>
       </JotaiProvider>
     </QueryClientProvider>

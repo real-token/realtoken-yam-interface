@@ -10,7 +10,7 @@ import { useRefreshOffers } from "./useRefreshOffers";
 export const useAutoRefresh = () => {
 
   const { provider, account } = useWeb3React();
-  const { refreshOffers } = useRefreshOffers(false);
+  const { refreshOffers } = useRefreshOffers();
 
   const interval = useInterval(() => refreshOffers(), 60000);
   const isAutoRefreshEnabled = useAtomValue(isRefreshedAutoAtom);
