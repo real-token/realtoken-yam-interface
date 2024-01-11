@@ -90,7 +90,12 @@ const ShowOfferPage: FC = () => {
                                 buttonClassName={classes.buyButton}
                             />
                         </Flex>
-                        <Flex direction={"column"} gap={"md"} align={"center"}>
+                        <Flex 
+                            direction={"column"} 
+                            gap={"md"} 
+                            align={"center"}
+                            w={"100%"}
+                        >
                             { propertyTokens && offer && propertyTokens.length > 0 ? 
                                 propertyTokens.map(token => <PropertyCard key={token.contractAddress} propertyToken={token} offer={offer}/>)
                                 :
