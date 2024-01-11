@@ -13,13 +13,15 @@ import { getNotWhitelistedTokens } from '../../../utils/whitelist';
 import { useRootStore } from '../../../zustandStore/store';
 
 type BuyActions = {
-  buyOffer: Offer;
+  buyOffer: Offer | undefined;
+  loading?: boolean;
   buttonClassName?: string;
   groupClassName?: string;
 };
 
 export const BuyActionsWithPermit: FC<BuyActions> = ({
   buyOffer,
+  loading,
   buttonClassName,
   groupClassName
 }) => {
@@ -34,7 +36,9 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
     state.wlProperties,
     state.properties,
     state.offersAreLoading
-  ])
+  ]);
+
+  const isLoading = loading || offersAreLoading;
 
   const { t } = useTranslation('modals');
   const { t: t1 } = useTranslation('buy', { keyPrefix: 'table' });
@@ -70,60 +74,59 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
   const [opened, setOpened] = useState(false);
   const [tokenNotWhitelisted, setTokenNotWhitelisted] = useState<PropertiesToken[]>([]);
   useEffect(() => {
-    if(!wlProperties) return;
+    if(!wlProperties || !buyOffer) return;
 
     let notWlTokens = getNotWhitelistedTokens(wlProperties, buyOffer, properties);
     setTokenNotWhitelisted(notWlTokens);
 
-  }, [wlProperties]);
+  }, [wlProperties, buyOffer, properties]);
 
   return (
     <>
-      { !offersAreLoading ? 
-        (
-          <Popover 
-            opened={opened}
-            onChange={setOpened}
-            width={200} 
-            position="top" 
-            withArrow
-            shadow="md"
-          >
-            <Popover.Target>
-              <Group 
-                justify={'center'}
-                className={groupClassName ?? ""}
-                onMouseEnter={() => { if(tokenNotWhitelisted.length > 0) setOpened(true) }}
-                onMouseLeave={() => { setOpened(false) }}
-              >
-                {!isAccountOffer ? (
-                  <ActionIcon
-                    color={'green'}
-                    onClick={() =>
-                      account ? onOpenBuyModal(buyOffer) : onOpenWalletModal()
-                    }
-                    className={buttonClassName ?? ""}
-                    disabled={tokenNotWhitelisted.length > 0}
-                  >
-                    <IconShoppingCart size={16} aria-label={'Buy'} />
-                  </ActionIcon>
-                ): (
-                  <ActionIcon disabled={true} variant={"transparent"}/>
-                )}
-              </Group> 
-            </Popover.Target>
-            <Popover.Dropdown>
-              <Flex>
-                <Text>{t1('notWhitelisted')}</Text>
-              </Flex>
-              <ul>
-                {tokenNotWhitelisted.length > 0 && tokenNotWhitelisted.map((token) => (
-                  <li><Text>{token.shortName}</Text></li>
-                ))}
-              </ul>
-            </Popover.Dropdown>
-          </Popover>
-        ): undefined }
+      { !isLoading ? (
+        <Popover 
+          opened={opened}
+          onChange={setOpened}
+          width={300} 
+          position="top" 
+          withArrow
+          shadow="md"
+        >
+          <Popover.Target>
+            <Group 
+              justify={'center'}
+              className={groupClassName ?? ""}
+              onMouseEnter={() => { if(tokenNotWhitelisted.length > 0) setOpened(true) }}
+              onMouseLeave={() => { setOpened(false) }}
+            >
+              {!isAccountOffer && buyOffer ? (
+                <ActionIcon
+                  color={'green'}
+                  onClick={() =>
+                    account ? onOpenBuyModal(buyOffer) : onOpenWalletModal()
+                  }
+                  className={buttonClassName ?? ""}
+                  disabled={tokenNotWhitelisted.length > 0 || !buyOffer}
+                >
+                  <IconShoppingCart size={16} aria-label={'Buy'} />
+                </ActionIcon>
+              ): (
+                <ActionIcon disabled={true} variant={"transparent"}/>
+              )}
+            </Group> 
+          </Popover.Target>
+          <Popover.Dropdown>
+            <Flex>
+              <Text>{t1('notWhitelisted')}</Text>
+            </Flex>
+            <ul>
+              {tokenNotWhitelisted.length > 0 && tokenNotWhitelisted.map((token) => (
+                <li><Text>{token.shortName}</Text></li>
+              ))}
+            </ul>
+          </Popover.Dropdown>
+        </Popover>
+      ): undefined }
     </>
   );
 };

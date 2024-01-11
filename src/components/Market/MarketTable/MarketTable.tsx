@@ -78,7 +78,6 @@ export const MarketTable: FC = () => {
       globalFilter: nameFilterValue,
       columnFilters: columnFilters,
       columnVisibility: {
-        offerId: false,
         whitelisted: false
       }
     },

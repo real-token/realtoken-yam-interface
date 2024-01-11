@@ -1,20 +1,17 @@
-import { Flex, Text, Skeleton, ActionIcon, Title, Divider } from "@mantine/core";
-import { IconError404, IconExclamationCircle, IconShoppingCart } from "@tabler/icons";
+import { Flex, Text, Skeleton, Divider } from "@mantine/core";
+import { IconError404, IconExclamationCircle } from "@tabler/icons";
 import { useRouter } from "next/router"
-import { FC, useCallback, useEffect, useMemo, useState } from "react"
+import { FC, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next";
 import { OfferText } from "src/components/Offer/OfferText";
 import { useOffer } from "src/hooks/offers/useOffer";
 import { usePropertiesToken } from "src/hooks/usePropertiesToken";
 import { PropertiesToken } from "src/types";
-import { useModals } from '@mantine/modals';
-import { useWeb3React } from "@web3-react/core";
-import { Offer } from "src/types/offer";
-import { useRefreshOffers } from "src/hooks/offers/useRefreshOffers";
 import BigNumber from "bignumber.js";
 import { PropertyCard } from "src/components/Offer/PropertyCard/PropertyCard";
 import { ConnectedProvider } from "src/providers/ConnectProvider";
 import classes from './Offer.module.css';
+import { BuyActionsWithPermit } from "../../src/components/Market/BuyActions";
 
 const ShowOfferPage: FC = () => {
 
@@ -23,15 +20,9 @@ const ShowOfferPage: FC = () => {
 
     const offerId: number = parseInt(id as string);
 
-    const { account } = useWeb3React();
     const { offer, isLoading, hasError } = useOffer(offerId);
 
-    const { refreshOffers } = useRefreshOffers();
-
     const { t } = useTranslation('modals', { keyPrefix: 'buy' });
-    const { t: t2 } = useTranslation('modals');
-
-    const modals = useModals();
 
     const [propertyTokens,setPropertyTokens] = useState<PropertiesToken[]>([]);
     const { getPropertyToken, propertiesIsloading } = usePropertiesToken();
@@ -50,30 +41,6 @@ const ShowOfferPage: FC = () => {
         }
 
     },[getPropertyToken, offer, propertiesIsloading, propertyTokens.length]);
-
-    const onOpenWalletModal = useCallback(() => {
-        modals.openContextModal('wallet', {
-          title: <Title order={3}>{t2('wallet.title')}</Title>,
-          innerProps: {},
-        });
-      }, [modals, t2]);
-    
-    const isAccountOffer: boolean = useMemo(() => {
-    if(!offer || !account) return false;
-        return offer.sellerAddress == account.toLowerCase()
-    },[offer, account])
-
-    const onOpenBuyModal = useCallback(
-        (offer: Offer) => {
-          modals.openContextModal('buyPermit', {
-            title: <Title order={3}>{t2('buy.title')}</Title>,
-            size: "lg",
-            innerProps: {
-              offer: offer,
-              triggerTableRefresh: refreshOffers,
-            },
-        });
-    },[modals, refreshOffers, t2]);
 
     return(
         <ConnectedProvider>
@@ -117,25 +84,18 @@ const ShowOfferPage: FC = () => {
                                 </Flex>
                             </Flex>
                             <Divider />
-                            <ActionIcon
-                                color={'green'}
-                                disabled={isAccountOffer || isLoading}
-                                className={classes.buyButton}
-                                onClick={() => account && offer ? onOpenBuyModal(offer) : onOpenWalletModal() }
-                            >
-                                { isAccountOffer ? 
-                                    <Text fz={"sm"} style={{ textAlign: 'center' }} p={6}>{"Cannot buy your own offer"}</Text> 
-                                    : 
-                                    <IconShoppingCart size={24} aria-label={'Buy'} /> 
-                                }
-                            </ActionIcon>
+                            <BuyActionsWithPermit
+                                buyOffer={offer}
+                                loading={isLoading}
+                                buttonClassName={classes.buyButton}
+                            />
                         </Flex>
                         <Flex direction={"column"} gap={"md"} align={"center"}>
-                        { propertyTokens && offer && propertyTokens.length > 0 ? 
-                            propertyTokens.map(token => <PropertyCard key={token.contractAddress} propertyToken={token} offer={offer}/>)
-                            :
-                            undefined
-                        }
+                            { propertyTokens && offer && propertyTokens.length > 0 ? 
+                                propertyTokens.map(token => <PropertyCard key={token.contractAddress} propertyToken={token} offer={offer}/>)
+                                :
+                                undefined
+                            }
                         </Flex>
                     </Flex>
                 )

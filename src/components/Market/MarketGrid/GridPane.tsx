@@ -8,6 +8,7 @@ import { Offer } from "src/types/offer/Offer"
 import { BuyActionsWithPermit } from "../BuyActions";
 import { ShowOfferAction } from "../ShowOfferAction/ShowOfferAction";
 import classes from './GridPane.module.css';
+import { useRootStore } from "../../../zustandStore/store";
 
 interface GridPaneProps{
     offer: Offer
@@ -15,6 +16,7 @@ interface GridPaneProps{
 export const GridPane: FC<GridPaneProps> = ({ offer }) => {
 
     const { t } = useTranslation('buy', { keyPrefix: 'table' });
+    const [offersAreLoading] = useRootStore((state) => [state.offersAreLoading]);
 
     return(
         <>
@@ -60,6 +62,7 @@ export const GridPane: FC<GridPaneProps> = ({ offer }) => {
                     <Flex gap={"sm"}>
                         <BuyActionsWithPermit
                             buyOffer={offer}
+                            loading={offersAreLoading}
                             groupClassName={classes.buyButtonGroup}
                             buttonClassName={classes.buyButton}
                         />
