@@ -310,15 +310,6 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
     }
   }
 
-  const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
-    ({ label, value, ...others }: ItemProps, ref) => (
-      <Flex ref={ref} {...others} key={value} gap={"sx"} direction={"column"}>
-          <Text fz={"sm"} fw={700}>{label}</Text>
-          <Text fz={"xs"} fs={"italic"}>{value}</Text>
-      </Flex>
-    )
-  );
-
   const [priceInDollar,setPriceInDollar] = useState<number|undefined|string>(undefined);
 
   // COMPONENTS
@@ -375,7 +366,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
           onChange={(value) => setPriceInDollar(value)}
           decimalScale={6}
           required={true}
-          disabled={false}
+          disabled={values.buyerTokenAddress == ''}
           min={0.000001}
           width={width ? width : "100%"}
           max={undefined}
@@ -516,6 +507,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
             {...getInputProps("price")}
             style={{ width: "100%" }}
             onBlur={() => setPInDollar()}
+            disabled={values.buyerTokenAddress == ''}
           />
           { tokenSymbol && price ? <Text fz={"sm"} fs={"italic"}>{t("withPrice", { buyerTokenSymbol: tokenSymbol, price: price.toString(), currency: "$" })}</Text> : undefined }
         </Flex>
