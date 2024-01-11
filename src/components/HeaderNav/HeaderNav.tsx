@@ -9,7 +9,8 @@ import Link from 'next/link';
 
 export const HeaderNav: FC = () => {
   const { t } = useTranslation('header');
-  const router = useRouter()
+  const router = useRouter();
+
   const colorSelected = '#cfaa70';
 
   const { role } = useRole();
@@ -19,18 +20,18 @@ export const HeaderNav: FC = () => {
         <Text
           size={'xl'}
           fw={700}
-          component={Link}
-          href={'/'}
+          className={classes.link}
           c={router.pathname === '/' ? colorSelected : ''}
+          onClick={() => router.push('/')}
         >
           {t('titleCat1')}
         </Text>
         <Text
           size={'xl'}
           fw={700}
-          component={Link}
-          href={'/my-offers'}
+          className={classes.link}
           c={router.pathname === '/my-offers' ? colorSelected : ''}
+          onClick={() => router.push('/my-offers')}
         >
           {t('titleCat2')}
         </Text>
@@ -38,9 +39,9 @@ export const HeaderNav: FC = () => {
           <Text
             size={'xl'}
             fw={700}
-            component={Link}
-            href={'/admin'}
+            className={classes.link}
             c={router.pathname === '/admin' ? colorSelected : ''}
+            onClick={() => router.push('/admin')}
           >
             {t('titleAdmin')}
           </Text>
