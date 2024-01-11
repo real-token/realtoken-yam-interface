@@ -6,7 +6,7 @@ export const modalStyles: ModalProps['styles'] = {
     padding: '1rem',
     width: "auto",
     maxWidth: "700px",
-    // maxHeight: 'calc(100vh - (3vh * 2))',
+    maxHeight: 'calc(100vh - (3vh * 2))',
     overflowY: 'auto'
   },
   root: { zIndex: 99 },

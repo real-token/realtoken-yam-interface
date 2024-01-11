@@ -333,7 +333,6 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         required={true}
         style={{ width : "100%" }}
         nothingFoundMessage={"No property found"}
-        component={SelectItem}
         data={offerTokenSelectData}
         {...getInputProps('offerTokenAddress')}
       />,
@@ -344,7 +343,6 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         searchable={true}
         style={{ width : "100%" }}
         nothingFoundMessage={"No property found"}
-        component={SelectItem}
         data={buyerTokenSelectData}
         required={true}
         {...getInputProps('buyerTokenAddress')}

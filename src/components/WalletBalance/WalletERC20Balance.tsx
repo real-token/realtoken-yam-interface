@@ -12,7 +12,7 @@ interface Param{
 const BalanceContainer = styled('div')<Param>`
   display: flex;
   flex-direction: column;
-  row-gap: ${({ $isLoading }) => $isLoading ? 5 : 0 };
+  row-gap: ${({ $isLoading }) => $isLoading ? '3px' : '3px' };
   width: 100%;
 `;
 
