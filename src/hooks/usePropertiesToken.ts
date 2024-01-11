@@ -13,6 +13,7 @@ export const usePropertiesToken = (): usePropertiesTokenReturn => {
     const [propertiesToken, propertiesAreloading ] = useRootStore((state) => [state.properties, state.propertiesAreLoading])
 
     const getPropertyToken = (address: string): PropertiesToken | undefined => {
+        if(!address) return undefined
         return propertiesToken.find(propertyToken => propertyToken.contractAddress.toLocaleLowerCase() == address.toLowerCase())
     }
 
