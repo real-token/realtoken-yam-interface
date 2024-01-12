@@ -12,42 +12,34 @@ const erc20PermitSignature = async (
   library: Web3Provider
 ) => {
   try {
-    // const transactionDeadline = Date.now() + 3600; // permit valable during 1h
-
     let nonce;
-    if(contract.address.toLowerCase() == gnosisAllowedTokens[2].contractAddress.toLowerCase()){
+    if (contract.address.toLowerCase() == gnosisAllowedTokens[2].contractAddress.toLowerCase()) {
       nonce = await contract._nonces(owner);
-    }else{
+    } else {
       nonce = await contract.nonces(owner);
     }
 
-    console.log(contract.address)
-    
     let version = undefined;
-    try{
+    try {
       version = await contract.version();
-    }catch(e){
+    } catch (e) {
       console.log('No version function in contract.', e)
+      try {
+        version = await contract.VERSION();
+      } catch (e) {
+        console.log('No VERSION function in contract.', e)
+        try {
+          version = await contract.EIP712_REVISION();
+        } catch (e) {
+          console.log('No EIP712_REVISION function in contract.', e)
+          throw Error("Cannot get permit version from contract.");
+        }
+      }
     }
 
-    let VERSION = undefined;
-    try{
-      VERSION = await contract.VERSION();
-    }catch(e){
-      console.log('No VERSION function in contract.', e)
-    }
-
-    let revision = undefined;
-    try{
-      revision = await contract.EIP712_REVISION();
-    }catch(e){
-      console.log('No EIP712_REVISION function in contract.', e)
-    }
-
-    if(!version && !VERSION && !revision) throw Error("Cannot get permit version from contract.");
 
     const contractName = await contract.name();
-    const rightVersion = version ?? VERSION ?? revision;
+    const rightVersion = version;
 
     const EIP712Domain = [
       { name: 'name', type: 'string' },
@@ -61,7 +53,6 @@ const erc20PermitSignature = async (
       chainId: library.network.chainId,
       verifyingContract: contract.address,
     };
-    console.log(domain)
     const Permit = [
       { name: 'owner', type: 'address' },
       { name: 'spender', type: 'address' },
@@ -78,7 +69,6 @@ const erc20PermitSignature = async (
       deadline: transactionDeadline,
     };
 
-    console.log(message)
 
     // eslint-disable-next-line object-shorthand
     const data = JSON.stringify({
@@ -100,7 +90,7 @@ const erc20PermitSignature = async (
       v,
     };
   } catch (e) {
-    console.log('Error getting permit signature: ', e);
+    console.error('Error getting permit signature: ', e);
     return e;
   }
 };
