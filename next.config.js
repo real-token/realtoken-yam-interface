@@ -6,6 +6,7 @@ const nextConfig = {
   experimental: {
     outputStandalone: true,
   },
+  
 };
 
 

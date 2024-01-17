@@ -39,7 +39,7 @@ import {
   formatUsd,
 } from 'src/utils/format';
 
-const EMPHASIS_RATE = 0.2;
+const EMPHASIS_RATE = 0.21;
 
 const descriptionsList = [
   {

@@ -7,12 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "export": "next build && next export && node ./scripts/add-version-meta.js",
+    "export": "next build && next export && node ./scripts/add-version-meta.js && node ./scripts/add-nocache-meta.js",
     "graphql": "yarn graphclient build",
     "yalc:add": "yalc add @realtoken/realt-commons",
     "yalc:remove": "yalc remove @realtoken/realt-commons",
     "release": "release-it",
-    "postversion": "node ./scripts/add-version-meta.js"
+    "postversion": "node ./scripts/add-version-meta.js && node ./scripts/add-nocache-meta.js"
   },
   "dependencies": {
     "@apollo/client": "^3.7.3",
