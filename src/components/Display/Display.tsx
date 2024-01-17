@@ -32,8 +32,9 @@ const Display: FC = () => {
   const offerToBuy = useAppSelector(selectBuyOffer);
   const [choosenDisplay, setChoosenDisplay] = useAtom(displayChoosedAtom);
   const displayRef = useRef<HTMLDivElement | null>(null);
+  setChoosenDisplay(Displays.LIST);
 
-  console.log('DISPLAY', JSON.stringify(offerToBuy, null, 4));
+  //console.log('DISPLAY', JSON.stringify(offerToBuy, null, 4));
 
   const availableDisplays = useMemo(() => {
     return new Map<Displays, Display>([
@@ -45,22 +46,22 @@ const Display: FC = () => {
           component: <PublicMarketList key={'list'} />,
         },
       ],
-      [
-        Displays.TABLE,
-        {
-          display: Displays.TABLE,
-          title: 'Table',
-          component: <MarketTable key={'table'} />,
-        },
-      ],
-      [
-        Displays.GRID,
-        {
-          display: Displays.GRID,
-          title: 'Grid',
-          component: <MarketGrid key={'grid'} />,
-        },
-      ],
+      // [
+      //   Displays.TABLE,
+      //   {
+      //     display: Displays.TABLE,
+      //     title: 'Table',
+      //     component: <MarketTable key={'table'} />,
+      //   },
+      // ],
+      // [
+      //   Displays.GRID,
+      //   {
+      //     display: Displays.GRID,
+      //     title: 'Grid',
+      //     component: <MarketGrid key={'grid'} />,
+      //   },
+      // ],
     ]);
   }, []);
 
@@ -70,7 +71,7 @@ const Display: FC = () => {
     }
 
     return [...availableDisplays.values()].find(
-      (display) => display.display == choosenDisplay
+      (display) => display.display == Displays.LIST //choosenDisplay
     );
   };
 
