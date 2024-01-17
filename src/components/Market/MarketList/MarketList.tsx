@@ -151,6 +151,7 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
               data={[
                 columnLabels[Columns.requesterName],
                 columnLabels[Columns.requestedPrice],
+                columnLabels[Columns.priceDelta],
                 columnLabels[Columns.createdAt],
                 columnLabels[Columns.requestedAmount],
               ]}
@@ -172,6 +173,7 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
               data={[
                 columnLabels[Columns.requesterName],
                 columnLabels[Columns.requestedPrice],
+                columnLabels[Columns.priceDelta],
                 columnLabels[Columns.createdAt],
                 columnLabels[Columns.requestedAmount],
               ]}
@@ -179,7 +181,7 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
           </Group>
         )}
         {screenSize === SCREEN_SIZE.Large && (
-          <Grid columns={20}>
+          <Grid columns={23}>
             <Grid.Col xl={4} lg={5}>
               <TextInput
                 placeholder={tList('search')}

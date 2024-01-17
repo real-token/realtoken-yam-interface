@@ -5,7 +5,8 @@
     "requestedPrice": "Price (USD)",
     "requestedAmount": "Quantity",
     "createdAt": "Created at",
-    "deleted": "Offer deleted"
+    "deleted": "Offer deleted",
+    "priceDelta": "Price Delta"
   },
 
   "success": {

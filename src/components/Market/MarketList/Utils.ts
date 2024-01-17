@@ -103,6 +103,7 @@ export function mapColumnLabels(
   return {
     requesterName: t('requesterName'),
     requestedPrice: t('requestedPrice'),
+    priceDelta: t('priceDelta'),
     createdAt: t('createdAt'),
     requestedAmount: t('requestedAmount'),
   };

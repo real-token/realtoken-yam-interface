@@ -5,6 +5,7 @@
     "requestedPrice": "Precio (USD)",
     "requestedAmount": "Cantidad",
     "createdAt": "Creada el",
-    "deleted": "Eliminado"
+    "deleted": "Eliminado",
+    "priceDelta": "Delta de Precio"
   }
 }

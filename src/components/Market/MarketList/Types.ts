@@ -78,6 +78,7 @@ export enum ROW_HEIGHT {
 export enum Columns {
   requesterName = 'requesterName',
   requestedPrice = 'requestedPrice',
+  priceDelta = 'priceDelta',
   createdAt = 'createdAt',
   requestedAmount = 'requestedAmount',
 }

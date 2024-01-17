@@ -30,6 +30,7 @@ import { TokensTradedElement } from './TokensTradedElement';
 import { OfferAmount } from './widgets/OfferAmount';
 import { OfferDate } from './widgets/OfferDate';
 import { OfferPrice } from './widgets/OfferPrice';
+import { OfferPriceDelta } from './widgets/OfferPriceDelta';
 import { OfferSeller } from './widgets/OfferSeller';
 
 interface ItemElementProps {
@@ -94,7 +95,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
       style={lastCardStyle}
       onClick={handleClickEvent}
     >
-      <Grid columns={20}>
+      <Grid columns={isLarge ? 23 : 25}>
         <Grid.Col xl={4} lg={5}>
           <OfferBadgeAbsolute
             offerType={offer.type}
@@ -193,6 +194,26 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
           }}
         >
           {!isMobile && (
+            <OfferPriceDelta
+              offer={offer}
+              label={columnLabels[Columns.requestedPrice]}
+              isLarge={isLarge}
+              textAlignRight={false}
+            ></OfferPriceDelta>
+          )}
+        </Grid.Col>
+        <Grid.Col
+          xl={3}
+          lg={3}
+          md={5}
+          sm={5}
+          xs={5}
+          style={{
+            paddingTop: isMobile ? 0 : undefined,
+            paddingBottom: isMobile ? 0 : undefined,
+          }}
+        >
+          {!isMobile && (
             <OfferDate
               offer={offer}
               label={columnLabels[Columns.createdAt]}
@@ -204,8 +225,8 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
         <Grid.Col
           xl={3}
           lg={3}
-          md={5}
-          sm={5}
+          md={4}
+          sm={4}
           xs={5}
           style={{
             paddingTop: isMobile ? 0 : undefined,
@@ -232,12 +253,12 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
             <Stack>
               <Group position={'apart'}>
                 {
-                  <OfferSeller
+                  <OfferPriceDelta
                     offer={offer}
-                    label={columnLabels[Columns.requesterName]}
+                    label={columnLabels[Columns.priceDelta]}
                     isLarge={isLarge}
                     textAlignRight={true}
-                  ></OfferSeller>
+                  ></OfferPriceDelta>
                 }
 
                 <OfferDate

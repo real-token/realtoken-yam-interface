@@ -1,8 +1,6 @@
 import React, { FC } from 'react';
-import { useTranslation } from 'react-i18next';
 
-import { Group, Skeleton, Stack, Text, Tooltip } from '@mantine/core';
-import { IconInfoCircle } from '@tabler/icons';
+import { Group, Skeleton, Stack, Text } from '@mantine/core';
 
 import { BigNumber } from 'bignumber.js';
 
@@ -20,13 +18,12 @@ interface OfferPriceProps {
   isLarge: boolean;
   textAlignRight: boolean;
 }
-export const OfferPrice: FC<OfferPriceProps> = ({
+export const OfferPriceDelta: FC<OfferPriceProps> = ({
   offer,
   label,
   isLarge,
   textAlignRight,
 }) => {
-  const { t } = useTranslation('list');
   const prices: Price = useAppSelector(selectPrices);
   const priceDelta = calculatePriceDelta(offer, prices);
 
@@ -56,28 +53,22 @@ export const OfferPrice: FC<OfferPriceProps> = ({
             fz={isLarge ? 'md' : 'md'}
             ta={isLarge ? 'right' : 'left'}
             fw={500}
+            color={priceDeltaColor}
           >
-            {formatUsd(offer.requestedPrice ?? offer.initialSellingPrice ?? 0)}
+            {(priceDelta > 0 ? '+' : '') + formatPercent(priceDelta)}
           </Text>
-          <Tooltip
-            label={
-              t('initialPrice') +
-              ' ' +
-              formatUsd(offer.initialSellingPrice ?? 0)
-            }
+          <Text
+            fz={isLarge ? 'xs' : 'xs'}
+            color={'dimmed'}
+            ta={isLarge ? 'right' : 'left'}
           >
-            <Group position={isLarge ? 'right' : 'left'} spacing={2}>
-              <IconInfoCircle size={14} />
-              <Text
-                fz={isLarge ? 'xs' : 'xs'}
-                color={'dimmed'}
-                ta={isLarge ? 'right' : 'left'}
-              >
-                {formatUsd(offer.initialSellingPrice ?? 0)}
-                {/* {(priceDelta > 0 ? '+' : '') + formatPercent(priceDelta)} */}
-              </Text>
-            </Group>
-          </Tooltip>
+            {(priceDelta > 0 ? '+' : '-') +
+              formatUsd(
+                Math.abs(
+                  (offer.requestedPrice ?? 0) - (offer.initialSellingPrice ?? 0)
+                )
+              )}
+          </Text>
         </div>
       ) : (
         <Group position={isLarge ? 'right' : 'left'}>
