@@ -43,7 +43,6 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
   const theme = useMantineTheme();
   const listOfferType = useAtomValue(tableOfferTypeAtom);
 
-  const [sortedColumn, setSortedColumn] = useState('');
   const { width } = useViewportSize();
   const screenSize = getScreenSize(width);
   const rowHeight = getRowHeight(screenSize);
@@ -56,6 +55,10 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
     keyPrefix: 'list',
   });
   const columnLabels = mapColumnLabels(tOfferMode);
+  const [sortedColumn, setSortedColumn] = useState(
+    columnLabels[Columns.priceDelta]
+  );
+
   const [filterText, setFilterText] = useState('');
   const [sortedOffers, setSortedOffers] = useState(
     offersData.filter(filterByText(filterText))
@@ -75,13 +78,6 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
     setFilterText(event.target.value);
   };
 
-  useEffect(() => {
-    const offersData: OfferData[] = offers
-      .map((offer) => mapOfferToOfferData(offer, listOfferType, allowedTokens))
-      .sort(sortColumn(Columns.createdAt, SortDirection.Desc));
-    setSortedOffers(offersData.filter(filterByText(filterText)));
-  }, [offers, filterText, allowedTokens, listOfferType]);
-
   const renderItem = ({ index }: { index: number }) => {
     const offer = sortedOffers[index];
     const isLastItem = index === sortedOffers.length - 1;
@@ -94,7 +90,7 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
 
   const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedColumn = event.target.value;
-
+    console.log('SORT', selectedColumn);
     // Update the value of sortedColumn
     setSortedColumn(selectedColumn);
 
@@ -115,6 +111,14 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
 
   const isMediumOrSmall =
     screenSize === SCREEN_SIZE.Medium || screenSize === SCREEN_SIZE.Small;
+
+  useEffect(() => {
+    console.log('SORTED COL', sortedColumn);
+    const offersData: OfferData[] = offers
+      .map((offer) => mapOfferToOfferData(offer, listOfferType, allowedTokens))
+      .sort(sortColumn(Columns.priceDelta, SortDirection.Asc));
+    setSortedOffers(offersData.filter(filterByText(filterText)));
+  }, [offers, filterText, allowedTokens, listOfferType]);
 
   return (
     <Container
