@@ -76,7 +76,7 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
   useEffect(() => {
     if(!wlProperties || !buyOffer) return;
 
-    let notWlTokens = getNotWhitelistedTokens(wlProperties, buyOffer, properties);
+    const notWlTokens = getNotWhitelistedTokens(wlProperties, buyOffer, properties);
     setTokenNotWhitelisted(notWlTokens);
 
   }, [wlProperties, buyOffer, properties]);
@@ -120,8 +120,8 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
               <Text>{t1('notWhitelisted')}</Text>
             </Flex>
             <ul>
-              {tokenNotWhitelisted.length > 0 && tokenNotWhitelisted.map((token) => (
-                <li><Text>{token.shortName}</Text></li>
+              {tokenNotWhitelisted.length > 0 && tokenNotWhitelisted.map((token, index) => (
+                <li key={`not-wl-${index}`}><Text>{token.shortName}</Text></li>
               ))}
             </ul>
           </Popover.Dropdown>

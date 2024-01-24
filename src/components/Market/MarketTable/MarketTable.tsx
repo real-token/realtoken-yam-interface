@@ -20,14 +20,12 @@ import { OFFERS_TYPE, useRightTableColumn } from 'src/hooks/useRightTableColumns
 import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
 import { useRootStore } from '../../../zustandStore/store';
 import { selectPublicOffers } from '../../../zustandStore/selectors';
+import { useRefreshOffers } from '../../../hooks/offers/useRefreshOffers';
 
 export const MarketTable: FC = () => {
 
-  // const { refreshOffers, offersIsLoading } = useRefreshOffers();
+  const { refreshOffers, offersIsLoading } = useRefreshOffers();
   const [nameFilterValue,setNamefilterValue] = useAtom(nameFilterValueAtom);
-
-  const offersIsLoading = false;
-  const refreshOffers = () => {};
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
