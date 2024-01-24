@@ -1,12 +1,8 @@
-import {
-  ApolloClient,
-  InMemoryCache,
-  NormalizedCacheObject,
-  gql,
-} from '@apollo/client';
+import { ApolloClient, NormalizedCacheObject, gql } from '@apollo/client';
 import { Web3Provider } from '@ethersproject/providers';
 
 import BigNumber from 'bignumber.js';
+import { YamGnosis_Offer as OfferGraphQl } from 'gql/graphql';
 
 import { CHAINS, ChainsID } from 'src/constants';
 import { PropertiesToken } from 'src/types';
@@ -14,21 +10,20 @@ import { DataRealtokenType } from 'src/types/offer/DataRealTokenType';
 import { Offer } from 'src/types/offer/Offer';
 import { Price } from 'src/types/price';
 
-import { Offer as OfferGraphQl } from 'gql/graphql';
-import { parseOffer } from './parseOffer';
 import { apiClient } from './getClientURL';
+import { parseOffer } from './parseOffer';
 
 const nbrFirst = 1000;
 
 export const getBigDataGraphRealtoken = async (
   chainId: number,
   client: ApolloClient<NormalizedCacheObject>,
-  realtokenAccount: string[],
+  realtokenAccount: string[]
 ) => {
-
   const chainConfig = CHAINS[chainId as ChainsID];
 
-  const { address: realTokenYamUpgradeable } = chainConfig.contracts.realTokenYamUpgradeable;
+  const { address: realTokenYamUpgradeable } =
+    chainConfig.contracts.realTokenYamUpgradeable;
 
   const graphNetworkPrefix = chainConfig.graphPrefixes.realtoken;
 
@@ -61,7 +56,7 @@ export const getBigDataGraphRealtoken = async (
   });
   //console.log('DEBUG getBigDataGraphRealtoken data', data);
 
-  const accountBalances = data[graphNetworkPrefix].accountBalances
+  const accountBalances = data[graphNetworkPrefix].accountBalances;
 
   return accountBalances.map((accountBalance: DataRealtokenType) => {
     const allowance: { id: string; allowance: string } | undefined =
@@ -91,9 +86,8 @@ export const fetchOffersTheGraph = (
   propertiesToken: PropertiesToken[],
   prices: Price
 ): Promise<Offer[]> => {
-  return new Promise<Offer[]>(async (resolve, reject) => {
+  return new Promise<Offer[]>(async (resolve) => {
     try {
-
       const graphNetworkPrefix = CHAINS[chainId as ChainsID].graphPrefixes.yam;
 
       const offersData: Offer[] = [];
@@ -110,8 +104,9 @@ export const fetchOffersTheGraph = (
         `,
       });
 
-      const offersToFetch = activeOfferResult.data[graphNetworkPrefix].global.activeOffersCount;
-      console.log('Amount of offersToFetch: ', offersToFetch)
+      const offersToFetch =
+        activeOfferResult.data[graphNetworkPrefix].global.activeOffersCount;
+      console.log('Amount of offersToFetch: ', offersToFetch);
 
       const offersRes = await apiClient.query({
         query: gql`
@@ -156,13 +151,15 @@ export const fetchOffersTheGraph = (
               }
             }
           }
-        `
-      })
+        `,
+      });
 
       const offers: OfferGraphQl[] = offersRes.data[graphNetworkPrefix].offers;
-      console.log(offers)
+      console.log(offers);
 
-      const accountRealtokenDuplicates: string[] = offers.map(val => (val.seller.address + '-' + val.offerToken.address));
+      const accountRealtokenDuplicates: string[] = offers.map(
+        (val) => val.seller.address + '-' + val.offerToken.address
+      );
       const accountBalanceId = [...new Set(accountRealtokenDuplicates)]; // remove duplicates
       // //console.log('Debug liste accountBalanceId', accountBalanceId);
 
@@ -174,11 +171,15 @@ export const fetchOffersTheGraph = (
         ); */
         if (batch.length <= 0) break;
 
-        bigDataRealTokenPromises.push(getBigDataGraphRealtoken(chainId, apiClient, batch));
+        bigDataRealTokenPromises.push(
+          getBigDataGraphRealtoken(chainId, apiClient, batch)
+        );
         //console.log('DEBUG for realtokenData', i, batchSize, realtokenData);
       }
 
-      const dataRealtoken = (await Promise.all(bigDataRealTokenPromises)).flat() as DataRealtokenType[]
+      const dataRealtoken = (
+        await Promise.all(bigDataRealTokenPromises)
+      ).flat() as DataRealtokenType[];
 
       // //console.log('Debug Query dataRealtoken', dataRealtoken);
 
