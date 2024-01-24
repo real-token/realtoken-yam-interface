@@ -1,10 +1,9 @@
 import {
   ApolloClient,
-  InMemoryCache,
   NormalizedCacheObject,
   gql,
 } from '@apollo/client';
-import { Web3Provider } from '@ethersproject/providers';
+import { JsonRpcProvider, Web3Provider } from '@ethersproject/providers';
 
 import BigNumber from 'bignumber.js';
 
@@ -85,7 +84,7 @@ export const getBigDataGraphRealtoken = async (
 };
 
 export const fetchOffersTheGraph = (
-  provider: Web3Provider,
+  provider: JsonRpcProvider,
   account: string,
   chainId: number,
   propertiesToken: PropertiesToken[],
@@ -164,6 +163,8 @@ export const fetchOffersTheGraph = (
 
       const offers: OfferGraphQl[] = offersRes.data[graphNetworkPrefix].offers;
 
+      console.log('offers: ', offers.length)
+
       const accountRealtokenDuplicates: string[] = offers.map(val => (val.seller.address + '-' + val.offerToken.address));
       const accountBalanceId = [...new Set(accountRealtokenDuplicates)]; // remove duplicates
       // //console.log('Debug liste accountBalanceId', accountBalanceId);
@@ -197,7 +198,6 @@ export const fetchOffersTheGraph = (
 
               // console.log('wlProperties: ', wlProperties)
               const offerData: Offer = await parseOffer(
-                provider,
                 account,
                 offer,
                 accountUserRealtoken,

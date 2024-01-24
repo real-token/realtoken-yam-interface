@@ -12,6 +12,7 @@ import { getRightAllowBuyTokens } from "../hooks/useAllowedTokens";
 import { AllowedToken } from "../types/allowedTokens";
 import { getPrice } from "../utils/price";
 import { Price as P } from "src/utils/price";
+import { fetchOffer } from "../utils/offers/fetchOffer";
 
 export interface InterfaceSlice {
   account: string;
@@ -19,16 +20,19 @@ export interface InterfaceSlice {
   chainId: number;
   setChainId: (chainId: number) => void;
 
+  getProvider: () => JsonRpcProvider;
+
+  interfaceIsLoading: boolean;
+  setInterfaceIsLoading: (status: boolean) => void;
+
+  refreshInterfaceDatas: () => Promise<void>;
+  refreshOffers: () => Promise<void>;
+  refreshInterface: () => void;
+
   //Offers
-  fetchOffers: (
-    provider: Web3Provider,
-    account: string,
-    chainId: number,
-    properties: PropertiesToken[],
-    wlProperties: number[]
-  ) => Promise<void>;
-  askForRefresh: boolean;
-  setAskForRefresh: (askForRefresh: boolean) => void;
+  fetchOffers: (provider: Web3Provider|JsonRpcProvider) => Promise<void>;
+  // askForRefresh: boolean;
+  // setAskForRefresh: (askForRefresh: boolean) => void;
   offersAreLoading: boolean;
   offers: Offer[];
   privateOffers: Offer[];
@@ -62,12 +66,51 @@ export const createInterfaceSlice: StateCreator<
     chainId: 1,
     setChainId: (chainId: number) => set({ chainId }),
 
-    fetchOffers: async (provider, account, chainId) => {
+    getProvider: (): JsonRpcProvider => {
+      const { chainId } = get();
+      const rpcUrl = CHAINS[chainId as ChainsID].rpcUrl;
+      return new JsonRpcProvider(rpcUrl);
+    },
+
+    interfaceIsLoading: true,
+    setInterfaceIsLoading: (interfaceIsLoading: boolean) => set({ interfaceIsLoading }),
+
+    refreshInterfaceDatas: async () => {
+      const { chainId, account, fetchAddressWlProperties, fetchProperties, fetchPrices, getProvider, setInterfaceIsLoading } = get();
+      setInterfaceIsLoading(true);
+
+      const provider = getProvider()
+
+      await fetchProperties(chainId);
+      await fetchAddressWlProperties(account, chainId);
+      await fetchPrices(chainId,provider);
+
+    },
+    refreshInterface: async () => {
+
+      const { getProvider, fetchOffers, setInterfaceIsLoading, refreshInterfaceDatas } = get();
+      setInterfaceIsLoading(true);
+
+      const provider = getProvider();
+      await refreshInterfaceDatas();
+
+      await fetchOffers(provider);
+      setInterfaceIsLoading(false);
+    },
+    refreshOffers: async () => {
+      const { getProvider, fetchOffers, setInterfaceIsLoading } = get();
+      setInterfaceIsLoading(true);
+
+      const provider = getProvider();
+      await fetchOffers(provider);
+
+      setInterfaceIsLoading(false);
+    },
+
+    fetchOffers: async (provider) => {
       set({ offersAreLoading: true });
-  
-      const prices = get().prices;
-      const properties = get().properties;
-      const wlProperties = get().wlProperties;
+
+      const { prices, properties, wlProperties, account, chainId } = get();
   
       let offersData;
       if ((chainId == 1 || chainId == 100 || chainId == 5) && wlProperties && prices) {
@@ -77,8 +120,8 @@ export const createInterfaceSlice: StateCreator<
   
       set({ offers: offersData, offersAreLoading: false });
     },
-    askForRefresh: false,
-    setAskForRefresh: (askForRefresh: boolean) => set({ askForRefresh}),
+    // askForRefresh: false,
+    // setAskForRefresh: (askForRefresh: boolean) => set({ askForRefresh}),
     offers: OFFER_LOADING,
     offersAreLoading: true,
     privateOffers: [],
@@ -142,6 +185,8 @@ export const createInterfaceSlice: StateCreator<
 
     fetchPrices: async (chainId, provider) => {
       try{
+
+        console.log('FETCH PRICES')
 
         const tokens = getRightAllowBuyTokens(chainId);
         const p = await Promise.all(tokens.map((allowedToken: AllowedToken) => getPrice(provider,allowedToken)));

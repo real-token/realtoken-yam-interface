@@ -79,10 +79,9 @@ export const CHAINS: Record<ChainsID, Chain> = {
     rpcUrl: 'https://rpc.ankr.com/eth_goerli',
     blockExplorerUrl: 'https://goerli.etherscan.io/',
     isTestnet: true,
-    // TODO: replace
     graphPrefixes: {
-      yam: "",
-      realtoken: ""
+      yam: "yamGoerli",
+      realtoken: "realTokenGoerli"
     },
     contracts: {
       [ContractsID.realTokenYamUpgradeable]: {

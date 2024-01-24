@@ -23,7 +23,6 @@ export const getOfferType = (offerTokenType: number, buyerTokenType: number): OF
 }
 
 export const parseOffer = (
-    provider: Web3Provider,
     account: string,
     offer: OfferGraphQl,
     accountUserRealtoken: DataRealtokenType,

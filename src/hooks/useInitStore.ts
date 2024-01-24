@@ -1,8 +1,6 @@
 import { useEffect } from "react";
-import { useRefreshOffers } from "./offers/useRefreshOffers";
 import { useWeb3React } from "@web3-react/core";
 import { useRootStore } from "../zustandStore/store";
-import { useAutoRefresh } from "./offers/useAutoRefresh";
 import { useGetOffers } from "./useGetOffers";
 
 export default function useInitStore(){
@@ -12,7 +10,7 @@ export default function useInitStore(){
 
     // INIT REDUX STORE HERE
     useGetOffers();
-    useAutoRefresh();
+    // useAutoRefresh();
 
     useEffect(() => {
         if(account) setAccount(account)

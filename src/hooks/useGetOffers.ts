@@ -6,60 +6,28 @@ import { useRootStore } from "../zustandStore/store";
 
 export const useGetOffers = () => {
 
-    const { account, provider } = useWeb3React();
-    const { propertiesToken, propertiesIsloading } = usePropertiesToken();
-
-    const [currentChainId, setCurrentChainId] = useState<number>(1);
     const [initiated, setInitiated] = useState<boolean>(false);
 
     const [
         chainId,
-        wlProperties,
-        wlPropertiesAreLoading,
-        fetchOffers,
-        askForRefresh,
-        setAskForRefresh
+        account,
+        refreshInterface,
       ] = useRootStore((state) => [
         state.chainId,
-        state.wlProperties,
-        state.wlPropertiesAreLoading,
-        state.fetchOffers,
-        state.askForRefresh,
-        state.setAskForRefresh
+        state.account,
+        state.refreshInterface,
       ]);
 
     const disableQuery = useMemo(() => {
-        return !provider || 
-          !account || 
-          !chainId || 
-          !propertiesToken || 
-          propertiesToken.length == 0 || 
-          propertiesIsloading ||
-          wlPropertiesAreLoading || 
-          wlProperties == undefined;
-    },[provider, account, chainId, propertiesToken, propertiesIsloading, wlPropertiesAreLoading, wlProperties]);
+        return !account || !chainId;
+    },[account, chainId]);
 
     const { refetch } = useQuery({
         queryKey: ['offers'],
-        // @ts-ignore
-        queryFn: () => fetchOffers(provider, account, chainId, propertiesToken, wlProperties),
-        onSuccess: () => {
-          setAskForRefresh(false);
-        },
+        queryFn: () => refreshInterface(),
         enabled: false,
         refetchOnMount: false,
     });
-
-    useEffect(() => {
-      if(!askForRefresh) return;
-      refetch();
-    },[askForRefresh])
-
-    useEffect(() => {
-        if(currentChainId == chainId) return;
-        refetch();
-        setCurrentChainId(chainId);
-    }, [chainId, currentChainId]);
 
     useEffect(() => {
         if(initiated || disableQuery) return;

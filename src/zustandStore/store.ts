@@ -4,8 +4,7 @@ import { mountStoreDevtool } from 'simple-zustand-devtools';
 import { InterfaceSlice, createInterfaceSlice } from './interfaceSlice';
 import { subscribeWithSelector } from 'zustand/middleware'
 import { CreateOffersSlice, createCreateOfferSlice } from './createOffersSlice';
-import { JsonRpcProvider } from '@ethersproject/providers';
-import { CHAINS } from '@realtoken/realt-commons';
+import { stat } from 'fs';
 
 export type RootStore = InterfaceSlice & CreateOffersSlice;
 
@@ -20,14 +19,8 @@ export const useRootStore = create<RootStore>()(
 
 mountStoreDevtool('bridge', useRootStore);
 
-useRootStore.subscribe((state) => state.chainId, async (newChainId) => {
-    const { account, fetchAddressWlProperties, fetchProperties, fetchPrices } = useRootStore.getState();
-
-    const rpcUrl = CHAINS[newChainId].rpcUrl;
-    const provider = new JsonRpcProvider(rpcUrl);
-
-    await fetchProperties(newChainId);
-    await fetchAddressWlProperties(account, newChainId);
-    await fetchPrices(newChainId,provider)
-
+useRootStore.subscribe((state) => state.chainId, async (newChainId, oldChainId) => {
+    const { refreshInterface } = useRootStore.getState();
+    if(oldChainId === newChainId) return;
+    await refreshInterface();
 })

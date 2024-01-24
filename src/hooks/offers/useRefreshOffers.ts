@@ -6,13 +6,13 @@ type UseRefreshOffers = () => {
 }
 export const useRefreshOffers: UseRefreshOffers = () => {
 
-  const [offersAreLoading, setAskForRefresh] = useRootStore((state) => [state.offersAreLoading, state.setAskForRefresh]);
+  const [interfaceIsLoading, refreshInterfaceOffers] = useRootStore((state) => [state.interfaceIsLoading, state.refreshOffers]);
 
-  const refreshOffers = () => setAskForRefresh(true);
+  const refreshOffers = () => refreshInterfaceOffers();
 
   // eslint-disable-next-line object-shorthand
   return{
-    offersIsLoading: offersAreLoading,
+    offersIsLoading: interfaceIsLoading,
     refreshOffers: refreshOffers
   }
 
