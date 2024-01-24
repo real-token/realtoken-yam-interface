@@ -47,7 +47,7 @@ export const fetchOffer = (
       const realtokenData: [DataRealtokenType] = await getBigDataGraphRealtoken(chainId, apiClient, batch);
 
       const accountUser = realtokenData[0];
-      const offer = await parseOffer(provider, account, offerFromTheGraph,accountUser, propertiesToken, wlProperties, prices);
+      const offer = await parseOffer(account, offerFromTheGraph,accountUser, propertiesToken, wlProperties, prices);
 
       const hasPropertyToken = propertiesToken.find(propertyToken => (propertyToken.contractAddress == offer.buyerTokenAddress || propertyToken.contractAddress == offer.offerTokenAddress));
       offer.hasPropertyToken = hasPropertyToken ? true : false;
