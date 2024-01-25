@@ -43,7 +43,14 @@ export const MarketTablePrivate: FC = () => {
   const table = useReactTable({
     data: offers,
     columns: columns,
-    state: { sorting, pagination, expanded },
+    state: { 
+      sorting, 
+      pagination, 
+      expanded, 
+      columnVisibility: {
+        whitelisted: false
+      } 
+    },
     onSortingChange: setSorting,
     onPaginationChange: setPagination,
     onExpandedChange: setExpanded,
@@ -52,6 +59,7 @@ export const MarketTablePrivate: FC = () => {
     getPaginationRowModel: getPaginationRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
     meta: { colSpan: 16 },
+    
   });
 
   return (

@@ -50,6 +50,9 @@ export const MarketTableUser: FC = () => {
       pagination, 
       expanded,
       globalFilter: globalFilter, 
+      columnVisibility: {
+        whitelisted: false
+      } 
     },
     //Trick to convert every value to string. Needed for comparison
     globalFilterFn: (row, columnId, filterValue) => {
