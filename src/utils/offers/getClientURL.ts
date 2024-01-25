@@ -11,19 +11,6 @@ export const getTheGraphUrlYAM = (chainId: number): string => {
       return '';
   }
 };
-  
-export const getTheGraphUrlRealtoken = (chainId: number): string => {
-    switch (chainId) {
-      case 1:
-        return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/realtoken-eth';
-      case 5:
-        return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/realtoken-goerli';
-      case 100:
-        return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/realtoken-xdai';
-      default:
-        return '';
-    }
-  };
 
 export const getYamClient = (chainId: number): ApolloClient<NormalizedCacheObject> => {
     return new ApolloClient({
@@ -32,14 +19,12 @@ export const getYamClient = (chainId: number): ApolloClient<NormalizedCacheObjec
     });
 }
 
-export const getRealTokenClient = (chainId: number): ApolloClient<NormalizedCacheObject> => {
-  return new ApolloClient({
-      uri: getTheGraphUrlRealtoken(chainId),
-      cache: new InMemoryCache(),
-  });
+export const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? undefined;
+if(!apiUrl){
+  throw new Error('Missing "NEXT_PUBLIC_API_URL" var env')
 }
 
 export const apiClient = new ApolloClient({
-  uri: "https://staging-api.realtoken.network/graphql",
+  uri: apiUrl,
   cache: new InMemoryCache(),
 });
