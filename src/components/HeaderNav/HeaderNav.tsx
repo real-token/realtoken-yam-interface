@@ -5,7 +5,6 @@ import { useRole } from 'src/hooks/useRole';
 import { isRole, USER_ROLE } from 'src/types/admin';
 import classes from './HeaderNav.module.css';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
 
 export const HeaderNav: FC = () => {
   const { t } = useTranslation('header');

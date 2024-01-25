@@ -29,6 +29,7 @@ import { HeaderNav } from '../src/components/HeaderNav';
 import { modalStyles, theme } from '../src/theme';
 import { ReactQueryDevtools } from 'react-query/devtools'
 import '@mantine/core/styles.css';
+import { FooterLinks } from '../src/components/footer/FooterLinks';
 
 export const i18n = initLanguage(resources);
 
@@ -79,6 +80,7 @@ const App = ({ Component, pageProps }: AppProps) => {
                     chains={customChains}
                     head={<Head title='Realtoken YAM (You And Me)' description='Realtoken YAM (You And Me)'/>}
                     headerNav={<HeaderNav/>}
+                    footerCustomLinks={<FooterLinks/>}
                   >
                     <ReactQueryDevtools/>
                     <Component {...pageProps} />

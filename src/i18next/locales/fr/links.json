@@ -2,5 +2,8 @@
   "walletMenu": {
     "text": "En savoir plus sur les portefeuilles",
     "href": "https://metamask.zendesk.com/hc/fr-fr/articles/360015489531-Commencer-avec-MetaMask"
+  },
+  "footer": {
+    "faq": "AIDE"
   }
 }
