@@ -4,10 +4,7 @@ import { Currency, DAI, ETH } from './currencies';
 import { Chain as RealtChains, EthereumLogo, GnosisLogo } from '@realtoken/realt-commons';
 import { FC } from 'react';
 
-export const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? undefined;
-if(!apiUrl){
-  throw new Error('Missing "NEXT_PUBLIC_API_URL" var env')
-}
+
 
 export enum ChainsID {
   Ethereum = 0x01,

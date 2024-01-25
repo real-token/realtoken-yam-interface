@@ -8,7 +8,6 @@ import { AllowedToken } from 'src/types/allowedTokens';
 import { OFFER_LOADING, Offer } from 'src/types/offer/Offer';
 import { Price } from 'src/types/price';
 import { fetchOffersTheGraph } from 'src/utils/offers/fetchOffers';
-import { getRealTokenClient } from 'src/utils/offers/getClientURL';
 import { getPrice } from 'src/utils/price';
 import { Price as P } from "src/utils/price";
 
@@ -124,29 +123,29 @@ export function fetchAddressWlProperties(address: string, chainId: number){
   return async function fetchAddressWlPropertiesThunk(dispatch: AppDispatch){
     try{
 
-      const realTokenGraphClient = getRealTokenClient(chainId);
+      // const realTokenGraphClient = getRealTokenClient(chainId);
 
-      //TODO: finish query
-      const { data } = await realTokenGraphClient.query({query: gql`
-        query fetchWlToken{
-          account(id: "${address.toLowerCase()}") {
-            id
-            userIds {
-              attributeKeys
-            }
-          }
-        }
-      `});
+      // //TODO: finish query
+      // const { data } = await realTokenGraphClient.query({query: gql`
+      //   query fetchWlToken{
+      //     account(id: "${address.toLowerCase()}") {
+      //       id
+      //       userIds {
+      //         attributeKeys
+      //       }
+      //     }
+      //   }
+      // `});
 
-      const wlTokenIds: string[] | undefined = data.account?.userIds?.[0]?.attributeKeys;
+      // const wlTokenIds: string[] | undefined = data.account?.userIds?.[0]?.attributeKeys;
 
-      // console.log(wlTokenIds)
+      // // console.log(wlTokenIds)
 
-      if(wlTokenIds){
-        const numberWlTokenIds = wlTokenIds.map(str => parseInt(str));
-        dispatch({ type: wlPropertiesIdChangedDispatchType, payload: numberWlTokenIds });
+      // if(wlTokenIds){
+      //   const numberWlTokenIds = wlTokenIds.map(str => parseInt(str));
+        // dispatch({ type: wlPropertiesIdChangedDispatchType, payload: numberWlTokenIds });
         dispatch({ type: wlPropertiesIdIsloadingChangedDispatchType, payload: false });
-      }
+      // }
 
     } catch(err){
       console.log("Failed to fetch wl properties for connected address.", err)
