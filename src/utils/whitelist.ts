@@ -1,3 +1,4 @@
+import { WHITLISTED_ON_ALL_ID_RULE } from "../constants/whitelist";
 import { PropertiesToken } from "../types";
 import { OFFER_TYPE, Offer } from "../types/offer";
 
@@ -6,6 +7,9 @@ export const getNotWhitelistedTokens = (
     offer: Offer,
     properties: PropertiesToken[]
 ): PropertiesToken[] => {
+
+    // Bypass 
+    if(wlTokenId.some(r=> WHITLISTED_ON_ALL_ID_RULE.includes(r))) return []
 
     let tokenAddressToCheck: string[] = [];
     switch(offer.type){
@@ -20,13 +24,13 @@ export const getNotWhitelistedTokens = (
         break;
     }
 
+    console.log(wlTokenId, WHITLISTED_ON_ALL_ID_RULE)
+
     const notWlTokens: PropertiesToken[] = [];
     tokenAddressToCheck.forEach((tokenAddress: string) => {
         const token = properties.find((token: PropertiesToken) => token.contractAddress.toLowerCase() == tokenAddress.toLowerCase());
-        if (token) {
-            if(!wlTokenId.includes(token.tokenIdRules)){
-                notWlTokens.push(token);
-            }
+        if (token && !wlTokenId.includes(token.tokenIdRules)) {
+            notWlTokens.push(token);
         }
     });
 
