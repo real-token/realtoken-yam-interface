@@ -1,22 +1,46 @@
 import type { Web3Provider } from '@ethersproject/providers';
+import { Contract, utils } from 'ethers';
+import { gnosisAllowedTokens } from '../constants/allowedBuyTokens';
 
-import { utils } from 'ethers';
-
-import { CoinBridgeToken } from '../abis/types/CoinBridgeToken';
-
-// This function is used for RealToken since the version is indicated within the token contract
-const coinBridgeTokenPermitSignature = async (
+// This function is used for general tokens with permit function
+const erc20PermitSignature = async (
   owner: string,
   spender: string,
   amount: string,
   transactionDeadline: number,
-  contract: CoinBridgeToken,
+  contract: Contract,
   library: Web3Provider
 ) => {
   try {
-    const nonce = await contract.nonces(owner); //BigNumber.from('2'); //await contract.nonces(owner);
+    let nonce;
+    if (contract.address.toLowerCase() == gnosisAllowedTokens[2].contractAddress.toLowerCase()) {
+      nonce = await contract._nonces(owner);
+    } else {
+      nonce = await contract.nonces(owner);
+    }
+
+    let version = undefined;
+    try {
+      version = await contract.version();
+    } catch (e) {
+      console.log('No version function in contract.', e)
+      try {
+        version = await contract.VERSION();
+      } catch (e) {
+        console.log('No VERSION function in contract.', e)
+        try {
+          version = await contract.EIP712_REVISION();
+        } catch (e) {
+          console.log('No EIP712_REVISION function in contract.', e)
+          throw Error("Cannot get permit version from contract.");
+        }
+      }
+    }
+    version = 2;
+
+
     const contractName = await contract.name();
-    //console.log('nonce contract: ', contractName, nonce);
+    const rightVersion = version;
 
     const EIP712Domain = [
       { name: 'name', type: 'string' },
@@ -24,15 +48,12 @@ const coinBridgeTokenPermitSignature = async (
       { name: 'chainId', type: 'uint256' },
       { name: 'verifyingContract', type: 'address' },
     ];
-
     const domain = {
       name: contractName,
-      version: (await contract.VERSION()).toString(), // get version of token since RealToken is upgraded to V2, otherwise wrong signature
+      version: rightVersion.toString(),
       chainId: library.network.chainId,
       verifyingContract: contract.address,
     };
-    //console.log('domain: ', domain);
-
     const Permit = [
       { name: 'owner', type: 'address' },
       { name: 'spender', type: 'address' },
@@ -40,7 +61,6 @@ const coinBridgeTokenPermitSignature = async (
       { name: 'nonce', type: 'uint256' },
       { name: 'deadline', type: 'uint256' },
     ];
-
     // eslint-disable-next-line object-shorthand
     const message = {
       owner,
@@ -49,7 +69,7 @@ const coinBridgeTokenPermitSignature = async (
       nonce: nonce.toHexString(),
       deadline: transactionDeadline,
     };
-    //console.log('message: ', message);
+
 
     // eslint-disable-next-line object-shorthand
     const data = JSON.stringify({
@@ -61,11 +81,8 @@ const coinBridgeTokenPermitSignature = async (
       primaryType: 'Permit',
       message,
     });
-    //console.log('data: ', data);
 
     const signature = await library.send('eth_signTypedData_v4', [owner, data]);
-    //console.log('signature: ', signature);
-
     const signData = utils.splitSignature(signature as string);
     const { r, s, v } = signData;
     return {
@@ -74,9 +91,9 @@ const coinBridgeTokenPermitSignature = async (
       v,
     };
   } catch (e) {
-    console.log('Error getting permit signature: ', e);
+    console.error('Error getting permit signature: ', e);
     return e;
   }
 };
 
-export default coinBridgeTokenPermitSignature;
+export default erc20PermitSignature;
