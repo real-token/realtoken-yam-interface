@@ -169,6 +169,30 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], w
                 marketplaceLink: "",
                 netRentYearPerToken: 5.8627777777778,
                 tokenIdRules: 100049
+            },
+            {
+                uuid: "15039 Ward",
+                shortName: "15039 Ward",
+                fullName: "RealToken S 15039 Ward Ave Detroit MI",
+                contractAddress: "0xc89bff212a860f2d888a748636eabe8b18069922",
+                officialPrice: 52.13,
+                currency: "USDC",
+                imageLink: [],
+                marketplaceLink: "",
+                netRentYearPerToken: 6.44,
+                tokenIdRules: 100052
+            },
+            {
+                uuid: "19311 Keystone",
+                shortName: "19311 Keystone",
+                fullName: "RealToken S 19311 Keystone St Detroit MI",
+                contractAddress: "0xd5fe60558266675a6b02ec61176054ae0de8178f",
+                officialPrice: 52.13,
+                currency: "USDC",
+                imageLink: [],
+                marketplaceLink: "",
+                netRentYearPerToken: 5.54,
+                tokenIdRules: 100051
             }
         ]
         propertiesGoerli.forEach((token) => token.annualYield = token.officialPrice ? token.netRentYearPerToken/token.officialPrice : 0)
