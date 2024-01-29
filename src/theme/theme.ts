@@ -6,15 +6,12 @@ export const modalStyles: ModalProps['styles'] = {
     padding: '1rem',
     width: "auto",
     maxWidth: "700px",
-    maxHeight: 'calc(100vh - (3vh * 2))',
-    overflowY: 'auto'
   },
   root: { zIndex: 99 },
   overlay: { zIndex: 99 },
   inner: { zIndex: 99 },
   content: {
-    overflowY: 'unset',
-    maxHeight: 'unset',
+    maxHeight: '95%',
   }
 };
 
