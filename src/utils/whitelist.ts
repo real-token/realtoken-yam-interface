@@ -24,8 +24,6 @@ export const getNotWhitelistedTokens = (
         break;
     }
 
-    console.log(wlTokenId, WHITLISTED_ON_ALL_ID_RULE)
-
     const notWlTokens: PropertiesToken[] = [];
     tokenAddressToCheck.forEach((tokenAddress: string) => {
         const token = properties.find((token: PropertiesToken) => token.contractAddress.toLowerCase() == tokenAddress.toLowerCase());
