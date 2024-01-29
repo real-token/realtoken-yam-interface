@@ -110,7 +110,7 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
                 >
                   <IconShoppingCart size={16} aria-label={'Buy'} />
                 </ActionIcon>
-              ): (
+              ) : (
                 <ActionIcon disabled={true} variant={"transparent"}/>
               )}
             </Group> 

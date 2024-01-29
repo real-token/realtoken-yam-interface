@@ -19,6 +19,7 @@ import { useAtomValue } from "jotai";
 import { providerAtom } from "../../states";
 import classes from './CreateOffer.module.css';
 import { useRootStore } from "../../zustandStore/store";
+import { AvailableConnectors, ConnectorsDatas } from "@realtoken/realt-commons";
 
 const approveOffer = (
   offerTokenAddress: string,
@@ -187,7 +188,7 @@ export const CreateOffer = () => {
           .toString(10);
         const transactionDeadline = Math.floor(Date.now() / 1000) + 3600;
 
-        const isSafe = connector == 'gnosisSafe';
+        const isSafe = connector == ConnectorsDatas.get(AvailableConnectors.gnosisSafe)?.connectorKey;
 
         let permitAnswer: any | undefined = undefined;
         let needPermit = false;

@@ -63,7 +63,18 @@
     "sellOfferTypeAmount": "Quantity (of sell token)",
     "exchangeOfferTypeAmount": "Quantity (of exchange token)",
     "cancel": "Cancel",
-    "confirm": "Confirm",
+    "buyButtons": {
+      "permit": {
+        "text": "Buy with permit",
+        "options": "Permit",
+        "details": "A permit is a transaction that allows you to buy without having to approve the contract. This is consume less fees but you need you to sign a message in your wallet."
+      },
+      "approve": {
+        "text": "Buy with approve",
+        "options": "Approve",
+        "details": "The buy will be made with two transactions: the first one will approve the contract, then the second you will execute the buy."
+      }
+    },
     "buy": "Buy",
     "summary": "Transaction summary",
     "summaryText1": "You will buy",
