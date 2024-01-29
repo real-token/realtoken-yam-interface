@@ -223,7 +223,7 @@ export const BuyModalWithPermit: FC<
               {` ${t("summaryText1")} ${values?.amount} ${offerTokenSymbol} ${t("summaryText2")} ${cleanNumber(values?.price)} ${buyTokenSymbol} ${t("summaryText3")} ${total} ${buyTokenSymbol}`}
             </Text>
             
-            <Flex direction={'column'} gap={'md'} style={(theme) => ({ marginBottom: theme.spacing.xl })}>
+            <Flex direction={'column'} gap={'md'} style={{ marginBottom: '15px' }}>
               {connector !== ConnectorsDatas.get(AvailableConnectors.gnosisSafe)?.connectorKey ? (
                 <Flex direction={'column'} gap={5}>
                   <Text size="sm" fw={500} mt="md">{'Buy method'}</Text>

@@ -1,7 +1,7 @@
 import { Dispatch, FC, SetStateAction, useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ActionIcon, Group, Title } from '@mantine/core';
+import { ActionIcon, Group, Title, Text } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { IconShoppingCart } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
@@ -33,7 +33,7 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
   const onOpenBuyModal = useCallback(
     (offer: Offer) => {
       modals.openContextModal('buyPermit', {
-        title: <Title order={3}>{t('buy.title')}</Title>,
+        title: <Text>{t('buy.title')}</Text>,
         size: "lg",
         innerProps: {
           offer: offer,
@@ -46,7 +46,7 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
 
   const onOpenWalletModal = useCallback(() => {
     modals.openContextModal('wallet', {
-      title: <Title order={3}>{t('wallet.title')}</Title>,
+      title: <Text>{t('wallet.title')}</Text>,
       innerProps: {},
     });
   }, [modals, t]);

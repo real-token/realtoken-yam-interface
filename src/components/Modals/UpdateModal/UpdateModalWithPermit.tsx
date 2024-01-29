@@ -98,6 +98,8 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amountMax]);
 
+  const connector = useAtomValue(providerAtom);
+
   const onHandleSubmit = useCallback(
     async (formValues: UpdateFormValues) => {
       try {
@@ -157,8 +159,6 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
         const offerTokenType = await realTokenYamUpgradeable.getTokenType(
           formValues.offerTokenAddress
         );
-
-        const connector = useAtomValue(providerAtom);
 
         const isSafe = connector == ConnectorsDatas.get(AvailableConnectors.gnosisSafe)?.connectorKey;;
 
