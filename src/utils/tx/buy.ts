@@ -7,6 +7,12 @@ import { Web3Provider } from "@ethersproject/providers";
 import { CoinBridgeToken, coinBridgeTokenABI } from "../../abis";
 import { Offer } from "../../types/offer";
 import { getContract } from "../getContract";
+import { AvailableConnectors, ConnectorsDatas } from "@realtoken/realt-commons";
+
+export enum BUY_METHODS{
+  buyWithApprove = "buyWithApprove",
+  buyWithPermit = "buyWithPermit"
+}
 
 export const buy = async (
     account: string|undefined,
@@ -18,6 +24,7 @@ export const buy = async (
     connector: string,
     setSubmitting: (state: boolean) => void,
     onFinished?: () => void,
+    method?: string
 ) => {
       try {
         if (
@@ -28,6 +35,9 @@ export const buy = async (
         ){
           return;
         }
+
+        const buyMethod = method ?? BUY_METHODS.buyWithApprove;
+        console.log("buyMethod: ", buyMethod)
 
         const price = parseFloat(offer.price);
 
@@ -55,10 +65,11 @@ export const buy = async (
           offer.buyerTokenAddress
         );
 
-        console.log(connector)
-        if(connector == "gnosisSafe" || connector == 'walletConnect'){
-
-          console.log('TEST')
+        if(
+          connector == ConnectorsDatas.get(AvailableConnectors.gnosisSafe)?.connectorKey || 
+          connector == ConnectorsDatas.get(AvailableConnectors.walletConnectV2)?.connectorKey || 
+          buyMethod == BUY_METHODS.buyWithApprove
+        ){
             
           // TokenType = 3: ERC20 Without Permit, do Approve/buy
           const approveTx = await buyerToken.approve(

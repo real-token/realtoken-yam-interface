@@ -9,7 +9,7 @@ import {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Web3Provider } from '@ethersproject/providers';
-import { Button, Divider, Flex, Group, Stack, Text } from '@mantine/core';
+import { Button, Divider, Flex, Group, Stack, Text, Tooltip, SegmentedControl } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { ContextModalProps } from '@mantine/modals';
 import BigNumber from 'bignumber.js';
@@ -25,8 +25,9 @@ import { useERC20TokenInfo } from 'src/hooks/useERC20TokenInfo';
 import { Offer, OFFER_TYPE } from 'src/types/offer';
 import { useAtomValue } from 'jotai';
 import { providerAtom } from 'src/states';
-import { buy } from '../../../utils/tx/buy';
+import { BUY_METHODS, buy } from '../../../utils/tx/buy';
 import { Erc20, Erc20ABI } from '../../../abis';
+import { AvailableConnectors, ConnectorsDatas } from '@realtoken/realt-commons';
 
 type BuyModalWithPermitProps = {
   offer: Offer,
@@ -41,6 +42,7 @@ type BuyWithPermitFormValues = {
   offerTokenDecimals: number;
   buyerTokenAddress: string;
   buyerTokenDecimals: number;
+  buyMethod?: BUY_METHODS;
 };
 
 export const BuyModalWithPermit: FC<
@@ -55,36 +57,37 @@ export const BuyModalWithPermit: FC<
 }) => {
 
   const { account, provider } = useWeb3React();
-  const { getInputProps, onSubmit, reset, setFieldValue, values } =
-    useForm<BuyWithPermitFormValues>({
-      // eslint-disable-next-line object-shorthand
-      initialValues: {
-        offerId: offer.offerId,
-        price: parseFloat(offer.price),
-        amount: 0,
-        offerTokenAddress: offer.offerTokenAddress,
-        offerTokenDecimals: parseFloat(offer.offerTokenDecimals),
-        buyerTokenAddress: offer.buyerTokenAddress,
-        buyerTokenDecimals: parseFloat(offer.buyerTokenDecimals)
-      },
-    });
 
-    const [isSubmitting, setSubmitting] = useState<boolean>(false);
-    const activeChain = useActiveChain();
-    
-    const [offerTokenSellerBalance,setOfferTokenSellerBalance] = useState<string|undefined>("");
-    const { name:offerTokenName, symbol:offerTokenSymbol  } = useERC20TokenInfo(offer.offerTokenAddress);
-    const { symbol:buyTokenSymbol, address:buyerTokenAddress } = useERC20TokenInfo(offer.buyerTokenAddress);
-    
-    const realTokenYamUpgradeable = useContract(
-      ContractsID.realTokenYamUpgradeable
-    );
-    const offerToken = getContract<Erc20>(
-          offer.offerTokenAddress,
-          Erc20ABI,
-          provider as Web3Provider,
-          account
-    )
+  const { getInputProps, onSubmit, reset, setFieldValue, values } = useForm<BuyWithPermitFormValues>({
+    // eslint-disable-next-line object-shorthand
+    initialValues: {
+      offerId: offer.offerId,
+      price: parseFloat(offer.price),
+      amount: 0,
+      offerTokenAddress: offer.offerTokenAddress,
+      offerTokenDecimals: parseFloat(offer.offerTokenDecimals),
+      buyerTokenAddress: offer.buyerTokenAddress,
+      buyerTokenDecimals: parseFloat(offer.buyerTokenDecimals),
+      buyMethod: BUY_METHODS.buyWithApprove,
+    },
+  });
+
+  const [isSubmitting, setSubmitting] = useState<boolean>(false);
+  const activeChain = useActiveChain();
+  
+  const [offerTokenSellerBalance,setOfferTokenSellerBalance] = useState<string|undefined>("");
+  const { name:offerTokenName, symbol:offerTokenSymbol  } = useERC20TokenInfo(offer.offerTokenAddress);
+  const { symbol:buyTokenSymbol, address:buyerTokenAddress } = useERC20TokenInfo(offer.buyerTokenAddress);
+  
+  const realTokenYamUpgradeable = useContract(
+    ContractsID.realTokenYamUpgradeable
+  );
+  const offerToken = getContract<Erc20>(
+        offer.offerTokenAddress,
+        Erc20ABI,
+        provider as Web3Provider,
+        account
+  )
 
   const getOfferTokenInfos = async () => {
     if(!offerToken) return;
@@ -134,7 +137,8 @@ export const BuyModalWithPermit: FC<
         formValues.amount,
         connector,
         setSubmitting,
-        onFinished
+        onFinished,
+        formValues.buyMethod
       );
     },
     [account, provider, activeChain, realTokenYamUpgradeable, offer, connector, onClose, triggerTableRefresh]
@@ -219,19 +223,47 @@ export const BuyModalWithPermit: FC<
               {` ${t("summaryText1")} ${values?.amount} ${offerTokenSymbol} ${t("summaryText2")} ${cleanNumber(values?.price)} ${buyTokenSymbol} ${t("summaryText3")} ${total} ${buyTokenSymbol}`}
             </Text>
             
-            <Group grow={true}>
-              <Button color={'red'} onClick={onClose} aria-label={t('cancel')}>
-                {t('cancel')}
-              </Button>
+            <Flex direction={'column'} gap={'md'} style={(theme) => ({ marginBottom: theme.spacing.xl })}>
+              {connector !== ConnectorsDatas.get(AvailableConnectors.gnosisSafe)?.connectorKey ? (
+                <Flex direction={'column'} gap={5}>
+                  <Text size="sm" fw={500} mt="md">{'Buy method'}</Text>
+                  <SegmentedControl
+                    data={[
+                      {
+                        value: BUY_METHODS.buyWithApprove,
+                        label: (
+                          <Tooltip label={t('buyButtons.approve.details')} multiline w={200}>
+                            <span>{t('buyButtons.approve.options')}</span>
+                          </Tooltip>
+                        ),
+                      },
+                      {
+                        value: BUY_METHODS.buyWithPermit,
+                        label: (
+                          <Tooltip label={t('buyButtons.permit.details')} multiline w={200}>
+                            <span>{t('buyButtons.permit.options')}</span>
+                          </Tooltip>
+                        ),
+                      },
+                    ]}
+                    {...getInputProps('buyMethod')}
+                  />
+                </Flex>
+              ): undefined}
               <Button
                 type={'submit'}
                 loading={isSubmitting}
                 aria-label={t('confirm')}
                 disabled={process.env.NEXT_PUBLIC_ENV == "development" ? false : (values?.amount == 0 || !values.amount)}
               >
-                {t('confirm')}
+                {values.buyMethod == BUY_METHODS.buyWithPermit ? t('buyButtons.permit.text') : t('buyButtons.approve.text')}
               </Button>
-            </Group>
+            </Flex>
+            <Flex>
+              <Button color={'red'} onClick={onClose} aria-label={t('cancel')}>
+                {t('cancel')}
+              </Button>
+            </Flex>
           </Flex>
         </Flex>
           

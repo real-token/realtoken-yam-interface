@@ -30,6 +30,9 @@ import { cleanNumber } from 'src/utils/number';
 
 import { NumberInput } from '../../NumberInput';
 import { ethers } from 'ethers';
+import { useAtomValue } from 'jotai';
+import { providerAtom } from '../../../states';
+import { AvailableConnectors, ConnectorsDatas } from '@realtoken/realt-commons';
 
 type UpdateModalProps = {
   offer: Offer;
@@ -154,6 +157,10 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
         const offerTokenType = await realTokenYamUpgradeable.getTokenType(
           formValues.offerTokenAddress
         );
+
+        const connector = useAtomValue(providerAtom);
+
+        const isSafe = connector == ConnectorsDatas.get(AvailableConnectors.gnosisSafe)?.connectorKey;;
 
         // APPROVE OR PERMIT
         let signature: any;

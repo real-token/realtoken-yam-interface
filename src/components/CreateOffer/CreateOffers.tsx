@@ -20,6 +20,7 @@ import { Web3Provider } from "@ethersproject/providers";
 import { Contract } from "ethers";
 import { useAtomValue } from "jotai";
 import { providerAtom } from "../../states";
+import { AvailableConnectors, ConnectorsDatas } from "@realtoken/realt-commons";
 
 const approveOffer = (
     offerTokenAddress: string, 
@@ -189,8 +190,8 @@ export const CreateOffer = () => {
                 const priceInWei = new BigNumber(offer.price.toString()).shiftedBy(Number(buyerTokenDecimals)).toString(10);
                 const transactionDeadline = Math.floor(Date.now() / 1000) + 3600;
 
-                const isSafe = connector == "gnosisSafe";
-                const isWalletConnect = connector == "walletConnect"; 
+                const isSafe = connector == ConnectorsDatas.get(AvailableConnectors.gnosisSafe)?.connectorKey;
+                const isWalletConnect = connector == ConnectorsDatas.get(AvailableConnectors.walletConnectV2)?.connectorKey;
 
                 let permitAnswer: any|undefined = undefined;
                 let needPermit = false;
