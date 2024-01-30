@@ -21,6 +21,6 @@ export const createCreateOfferSlice: StateCreator<
         addOffer: (offer: CreatedOffer) => set({ offersToCreate: [...get().offersToCreate, offer] }),
         addOffers: (offers: CreatedOffer[]) => set({ offersToCreate: [...get().offersToCreate, ...offers] }),
         removeOffer: (offerId: number) => set({ offersToCreate: get().offersToCreate.filter(offer => offer.offerId !== offerId) }),
-        resetOffers: () => set({ offers: [] }),
+        resetOffers: () => set({ offersToCreate: [] }),
     } 
 }

@@ -1,5 +1,5 @@
 import { Button, Divider, Flex } from "@mantine/core"
-import { showNotification, updateNotification } from "@mantine/notifications";
+import { notifications, showNotification, updateNotification } from "@mantine/notifications";
 import { useWeb3React } from "@web3-react/core";
 import BigNumber from "bignumber.js";
 import { useState } from "react";
@@ -78,20 +78,20 @@ const approveOffer = (
         hash: approveTx.hash,
       };
 
-      showNotification(
+      notifications.show(
         NOTIFICATIONS[NotificationsID.approveOfferLoading](notificationApprove)
       );
 
       approveTx
         .wait()
-        .then(({ status }) =>
-          updateNotification(
-            NOTIFICATIONS[
+        .then(({ status }) => 
+          notifications.update({
+            ...NOTIFICATIONS[
               status === 1
                 ? NotificationsID.approveOfferSuccess
                 : NotificationsID.approveOfferError
             ](notificationApprove)
-          )
+          })
         );
 
       await approveTx.wait(1);
@@ -294,21 +294,23 @@ export const CreateOffer = () => {
 
         console.log('pass4');
 
-        createOfferTx.wait().then(({ status }) => {
-          updateNotification(
-            NOTIFICATIONS[
-              status === 1
-                ? NotificationsID.createOfferSuccess
-                : NotificationsID.createOfferError
-            ](notificationPayload)
-          );
+        createOfferTx.wait()
+          .then(({ status }) => {
+            updateNotification(
+              NOTIFICATIONS[
+                status === 1
+                  ? NotificationsID.createOfferSuccess
+                  : NotificationsID.createOfferError
+              ](notificationPayload)
+            );
 
-          if (status == 1) {
-            resetOffers()
-            refreshOffers();
-          }
-          setLoading(false);
-        });
+            if (status == 1) {
+              console.log('test1')
+              resetOffers()
+              refreshOffers();
+            }
+            setLoading(false);
+          });
       } else {
         // WANT TO CREATE MULTI OFFERS
         const _offerTokens = [];
@@ -387,6 +389,7 @@ export const CreateOffer = () => {
           );
 
           if (status == 1) {
+            console.log('test2')
             resetOffers()
             refreshOffers();
           }

@@ -192,6 +192,7 @@ export const NOTIFICATIONS = asConst<
         {(t) => t('createOfferSuccess.title')}
       </Translation>
     ),
+    loading: false,
     message: (
       <Translation ns={'notifications'}>
         {(t) => (
@@ -350,6 +351,7 @@ export const NOTIFICATIONS = asConst<
         {(t) => t('approveOfferSuccess.title')}
       </Translation>
     ),
+    loading: false,
     message: (
       <Translation ns={'notifications'}>
         {(t) => (

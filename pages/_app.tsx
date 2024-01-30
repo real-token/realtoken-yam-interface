@@ -28,8 +28,10 @@ import { modals } from '../src/components';
 import { HeaderNav } from '../src/components/HeaderNav';
 import { modalStyles, theme } from '../src/theme';
 import { ReactQueryDevtools } from 'react-query/devtools'
-import '@mantine/core/styles.css';
 import { FooterLinks } from '../src/components/footer/FooterLinks';
+
+import '@mantine/core/styles.css';
+import '@mantine/notifications/styles.css';
 
 export const i18n = initLanguage(resources);
 
@@ -73,7 +75,14 @@ const App = ({ Component, pageProps }: AppProps) => {
         <RealtProvider value={{ env, showAllNetworks }}>
           <Web3Providers libraryConnectors={libraryConnectors}>
             <InitStoreProvider>
-              <MantineProviders modals={modals} modalStyles={modalStyles} theme={theme}>
+              <MantineProviders 
+                modals={modals} 
+                modalStyles={modalStyles} 
+                theme={theme}
+                notificationsProps={{
+                  position: "bottom-right"
+                }}
+              >
                   <LanguageInit i={i18n} />
                   <Layout
                     currentWebsite={Websites.YAM}
