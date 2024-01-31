@@ -15,7 +15,7 @@ const getTokenFromCommunityAPI = new Promise<APIPropertiesToken[]>( async (resol
         console.log("Failed to fetch properties from community")
         reject(err);
     }
-}) 
+});
 
 const getContractAddressFromChainId = (propertyToken: APIPropertiesToken, chainId: number): string|undefined => {
     switch(chainId){
@@ -172,18 +172,18 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[]): 
     }else{
         communityProperties.forEach((propertyToken: APIPropertiesToken) => {
             const contractAddress = getContractAddressFromChainId(propertyToken,chainId);
-            if(contractAddress){
+            // if(contractAddress){
                 propertiesNonFiltered.push({
                     uuid: propertyToken.uuid,
                     shortName: propertyToken.shortName,
                     symbol: propertyToken.symbol,
                     fullName: propertyToken.fullName,
-                    contractAddress: contractAddress.toLowerCase(),
+                    contractAddress: contractAddress?.toLowerCase() ?? "",
                     marketplaceLink: propertyToken.marketplaceLink,
                     imageLink: propertyToken.imageLink,
                     tokenIdRules: propertyToken.tokenIdRules
                 });
-            }
+            // }
             
         });
     }
