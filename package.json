@@ -49,9 +49,9 @@
     "react-dom": "18.2.0",
     "react-i18next": "^14.0.1",
     "react-query": "^3.39.3",
-    "react-redux": "^8.0.5",
+    "react-redux": "^9.1.0",
     "react-window": "^1.8.10",
-    "redux": "^4.2.0",
+    "redux": "^5.0.1",
     "release-it": "^17.0.3",
     "swr": "^2.2.4"
   },
