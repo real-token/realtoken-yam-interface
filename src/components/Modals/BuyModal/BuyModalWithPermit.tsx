@@ -9,7 +9,7 @@ import {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Web3Provider } from '@ethersproject/providers';
-import { Button, Divider, Flex, Group, Stack, Text, Tooltip, SegmentedControl } from '@mantine/core';
+import { Button, Divider, Flex, Stack, Text, Tooltip, SegmentedControl } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { ContextModalProps } from '@mantine/modals';
 import BigNumber from 'bignumber.js';
@@ -28,6 +28,7 @@ import { providerAtom } from 'src/states';
 import { BUY_METHODS, buy } from '../../../utils/tx/buy';
 import { Erc20, Erc20ABI } from '../../../abis';
 import { AvailableConnectors, ConnectorsDatas } from '@realtoken/realt-commons';
+import { useApproveOffer } from '../../../hooks/useApproveOffer';
 
 type BuyModalWithPermitProps = {
   offer: Offer,
@@ -118,7 +119,6 @@ export const BuyModalWithPermit: FC<
   const total = values?.amount * values?.price;
 
   const connector = useAtomValue(providerAtom);
-  console.log('connector: ', connector)
 
   const onHandleSubmit = useCallback(
     async (formValues: BuyWithPermitFormValues) => {
@@ -152,6 +152,9 @@ export const BuyModalWithPermit: FC<
 
     return max.isGreaterThanOrEqualTo(new BigNumber(offer.amount)) ? new BigNumber(offer.amount).toNumber() : parseFloat(max.toString());
   },[balance,offer]);
+
+  const { approveNeeded, approve, approveLoading } = useApproveOffer(offer, values.amount);
+  console.log('approveNeeded: ', approveNeeded)
 
   const priceTranslation: Map<OFFER_TYPE,string> = new Map<OFFER_TYPE,string>([
     [OFFER_TYPE.BUY,t("buyOfferTypePrice")],
@@ -250,11 +253,20 @@ export const BuyModalWithPermit: FC<
                   />
                 </Flex>
               ): undefined}
+              {values.buyMethod == BUY_METHODS.buyWithApprove && approveNeeded ? (
+                <Button
+                  loading={approveLoading}
+                  aria-label={t('confirm')}
+                  onClick={() => approve()}
+                >
+                  {'Approve token'}
+                </Button>
+              ): undefined}
               <Button
                 type={'submit'}
                 loading={isSubmitting}
                 aria-label={t('confirm')}
-                disabled={process.env.NEXT_PUBLIC_ENV == "development" ? false : (values?.amount == 0 || !values.amount)}
+                disabled={process.env.NEXT_PUBLIC_ENV == "development" ? false : (values?.amount == 0 || !values.amount || approveNeeded)}
               >
                 {values.buyMethod == BUY_METHODS.buyWithPermit ? t('buyButtons.permit.text') : t('buyButtons.approve.text')}
               </Button>
