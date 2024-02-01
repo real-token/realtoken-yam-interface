@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
-import { TFunction, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
+import { TFunction } from 'i18next';
 
 import { Card, Container, Group, SimpleGrid, Text } from '@mantine/core';
 
