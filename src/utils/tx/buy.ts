@@ -14,6 +14,18 @@ export enum BUY_METHODS{
   buyWithPermit = "buyWithPermit"
 }
 
+export const approve = async (
+
+) => {
+  try{
+
+    
+
+  }catch(err){
+    console.error(err);
+  }
+}
+
 export const buy = async (
     account: string|undefined,
     provider: Web3Provider|undefined,
@@ -272,7 +284,7 @@ export const buy = async (
                 );
     
               await approveTx.wait(1);
-              
+
             }
   
             const buyTx = await realTokenYamUpgradeable.buy(
