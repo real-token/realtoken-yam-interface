@@ -13,7 +13,7 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import { IconLanguage, IconMoon, IconSettings, IconSun } from '@tabler/icons';
 
-import { setCookies } from 'cookies-next';
+import { setCookie } from 'cookies-next';
 
 const ColorSchemeMenuItem: FC = () => {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
@@ -58,7 +58,7 @@ const LanguageSelect: FC = () => {
   const updateLocale = useCallback(
     (updatedLocale: string) => {
       if (i18n.language !== updatedLocale) {
-        setCookies('react-i18next', updatedLocale);
+        setCookie('react-i18next', updatedLocale);
         i18n.changeLanguage(updatedLocale);
       }
     },
