@@ -37,15 +37,15 @@ export const buy = async (
         }
 
         const buyMethod = method ?? BUY_METHODS.buyWithApprove;
-        console.log("buyMethod: ", buyMethod)
+        // console.log("buyMethod: ", buyMethod)
 
         const price = parseFloat(offer.price);
 
         const amountInWei = new BigNumber(parseInt(new BigNumber(amount.toString()).shiftedBy(Number(offer.offerTokenDecimals)).toString()));
         const priceInWei = new BigNumber(price.toString()).shiftedBy(Number(offer.buyerTokenDecimals));
 
-        console.log("amountInWei: ", amountInWei.toString())
-        console.log("priceInWei: ", priceInWei.toString())
+        // console.log("amountInWei: ", amountInWei.toString())
+        // console.log("priceInWei: ", priceInWei.toString())
 
         const buyerToken = getContract<CoinBridgeToken>(
             offer.buyerTokenAddress,
@@ -54,12 +54,26 @@ export const buy = async (
             account
         );
 
-        if(!buyerToken) return;
+        if(!buyerToken){
+          console.error("buyerToken is undefined");
+          return;
+        };
 
         const buyerTokenAmount = new BigNumber(parseInt(amountInWei.multipliedBy(priceInWei).shiftedBy(-offer.offerTokenDecimals).toString()));
         const transactionDeadline = Math.floor(Date.now() / 1000) + 3600; // permit valable during 1h
 
         console.log("buyerTokenAmount: ", buyerTokenAmount.toString())
+
+        let approveNeeded = false;
+        if(buyMethod == BUY_METHODS.buyWithApprove){
+          const allowance = await buyerToken.allowance(account, realTokenYamUpgradeable.address);
+          console.log("allowance: ", allowance.toString());
+          if(allowance.lt(buyerTokenAmount.toString(10))){
+            approveNeeded = true;
+          }
+        }
+
+        console.log("approveNeeded: ", approveNeeded)
 
         const buyerTokenType = await realTokenYamUpgradeable.getTokenType(
           offer.buyerTokenAddress
@@ -70,38 +84,40 @@ export const buy = async (
           connector == ConnectorsDatas.get(AvailableConnectors.walletConnectV2)?.connectorKey || 
           buyMethod == BUY_METHODS.buyWithApprove
         ){
-            
-          // TokenType = 3: ERC20 Without Permit, do Approve/buy
-          const approveTx = await buyerToken.approve(
-            realTokenYamUpgradeable.address,
-            buyerTokenAmount.toString(10)
-          );
 
-          const notificationApprove = {
-            key: approveTx.hash,
-            href: `${activeChain?.blockExplorerUrl}tx/${approveTx.hash}`,
-            hash: approveTx.hash,
-          };
+          if(approveNeeded){
+            // TokenType = 3: ERC20 Without Permit, do Approve/buy
+            const approveTx = await buyerToken.approve(
+              realTokenYamUpgradeable.address,
+              buyerTokenAmount.toString(10)
+            );
 
-          showNotification(
-            NOTIFICATIONS[NotificationsID.approveOfferLoading](
-              notificationApprove
-            )
-          );
+            const notificationApprove = {
+              key: approveTx.hash,
+              href: `${activeChain?.blockExplorerUrl}tx/${approveTx.hash}`,
+              hash: approveTx.hash,
+            };
 
-          approveTx
-            .wait()
-            .then(({ status }) =>
-              updateNotification(
-                NOTIFICATIONS[
-                  status === 1
-                    ? NotificationsID.approveOfferSuccess
-                    : NotificationsID.approveOfferError
-                ](notificationApprove)
+            showNotification(
+              NOTIFICATIONS[NotificationsID.approveOfferLoading](
+                notificationApprove
               )
             );
 
-          await approveTx.wait(1);
+            approveTx
+              .wait()
+              .then(({ status }) =>
+                updateNotification(
+                  NOTIFICATIONS[
+                    status === 1
+                      ? NotificationsID.approveOfferSuccess
+                      : NotificationsID.approveOfferError
+                  ](notificationApprove)
+                )
+              );
+
+            await approveTx.wait(1);
+          }
 
           const buyTx = await realTokenYamUpgradeable.buy(
             offer.offerId,
@@ -219,37 +235,45 @@ export const buy = async (
                 )
               );
           } else if (buyerTokenType === 3) {
+
             // TokenType = 3: ERC20 Without Permit, do Approve/buy
-            const approveTx = await buyerToken.approve(
-              realTokenYamUpgradeable.address,
-              buyerTokenAmount.toString()
-            );
-  
-            const notificationApprove = {
-              key: approveTx.hash,
-              href: `${activeChain?.blockExplorerUrl}tx/${approveTx.hash}`,
-              hash: approveTx.hash,
-            };
-  
-            showNotification(
-              NOTIFICATIONS[NotificationsID.approveOfferLoading](
-                notificationApprove
-              )
-            );
-  
-            approveTx
-              .wait()
-              .then(({ status }) =>
-                updateNotification(
-                  NOTIFICATIONS[
-                    status === 1
-                      ? NotificationsID.approveOfferSuccess
-                      : NotificationsID.approveOfferError
-                  ](notificationApprove)
+
+          
+            if(approveNeeded){
+
+
+              const approveTx = await buyerToken.approve(
+                realTokenYamUpgradeable.address,
+                buyerTokenAmount.toString()
+              );
+    
+              const notificationApprove = {
+                key: approveTx.hash,
+                href: `${activeChain?.blockExplorerUrl}tx/${approveTx.hash}`,
+                hash: approveTx.hash,
+              };
+    
+              showNotification(
+                NOTIFICATIONS[NotificationsID.approveOfferLoading](
+                  notificationApprove
                 )
               );
-  
-            await approveTx.wait(1);
+    
+              approveTx
+                .wait()
+                .then(({ status }) =>
+                  updateNotification(
+                    NOTIFICATIONS[
+                      status === 1
+                        ? NotificationsID.approveOfferSuccess
+                        : NotificationsID.approveOfferError
+                    ](notificationApprove)
+                  )
+                );
+    
+              await approveTx.wait(1);
+              
+            }
   
             const buyTx = await realTokenYamUpgradeable.buy(
               offer.offerId,
