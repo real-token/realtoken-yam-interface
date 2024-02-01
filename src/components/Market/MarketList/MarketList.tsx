@@ -81,11 +81,14 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
   const renderItem = ({ index }: { index: number }) => {
     const offer = sortedOffers[index];
     const isLastItem = index === sortedOffers.length - 1;
-    if (sortedOffers.length === 0) {
+    /* if (sortedOffers.length === 0) {
       return <ItemEmptyElement></ItemEmptyElement>;
     } else {
       return <ItemElement offer={offer} isLastItem={isLastItem}></ItemElement>;
-    }
+    } */
+    return <>
+    {sortedOffers.length === 0 ? <ItemEmptyElement></ItemEmptyElement> : <ItemElement offer={offer} isLastItem={isLastItem}></ItemElement>}
+    </>;
   };
 
   const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
