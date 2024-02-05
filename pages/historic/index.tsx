@@ -201,7 +201,7 @@ export default function HistoricPage(){
                     table={table}
                 />
              </Flex>
-        // </ConnectedProvider>
+        </ConnectedProvider>
 
     )
 }
