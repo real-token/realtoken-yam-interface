@@ -84,7 +84,6 @@ export default function HistoricPage(){
         setDownloadLoading(false);
     }
 
-
     const columns: ColumnDef<Historic,any>[] = useMemo(() => ([
         {
             id: 'purchase-txhash',
@@ -124,7 +123,7 @@ export default function HistoricPage(){
             },
             meta: { colSpan: 10 },
         },
-    ]),[t]);
+    ]),[t, blockExplorerUrl]);
 
     const data = useMemo(() => {
         return historics ?? [];
