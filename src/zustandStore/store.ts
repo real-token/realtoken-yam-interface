@@ -4,7 +4,6 @@ import { mountStoreDevtool } from 'simple-zustand-devtools';
 import { InterfaceSlice, createInterfaceSlice } from './interfaceSlice';
 import { subscribeWithSelector } from 'zustand/middleware'
 import { CreateOffersSlice, createCreateOfferSlice } from './createOffersSlice';
-import { stat } from 'fs';
 
 export type RootStore = InterfaceSlice & CreateOffersSlice;
 
@@ -22,5 +21,11 @@ mountStoreDevtool('bridge', useRootStore);
 useRootStore.subscribe((state) => state.chainId, async (newChainId, oldChainId) => {
     const { refreshInterface } = useRootStore.getState();
     if(oldChainId === newChainId) return;
+    await refreshInterface();
+})
+
+useRootStore.subscribe((state) => state.account, async (newAccount, oldAccount) => {
+    const { refreshInterface } = useRootStore.getState();
+    if(newAccount === oldAccount) return;
     await refreshInterface();
 })
