@@ -1,4 +1,4 @@
-import { Flex, Text, Anchor, Button } from "@mantine/core";
+import { Flex, Text, Anchor, Button, Loader } from "@mantine/core";
 import { IconDownload } from "@tabler/icons";
 import { useRootStore } from "../../src/zustandStore/store"
 import { IconExclamationCircle } from "@tabler/icons";
@@ -14,6 +14,7 @@ import { saveAs } from 'file-saver';
 import { useWeb3React } from "@web3-react/core";
 import { Historic } from "../../src/types/historic";
 import { useTranslation } from "react-i18next";
+import { ConnectedProvider } from "../../src/providers/ConnectProvider";
 
 export default function HistoricPage(){
 
@@ -161,15 +162,24 @@ export default function HistoricPage(){
         )
     }
 
-    // TODO: finish this
     if(historicsAreLoading){
         return (
-            <></>
+            <Flex
+                h={'100%'}
+                w={'100%'}
+                justify={'center'}
+                align={'center'}
+                direction={'column'}
+                gap={'md'}
+            >
+                <Text fz={'xl'}>{t('historicAreLoading')}</Text>
+                <Loader size={'xl'}/>
+            </Flex>
         )
     }
 
     return(
-        // <ConnectedProvider>
+        <ConnectedProvider>
              <Flex direction={"column"} my={"xl"} h={'100%'}>
                 <Flex justify={'space-between'}>
                     <Text fz={'xl'} fw={700} mb={'xl'}>{t('pageTitle')}</Text>

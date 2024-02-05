@@ -1,6 +1,7 @@
 {
     "pageTitle": "Historique d'achat",
     "errorLoading": "Une erreur est servenue lors du chargement de l'historique d'achat",
+    "historicAreLoading": "Historique en cours de chargement",
     "downloadButton": "Télécharger",
     "table": {
         "columnTitle": {
