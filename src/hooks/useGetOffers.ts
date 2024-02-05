@@ -1,7 +1,5 @@
 import { useQuery } from "react-query";
-import { useWeb3React } from "@web3-react/core";
 import { useEffect, useMemo, useState } from "react";
-import { usePropertiesToken } from "./usePropertiesToken";
 import { useRootStore } from "../zustandStore/store";
 
 export const useGetOffers = () => {

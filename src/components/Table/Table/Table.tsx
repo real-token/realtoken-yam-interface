@@ -9,7 +9,6 @@ import { Table as ReactTable, Row, flexRender } from '@tanstack/react-table';
 import { TableCaption, TableCaptionOptions } from '../TableCaption';
 import { TableHeader } from '../TableHeader';
 import { ENV, isEnvs } from 'src/utils/isEnv';
-import classes from "./Table.module.css";
 
 export type TableSubRowProps<T> = { row: Row<T> };
 
@@ -30,7 +29,7 @@ export const Table = <T,>({
 
   return (
       //
-      <div style={{ border: 'thin solid #424242', borderRadius: '0.5em', overflow: 'hidden' }}>
+      <div style={{ border: 'thin solid #424242', borderRadius: '0.5em' }}>
         <MantineTable  {...tableProps} stickyHeader={true} withRowBorders={true}>
           <MantineTable.Thead>
             {table.getHeaderGroups().map(({ id, headers }) => (

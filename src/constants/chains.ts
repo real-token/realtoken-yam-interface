@@ -4,8 +4,6 @@ import { Currency, DAI, ETH } from './currencies';
 import { Chain as RealtChains, EthereumLogo, GnosisLogo } from '@realtoken/realt-commons';
 import { FC } from 'react';
 
-
-
 export enum ChainsID {
   Ethereum = 0x01,
   Gnosis = 0x64,
@@ -32,7 +30,7 @@ export const CHAINS: Record<ChainsID, Chain> = {
     chainName: 'Gnosis Chain',
     logo: GnosisLogo,
     nativeCurrency: DAI,
-    rpcUrl: 'https://rpc.ankr.com/gnosis',
+    rpcUrl: 'https://gnosis-pokt.nodies.app',
     blockExplorerUrl: 'https://gnosisscan.io/',
     isTestnet: false,
     graphPrefixes: {

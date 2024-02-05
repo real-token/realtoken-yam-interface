@@ -34,6 +34,15 @@ export const HeaderNav: FC = () => {
         >
           {t('titleCat2')}
         </Text>
+        <Text
+          size={'xl'}
+          fw={700}
+          className={classes.link}
+          c={router.pathname === '/historic' ? colorSelected : ''}
+          onClick={() => router.push('/historic')}
+        >
+          {t('historic')}
+        </Text>
         { isRole(role,[USER_ROLE.MODERATOR,USER_ROLE.ADMIN]) ? 
           <Text
             size={'xl'}

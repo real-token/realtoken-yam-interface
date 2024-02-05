@@ -8,7 +8,8 @@ import { default as components } from './components.json';
 import { default as faq } from './faq.json';
 import { default as admin } from './admin.json';
 import { default as header } from './header.json';
+import { default as historic } from './historic.json';
 
-const lng = { header, links, buy, menu, modals, notifications, table, components, faq, admin };
+const lng = { header, links, buy, menu, modals, notifications, table, components, faq, admin, historic };
 
 export default lng;

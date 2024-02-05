@@ -13,6 +13,8 @@ import { AllowedToken } from "../types/allowedTokens";
 import { getPrice } from "../utils/price";
 import { Price as P } from "src/utils/price";
 import { fetchOffer } from "../utils/offers/fetchOffer";
+import { Historic } from "../types/historic";
+import { parseHistoric } from "../utils/historic/historic";
 
 export interface InterfaceSlice {
   account: string;
@@ -51,6 +53,12 @@ export interface InterfaceSlice {
   fetchPrices: (chainId: number, provider: Web3Provider|JsonRpcProvider) => Promise<void>;
   prices: Price;
   pricesAreLoading: boolean;
+
+  // HISTORIC
+  historics: Historic[];
+  historicsAreLoading: boolean;
+  historicHasLoadingError: boolean;
+  fetchHistorics: () => Promise<void>;
 }
 
 export const createInterfaceSlice: StateCreator<
@@ -88,13 +96,16 @@ export const createInterfaceSlice: StateCreator<
     },
     refreshInterface: async () => {
 
-      const { getProvider, fetchOffers, setInterfaceIsLoading, refreshInterfaceDatas } = get();
+      const { getProvider, fetchOffers, fetchHistorics, setInterfaceIsLoading, refreshInterfaceDatas } = get();
       setInterfaceIsLoading(true);
 
       const provider = getProvider();
       await refreshInterfaceDatas();
 
-      await fetchOffers(provider);
+      await Promise.all([
+        fetchOffers(provider),
+        fetchHistorics()
+      ]);
       setInterfaceIsLoading(false);
     },
     refreshOffers: async () => {
@@ -206,5 +217,60 @@ export const createInterfaceSlice: StateCreator<
     prices: {},
     pricesAreLoading: true,
 
+    historics: [],
+    historicsAreLoading: true,
+    historicHasLoadingError: false,
+    fetchHistorics: async () => {
+      const { chainId, account } = get();
+      try{
+
+        const graphNetworkPrefix = CHAINS[chainId as ChainsID].graphPrefixes.yam;
+
+        const { data } = await apiClient.query({query: gql`
+          query getHistorics{
+            ${graphNetworkPrefix} {
+              purchases(where: { buyer: "${account.toLowerCase()}" }, orderBy: createdAtTimestamp, orderDirection: desc, first: 100){
+                id
+                offer{
+                  id
+                  offerToken{
+                    address
+                    tokenType
+                    name
+                    symbol
+                  }
+                  buyerToken{
+                    address
+                    tokenType
+                    name
+                    symbol
+                  }
+                }
+                seller{
+                  address
+                }
+                price
+                quantity
+                createdAtTimestamp
+              }
+            }
+          }
+        `});
+
+        console.log('HISTORICS: ', data[graphNetworkPrefix].purchases);
+        const historic: Historic[] | undefined = parseHistoric(data[graphNetworkPrefix].purchases);
+        if(!historic) return;
+
+        set({ 
+          historics: historic,
+          historicsAreLoading: false,
+          historicHasLoadingError: false
+        });
+
+      }catch(err){
+        console.error('Failed to fetch historics: ', err);
+        set({ historicHasLoadingError: true })
+      }
+    }
   };
 };
