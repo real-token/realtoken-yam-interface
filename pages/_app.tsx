@@ -32,6 +32,7 @@ import { FooterLinks } from '../src/components/footer/FooterLinks';
 
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
+import { Banners } from '../src/components/header/Banners';
 
 export const i18n = initLanguage(resources);
 
@@ -90,6 +91,7 @@ const App = ({ Component, pageProps }: AppProps) => {
                     head={<Head title='Realtoken YAM (You And Me)' description='Realtoken YAM (You And Me)'/>}
                     headerNav={<HeaderNav/>}
                     footerCustomLinks={<FooterLinks/>}
+                    headerBanner={<Banners/>}
                   >
                     <ReactQueryDevtools/>
                     <Component {...pageProps} />

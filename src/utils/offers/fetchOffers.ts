@@ -84,12 +84,12 @@ export const getBigDataGraphRealtoken = async (
 };
 
 export const fetchOffersTheGraph = (
-  provider: JsonRpcProvider,
   account: string,
   chainId: number,
   propertiesToken: PropertiesToken[],
   wlProperties: number[],
-  prices: Price
+  prices: Price,
+  setTheGraphIssue: (value: boolean) => void
 ): Promise<Offer[]> => {
   return new Promise<Offer[]>(async (resolve, reject) => {
     try {
@@ -219,6 +219,10 @@ export const fetchOffersTheGraph = (
       );
 
       const parsedOffers = await Promise.all(promises);
+
+      if(parsedOffers.length < offersToFetch) {
+        setTheGraphIssue(true);
+      }
 
       offersData.push(...parsedOffers);
       // // console.log('Offers formated', offersData.length);

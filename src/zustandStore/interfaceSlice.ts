@@ -22,6 +22,9 @@ export interface InterfaceSlice {
   chainId: number;
   setChainId: (chainId: number) => void;
 
+  theGraphHasIssue: boolean;
+  setTheGraphIssue: (theGraphHasIssue: boolean) => void;
+
   getProvider: () => JsonRpcProvider;
 
   interfaceIsLoading: boolean;
@@ -75,10 +78,19 @@ export const createInterfaceSlice: StateCreator<
     setChainId: (chainId: number) => set({ chainId }),
 
     getProvider: (): JsonRpcProvider => {
-      const { chainId } = get();
-      const rpcUrl = CHAINS[chainId as ChainsID].rpcUrl;
-      return new JsonRpcProvider(rpcUrl);
+      try{
+        const { chainId } = get();
+        const rpcUrl = CHAINS[chainId as ChainsID].rpcUrl;
+        return new JsonRpcProvider(rpcUrl);
+      }catch(err){
+        console.log('Failed to get provider: ', err)
+      }finally{
+        return new JsonRpcProvider(CHAINS[ChainsID.Gnosis].rpcUrl);
+      }
     },
+
+    theGraphHasIssue: false,
+    setTheGraphIssue: (theGraphHasIssue: boolean) => set({ theGraphHasIssue }),
 
     interfaceIsLoading: true,
     setInterfaceIsLoading: (interfaceIsLoading: boolean) => set({ interfaceIsLoading }),
@@ -121,12 +133,12 @@ export const createInterfaceSlice: StateCreator<
     fetchOffers: async (provider) => {
       set({ offersAreLoading: true });
 
-      const { prices, properties, wlProperties, account, chainId } = get();
-  
+      const { prices, properties, wlProperties, account, chainId, setTheGraphIssue } = get();
+
       let offersData;
       if ((chainId == 1 || chainId == 100 || chainId == 5) && wlProperties && prices) {
         //offersData = await fetchOfferTheGraph(chainId,properties);
-        offersData = await fetchOffersTheGraph(provider,account,chainId, properties, wlProperties, prices);
+        offersData = await fetchOffersTheGraph(account,chainId, properties, wlProperties, prices, setTheGraphIssue);
       }
   
       set({ offers: offersData, offersAreLoading: false });
