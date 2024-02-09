@@ -23,7 +23,7 @@ export default function useInitStore(){
     // useAutoRefresh();
 
     useEffect(() => {
-        if(account && currentAccount !== currentAccount){
+        if(account && currentAccount !== account){
             setAccount(account);
             console.log("account", account)
         }

@@ -101,7 +101,7 @@ export const createInterfaceSlice: StateCreator<
 
       const provider = getProvider()
 
-      await fetchProperties(chainId);
+            await fetchProperties(chainId);
       await fetchAddressWlProperties(account, chainId);
       await fetchPrices(chainId,provider);
 
