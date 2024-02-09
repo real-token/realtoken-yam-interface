@@ -1,89 +1,28 @@
-import { Flex, Text, createStyles, Skeleton, ActionIcon, Title, Divider, useMantineTheme } from "@mantine/core";
-import { IconExternalLink, IconShoppingCart } from "@tabler/icons";
+import { Flex, Text, Skeleton, Divider } from "@mantine/core";
+import { IconError404, IconExclamationCircle } from "@tabler/icons";
 import { useRouter } from "next/router"
-import { FC, useCallback, useEffect, useMemo, useState } from "react"
+import { FC, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next";
 import { OfferText } from "src/components/Offer/OfferText";
 import { useOffer } from "src/hooks/offers/useOffer";
 import { usePropertiesToken } from "src/hooks/usePropertiesToken";
 import { PropertiesToken } from "src/types";
-import { useModals } from '@mantine/modals';
-import { useWeb3React } from "@web3-react/core";
-import { Offer } from "src/types/offer";
-import { useRefreshOffers } from "src/hooks/offers/useRefreshOffers";
 import BigNumber from "bignumber.js";
-import { PropertyCard } from "src/components/Offer/PropertyCard";
+import { PropertyCard } from "src/components/Offer/PropertyCard/PropertyCard";
 import { ConnectedProvider } from "src/providers/ConnectProvider";
-
-const useStyle = createStyles((theme) => ({
-    container: {
-        alignItems: "start",
-        width: "50%"
-    },
-    propertyInfosContainer: {
-        display: "flex",
-        borderStyle: "solid",
-        borderWidth: "3px",
-        borderColor: theme.colors.brand,
-        borderRadius: theme.radius.md,
-        padding: theme.radius.lg,
-        gap: theme.spacing.md
-    },
-    offerId: {
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: theme.colors.brand,
-        borderRadius: theme.radius.md,
-        height: "40px",
-        padding: `0 ${10}px`,
-        // color: theme.colors.brand,
-        fontWeight: 700,
-        fontSize: theme.fontSizes.xl
-    },
-    buyButton: {
-        width: "125px",
-        height: "50px"
-    },
-    propertyNameContainer: {
-        display: "flex",
-        justifyContent: "start",
-        marginBottom: theme.spacing.sm
-    },
-    propertyName: {
-        borderBottomStyle: "solid",
-        borderBottomWidth: "2px",
-        borderBottomColor: "transparent",
-        '&:hover': {
-            borderBottomColor: theme.colors.brand,
-            cursor: "pointer"
-        },
-    }
-}));
+import classes from './Offer.module.css';
+import { BuyActionsWithPermit } from "../../src/components/Market/BuyActions";
 
 const ShowOfferPage: FC = () => {
-
-    const { classes } = useStyle();
 
     const router = useRouter();
     const { id } = router.query;
 
     const offerId: number = parseInt(id as string);
 
-    const { account } = useWeb3React();
-    const { offer, isLoading } = useOffer(offerId);
-
-    const offerDeleted = useMemo(() => {
-        if(!offer) return false;
-        return offer.removed
-    },[offer])
-
-    const { refreshOffers } = useRefreshOffers(false);
+    const { offer, isLoading, hasError } = useOffer(offerId);
 
     const { t } = useTranslation('modals', { keyPrefix: 'buy' });
-    const { t: t2 } = useTranslation('modals');
-
-    const modals = useModals();
 
     const [propertyTokens,setPropertyTokens] = useState<PropertiesToken[]>([]);
     const { getPropertyToken, propertiesIsloading } = usePropertiesToken();
@@ -103,48 +42,9 @@ const ShowOfferPage: FC = () => {
 
     },[getPropertyToken, offer, propertiesIsloading, propertyTokens.length]);
 
-    const onOpenWalletModal = useCallback(() => {
-        modals.openContextModal('wallet', {
-          title: <Title order={3}>{t2('wallet.title')}</Title>,
-          innerProps: {},
-        });
-      }, [modals, t2]);
-    
-    const isAccountOffer: boolean = useMemo(() => {
-    if(!offer || !account) return false;
-        return offer.sellerAddress == account.toLowerCase()
-    },[offer, account])
-
-    const onOpenBuyModal = useCallback(
-        (offer: Offer) => {
-          modals.openContextModal('buyPermit', {
-            title: <Title order={3}>{t2('buy.title')}</Title>,
-            size: "lg",
-            innerProps: {
-              offer: offer,
-              triggerTableRefresh: refreshOffers,
-            },
-        });
-    },[modals, refreshOffers, t2]);
-
-    if(offerDeleted){
-        return(
-            <Flex
-                sx={{
-                    width: '100%',
-                    height: '100%',
-                    justifyContent: "center",
-                    alignItems: 'center'
-                }}
-            >
-                <Text>{'This offer has been deleted'}</Text>
-            </Flex>
-        )
-    }
-
     return(
         <ConnectedProvider>
-            <Flex direction={"column"} mt={"xl"}>
+            <Flex direction={"column"} mt={"xl"} h={offer == undefined ? '100%': 'unset'}>
             { 
                 isLoading || offer !== undefined ? (
                     <Flex gap={"md"}>
@@ -184,31 +84,48 @@ const ShowOfferPage: FC = () => {
                                 </Flex>
                             </Flex>
                             <Divider />
-                            <ActionIcon
-                                color={'green'}
-                                disabled={isAccountOffer}
-                                className={classes.buyButton}
-                                onClick={() => account && offer ? onOpenBuyModal(offer) : onOpenWalletModal() }
-                            >
-                                { isAccountOffer ? 
-                                    <Text fz={"sm"} align={"center"} p={6}>{"Cannot buy your own offer"}</Text> 
-                                    : 
-                                    <IconShoppingCart size={24} aria-label={'Buy'} /> 
-                                }
-                            </ActionIcon>
+                            <BuyActionsWithPermit
+                                buyOffer={offer}
+                                loading={isLoading}
+                                buttonClassName={classes.buyButton}
+                            />
                         </Flex>
-                        <Flex direction={"column"} gap={"md"} align={"center"}>
-                        { propertyTokens && offer && propertyTokens.length > 0 ? 
-                            propertyTokens.map(token => <PropertyCard key={token.contractAddress} propertyToken={token} offer={offer}/>)
-                            :
-                            undefined
-                        }
+                        <Flex 
+                            direction={"column"} 
+                            gap={"md"} 
+                            align={"center"}
+                            w={"100%"}
+                        >
+                            { propertyTokens && offer && propertyTokens.length > 0 ? 
+                                propertyTokens.map(token => <PropertyCard key={token.contractAddress} propertyToken={token} offer={offer}/>)
+                                :
+                                undefined
+                            }
                         </Flex>
                     </Flex>
                 )
                 :
                 (
-                    <div>{"Offer doesn't exist :/"}</div>
+                    <Flex
+                        h={'100%'}
+                        w={'100%'}
+                        justify={'center'}
+                        align={'center'}
+                        direction={'column'}
+                    >
+                        {hasError ? (
+                            <>
+                            <IconExclamationCircle size={'200px'} color="#AE740A"/>
+                            <Text size={'xl'}>{"An error hapenned while loading offer"}</Text>
+                            </>
+                        ):(
+                            <>
+                            <IconError404 size={'200px'} color="#AE740A"/>
+                            <Text size={'xl'}>{"Offer don't exists"}</Text>
+                            </>
+                        )}
+                        
+                    </Flex>
                 )
             }
             </Flex>

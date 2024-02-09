@@ -1,43 +1,51 @@
-import { Web3Provider } from "@ethersproject/providers";
 import { useWeb3React } from "@web3-react/core";
-import { useCallback, useEffect, useState } from "react"
-import { selectPrices, selectPricesIsLoading } from "src/store/features/interface/interfaceSelector";
+import { useState } from "react"
 import { fetchOffer } from "src/utils/offers/fetchOffer";
 import { Offer, DEFAULT_OFFER } from '../../types/offer/Offer';
-import { useAppSelector } from "../react-hooks";
 import { usePropertiesToken } from '../usePropertiesToken';
+import { useQuery } from "react-query";
+import { useRootStore } from "../../zustandStore/store";
 
 type UseOfferProps  = (offerId: number) => {
     offer: Offer | undefined
     isLoading: boolean
+    hasError: boolean;
 };
 
 export const useOffer: UseOfferProps = (offerId: number) => {
     const { chainId, provider, account } = useWeb3React();
-    const [offer,setOffer] = useState<Offer>(DEFAULT_OFFER);
+    const [offer,setOffer] = useState<Offer|undefined>(DEFAULT_OFFER);
     const [isLoading,setIsLoading] = useState<boolean>(true);
+
+    const [hasError, setHasError] = useState<boolean>(false);
 
     const { propertiesToken, propertiesIsloading } = usePropertiesToken();
 
-    const pricesIsLoading = useAppSelector(selectPricesIsLoading);
-    const prices = useAppSelector(selectPrices)
+    const [prices, wlProperties] = useRootStore((state) => [state.prices, state.wlProperties])
 
-    const fetch = useCallback(async (provider: Web3Provider, chainId: number, offerId: number) => {
-        if(!account || pricesIsLoading) return;
-        fetchOffer(provider, account, chainId,offerId, propertiesToken,prices)
-            .then((offer: Offer) => {
+    const { } = useQuery({
+        queryKey: [offerId],
+        // @ts-ignore
+        queryFn: () => fetchOffer(provider, account, chainId,offerId, propertiesToken, wlProperties, prices),
+        enabled: !!offerId && !!chainId && !!provider && !!account && !!propertiesToken && !propertiesIsloading && propertiesToken.length > 0 && wlProperties !== undefined,
+        onSuccess: (offer: Offer|undefined) => {
+            if(offer){
                 setOffer(offer);
-                setIsLoading(false);
-            })
-            .catch(err => console.log(err))
-    },[account, pricesIsLoading, propertiesToken, prices]);
-
-    useEffect(() => {
-        if(offerId && chainId && provider && account && propertiesToken && !propertiesIsloading && propertiesToken.length > 0) fetch(provider,chainId, offerId);
-    },[offerId, chainId, propertiesIsloading,provider,account, propertiesToken, fetch])
+            }else{
+                setOffer(undefined);
+            }
+            setIsLoading(false);
+        },
+        onError: () => {
+            setOffer(undefined);
+            setHasError(true);
+            setIsLoading(false);
+        }
+    })
 
     return{
         offer,
-        isLoading
+        isLoading,
+        hasError
     }
 }

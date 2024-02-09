@@ -36,7 +36,7 @@ export const MarketSubRow: FC<TableSubRowProps<Offer>> = ({
         cell: ({ getValue }: CellContext<Offer,string>) => (
           <Text
             size={'sm'}
-            sx={{
+            style={{
               fontVariantNumeric: 'tabular-nums',
               textAlign: 'center',
               textOverflow: 'ellipsis',
@@ -65,7 +65,7 @@ export const MarketSubRow: FC<TableSubRowProps<Offer>> = ({
       tableProps={{
         verticalSpacing: 'xs',
         horizontalSpacing: 'xs',
-        sx: { tableLayout: 'fixed' },
+        style: { tableLayout: 'fixed' },
       }}
       table={table}
     />

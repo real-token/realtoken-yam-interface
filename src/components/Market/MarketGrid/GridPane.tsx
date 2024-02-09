@@ -1,71 +1,14 @@
-import { createStyles, Flex, Skeleton, Text } from "@mantine/core"
+import { Flex, Skeleton, Text } from "@mantine/core"
 import { FC } from "react"
 import { useTranslation } from "react-i18next";
-import { OfferTypeBadge } from "src/components/Offer/OfferTypeBadge";
+import { OfferTypeBadge } from "src/components/Offer/OfferTypeBadge/OfferTypeBadge";
 import { OfferDeltaTable } from "src/components/Table/OfferDeltaTable/OfferDeltaTable";
 import { OFFER_TYPE } from "src/types/offer";
 import { Offer } from "src/types/offer/Offer"
 import { BuyActionsWithPermit } from "../BuyActions";
 import { ShowOfferAction } from "../ShowOfferAction/ShowOfferAction";
-
-const useStyle = createStyles((theme) => ({
-    container: {
-        display: "flex",
-        flexDirection: "column",
-        borderWidth: "2px",
-        borderStyle: "solid",
-        borderColor: "#624105",
-        borderRadius: theme.radius.md,
-        overflow: "hidden",
-        height: "100%",
-    },
-    header: {
-        backgroundColor: "#624105",
-        padding: theme.spacing.sm,
-    },
-    content: {
-        height: "100%",
-    },
-    data: {
-        flexGrow: 1
-    },
-    offerTokenName: {
-        color: "white",
-        fontSize: theme.fontSizes.lg,
-        fontWeight: 700
-    },
-    buyerTokenName: {
-        fontStyle: 'italic',
-        fontWeight: 500,
-        color: theme.colors.gray[5]
-    },
-    buyButtonGroup: {
-        width: "50%",
-    },
-    buyButton: {
-        width: "100%",
-        height: "35px"
-    },
-    showOfferButton: {
-        width: "50%",
-        height: "35px"
-    },
-    loader: {
-        height: "500px",
-        width: "500px"
-    }, 
-    offerId:{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: `0 ${theme.spacing.sm}px`,
-        borderRadius: theme.radius.md,
-        backgroundColor: theme.colors.dark,
-        fontSize: theme.fontSizes.lg,
-        fontWeight: 700,
-        color: "white"
-    }
-}));
+import classes from './GridPane.module.css';
+import { useRootStore } from "../../../zustandStore/store";
 
 interface GridPaneProps{
     offer: Offer
@@ -73,7 +16,7 @@ interface GridPaneProps{
 export const GridPane: FC<GridPaneProps> = ({ offer }) => {
 
     const { t } = useTranslation('buy', { keyPrefix: 'table' });
-    const { classes } = useStyle();
+    const [offersAreLoading] = useRootStore((state) => [state.offersAreLoading]);
 
     return(
         <>
@@ -119,6 +62,7 @@ export const GridPane: FC<GridPaneProps> = ({ offer }) => {
                     <Flex gap={"sm"}>
                         <BuyActionsWithPermit
                             buyOffer={offer}
+                            loading={offersAreLoading}
                             groupClassName={classes.buyButtonGroup}
                             buttonClassName={classes.buyButton}
                         />

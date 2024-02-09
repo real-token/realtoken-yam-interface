@@ -1,0 +1,18 @@
+.container {
+    display: flex;
+    width: 33%;
+    border-style: solid;
+    border-color: var(--mantine-color-brand-9);
+    border-width: 2px;
+    border-radius: var(--mantine-spacing-sm);
+    padding: var(--mantine-spacing-md);
+    height: 40vh;
+
+    @media (max-width: 36rem) {
+        width: "100%",
+    }
+}
+
+.offersContainer {
+    overflow-y: scroll;
+}

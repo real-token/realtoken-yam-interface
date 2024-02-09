@@ -1,4 +1,5 @@
 {
+  "graphIssue": "There are troubles with offer loadings with TheGraph. Please be patient",
   "grantRoleLoading": {
     "title": "Copied 🎉",
     "message": "Your transaction is being validated."

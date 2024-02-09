@@ -1,0 +1,15 @@
+.container {
+    @media (min-width: 36rem) {
+        padding: var(--mantine-spacing-md);
+    }
+    @media (max-width: 36rem) {
+        padding: var(--mantine-spacing-xs);
+    }
+}
+
+.link{
+    font-size: 1.25rem;
+    line-height: 1.55;
+    text-decoration: none;
+    font-weight: 700;
+}

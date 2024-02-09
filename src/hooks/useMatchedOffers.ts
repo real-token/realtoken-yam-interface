@@ -1,9 +1,7 @@
 import { useAtomValue } from "jotai";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { multiPathMultiCurrencyAtom, shieldDisabledAtom, shieldValueAtom } from "../states";
-import { selectPublicOffers } from "../store/features/interface/interfaceSelector";
 import { Offer, OFFER_TYPE } from "../types/offer";
-import { useAppSelector } from "./react-hooks";
 import BigNumber from "bignumber.js";
 import { getContract } from "../utils";
 import { CoinBridgeToken, coinBridgeTokenABI } from "../abis";
@@ -12,6 +10,8 @@ import { useWeb3React } from "@web3-react/core";
 import { useContract } from "./useContract";
 import { ContractsID } from "../constants";
 import { MultiPathOffer } from "../types/offer/MultiPathOffer";
+import { useRootStore } from "../zustandStore/store";
+import { selectPublicOffers } from "../zustandStore/selectors";
 
 const getReverseOfferType = (offerType: OFFER_TYPE) => {
     switch(offerType){
@@ -44,7 +44,7 @@ export const useMatchedOffers: UseMatchedOffers = (offerType, offerTokenAddress,
     const shieldValue = useAtomValue(shieldValueAtom);
     const useMultiCurrencies = useAtomValue(multiPathMultiCurrencyAtom);
 
-    const publicOffers = useAppSelector(selectPublicOffers);
+    const publicOffers = useRootStore(selectPublicOffers);
     const revesedOfferType = getReverseOfferType(offerType);
 
     const { account, provider } = useWeb3React();

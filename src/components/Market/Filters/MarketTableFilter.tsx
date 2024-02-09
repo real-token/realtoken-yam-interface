@@ -1,9 +1,9 @@
-import { Flex, Grid, Input, Text, TextInput } from "@mantine/core";
-import { useAtom } from "jotai";
+import { Flex, Text, TextInput } from "@mantine/core";
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
-import { nameFilterValueAtom } from "src/states";
-
+import { ShowOnlyWlCheckbox } from "./OnlyShowWLCheckbox";
+import { useAtom } from "jotai";
+import { nameFilterValueAtom } from "../../../states";
 
 export const MarketTableFilter: FC = () => {
 
@@ -26,6 +26,7 @@ export const MarketTableFilter: FC = () => {
                 value={nameFilterValue}
                 onChange={(event) => setNamefilterValue(event.currentTarget.value)}
             />
+            <ShowOnlyWlCheckbox />
         </Flex>
     )
 }

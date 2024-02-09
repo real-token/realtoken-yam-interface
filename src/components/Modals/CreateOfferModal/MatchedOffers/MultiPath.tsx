@@ -1,4 +1,4 @@
-import { Flex, MantineTheme, createStyles, Text, Button, Checkbox } from "@mantine/core"
+import { Flex, MantineTheme, Text, Button, Checkbox } from "@mantine/core"
 import { Offer } from "../../../../types/offer"
 import { IconArrowRight } from "@tabler/icons"
 import { useEffect, useMemo, useState } from "react";
@@ -17,31 +17,7 @@ import { getContract } from "../../../../utils";
 import { Web3Provider } from "@ethersproject/providers";
 import { showNotification, updateNotification } from "@mantine/notifications";
 import { MultiPathOffer } from "../../../../types/offer/MultiPathOffer";
-
-const useStyle = createStyles((theme: MantineTheme) => ({
-    container: {
-        position: 'relative',
-        border: `2px solid ${theme.colors.brand[0]}`,
-        padding: theme.spacing.md,
-        borderRadius: theme.spacing.md
-    },
-    floatingButton: {
-        bottom: 0,
-        right: 0,
-        marginBottom: '10px',
-        marginRight: '10px'
-    },
-    currencyLogo: {
-        position: 'absolute',
-        bottom: 0,
-        right: 0,
-        transform: 'translate(40%,40%)'
-    },
-    missingTokens: {
-        border: `2px solid ${theme.colors.red[9]}`,
-        borderRadius: theme.spacing.md
-    }
-}));
+import classes from './MultiPath.module.css';
 
 export interface AveragePrice{
     totalPriceInDollar: number;
@@ -83,7 +59,6 @@ export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage, mul
     const { t: t1 } = useTranslation('modals', { keyPrefix: "buy" });
 
     const { chainId } = useWeb3React();
-    const { classes } = useStyle();
 
     const [multiCurrencies,setMultiCurrencies] = useAtom(multiPathMultiCurrencyAtom);
 
@@ -281,9 +256,17 @@ export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage, mul
     }
 
     return(
-        <Flex direction={"column"} className={classes.container}>
+        <Flex 
+            direction={"column"} 
+            style={(theme) => ({
+                position: 'relative',
+                border: `2px solid ${theme.colors.brand[0]}`,
+                padding: theme.spacing.md,
+                borderRadius: theme.spacing.md
+            })}
+        >
             <Flex 
-                sx={(theme) => ({ 
+                style={(theme) => ({ 
                     backgroundColor: theme.colors.blue,
                     borderRadius: theme.radius.md,
                     fontWeight: 700,
@@ -301,14 +284,14 @@ export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage, mul
                 checked={multiCurrencies} 
                 onChange={(event) => setMultiCurrencies(event.currentTarget.checked)}
             />
-            <Text mb={5} weight={700}>{t('bestPath')}</Text>
+            <Text mb={5} fw={700}>{t('bestPath')}</Text>
             <Flex gap={15} mb={12} wrap={"wrap"}>
             {offers && offers.map((offer,index) => {
                 const Logo = getRightAllowBuyTokens(chainId).find((allowedToken) => allowedToken.contractAddress.toLowerCase() == offer.buyerTokenAddress.toLowerCase())?.logo;
                 return(
                 <Flex key={`multi-path-${offer.offerId}`} gap={"xs"} align={"center"}>
                     <Flex
-                        sx={(theme) => ({
+                        style={(theme) => ({
                             display: "flex",
                             position: "relative",
                             alignItems: "center",
@@ -331,17 +314,17 @@ export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage, mul
             })}
             </Flex>
             <Flex direction={"column"} gap={5} mb={12}>
-                <Text weight={700}>{t("total")}</Text>
+                <Text fw={700}>{t("total")}</Text>
                 <MultiPathDetailsPopover averagePrice={averagePrice} />
             </Flex>
             <Flex direction={"column"} gap={5} mb={12}>
-                <Text weight={700}>{t('amountFilled')}</Text>
+                <Text fw={700}>{t('amountFilled')}</Text>
                 <Flex>
                     {`${multiPathAmountFilledPercentage*100}% (${multiPathAmountFilled})`}
                 </Flex>
             </Flex>
             <Flex direction={"column"} gap={5} mb={16}>
-                <Text weight={700}>{t('averagePricePerToken')}</Text>
+                <Text fw={700}>{t('averagePricePerToken')}</Text>
                 <Text>{`$ ${multiPathAmountFilled ? averagePrice?.totalPriceInDollar/multiPathAmountFilled : 0}`}</Text>
             </Flex>
             {buyDatas && buyDatas.missingTokenBalance.length > 0 ? (

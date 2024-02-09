@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { tableOfferTypeAtom } from "src/states";
 import { Offer, OFFER_TYPE } from "src/types/offer";
-import { accountOfferActionsColumn, amountColumn, buyerTokenNameColumn, buyShortTokenNameColumn, deleteOfferActionColumn, exchangeBuyShortTokenNameColumn, exchangeOfferShortTokenNameColumn, header, idColumn, modifyOfferActionColumn, offerShortTokenNameColumn, offerTokenNameColumn, offerYieldColumn, officialPriceColumn, officialYieldColumn, priceColumn, priceDeltaColumn, publicActionsColumn, simplePriceColumn, viewActionColumn, yieldDeltaColumn } from "./column";
+import { accountOfferActionsColumn, amountColumn, buyerTokenNameColumn, buyShortTokenNameColumn, deleteOfferActionColumn, exchangeBuyShortTokenNameColumn, exchangeOfferShortTokenNameColumn, header, idColumn, modifyOfferActionColumn, offerShortTokenNameColumn, offerTokenNameColumn, offerYieldColumn, officialPriceColumn, officialYieldColumn, priceColumn, priceDeltaColumn, publicActionsColumn, simplePriceColumn, viewActionColumn, whitelistedColumn, yieldDeltaColumn } from "./column";
 
 export enum OFFERS_TYPE{
     PUBLIC,
@@ -22,6 +22,7 @@ export const useRightTableColumn: UseRightTableColumn = (offersType)  => {
     // COLUMN BASE
     const basicSellColumns = useMemo(() => [
         idColumn(t,1),
+        whitelistedColumn(t,1),
         offerShortTokenNameColumn(t,2),
         buyerTokenNameColumn(t,2),
         officialYieldColumn(t,1),

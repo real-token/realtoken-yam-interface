@@ -1,0 +1,6 @@
+.container {
+    border-color: var(--mantine-color-brand-9);
+    border-width: 2px;
+    border-style: solid;
+    border-radius: var(--mantine-radius-md);
+}

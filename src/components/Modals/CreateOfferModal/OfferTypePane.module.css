@@ -1,0 +1,9 @@
+.info {
+    position: absolute;
+    top: 0;
+    margin-right: 8px;
+    margin-top: 5px;
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+}

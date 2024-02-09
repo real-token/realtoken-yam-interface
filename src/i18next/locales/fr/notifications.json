@@ -1,4 +1,5 @@
 {
+  "graphIssue": "Il y a des soucis sur le chargements des offers avec TheGraph. Nous vous remercions d'être patient",
   "grantRoleLoading": {
     "title": "Veuillez patienter",
     "message": "Votre transaction est en cours de validation."

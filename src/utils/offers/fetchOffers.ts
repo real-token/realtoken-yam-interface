@@ -1,8 +1,11 @@
-import { ApolloClient, NormalizedCacheObject, gql } from '@apollo/client';
-import { Web3Provider } from '@ethersproject/providers';
+import {
+  ApolloClient,
+  NormalizedCacheObject,
+  gql,
+} from '@apollo/client';
 
 import BigNumber from 'bignumber.js';
-import { YamGnosis_Offer as OfferGraphQl } from 'gql/graphql';
+import { Offer as OfferGraphQl } from '../../../gql/graphql';
 
 import { CHAINS, ChainsID } from 'src/constants';
 import { PropertiesToken } from 'src/types';
@@ -80,14 +83,18 @@ export const getBigDataGraphRealtoken = async (
 };
 
 export const fetchOffersTheGraph = (
-  provider: Web3Provider,
   account: string,
   chainId: number,
   propertiesToken: PropertiesToken[],
-  prices: Price
+  wlProperties: number[],
+  prices: Price,
+  setTheGraphIssue: (value: boolean) => void
 ): Promise<Offer[]> => {
   return new Promise<Offer[]>(async (resolve) => {
     try {
+
+      console.log('wlProperties: ', wlProperties)
+
       const graphNetworkPrefix = CHAINS[chainId as ChainsID].graphPrefixes.yam;
 
       const offersData: Offer[] = [];
@@ -155,7 +162,8 @@ export const fetchOffersTheGraph = (
       });
 
       const offers: OfferGraphQl[] = offersRes.data[graphNetworkPrefix].offers;
-      console.log(offers);
+
+      console.log('offers: ', offers.length)
 
       const accountRealtokenDuplicates: string[] = offers.map(
         (val) => val.seller.address + '-' + val.offerToken.address
@@ -194,12 +202,13 @@ export const fetchOffersTheGraph = (
                     offer.seller.address + '-' + offer.offerToken.address
                 )!;
 
+              // console.log('wlProperties: ', wlProperties)
               const offerData: Offer = await parseOffer(
-                provider,
                 account,
                 offer,
                 accountUserRealtoken,
                 propertiesToken,
+                wlProperties,
                 prices
               );
 
@@ -216,6 +225,10 @@ export const fetchOffersTheGraph = (
       );
 
       const parsedOffers = await Promise.all(promises);
+
+      if(parsedOffers.length < offersToFetch) {
+        setTheGraphIssue(true);
+      }
 
       offersData.push(...parsedOffers);
       // // console.log('Offers formated', offersData.length);

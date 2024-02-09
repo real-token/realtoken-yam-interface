@@ -49,7 +49,7 @@ export const UpdateActions: FC<UpdateActions> = ({
   }, [modals, t]);
 
   return (
-    <Group position={'center'}>
+    <Group justify={'center'}>
       {
         <ActionIcon
           color={'green'}

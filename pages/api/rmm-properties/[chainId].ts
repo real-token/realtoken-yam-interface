@@ -15,7 +15,7 @@ const getTokenFromCommunityAPI = new Promise<APIPropertiesToken[]>( async (resol
         console.log("Failed to fetch properties from community")
         reject(err);
     }
-}) 
+});
 
 const getContractAddressFromChainId = (propertyToken: APIPropertiesToken, chainId: number): string|undefined => {
     switch(chainId){
@@ -184,6 +184,7 @@ const getTokens = (chainId: number, communityProperties: APIPropertiesToken[]): 
                     tokenIdRules: propertyToken.tokenIdRules
                 });
             // }
+            
         });
     }
 

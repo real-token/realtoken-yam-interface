@@ -7,9 +7,9 @@ import { DataRealtokenType } from 'src/types/offer/DataRealTokenType';
 import { Offer } from 'src/types/offer/Offer';
 import { OFFER_TYPE } from 'src/types/offer/OfferType';
 import { Price } from 'src/types/price';
-
-import { YamGnosis_Offer as OfferGraphQl } from '../../../gql/graphql';
+import { Offer as OfferGraphQl } from '../../../gql/graphql';
 import { getPriceInDollar } from '../price';
+import { getNotWhitelistedTokens } from '../whitelist';
 
 // TOKEN TYPE
 // 1 = RealToken
@@ -28,51 +28,45 @@ export const getOfferType = (
 };
 
 export const parseOffer = (
-  provider: Web3Provider,
-  account: string,
-  offer: OfferGraphQl,
-  accountUserRealtoken: DataRealtokenType,
-  propertiesToken: PropertiesToken[],
-  prices: Price
-): Promise<Offer> => {
-  return new Promise<Offer>(async (resolve, reject) => {
-    try {
-      // console.log(
-      //   'DEBUG parseOffer accountUserRealtoken',
-      //   accountUserRealtoken
-      // );
+    account: string,
+    offer: OfferGraphQl,
+    accountUserRealtoken: DataRealtokenType,
+    propertiesToken: PropertiesToken[],
+    wlPropertiesId: number[],
+    prices: Price
+  ): Promise<Offer> => {
+    return new Promise<Offer>(async (resolve, reject) => {
+      try {
+        // console.log(
+        //   'DEBUG parseOffer accountUserRealtoken',
+        //   accountUserRealtoken
+        // );
 
-      let balanceWallet = '0';
-      let allowance = '0';
-      // let logLabel = 'Erreur Type token parseOffer or seller not data in graph realtoken';
-      // console.log("OFFER: ", offer)
-      if (BigNumber(offer.availableAmount).gt(0)) {
-        if (
-          offer.offerToken.tokenType === 1 &&
-          accountUserRealtoken != undefined
-        ) {
-          balanceWallet = accountUserRealtoken.amount ?? '0';
-          allowance = accountUserRealtoken.allowance ?? '0';
+        // console.log('proopertiesToken', propertiesToken);
+  
+        let balanceWallet = '0';
+        let allowance = '0';
+        // let logLabel = 'Erreur Type token parseOffer or seller not data in graph realtoken';
+        // console.log("OFFER: ", offer)
+        if (BigNumber(offer.availableAmount).gt(0)) {
+          if (
+            offer.offerToken.tokenType === 1 &&
+            accountUserRealtoken != undefined
+          ) {
+            balanceWallet = accountUserRealtoken.amount ?? '0';
+            allowance = accountUserRealtoken.allowance ?? '0';
+  
+            // logLabel = 'parseOffer type 1 blance/allowance';
 
-          // logLabel = 'parseOffer type 1 blance/allowance';
+          } else if (
+            offer.offerToken.tokenType === 2 ||
+            offer.offerToken.tokenType === 3
+          ) {
+            balanceWallet = offer.balance?.amount ?? offer.availableAmount;
+            allowance = offer.allowance?.allowance ?? offer.availableAmount;
 
-          // console.log(
-          //   "TESTTTTTTTT",
-          //   balanceWallet,
-          //   allowance
-          // )
-
-          //if (account.balance) balanceWallet = account.balance.toString();
-          //if (account.allowance) allowance = account.allowance.toString();
-        } else if (
-          offer.offerToken.tokenType === 2 ||
-          offer.offerToken.tokenType === 3
-        ) {
-          balanceWallet = offer.balance?.amount ?? offer.availableAmount;
-          allowance = offer.allowance?.allowance ?? offer.availableAmount;
-
-          // logLabel = 'parseOffer type 2/3 blance/allowance';
-        }
+            // logLabel = 'parseOffer type 2/3 blance/allowance';
+          }
 
         /*  console.log(logLabel, {
             sellerAdress: offer.seller.address,
@@ -83,65 +77,71 @@ export const parseOffer = (
             Allowance: allowance,
             'YAM autorisé': offer.availableAmount,
           }); */
+        }
+
+        const o: Offer = {
+          offerId: BigNumber(offer.id).toString(),
+          offerTokenAddress: (offer.offerToken.address as string)?.toLowerCase(),
+          offerTokenName: offer.offerToken.name ?? '',
+          offerTokenDecimals: offer.offerToken.decimals?.toString() ?? '',
+          offerTokenType: offer.offerToken.tokenType ?? 0,
+          buyerTokenAddress: (offer.buyerToken.address as string)?.toLowerCase(),
+          buyerTokenName: offer.buyerToken.name ?? '',
+          buyerTokenDecimals: offer.buyerToken.decimals?.toString() ?? '',
+          buyerTokenType: offer.buyerToken.tokenType ?? 0,
+          sellerAddress: (offer.seller.address as string)?.toLowerCase(),
+          buyerAddress: (offer.buyer?.address as string)?.toLowerCase(),
+          price: offer.price.price.toString(),
+          amount:
+            BigNumber.minimum(
+              offer.availableAmount, //5.4
+              balanceWallet, // 0
+              allowance //0
+            ).toString(10) ?? '0',
+          availableAmount: offer.availableAmount.toString(),
+          balanceWallet: balanceWallet ?? '0',
+          allowanceToken: allowance ?? '0',
+          hasPropertyToken: false,
+          type: undefined,
+          removed: false,
+          createdAtTimestamp: offer.createdAtTimestamp,
+          buyCurrency: "",
+          officialPrice: undefined,
+          offerPrice: undefined,
+          priceDelta: undefined,
+          officialYield: undefined,
+          offerYield: undefined,
+          yieldDelta: undefined,
+          accountWhitelisted: false
+        };
+
+        if(offer.id == "0x5320"){
+          console.log(propertiesToken, prices)
+        }
+
+        o.type = getOfferType(o.offerTokenType,o.buyerTokenType);
+
+        const propertyToken = getProperty(
+          o.type == OFFER_TYPE.BUY ? o.buyerTokenAddress : o.offerTokenAddress,
+          propertiesToken
+        );
+
+        //add price and yield infos
+        o.buyCurrency = propertyToken?.currency ?? "";
+        o.officialPrice = getOfficialPrice(propertyToken);
+        o.offerPrice = getPriceInDollar(prices,o);
+        o.officialYield = getOfficialYield(propertyToken);
+        o.offerYield = getOfferYield(prices,o,propertyToken);
+        o.yieldDelta = getYieldDelta(o);
+        o.priceDelta = getPriceDelta(prices,o);
+        o.accountWhitelisted = getNotWhitelistedTokens(wlPropertiesId, o, propertiesToken).length == 0;
+
+        // console.log(offer.availableAmount, balanceWallet, allowance)
+        resolve(o);
+      } catch (err) {
+        console.log('Error when fetching account from TheGraph', err);
+        reject(err);
       }
-
-      const o: Offer = {
-        offerId: BigNumber(offer.id).toString(),
-        offerTokenAddress: (offer.offerToken.address as string)?.toLowerCase(),
-        offerTokenName: offer.offerToken.name ?? '',
-        offerTokenDecimals: offer.offerToken.decimals?.toString() ?? '',
-        offerTokenType: offer.offerToken.tokenType ?? 0,
-        buyerTokenAddress: (offer.buyerToken.address as string)?.toLowerCase(),
-        buyerTokenName: offer.buyerToken.name ?? '',
-        buyerTokenDecimals: offer.buyerToken.decimals?.toString() ?? '',
-        buyerTokenType: offer.buyerToken.tokenType ?? 0,
-        sellerAddress: (offer.seller.address as string)?.toLowerCase(),
-        buyerAddress: (offer.buyer?.address as string)?.toLowerCase(),
-        price: offer.price.price.toString(),
-        amount:
-          BigNumber.minimum(
-            offer.availableAmount, //5.4
-            balanceWallet, // 0
-            allowance //0
-          ).toString(10) ?? '0',
-        availableAmount: offer.availableAmount.toString(),
-        balanceWallet: balanceWallet ?? '0',
-        allowanceToken: allowance ?? '0',
-        hasPropertyToken: false,
-        type: undefined,
-        removed: offer.removedAtBlock !== null,
-        createdAtTimestamp: offer.createdAtTimestamp,
-        buyCurrency: '',
-        officialPrice: undefined,
-        offerPrice: undefined,
-        priceDelta: undefined,
-        officialYield: undefined,
-        offerYield: undefined,
-        yieldDelta: undefined,
-      };
-
-      o.type = getOfferType(o.offerTokenType, o.buyerTokenType);
-
-      const propertyToken = getProperty(
-        o.type == OFFER_TYPE.BUY ? o.buyerTokenAddress : o.offerTokenAddress,
-        propertiesToken
-      );
-
-      //add price and yield infos
-      o.buyCurrency = propertyToken?.currency ?? '';
-      o.officialPrice = getOfficialPrice(propertyToken);
-      o.offerPrice = getPriceInDollar(prices, o);
-      o.officialYield = getOfficialYield(propertyToken);
-      o.offerYield = getOfferYield(prices, o, propertyToken);
-      o.yieldDelta = getYieldDelta(o);
-      o.priceDelta = getPriceDelta(prices, o);
-
-      // console.log(offer.availableAmount, balanceWallet, allowance)
-      resolve(o);
-    } catch (err) {
-      console.log('Error when fetching account from TheGraph', err);
-      reject(err);
-    }
   });
 };
 

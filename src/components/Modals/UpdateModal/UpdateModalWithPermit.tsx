@@ -22,8 +22,6 @@ import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { useActiveChain, useContract } from 'src/hooks';
 import coinBridgeTokenPermitSignature from 'src/hooks/coinBridgeTokenPermitSignature';
 import erc20PermitSignature from 'src/hooks/erc20PermitSignature';
-import { useAppSelector } from 'src/hooks/react-hooks';
-import { selectPublicOffers } from 'src/store/features/interface/interfaceSelector';
 import { Offer } from 'src/types/offer/Offer';
 import { getContract } from 'src/utils';
 import { cleanNumber } from 'src/utils/number';
@@ -103,6 +101,10 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
   const onHandleSubmit = useCallback(
     async (formValues: UpdateFormValues) => {
       try {
+
+        console.log(formValues)
+
+
         if (
           !account ||
           !provider ||
@@ -134,7 +136,6 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           await realTokenYamUpgradeable.getInitialOffer(offer.offerId);
 
         const oldAmountInWei = BigNumber(amount._hex);
-        offerToken.decimals();
         const newAmountInWei = new BigNumber(formValues.amount).multipliedBy(
           10 ** (await offerToken.decimals())
         );
@@ -164,7 +165,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
 
         // APPROVE OR PERMIT
         let signature: any;
-        if (offerTokenType === 1) {
+        if (offerTokenType === 1 && !isSafe) {
           // TokenType = 1: RealToken
           signature = await coinBridgeTokenPermitSignature(
             account,
@@ -175,7 +176,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
             provider
           );
 
-        } else if (offerTokenType === 2) {
+        } else if (offerTokenType === 2 && !isSafe) {
           // TokenType = 2: ERC20 With Permit
           signature = await erc20PermitSignature(
             account,
@@ -186,7 +187,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
             provider
           );
 
-        } else if (offerTokenType === 3) {
+        } else if (offerTokenType === 3 || isSafe) {
           // TokenType = 3: ERC20 Without Permit, do Approve/buy
           const approveTx = await offerToken.approve(
             realTokenYamUpgradeable.address,
@@ -221,14 +222,14 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           
         }
 
-        // UPDATE OFFER TX
-        const { v, r, s } = signature;
-
         const price = new BigNumber(formValues.price.toString()).shiftedBy(parseFloat(offer.buyerTokenDecimals)).toString(10);
         const amountUpdate = BigNumber(formValues.amount).shiftedBy(parseFloat(offer.offerTokenDecimals)).toString(10);
         
         let updateTx: ethers.providers.TransactionResponse|undefined = undefined;
-        if (offerTokenType === 1) {
+        if (offerTokenType === 1 && !isSafe) {
+
+          const { v, r, s } = signature;
+
           updateTx = await realTokenYamUpgradeable.updateOfferWithPermit(
             offer.offerId,
             price,
@@ -240,7 +241,10 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
             s
           );
 
-        }else if(offerTokenType === 2){
+        }else if(offerTokenType === 2&& !isSafe){
+
+          const { v, r, s } = signature;
+
           updateTx = await realTokenYamUpgradeable.updateOfferWithPermit(
             formValues.offerId,
             price,
@@ -252,7 +256,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
             s
           );
 
-        }else if(offerTokenType === 3){
+        }else if(offerTokenType === 3 || isSafe){
           updateTx = await realTokenYamUpgradeable.updateOffer(
             formValues.offerId,
             price,
@@ -298,7 +302,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
         setSubmitting(false);
       }
     },
-    [account, provider, realTokenYamUpgradeable, offer.offerTokenAddress, offer.offerId, offer.buyerTokenDecimals, offer.offerTokenDecimals, activeChain?.blockExplorerUrl, triggerTableRefresh, onClose]
+    [account, provider,connector, realTokenYamUpgradeable, offer.offerTokenAddress, offer.offerId, offer.buyerTokenDecimals, offer.offerTokenDecimals, activeChain?.blockExplorerUrl, triggerTableRefresh, onClose]
   );
 
   const [offerTokenSymbol, setOfferTokenSymbol] = useState<string | undefined>(
@@ -375,7 +379,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           required={true}
           min={0}
           placeholder={t('price')}
-          sx={{ flexGrow: 1 }}
+          style={{ flexGrow: 1 }}
           {...getInputProps('price')}
         />
         <NumberInput
@@ -383,7 +387,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           required={true}
           min={0}
           placeholder={t('amount')}
-          sx={{ flexGrow: 1 }}
+          style={{ flexGrow: 1 }}
           {...getInputProps('amount')}
         />
 

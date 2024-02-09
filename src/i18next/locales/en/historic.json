@@ -1,0 +1,13 @@
+{
+    "pageTitle": "Purchase history",
+    "errorLoading": "An error hapenned while loading historic",
+    "historicAreLoading": "Historic is loading",
+    "downloadButton": "Download",
+    "table": {
+        "columnTitle": {
+            "txHash": "Tx hash",
+            "purchaseDate": "Puchase date",
+            "tokenSummary": "Transaction summary"
+        }
+    }
+}

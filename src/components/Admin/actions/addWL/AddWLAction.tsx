@@ -1,11 +1,8 @@
-import { Flex, Button, createStyles, Text } from "@mantine/core"
-import { useForm } from "@mantine/form";
+import { Flex, Button, Text } from "@mantine/core"
 import { Action } from "../../Action"
-import { utils } from "ethers";
 import { ContractsID, NOTIFICATIONS, NotificationsID } from "src/constants";
 import { useActiveChain, useContract } from "src/hooks";
 import { showNotification, updateNotification } from "@mantine/notifications";
-import { useEffect, useState } from "react";
 import { AddWL } from "./AddWL";
 import { useAtom } from "jotai";
 import { wlTokensAtom } from "src/states";
@@ -13,16 +10,7 @@ import { DEFAULT_WL_TOKEN } from "src/types/WlToken";
 import { IconPlus } from "@tabler/icons";
 import { calcRem } from "src/utils/style";
 import { useTranslation } from "react-i18next";
-
-const useStyle = createStyles((theme) => ({
-    addButton: {
-        '&:hover': {
-            borderRadius: theme.radius.sm,
-            cursor: "pointer",
-            backgroundColor: theme.colors.brand
-        }
-    }
-}));
+import classes from './AddWLAction.module.css';
 
 interface AddWLForm{
     type: string;
@@ -31,8 +19,6 @@ interface AddWLForm{
 
 export const AddWLAction = () => {
 
-    const { classes } = useStyle();
- 
     const realTokenYamUpgradeable = useContract(ContractsID.realTokenYamUpgradeable);
     const activeChain = useActiveChain();
 

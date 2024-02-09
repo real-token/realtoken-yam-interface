@@ -17,8 +17,8 @@ import { useActiveChain, useContract } from 'src/hooks';
 import { NumberInput } from '../../NumberInput';
 import { useWeb3React } from '@web3-react/core';
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
-import { selectPublicOffers } from 'src/store/features/interface/interfaceSelector';
-import { useAppSelector } from 'src/hooks/react-hooks';
+import { useRootStore } from '../../../zustandStore/store';
+import { selectPublicOffers } from '../../../zustandStore/selectors';
 
 type UpdateModalProps = {
   offerId: string;
@@ -78,8 +78,7 @@ export const UpdateModal: FC<ContextModalProps<UpdateModalProps>> = ({
     ContractsID.realTokenYamUpgradeable
   );
 
-  const offers = useAppSelector(selectPublicOffers);
-  const { refreshOffers } = useRefreshOffers(false);
+  const offers = useRootStore(selectPublicOffers);
 
   const { t } = useTranslation('modals', { keyPrefix: 'update' });
 
@@ -183,7 +182,7 @@ export const UpdateModal: FC<ContextModalProps<UpdateModalProps>> = ({
           // step={amountMax}
           showMax={true}
           placeholder={t('price')}
-          sx={{ flexGrow: 1 }}
+          style={{ flexGrow: 1 }}
           {...getInputProps('price')}
         />
         <NumberInput
@@ -195,7 +194,7 @@ export const UpdateModal: FC<ContextModalProps<UpdateModalProps>> = ({
           step={amountMax}
           showMax={true}
           placeholder={t('amount')}
-          sx={{ flexGrow: 1 }}
+          style={{ flexGrow: 1 }}
           {...getInputProps('amount')}
         />
         <Group grow={true}>

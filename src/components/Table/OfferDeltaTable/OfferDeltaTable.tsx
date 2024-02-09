@@ -1,32 +1,6 @@
-import { createStyles, Skeleton, Text } from "@mantine/core";
+import { Skeleton, Text } from "@mantine/core";
 import { Offer, OFFER_TYPE } from "src/types/offer";
-import { calcRem } from "src/utils/style";
-
-const useStyle = createStyles((theme) => ({
-    table: {
-        width: "100%",
-        borderWidth: "1px",
-        borderStyle: "solid",
-        borderColor: theme.colors.brand,
-        borderRadius: theme.radius.md,
-        overflow: "hidden",
-        padding: 0,
-        borderSpacing: 0
-    },
-    tableHead: {
-        backgroundColor: theme.colors.brand,
-        borderWidth: "1px",
-        borderStyle: "solid",
-        borderColor: theme.colors.brand,
-    },
-    tableCell: {
-        padding: calcRem(5),
-        textAlign: "center",
-        borderWidth: "1px",
-        borderStyle: "solid",
-        borderColor: theme.colors.brand,
-    }   
-}));
+import classes from './OfferDeltaTable.module.css';
 
 interface OfferDeltaTableProps{
     offer: Offer, 
@@ -36,8 +10,6 @@ interface OfferDeltaTableProps{
     offerYield: number|undefined,
 }
 export const OfferDeltaTable = ({ offer, officialPrice, officialYield, offerPrice, offerYield }: OfferDeltaTableProps) => {
-
-    const { classes } = useStyle();
 
     return(
         <table className={classes.table}>

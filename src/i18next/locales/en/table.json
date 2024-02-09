@@ -10,6 +10,7 @@
   },
   "filters": {
     "title": "Filters",
-    "nameFilterPlaceholder": "Search"
+    "nameFilterPlaceholder": "Search",
+    "showOnlyWhitelisted": "Show only whitelisted properties's offers"
   }
 }

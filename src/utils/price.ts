@@ -1,4 +1,4 @@
-import { Web3Provider } from "@ethersproject/providers";
+import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 import BigNumber from "bignumber.js";
 import { oraclePriceFeedABI } from "src/abis";
 import { OraclePriceFeed } from "src/abis/types/oraclePriceFeed";
@@ -13,7 +13,7 @@ export interface Price{
   price: string;
 }
 
-export const getPrice = (provider: Web3Provider, allowedToken: AllowedToken) => {
+export const getPrice = (provider: Web3Provider|JsonRpcProvider, allowedToken: AllowedToken) => {
     return new Promise<Price>(async (resolve,reject) => {
       try{
   

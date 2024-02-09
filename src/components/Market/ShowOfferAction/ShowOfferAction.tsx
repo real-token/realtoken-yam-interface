@@ -1,22 +1,21 @@
 import { ActionIcon } from "@mantine/core";
 import { IconEye } from "@tabler/icons";
 import { FC } from "react";
-import { useSelector } from "react-redux";
 import { Offer } from "src/types/offer/Offer";
-import { selectOffersIsLoading } from "src/store/features/interface/interfaceSelector";
 import { openInNewTab } from "src/utils/window";
+import { useRootStore } from "../../../zustandStore/store";
 interface ShowOfferActionProps{
     offer: Offer
     className?: string;
 }
 export const ShowOfferAction: FC<ShowOfferActionProps> = ({ offer, className }) => {
 
-    const offersIsLoading = useSelector(selectOffersIsLoading);
+    const offersAreLoading = useRootStore((state) => state.offersAreLoading);
 
     return(
         <>
         {
-            !offersIsLoading ? (
+            !offersAreLoading ? (
                 <ActionIcon
                     color={'brand'}
                     onClick={() => openInNewTab(`/offer/${offer.offerId}`)}

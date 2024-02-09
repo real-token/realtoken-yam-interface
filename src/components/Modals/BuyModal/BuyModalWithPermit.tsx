@@ -169,7 +169,7 @@ export const BuyModalWithPermit: FC<
   ]);
 
   return (
-    <form onSubmit={onSubmit(onHandleSubmit)} style={{ width: calcRem(500) }}>
+    <form onSubmit={onSubmit(onHandleSubmit)} style={{ paddingBottom: calcRem(40) }}>
       <Stack justify={'center'} align={'stretch'}>
         <Flex direction={"column"} gap={"sm"}>
           <Text size={"xl"}>{t('selectedOffer')}</Text>
@@ -215,7 +215,7 @@ export const BuyModalWithPermit: FC<
               max={maxTokenBuy}
               showMax={true}
               placeholder={t('amount')}
-              sx={{ flexGrow: 1 }}
+              style={{ flexGrow: 1 }}
               groupMarginBottom={16}
               setFieldValue={setFieldValue}
               {...getInputProps('amount')}
@@ -226,7 +226,7 @@ export const BuyModalWithPermit: FC<
               {` ${t("summaryText1")} ${values?.amount} ${offerTokenSymbol} ${t("summaryText2")} ${cleanNumber(values?.price)} ${buyTokenSymbol} ${t("summaryText3")} ${total} ${buyTokenSymbol}`}
             </Text>
             
-            <Flex direction={'column'} gap={'md'} style={{ marginBottom: '15px' }}>
+            <Flex direction={'column'} gap={'md'} style={(theme) => ({ marginBottom: theme.spacing.xl })}>
               {connector !== ConnectorsDatas.get(AvailableConnectors.gnosisSafe)?.connectorKey ? (
                 <Flex direction={'column'} gap={5}>
                   <Text size="sm" fw={500} mt="md">{'Buy method'}</Text>

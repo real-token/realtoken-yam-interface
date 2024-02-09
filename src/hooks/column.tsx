@@ -9,7 +9,7 @@ import { TokenName } from "src/components/Column/TokenName"
 import { BuyActionsWithPermit } from "src/components/Market/BuyActions"
 import { DeleteAdminAction } from "src/components/Market/DeleteActions/DeleteAdminAction"
 import { ShowOfferAction } from "src/components/Market/ShowOfferAction/ShowOfferAction"
-import { OfferTypeBadge } from "src/components/Offer/OfferTypeBadge"
+import { OfferTypeBadge } from "src/components/Offer/OfferTypeBadge/OfferTypeBadge"
 import { Offer, OFFER_TYPE } from "src/types/offer"
 import { getReduceAddress } from "src/utils/address"
 import { ENV, isEnvs } from "src/utils/isEnv"
@@ -70,7 +70,7 @@ export const idColumn: ColumnFn<OFFER_TYPE> = (t,span) => {
         header: t('offerId'),
         cell: ({ row, getValue }) => { 
             return (
-            <Group noWrap={true} spacing={'xs'}>
+            <Group wrap="nowrap" gap={'xs'} justify="center">
                 { row.original.buyerAddress ? <Badge>{t('privateTexte')}</Badge> : undefined }
                 { row.original.hasPropertyToken && isEnvs([ENV.DEV]) ?
                   <ActionIcon
@@ -79,19 +79,19 @@ export const idColumn: ColumnFn<OFFER_TYPE> = (t,span) => {
                       onClick={() => row.toggleExpanded()}
                   >
                       {row.getIsExpanded() ? (
-                      <IconChevronUp size={16} />
+                        <IconChevronUp size={16} />
                       ) : (
-                      <IconChevronDown size={16} />
+                        <IconChevronDown size={16} />
                       )}
                   </ActionIcon>
                   :
-                  <ActionIcon variant={'transparent'} color={'brand'} disabled={true}/>
+                  undefined
                 }
                 <Text
                     size={'sm'}
-                    sx={{
-                    textOverflow: 'ellipsis',
-                    overflow: 'hidden',
+                    style={{
+                      textOverflow: 'ellipsis',
+                      overflow: 'hidden',
                     }}
                 >
                     {getValue()}
@@ -104,6 +104,22 @@ export const idColumn: ColumnFn<OFFER_TYPE> = (t,span) => {
     }
 }
 
+export const whitelistedColumn: ColumnFn<OFFER_TYPE> = (t,span) => {
+  return{
+    id: 'whitelisted',
+    accessorFn: (offer) => offer.accountWhitelisted.toString(),
+    header: "Whitelisted",
+    enableColumnFilter: true,
+    filterFn: 'equals',
+    cell: ({ row }) => (
+      <Flex>
+        {/* {row.original.accountWhitelisted ? <Text>Yes</Text> : <Text>No</Text>} */}
+        {row.original.accountWhitelisted.toString()}
+      </Flex>
+    )
+  } as ColumnDef<Offer,OFFER_TYPE>
+}
+
 export const idPrivateColumn: ColumnFn<OFFER_TYPE> = (t,span) => {
   return{
       id: 'offer-id',
@@ -111,7 +127,7 @@ export const idPrivateColumn: ColumnFn<OFFER_TYPE> = (t,span) => {
       header: t('offerId'),
       cell: ({ row, getValue }) => { 
           return (
-          <Group noWrap={true} spacing={'xs'}>
+          <Group wrap="nowrap" gap={'xs'}>
               { row.original.hasPropertyToken && isEnvs([ENV.DEV]) ?
                 <ActionIcon
                     variant={'transparent'}
@@ -129,7 +145,7 @@ export const idPrivateColumn: ColumnFn<OFFER_TYPE> = (t,span) => {
               }
               <Text
                   size={'sm'}
-                  sx={{
+                  style={{
                   textOverflow: 'ellipsis',
                   overflow: 'hidden',
                   }}
@@ -168,7 +184,7 @@ export const buyerTokenNameColumn: ColumnFn<string> = (t,span) => {
           <Flex justify={"center"}>
             <Text
               size={'sm'}
-              sx={{
+              style={{
                 textAlign: "center",
                 textOverflow: 'ellipsis',
                 overflow: 'hidden',
@@ -196,7 +212,7 @@ export const sellerAddressColumn: ColumnFn<string> = (t,span) => {
         cell: ({ getValue }) => (
           <Text
             size={'sm'}
-            sx={{
+            style={{
               textAlign: "center",
               textOverflow: 'ellipsis',
               overflow: 'hidden',
@@ -235,7 +251,7 @@ export const simplePriceColumn: ColumnFn<number> = (t,span) => {
       cell: ({ getValue }) => (
           <Text
               size={'sm'}
-              sx={{
+              style={{
               textAlign: 'center',
               textOverflow: 'ellipsis',
               overflow: 'hidden',
@@ -271,7 +287,7 @@ export const amountColumn: ColumnFn<string> = (t,span) => {
         cell: ({ getValue }) => (
           <Text
             size={'sm'}
-            sx={{
+            style={{
               textAlign: 'center',
               textOverflow: 'ellipsis',
               overflow: 'hidden',
@@ -294,7 +310,7 @@ export const walletBalanceColumn: ColumnFn<string> = (t,span) => {
       cell: ({ getValue }) => (
         <Text
           size={'sm'}
-          sx={{
+          style={{
             textAlign: 'center',
             textOverflow: 'ellipsis',
             overflow: 'hidden',
@@ -316,7 +332,7 @@ export const allowanceColumn: ColumnFn<string> = (t,span) => {
       cell: ({ getValue }) => (
         <Text
           size={'sm'}
-          sx={{
+          style={{
             textAlign: 'center',
             textOverflow: 'ellipsis',
             overflow: 'hidden',
@@ -374,7 +390,7 @@ export const officialYieldColumn: ColumnFn<number|undefined> = (t,span) => {
           getValue() !== undefined ?
             <Text
               size={'sm'}
-              sx={{
+              style={{
                 textAlign: 'center',
                 textOverflow: 'ellipsis',
                 overflow: 'hidden',
@@ -535,7 +551,7 @@ export const offerDateColumn: ColumnFn<number> = (t,span) => {
     cell: ({ getValue }) => (
       <Text
             size={'sm'}
-            sx={{
+            style={{
               textAlign: 'center',
               textOverflow: 'ellipsis',
               overflow: 'hidden',
@@ -560,7 +576,7 @@ export const adminAmount: ColumnFn<string> = (t,span) => {
     cell: ({ getValue }) => (
       <Text
             size={'sm'}
-            sx={{
+            style={{
               textAlign: 'right',
               textOverflow: 'ellipsis',
               overflow: 'hidden',
@@ -586,7 +602,7 @@ export const adminWalletBlanace: ColumnFn<string> = (t,span) => {
     cell: ({ getValue }) => (
       <Text
             size={'sm'}
-            sx={{
+            style={{
               textAlign: 'right',
               textOverflow: 'ellipsis',
               overflow: 'hidden',
@@ -612,7 +628,7 @@ export const adminAllowance: ColumnFn<number> = (t,span) => {
     cell: ({ getValue }) => (
       <Text
             size={'sm'}
-            sx={{
+            style={{
               textAlign: 'right',
               textOverflow: 'ellipsis',
               overflow: 'hidden',

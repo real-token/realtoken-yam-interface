@@ -5,9 +5,10 @@ export interface CreatedOffer{
     offerType: OFFER_TYPE;
     offerId: number;
     offerTokenAddress: string;
+    offerTokenDecimal: number |undefined;
     buyerTokenAddress: string;
     price: number|undefined;
-    amount: BigNumber|undefined;
+    amount: string|undefined;
     buyerAddress: string;
     isPrivateOffer: boolean;
 }

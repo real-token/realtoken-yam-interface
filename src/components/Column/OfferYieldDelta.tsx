@@ -8,7 +8,7 @@ interface OfferYieldDeltaProps{
 }
 export const OfferYieldDelta = ({ offer }: OfferYieldDeltaProps) => {
 
-    const offerDelta = useMemo(() => new BigNumber(offer.yieldDelta ?? 0),[offer.yieldDelta]);;
+    const offerDelta = useMemo(() => new BigNumber(offer.yieldDelta ?? 0),[offer.yieldDelta]);
 
     const isZero: boolean|undefined = useMemo(() => {
         if(!offerDelta) return undefined;
@@ -18,13 +18,13 @@ export const OfferYieldDelta = ({ offer }: OfferYieldDeltaProps) => {
 
     return(
         <Flex justify={"center"}>
-            <Text color={isZero ? "white" : offerDelta.gt(0) ? "green" : "red"}>
+            <Text c={isZero ? "white" : offerDelta.gt(0) ? "green" : "red"}>
                 { !isZero ? 
                     `${offerDelta.gt(0) ? "+" : ""}${parseFloat(offerDelta.multipliedBy(100).toString()).toFixed(2)}%`
                     :
                     "-"
                 }   
-            </Text> 
+            </Text>
         </Flex>
     )
 } 

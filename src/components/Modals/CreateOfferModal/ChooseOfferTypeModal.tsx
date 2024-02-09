@@ -1,5 +1,5 @@
 /* eslint-disable react/display-name */
-import { Button, createStyles, Flex, Text, Tooltip } from '@mantine/core';
+import { Button, Flex, Text, Tooltip } from '@mantine/core';
 import { ContextModalProps, useModals } from '@mantine/modals';
 import { IconInfoCircle } from '@tabler/icons';
 import { Dispatch, FC, useState } from 'react';
@@ -7,47 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useOfferType } from 'src/hooks/useOfferType';
 import { OFFER_TYPE } from 'src/types/offer';
 import { calcRem } from 'src/utils/style';
-
-interface OfferTypePaneStyleProps{
-  backgroundColor: string;
-  isSelected: boolean
-}
-const offerTypePaneStyle = createStyles((theme, { backgroundColor, isSelected }: OfferTypePaneStyleProps) => ({
-  selected: {
-    display: "flex",
-    height: calcRem(100),
-    width: "33%",
-    padding: "7px",
-    borderStyle: "solid",
-    borderWidth: "3px",
-    borderRadius: theme.radius.lg,
-    borderColor: isSelected ? "white" : "transparent"
-  },
-  container: {
-    position: "relative",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-    backgroundColor: backgroundColor,
-    // padding: theme.spacing.sm,
-    borderRadius: theme.radius.md,
-    '&:hover':{
-      backgroundColor: theme.fn.darken(backgroundColor,0.4),
-      cursor: "pointer"
-    }
-  },
-  info:{
-    position: "absolute",
-    top: "0",
-    marginRight: "8px",
-    marginTop: "5px",
-    display: "flex",
-    justifyContent: "end",
-    width: "100%"
-  }
-}));
+import classes from './OfferTypePane.module.css';
 
 interface OfferTypePaneProps{
   setOfferType: Dispatch<OFFER_TYPE|undefined>;
@@ -57,10 +17,9 @@ interface OfferTypePaneProps{
 const OfferTypePane: FC<OfferTypePaneProps> = ({ offerType, selectedOfferType, setOfferType }) => {
 
   const { getColor, getI18OfferTypeName } = useOfferType();
-  const { classes } = offerTypePaneStyle({ 
-    backgroundColor: getColor(offerType) ?? "",
-    isSelected: offerType == selectedOfferType
-  })
+
+  const isSelected = offerType == selectedOfferType;
+  const backgroundColor = getColor(offerType) ?? "";
 
   const { t } = useTranslation("modals", { keyPrefix: "chooseOfferType" });
 
@@ -76,10 +35,35 @@ const OfferTypePane: FC<OfferTypePaneProps> = ({ offerType, selectedOfferType, s
 
   return(
     <Tooltip label={tooltipText.get(offerType)} position={"bottom"} multiline={true}>
-      <Flex className={classes.selected}>
+      <Flex
+        style={(theme) => ({
+          display: "flex",
+          height: calcRem(100),
+          width: "33%",
+          padding: "7px",
+          borderStyle: "solid",
+          borderWidth: "3px",
+          borderRadius: theme.radius.lg,
+          borderColor: isSelected ? "white" : "transparent"
+        })}
+      >
         <Flex
           onClick={() => setO()}
-          className={classes.container}
+          style={(theme) => ({
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%",
+            backgroundColor: backgroundColor,
+            // padding: theme.spacing.sm,
+            borderRadius: theme.radius.md,
+            '&:hover':{
+              backgroundColor: `darken(${backgroundColor},0.4)`,
+              cursor: "pointer"
+            }
+          })}
         >
           <div className={classes.info}><IconInfoCircle size={20} color={"white"}/></div>
           <Text color={"white"} fw={700}>{getI18OfferTypeName(offerType)}</Text>

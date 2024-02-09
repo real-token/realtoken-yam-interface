@@ -21,7 +21,7 @@ export const DeleteAdminAction: FC<DeleteActions> = ({
 
   const { t } = useTranslation('modals');
 
-  const { refreshOffers } = useRefreshOffers(false);
+  const { refreshOffers } = useRefreshOffers();
 
   const onOpenDeleteModal = useCallback(
     (offer: Offer) => {
@@ -46,7 +46,7 @@ export const DeleteAdminAction: FC<DeleteActions> = ({
   }, [modals, t]);
 
   return (
-    <Group position={'center'}>
+    <Group justify={'center'}>
       {
         <ActionIcon
           color={'red'}

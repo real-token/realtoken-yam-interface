@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useSelector } from "react-redux";
-import { selectProperties, selectPropertiesIsLoading } from "src/store/features/interface/interfaceSelector";
 import { PropertiesToken } from "src/types/PropertiesToken";
+import { useRootStore } from "../zustandStore/store";
 
 type usePropertiesTokenReturn = {
     propertiesToken: PropertiesToken[]
@@ -11,16 +10,16 @@ type usePropertiesTokenReturn = {
 
 export const usePropertiesToken = (): usePropertiesTokenReturn => {
 
-    const propertiesToken = useSelector(selectProperties);
-    const propertiesIsloading = useSelector(selectPropertiesIsLoading)
+    const [propertiesToken, propertiesAreloading ] = useRootStore((state) => [state.properties, state.propertiesAreLoading])
 
     const getPropertyToken = (address: string): PropertiesToken | undefined => {
+        if(!address) return undefined
         return propertiesToken.find(propertyToken => propertyToken.contractAddress.toLocaleLowerCase() == address.toLowerCase())
     }
 
     return{
         propertiesToken,
-        propertiesIsloading,
+        propertiesIsloading: propertiesAreloading,
         getPropertyToken
     }
 

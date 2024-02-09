@@ -1,4 +1,4 @@
-import { SelectItem } from "@mantine/core";
+import { ComboboxItem } from "@mantine/core";
 import { useMemo } from "react"
 import { PropertiesToken } from "src/types";
 import { AllowedToken } from "src/types/allowedTokens";
@@ -11,10 +11,10 @@ type UseCreateOfferTokens = (
     choosedOfferTokenAddress: string,
     choosedBuyerTokenAddress: string,
 ) => {
-    allowedTokens: SelectItem[],
-    properties: SelectItem[],
-    offerTokens: SelectItem[];
-    buyerTokens: SelectItem[];
+    allowedTokens: ComboboxItem[],
+    properties: ComboboxItem[],
+    offerTokens: ComboboxItem[];
+    buyerTokens: ComboboxItem[];
 }
 
 export const useCreateOfferTokens: UseCreateOfferTokens = (offerType) => {
@@ -22,21 +22,21 @@ export const useCreateOfferTokens: UseCreateOfferTokens = (offerType) => {
     const { propertiesToken } = usePropertiesToken();
     const { allowedTokens } = useAllowedTokens();
 
-    const formatedPropetiesTokenForSelect: SelectItem[] = useMemo((): SelectItem[] => {
+    const formatedPropetiesTokenForSelect: ComboboxItem[] = useMemo((): ComboboxItem[] => {
         if(!propertiesToken) return [];
-        const formated: SelectItem[] = [];
+        const formated: ComboboxItem[] = [];
         propertiesToken.map((propertyTokenInfo: PropertiesToken) => formated.push({value: propertyTokenInfo.contractAddress, label: propertyTokenInfo.shortName}))
         return formated;
       },[propertiesToken])
     
-    const formatedAllowTokensForSelect: SelectItem[] = useMemo((): SelectItem[] => {
+    const formatedAllowTokensForSelect: ComboboxItem[] = useMemo((): ComboboxItem[] => {
         if(!allowedTokens) return [];
-        const formated: SelectItem[] = [];
+        const formated: ComboboxItem[] = [];
         allowedTokens.map((allowedBuyToken: AllowedToken) => formated.push({value: allowedBuyToken.contractAddress, label: allowedBuyToken.symbol}))
         return formated;
     },[allowedTokens])
     
-    const allowedBuyerTokensForSelect: SelectItem[] = useMemo((): SelectItem[] => {
+    const allowedBuyerTokensForSelect: ComboboxItem[] = useMemo((): ComboboxItem[] => {
         if(!formatedAllowTokensForSelect || !formatedPropetiesTokenForSelect) return [];
 
         if(offerType == OFFER_TYPE.SELL) return formatedAllowTokensForSelect;
@@ -45,7 +45,7 @@ export const useCreateOfferTokens: UseCreateOfferTokens = (offerType) => {
         return [];
     },[formatedAllowTokensForSelect, formatedPropetiesTokenForSelect, offerType])
 
-    const allowedOfferTokensForSelect: SelectItem[] = useMemo((): SelectItem[] => {
+    const allowedOfferTokensForSelect: ComboboxItem[] = useMemo((): ComboboxItem[] => {
         if(!formatedAllowTokensForSelect || !formatedPropetiesTokenForSelect) return [];
 
         if(offerType == OFFER_TYPE.SELL) return formatedPropetiesTokenForSelect;

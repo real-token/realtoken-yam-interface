@@ -1,46 +1,55 @@
 import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Flex, Text } from '@mantine/core';
-import { NextLink } from '@mantine/next';
-import { styles } from './Header.styles';
-import { useRouter } from 'next/router';
 import { useRole } from 'src/hooks/useRole';
 import { isRole, USER_ROLE } from 'src/types/admin';
+import classes from './HeaderNav.module.css';
+import { useRouter } from 'next/router';
 
 export const HeaderNav: FC = () => {
   const { t } = useTranslation('header');
-  const router = useRouter()
+  const router = useRouter();
+
   const colorSelected = '#cfaa70';
 
   const { role } = useRole();
 
   return (
-      <Flex sx={styles.container} gap={100} justify={'center'}>
+      <Flex className={classes.container} gap={100} justify={'center'}>
         <Text
           size={'xl'}
-          weight={700}
-          component={NextLink}
-          href={'/'}
-          color={router.pathname === '/' ? colorSelected : ''}
+          fw={700}
+          className={classes.link}
+          c={router.pathname === '/' ? colorSelected : ''}
+          onClick={() => router.push('/')}
         >
           {t('titleCat1')}
         </Text>
         <Text
           size={'xl'}
-          weight={700}
-          component={NextLink}
-          href={'/my-offers'}
-          color={router.pathname === '/my-offers' ? colorSelected : ''}
+          fw={700}
+          className={classes.link}
+          c={router.pathname === '/my-offers' ? colorSelected : ''}
+          onClick={() => router.push('/my-offers')}
         >
           {t('titleCat2')}
         </Text>
+        <Text
+          size={'xl'}
+          fw={700}
+          className={classes.link}
+          c={router.pathname === '/historic' ? colorSelected : ''}
+          onClick={() => router.push('/historic')}
+        >
+          {t('historic')}
+        </Text>
         { isRole(role,[USER_ROLE.MODERATOR,USER_ROLE.ADMIN]) ? 
-            <Text
+          <Text
             size={'xl'}
-            weight={700}
-            component={NextLink}
-            href={'/admin'}
-            color={router.pathname === '/admin' ? colorSelected : ''}
+            fw={700}
+            className={classes.link}
+            c={router.pathname === '/admin' ? colorSelected : ''}
+            onClick={() => router.push('/admin')}
           >
             {t('titleAdmin')}
           </Text>

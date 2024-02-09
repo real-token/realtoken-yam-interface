@@ -28,6 +28,7 @@ export type Offer = {
   offerYield: number|undefined;
   yieldDelta: number|undefined,
   buyCurrency: string;
+  accountWhitelisted: boolean;
 };
 
 export const DEFAULT_OFFER: Offer = {
@@ -56,7 +57,8 @@ export const DEFAULT_OFFER: Offer = {
   officialYield: undefined,
   offerYield: undefined,
   yieldDelta: undefined,
-  buyCurrency: ""
+  buyCurrency: "",
+  accountWhitelisted: false
 }
 
 export const OFFER_LOADING = [DEFAULT_OFFER, DEFAULT_OFFER, DEFAULT_OFFER]

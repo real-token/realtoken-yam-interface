@@ -1,5 +1,4 @@
 import { FC, useEffect, useState } from 'react';
-import { MantineSize } from '@mantine/core';
 import {
   ExpandedState,
   PaginationState,
@@ -10,22 +9,37 @@ import {
   getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
+  ColumnFiltersState,
 } from '@tanstack/react-table';
 import { Table } from '../../Table';
 import { MarketSubRow } from '../MarketSubRow';
-import { useAtom } from 'jotai';
-import { nameFilterValueAtom } from 'src/states';
+import { useAtom, useAtomValue } from 'jotai';
+import { nameFilterValueAtom, showOnlyWhitelistedAtom } from 'src/states';
 import React from 'react';
-import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 import { OFFERS_TYPE, useRightTableColumn } from 'src/hooks/useRightTableColumns';
-import { selectPublicOffers } from 'src/store/features/interface/interfaceSelector';
-import { useAppSelector } from 'src/hooks/react-hooks';
 import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
+import { useRootStore } from '../../../zustandStore/store';
+import { selectPublicOffers } from '../../../zustandStore/selectors';
+import { useRefreshOffers } from '../../../hooks/offers/useRefreshOffers';
 
 export const MarketTable: FC = () => {
 
-  const { refreshOffers, offersIsLoading } = useRefreshOffers(false);
+  const { refreshOffers, offersIsLoading } = useRefreshOffers();
   const [nameFilterValue,setNamefilterValue] = useAtom(nameFilterValueAtom);
+
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
+  const showOnlyWhitelisted = useAtomValue(showOnlyWhitelistedAtom);
+  useEffect(() => {
+    if(showOnlyWhitelisted && !offersIsLoading){
+      setColumnFilters([{
+        id: 'whitelisted',
+        value: 'true'
+      }]);
+    }else{
+      setColumnFilters([])
+    }
+  }, [showOnlyWhitelisted, offersIsLoading])
   
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'offer-id', desc: false },
@@ -48,7 +62,7 @@ export const MarketTable: FC = () => {
     }
   },[nameFilterValue])
 
-  const publicOffers = useAppSelector(selectPublicOffers);
+  const publicOffers = useRootStore(selectPublicOffers);
   const { offers: data } = useTypedOffers(publicOffers);
   const columns = useRightTableColumn(OFFERS_TYPE.PUBLIC);
 
@@ -59,18 +73,22 @@ export const MarketTable: FC = () => {
       sorting: sorting, 
       pagination: pagination, 
       expanded: expanded, 
-      globalFilter: nameFilterValue, 
+      globalFilter: nameFilterValue,
+      columnFilters: columnFilters,
+      columnVisibility: {
+        whitelisted: false
+      }
     },
     //Trick to convert every value to string. Needed for comparison
     globalFilterFn: (row, columnId, filterValue) => {
       const value = row.getValue(columnId);
       if(value == undefined) return false;
       const safeValue: string = (() => {
-        
         return typeof value === 'number' ? String(value) : value as string;
       })();
       return safeValue.toLowerCase().includes(filterValue.toLowerCase());
     },
+    onColumnFiltersChange: setColumnFilters,
     onSortingChange: setSorting,
     onGlobalFilterChange: setNamefilterValue,
     onPaginationChange: setPagination,
@@ -89,11 +107,12 @@ export const MarketTable: FC = () => {
         highlightOnHover: true,
         verticalSpacing: 'sm',
         horizontalSpacing: 'xs',
-        sx: (theme) => ({
-          border: theme.other.border(theme),
-          borderRadius: theme.radius[theme.defaultRadius as MantineSize],
-          borderCollapse: 'separate',
-          borderSpacing: 0,
+        style: (theme) => ({
+          // border: theme.other.border(theme),
+          // borderRadius: theme.radius[theme.defaultRadius as MantineSize],
+          // borderCollapse: 'separate',
+          overflow: 'hidden',
+          // borderSpacing: 0,
         }),
       }}
       table={table}

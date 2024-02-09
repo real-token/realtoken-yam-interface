@@ -1,0 +1,25 @@
+.table {
+    width: 100%;
+    border-width: 1px;
+    border-style: solid;
+    border-color: var(--mantine-color-brand-9);
+    border-radius: var(--mantine-radius-md);
+    overflow: hidden;
+    padding: 0;
+    border-spacing: 0;
+}
+
+.tableHead {
+    background-color: var(--mantine-color-brand-9);
+    border-width: 1px;
+    border-style: solid;
+    border-color: var(--mantine-color-brand-9);
+}
+
+.tableCell {
+    padding: calcRem(5);
+    text-align: center;
+    border-width: 1px;
+    border-style: solid;
+    border-color: var(--mantine-color-brand-9);
+}

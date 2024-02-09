@@ -1,0 +1,18 @@
+.floatingButton{
+    bottom: 0;
+    right: 0;
+    margin-bottom: 10px;
+    margin-right: 10px;
+}
+
+.currencyLogo{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    transform: translate(40%,40%);
+}
+
+.missingTokens {
+    border: 2px solid var(--mantine-color-red-9);
+    border-radius: var(--mantine-spacing-md);
+}

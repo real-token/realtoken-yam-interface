@@ -19,7 +19,7 @@ export const UpdateActionsWithPermit: FC<UpdateActions> = ({
   const { account } = useWeb3React();
   const modals = useModals();
 
-  const { refreshOffers } = useRefreshOffers(false); 
+  const { refreshOffers } = useRefreshOffers(); 
 
   const { t } = useTranslation('modals');
 
@@ -45,7 +45,7 @@ export const UpdateActionsWithPermit: FC<UpdateActions> = ({
   }, [modals, t]);
 
   return (
-    <Group position={'center'}>
+    <Group justify={'center'}>
       {
         <ActionIcon
           color={'green'}
