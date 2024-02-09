@@ -59,7 +59,7 @@ export default function HistoricPage(){
             }
         })
 
-        console.log(parsedHistorics);
+        // console.log(parsedHistorics);
 
         saveAs(
             new File(

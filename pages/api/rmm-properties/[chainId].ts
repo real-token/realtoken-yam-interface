@@ -12,7 +12,7 @@ const getTokenFromCommunityAPI = new Promise<APIPropertiesToken[]>( async (resol
         const tokens: APIPropertiesToken[] = await response.json();
         resolve(tokens);
     }catch(err){
-        console.log("Failed to fetch properties from community")
+        console.error("Failed to fetch properties from community")
         reject(err);
     }
 });
