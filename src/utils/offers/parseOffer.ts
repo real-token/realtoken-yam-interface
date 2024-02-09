@@ -116,13 +116,9 @@ export const parseOffer = (
           accountWhitelisted: false
         };
 
-        if(offer.id == "0x5fe1"){
-          console.log(
-            offer.availableAmount,
-            balanceWallet,
-            allowance
-          )
-        }
+        // if(offer.id == "0x5320"){
+        //   console.log(propertiesToken, prices)
+        // }
 
         o.type = getOfferType(o.offerTokenType,o.buyerTokenType);
 
