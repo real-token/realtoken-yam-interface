@@ -6,18 +6,34 @@ import { useGetOffers } from "./useGetOffers";
 export default function useInitStore(){
 
     const { account, chainId } = useWeb3React();
-    const [setAccount, setChainId] = useRootStore(state => [state.setAccount, state.setChainId]);
+    const [
+        setAccount, 
+        setChainId, 
+        currentChainId, 
+        currentAccount
+    ] = useRootStore(state => [
+        state.setAccount, 
+        state.setChainId, 
+        state.chainId, 
+        state.account
+    ]);
 
     // INIT REDUX STORE HERE
     useGetOffers();
     // useAutoRefresh();
 
     useEffect(() => {
-        if(account) setAccount(account)
-    },[account]);
+        if(account && currentAccount !== account){
+            setAccount(account);
+            console.log("account", account)
+        }
+    },[account, currentAccount]);
 
     useEffect(() => {
-        if(chainId) setChainId(chainId)
-    },[chainId])
+        if(chainId && currentChainId !== chainId){
+            setChainId(chainId) 
+            console.log("chainId", chainId)
+        }
+    },[chainId, currentChainId])
 
 }

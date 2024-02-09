@@ -18,14 +18,25 @@ export const useRootStore = create<RootStore>()(
 
 mountStoreDevtool('bridge', useRootStore);
 
-useRootStore.subscribe((state) => state.chainId, async (newChainId, oldChainId) => {
+useRootStore.subscribe((state) => ({
+    chainId: state.chainId,
+    account: state.account
+}), async (values, oldValues) => {
+    if(
+        (values.chainId == oldValues.chainId && values.account == oldValues.account) ||
+        values.chainId == undefined ||
+        values.account == undefined ||
+        values.account == ''
+    ) return;
+
+    console.log(values, oldValues)
+
     const { refreshInterface } = useRootStore.getState();
-    if(oldChainId === newChainId) return;
     await refreshInterface();
 })
 
-useRootStore.subscribe((state) => state.account, async (newAccount, oldAccount) => {
-    const { refreshInterface } = useRootStore.getState();
-    if(newAccount === oldAccount) return;
-    await refreshInterface();
-})
+// useRootStore.subscribe((state) => state.account, async (newAccount, oldAccount) => {
+//     const { refreshInterface } = useRootStore.getState();
+//     if(newAccount === oldAccount) return;
+//     await refreshInterface();
+// })
