@@ -1,8 +1,15 @@
+import { FC } from 'react';
+
+import {
+  EthereumLogo,
+  GnosisLogo,
+  Chain as RealtChains,
+} from '@realtoken/realt-commons';
+
 import { realTokenYamUpgradeableABI } from 'src/abis';
+
 import { Contracts, ContractsID } from './contracts';
 import { Currency, DAI, ETH } from './currencies';
-import { Chain as RealtChains, EthereumLogo, GnosisLogo } from '@realtoken/realt-commons';
-import { FC } from 'react';
 
 export enum ChainsID {
   Ethereum = 0x01,
@@ -10,7 +17,7 @@ export enum ChainsID {
   Goerli = 0x05,
 }
 
-export type Chain = Omit<RealtChains,'blockExplorerUrl'> & {
+export type Chain = Omit<RealtChains, 'blockExplorerUrl'> & {
   chainId: ChainsID;
   chainName: string;
   logo: FC;
@@ -21,7 +28,7 @@ export type Chain = Omit<RealtChains,'blockExplorerUrl'> & {
   graphPrefixes: {
     yam: string;
     realtoken: string;
-  }
+  };
 };
 
 export const CHAINS: Record<ChainsID, Chain> = {
@@ -30,12 +37,12 @@ export const CHAINS: Record<ChainsID, Chain> = {
     chainName: 'Gnosis Chain',
     logo: GnosisLogo,
     nativeCurrency: DAI,
-    rpcUrl: 'https://gnosis-pokt.nodies.app',
+    rpcUrl: 'https://endpoints.omniatech.io/v1/gnosis/mainnet/public',
     blockExplorerUrl: 'https://gnosisscan.io/',
     isTestnet: false,
     graphPrefixes: {
-      yam: "yamGnosis",
-      realtoken: "realTokenGnosis"
+      yam: 'yamGnosis',
+      realtoken: 'realTokenGnosis',
     },
     contracts: {
       [ContractsID.realTokenYamUpgradeable]: {
@@ -54,8 +61,8 @@ export const CHAINS: Record<ChainsID, Chain> = {
     blockExplorerUrl: 'https://etherscan.io/',
     isTestnet: false,
     graphPrefixes: {
-      yam: "yamEth",
-      realtoken: "realTokenEth"
+      yam: 'yamEth',
+      realtoken: 'realTokenEth',
     },
     contracts: {
       [ContractsID.realTokenYamUpgradeable]: {
@@ -75,8 +82,8 @@ export const CHAINS: Record<ChainsID, Chain> = {
     blockExplorerUrl: 'https://goerli.etherscan.io/',
     isTestnet: true,
     graphPrefixes: {
-      yam: "yamGoerli",
-      realtoken: "realTokenGoerli"
+      yam: 'yamGoerli',
+      realtoken: 'realTokenGoerli',
     },
     contracts: {
       [ContractsID.realTokenYamUpgradeable]: {
