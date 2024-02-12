@@ -230,7 +230,10 @@ export const fetchOffersTheGraph = (
 
       const parsedOffers = await Promise.all(promises);
 
-      if(parsedOffers.length < offersToFetch) {
+      // ERROR_RANGE is used to check if the number of offers fetched is correctly
+      // This is the -/+ range difference accepted
+      const ERROR_RANGE = 0.1;
+      if(parsedOffers.length < offersToFetch*(1-ERROR_RANGE)) {
         setTheGraphIssue(true);
       }
 
