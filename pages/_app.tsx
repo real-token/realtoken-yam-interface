@@ -46,7 +46,7 @@ const showAllNetworks = true;
 
 const env = process.env.NEXT_PUBLIC_ENV ?? "development";
 const walletConnectKey = process.env.NEXT_PUBLIC_WALLET_CONNECT_KEY ?? "";
-console.log("key: ", walletConnectKey)
+// console.log("key: ", walletConnectKey)
 
 const [walletConnectV2, walletConnectV2Hooks] = getWalletConnectV2<CustomChain>(customChains,env, walletConnectKey, showAllNetworks);
 const [readOnly, readOnlyHooks] = getReadOnlyConnector(customChains);

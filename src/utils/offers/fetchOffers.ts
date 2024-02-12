@@ -16,6 +16,7 @@ import { Price } from 'src/types/price';
 import { Offer as OfferGraphQl } from 'gql/graphql';
 import { parseOffer } from './parseOffer';
 import { apiClient } from './getClientURL';
+import { useRootStore } from '../../zustandStore/store';
 
 const nbrFirst = 1000;
 
@@ -91,6 +92,7 @@ export const fetchOffersTheGraph = (
   prices: Price,
   setTheGraphIssue: (value: boolean) => void
 ): Promise<Offer[]> => {
+  const { abortController } = useRootStore.getState();
   return new Promise<Offer[]>(async (resolve, reject) => {
     try {
 
@@ -108,6 +110,11 @@ export const fetchOffersTheGraph = (
             }
           }
         `,
+        context: {
+          fetchOptions: {
+            signal: abortController.signal
+          }
+        }
       });
 
       const offersToFetch = activeOfferResult.data[graphNetworkPrefix].global.activeOffersCount;
@@ -156,7 +163,12 @@ export const fetchOffersTheGraph = (
               }
             }
           }
-        `
+        `,
+         context: {
+          fetchOptions: {
+            signal: abortController.signal
+          }
+        }
       })
 
       const offers: OfferGraphQl[] = offersRes.data[graphNetworkPrefix].offers;

@@ -19,7 +19,7 @@ export default function useInitStore(){
     ]);
 
     // INIT REDUX STORE HERE
-    useGetOffers();
+    // useGetOffers();
     // useAutoRefresh();
 
     useEffect(() => {

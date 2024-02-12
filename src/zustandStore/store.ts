@@ -31,7 +31,11 @@ useRootStore.subscribe((state) => ({
 
     console.log(values, oldValues)
 
-    const { refreshInterface } = useRootStore.getState();
+    const { refreshInterface, abortController } = useRootStore.getState();
+
+    // ABORT ALL BEFORE CONTINUING
+    abortController.abort('ABORTED: ChainId or account changed');
+
     await refreshInterface();
 })
 
