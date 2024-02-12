@@ -94,8 +94,6 @@ export const fetchOffersTheGraph = (
   return new Promise<Offer[]>(async (resolve, reject) => {
     try {
 
-      console.log('wlProperties: ', wlProperties)
-
       const graphNetworkPrefix = CHAINS[chainId as ChainsID].graphPrefixes.yam;
 
       const offersData: Offer[] = [];
