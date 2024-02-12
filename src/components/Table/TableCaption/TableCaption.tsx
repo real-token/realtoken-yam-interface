@@ -46,15 +46,16 @@ export const TableCaption = <T,>({
   ]);
   const [isAutoRefresh,setIsAutoRefresh] = useAtom(isRefreshedAutoAtom);
 
+  console.log('table: ', table.getPageCount())
+
   const paginationProps: PaginationProps & { page: number } = {
     total: table.getPageCount(),
     page: table.getState().pagination.pageIndex + 1,
     radius: 'md',
     size: 'md',
-    siblings: 0,
+    siblings: 1,
     onChange: (page) => table.setPageIndex(page - 1),
   };
-  const mediaQuery = useMediaQuery('(max-width: 720px)');
 
   const { t } = useTranslation('table', { keyPrefix: 'caption' });
 
@@ -81,7 +82,7 @@ export const TableCaption = <T,>({
         <IconRefresh size={16}/>
       </ActionIcon>
 
-      <Pagination {...paginationProps} boundaries={mediaQuery ? 1 : 0} />
+      <Pagination {...paginationProps} boundaries={1} />
 
       <Menu
         position={'top'}
