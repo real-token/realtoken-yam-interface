@@ -22,13 +22,11 @@ export default function HistoricPage(){
         historics,
         historicHasLoadingError,
         historicsAreLoading,
-        properties,
         chainId
     ] = useRootStore((state) => [
         state.historics,
         state.historicHasLoadingError,
         state.historicsAreLoading,
-        state.properties,
         state.chainId
     ]);
 

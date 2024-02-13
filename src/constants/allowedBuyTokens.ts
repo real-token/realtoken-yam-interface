@@ -64,6 +64,12 @@ export const gnosisAllowedTokens: AllowedToken[] = [
     logo: DaiSvg,
   },
   {
+    name: 'RMMv2 Xdai',
+    symbol: 'armmWXDAI',
+    contractAddress: '0x7349C9eaA538e118725a6130e0f8341509b9f8A0',
+    logo: DaiSvg
+  },
+  {
     name: 'RMMv3 Xdai',
     symbol: 'armmv3WXDAI',
     contractAddress: '0x0ca4f5554dd9da6217d62d8df2816c82bba4157b',

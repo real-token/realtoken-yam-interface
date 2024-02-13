@@ -15,6 +15,7 @@ import { Price } from 'src/types/price';
 
 import { apiClient } from './getClientURL';
 import { parseOffer } from './parseOffer';
+import { useRootStore } from '../../zustandStore/store';
 
 const nbrFirst = 1000;
 
@@ -90,10 +91,9 @@ export const fetchOffersTheGraph = (
   prices: Price,
   setTheGraphIssue: (value: boolean) => void
 ): Promise<Offer[]> => {
-  return new Promise<Offer[]>(async (resolve) => {
+  const { abortController } = useRootStore.getState();
+  return new Promise<Offer[]>(async (resolve, reject) => {
     try {
-
-      console.log('wlProperties: ', wlProperties)
 
       const graphNetworkPrefix = CHAINS[chainId as ChainsID].graphPrefixes.yam;
 
@@ -109,6 +109,11 @@ export const fetchOffersTheGraph = (
             }
           }
         `,
+        context: {
+          fetchOptions: {
+            signal: abortController.signal
+          }
+        }
       });
 
       const offersToFetch =
@@ -159,7 +164,12 @@ export const fetchOffersTheGraph = (
             }
           }
         `,
-      });
+         context: {
+          fetchOptions: {
+            signal: abortController.signal
+          }
+        }
+      })
 
       const offers: OfferGraphQl[] = offersRes.data[graphNetworkPrefix].offers;
 
@@ -226,7 +236,10 @@ export const fetchOffersTheGraph = (
 
       const parsedOffers = await Promise.all(promises);
 
-      if(parsedOffers.length < offersToFetch) {
+      // ERROR_RANGE is used to check if the number of offers fetched is correctly
+      // This is the -/+ range difference accepted
+      const ERROR_RANGE = 0.1;
+      if(parsedOffers.length < offersToFetch*(1-ERROR_RANGE)) {
         setTheGraphIssue(true);
       }
 
