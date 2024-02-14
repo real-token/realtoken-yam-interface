@@ -29,7 +29,7 @@ useRootStore.subscribe((state) => ({
         values.account == ''
     ) return;
 
-    console.log(values, oldValues)
+    console.log(oldValues, values)
 
     const { refreshInterface, abortController } = useRootStore.getState();
 

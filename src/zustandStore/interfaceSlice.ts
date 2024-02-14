@@ -101,7 +101,7 @@ export const createInterfaceSlice: StateCreator<
     abortController: new AbortController(),
     refreshInterfaceDatas: (): Promise<void> => {
       return new Promise<void>(async (resolve, reject) => {
-        try{
+        // try{
           const { chainId, account, fetchAddressWlProperties, fetchProperties, fetchPrices, getProvider, setInterfaceIsLoading } = get();
           setInterfaceIsLoading(true);
     
@@ -109,16 +109,16 @@ export const createInterfaceSlice: StateCreator<
     
           await fetchProperties(chainId);
           await fetchAddressWlProperties(account, chainId);
-          await fetchPrices(chainId,provider);
+          await fetchPrices(chainId,provider).catch(err => console.error('Failed to fetch prices: ', err));
           resolve();
 
-        }catch(err){
-          reject(err);
-        }
+        // }catch(err){
+        //   reject(err);
+        // }
       });
     },
     refreshInterface: async () => {
-      try{
+      // try{
 
         set({ abortController: new AbortController() })
 
@@ -132,9 +132,9 @@ export const createInterfaceSlice: StateCreator<
           fetchHistorics()
         ]);
         setInterfaceIsLoading(false);
-      }catch(err){
-        console.error('Error while refreshing interface: ');
-      }
+      // }catch(err){
+      //   console.error('Error while refreshing interface: ', err);
+      // }
     },
     refreshOffers: async () => {
       try{
