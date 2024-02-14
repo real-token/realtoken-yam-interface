@@ -310,12 +310,12 @@ export const createInterfaceSlice: StateCreator<
           });
   
           const lastPurchase = data.yamGnosis.purchases[0].createdAtTimestamp;
-          console.log('LAST PURCHASE: ', lastPurchase)
+          // console.log('LAST PURCHASE: ', lastPurchase)
   
           const historics = [];
           let timestamp = lastPurchase+1;
           while(true){
-            console.log(historics.length, timestamp)
+            // console.log(historics.length, timestamp)
             const { data } = await apiClient.query({query: gql`
               query getHistorics{
                 ${graphNetworkPrefix} {
@@ -352,7 +352,7 @@ export const createInterfaceSlice: StateCreator<
             `});
   
             const purchases = data[graphNetworkPrefix].purchases;
-            console.log('PURCHASES: ', purchases.length)
+            // console.log('PURCHASES: ', purchases.length)
   
             if(purchases.length == 0) break;
   
@@ -364,7 +364,7 @@ export const createInterfaceSlice: StateCreator<
   
           }
   
-          console.log('FINISH TO FETCH HISTORICS: ', historics.length)
+          console.log('FINISH TO FETCH HISTORICS: ', historics.length);
   
           set({ 
             historics: historics,
