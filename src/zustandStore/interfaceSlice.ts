@@ -118,12 +118,17 @@ export const createInterfaceSlice: StateCreator<
       });
     },
     refreshInterface: async () => {
-      // try{
+      try{
+
+        const { fetchOffers, fetchHistorics, setInterfaceIsLoading, refreshInterfaceDatas, abortController } = get();
+
+        abortController.abort();
 
         set({ abortController: new AbortController() })
 
-        const { fetchOffers, fetchHistorics, setInterfaceIsLoading, refreshInterfaceDatas } = get();
         setInterfaceIsLoading(true);
+
+        
   
         await refreshInterfaceDatas();
   
@@ -132,9 +137,9 @@ export const createInterfaceSlice: StateCreator<
           fetchHistorics()
         ]);
         setInterfaceIsLoading(false);
-      // }catch(err){
-      //   console.error('Error while refreshing interface: ', err);
-      // }
+      }catch(err){
+        console.error('Error while refreshing interface: ', err);
+      }
     },
     refreshOffers: async () => {
       try{
