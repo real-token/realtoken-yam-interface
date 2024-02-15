@@ -30,6 +30,7 @@
     "placeholderOfferSellTokenAddress": "Token you want to sell",
     "placeholderOfferBuyTokenAddress": "Token you want to buy",
     "placeholderOfferPrivatBuyerAddress": "Address of the private buyer",
+    "searchTokens": "Search a token",
     "buttonCreateOffer" : "Add new offer",
     "buttonModifyCreateOffer": "Modify offer",
     "buttonCreateOfferWithNumber": "Create {{ nbr, Number }} offer(s)",

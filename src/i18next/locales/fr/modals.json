@@ -31,6 +31,7 @@
     "placeholderOfferPrivatBuyerAddress": "Renseigner l'adresse de l'acheteur privé",
     "placeholderPrice": "Nb de jeton d'achat pour un jeton en vente",
     "placeholderAmount": "Quantité de jeton en vente",
+    "searchTokens": "Rechercher un token",
     "buttonCreateOffer": "Ajouter une nouvelle offre",
     "buttonModifyCreateOffer": "Modifier l'offre",
     "buttonCreateOfferWithNumber": "Ajouter {{ nbr, Number }} offre(s)",
