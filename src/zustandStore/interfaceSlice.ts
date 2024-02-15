@@ -16,6 +16,8 @@ import { fetchOffer } from "../utils/offers/fetchOffer";
 import { Historic } from "../types/historic";
 import { parseHistoric } from "../utils/historic/historic";
 import { reject } from "lodash";
+import { UserBalances } from "../types/UserBalance";
+import BigNumber from "bignumber.js";
 
 export interface InterfaceSlice {
   account: string;
@@ -36,6 +38,10 @@ export interface InterfaceSlice {
   refreshInterfaceDatas: () => Promise<void>;
   refreshOffers: () => Promise<void>;
   refreshInterface: () => void;
+
+  userBalances: UserBalances;
+  userBalancesAreLoading: boolean;
+  fetchUserBalances: () => Promise<void>;
 
   //Offers
   fetchOffers: () => Promise<void>;
@@ -102,14 +108,25 @@ export const createInterfaceSlice: StateCreator<
     refreshInterfaceDatas: (): Promise<void> => {
       return new Promise<void>(async (resolve, reject) => {
         // try{
-          const { chainId, account, fetchAddressWlProperties, fetchProperties, fetchPrices, getProvider, setInterfaceIsLoading } = get();
+          const { 
+            chainId, account, getProvider, setInterfaceIsLoading,
+            fetchAddressWlProperties, fetchProperties, fetchPrices,  fetchUserBalances 
+          } = get();
           setInterfaceIsLoading(true);
     
           const provider = getProvider()
+
+          // await Promise.allSettled([
+          //   fetchProperties(chainId),
+          //   fetchAddressWlProperties(account, chainId),
+          //   fetchPrices(chainId,provider),
+          //   fetchUserBalances()
+          // ]);
     
           await fetchProperties(chainId);
           await fetchAddressWlProperties(account, chainId);
           await fetchPrices(chainId,provider).catch(err => console.error('Failed to fetch prices: ', err));
+          await fetchUserBalances()
           resolve();
 
         // }catch(err){
@@ -125,7 +142,7 @@ export const createInterfaceSlice: StateCreator<
         abortController.abort();
 
         set({ abortController: new AbortController() })
-
+        
         setInterfaceIsLoading(true);
 
         
@@ -152,6 +169,46 @@ export const createInterfaceSlice: StateCreator<
       }catch(err){
         console.error(err)
       }
+    },
+
+    userBalances: {},
+    userBalancesAreLoading: true,
+    fetchUserBalances: (): Promise<void> => {
+      return new Promise<void>(async (resolve, reject) => {
+
+        const { account } = get();
+
+        const chainDatas = CHAINS[get().chainId as ChainsID];
+        const prefix = chainDatas.graphPrefixes.realtoken;
+
+        const res = await apiClient.query({
+          query: gql`
+          query getBalances{
+              ${prefix}{
+                accountBalances(where: { account: "${account.toLowerCase()}" }){
+                  token{
+                    address
+                  }
+                  amount
+                }
+              }
+            }
+          `
+        });
+
+        const balances = res.data[prefix].accountBalances;
+        console.log('USER BALANCES: ', balances);
+
+        const userBalances: UserBalances = {};
+        balances.forEach((balance: any) => {
+          userBalances[balance.token.address.toLowerCase()] = new BigNumber(balance.amount);
+        });
+
+        set({ userBalances, userBalancesAreLoading: false });
+
+        resolve();
+
+      });
     },
 
     fetchOffers: async () => {
@@ -313,6 +370,10 @@ export const createInterfaceSlice: StateCreator<
               }
             `
           });
+
+          if(data.yamGnosis.purchases.length == 0){
+            throw new Error('No purchases found');
+          }
   
           const lastPurchase = data.yamGnosis.purchases[0].createdAtTimestamp;
           // console.log('LAST PURCHASE: ', lastPurchase)
@@ -383,7 +444,6 @@ export const createInterfaceSlice: StateCreator<
         }catch(err){
           console.error('Failed to fetch historics: ', err);
           set({ historicHasLoadingError: true })
-          reject(err);
         }
       });
     }
