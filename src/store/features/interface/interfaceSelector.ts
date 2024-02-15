@@ -45,7 +45,7 @@ export const selectPublicOffers = (state: RootState) => {
     (offer: Offer) =>
       !offer.buyerAddress &&
       BigNumber(offer.amount).times(offer.price).gt(0.01) &&
-      offer.removed === false
+      offer.removed === false,
   );
 };
 
@@ -70,6 +70,15 @@ export const selectAllTransactions = (state: RootState) => {
   const transactionsIsLoading = selectTransactionsIsLoading(state);
   if (!transactions || transactionsIsLoading) return [];
   return transactions;
+};
+
+export const selectPublicTransactions = (state: RootState) => {
+  const transactions = selectTransactions(state);
+  const transactionsIsLoading = selectTransactionsIsLoading(state);
+  if (!transactions || transactionsIsLoading) return [];
+  return transactions.filter(
+    (transaction: Transaction) => !transaction.isPrivate,
+  );
 };
 
 export const selectPricesIsLoading = (state: RootState): boolean => {

@@ -19,6 +19,7 @@ export type Transaction = {
   initialOfferAmount?: number;
   currentOfferAmount?: number;
   type: TRANSACTION_TYPE;
+  isPrivate?: boolean;
 };
 
 export type TokenData = {

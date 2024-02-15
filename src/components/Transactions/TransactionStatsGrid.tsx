@@ -10,7 +10,7 @@ import { useAppSelector } from 'src/hooks/react-hooks';
 import { useRefreshTransactions } from 'src/hooks/transactions/useRefreshTransactions';
 import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
 import { statesFilterTokenAtom } from 'src/states';
-import { selectAllTransactions } from 'src/store/features/interface/interfaceSelector';
+import { selectPublicTransactions } from 'src/store/features/interface/interfaceSelector';
 import { selectOffersIsLoading } from 'src/store/features/interface/interfaceSelector';
 
 import { sortTransactions } from './Utils';
@@ -23,11 +23,11 @@ export const TransactionStatsGrid = ({}) => {
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`);
   const { refreshTransactions } = useRefreshTransactions(false);
   const offersIsLoading = useSelector(selectOffersIsLoading);
-  const allTransactions = useAppSelector(selectAllTransactions);
+  const allTransactions = useAppSelector(selectPublicTransactions);
   const { propertiesToken } = usePropertiesToken();
   const sortedTransactions = sortTransactions(allTransactions);
   const [tokenFilterStates, setTokenFilterStates] = useAtom(
-    statesFilterTokenAtom
+    statesFilterTokenAtom,
   );
 
   // useState<
@@ -47,8 +47,8 @@ export const TransactionStatsGrid = ({}) => {
         propertiesToken.map((token) => [
           token.contractAddress.toLowerCase(),
           true,
-        ])
-      )
+        ]),
+      ),
     );
   }, [propertiesToken, setTokenFilterStates]);
 
@@ -116,7 +116,7 @@ export const TransactionStatsGrid = ({}) => {
                   t.tokenForSale?.address.toLowerCase() ===
                     token.contractAddress.toLowerCase() ||
                   t.tokenBuyWith?.address.toLowerCase() ===
-                    token.contractAddress.toLowerCase()
+                    token.contractAddress.toLowerCase(),
               )}
               handleTokenFilter={handleTokenFilter}
               tokenFilterStates={tokenFilterStates}

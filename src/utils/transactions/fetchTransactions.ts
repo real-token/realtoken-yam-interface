@@ -13,7 +13,7 @@ import { parseTransaction } from './parseTransaction';
 
 export const fetchTransactionsTheGraph = (
   chainId: number,
-  offers: Offer[]
+  offers: Offer[],
 ): Promise<Transaction[]> => {
   return new Promise<Transaction[]>(async (resolve, reject) => {
     try {
@@ -59,7 +59,7 @@ export const fetchTransactionsTheGraph = (
             try {
               const offerData: Transaction = await parseTransaction(
                 transaction,
-                offers
+                offers,
               );
 
               resolve(offerData);
@@ -67,19 +67,19 @@ export const fetchTransactionsTheGraph = (
               console.log('Error when parsingOffer: ', err);
               reject(err);
             }
-          })
+          }),
       );
 
       const parsedTransactions = (await Promise.all(promises)).filter(
-        (t) => t.type === TRANSACTION_TYPE.BUY
+        (t) => t.type === TRANSACTION_TYPE.BUY,
       );
 
-      // console.log(
-      //   'Query dataYAM transaction',
-      //   parsedTransactions.length,
-      //   JSON.stringify(parsedTransactions[0], null, 4)
-      //   //parsedTransactions.map((t) => t.offerId)
-      // );
+      console.log(
+        'Query dataYAM transaction',
+        parsedTransactions.length,
+        JSON.stringify(parsedTransactions, null, 4),
+        //parsedTransactions.map((t) => t.offerId)
+      );
 
       transactionsData.push(...parsedTransactions);
 

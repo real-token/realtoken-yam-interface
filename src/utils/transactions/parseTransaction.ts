@@ -16,7 +16,7 @@ import { Transaction as TransactionGraphQl } from '../../../.graphclient/index';
 // 3 = ERC20 sans permit
 export const getOfferType = (
   offerTokenType: number,
-  buyerTokenType: number
+  buyerTokenType: number,
 ): OFFER_TYPE => {
   if (offerTokenType == 1 && (buyerTokenType == 2 || buyerTokenType == 3))
     return OFFER_TYPE.SELL;
@@ -28,12 +28,12 @@ export const getOfferType = (
 
 export const parseTransaction = (
   transactionGraphQL: TransactionGraphQl,
-  offers: Offer[]
+  offers: Offer[],
 ): Promise<Transaction> => {
   return new Promise<Transaction>(async (resolve, reject) => {
     try {
       const { amountGwei, offerId, priceGwei, type } = parseInput(
-        transactionGraphQL.input
+        transactionGraphQL.input,
       );
       const amount = new BigNumber(amountGwei)
         .dividedBy(transactionGraphQL.transferEvents[0].token.decimals)
@@ -107,7 +107,7 @@ function parseInput(inputString: string): {
 
 export const associateTransactionWithOffer = (
   transaction: Transaction,
-  offers: Offer[]
+  offers: Offer[],
 ): {
   transactionWithOffer: Transaction;
 } => {
@@ -115,7 +115,7 @@ export const associateTransactionWithOffer = (
   //const transactionWithOffer = transactions.map((transaction) => {
   // Trouve l'offre correspondante en utilisant offerId
   const correspondingOffer = offers.find(
-    (offer) => offer.offerId === transaction.offerId
+    (offer) => offer.offerId === transaction.offerId,
   );
 
   const tokenForSale: TokenData = {
@@ -135,12 +135,12 @@ export const associateTransactionWithOffer = (
   };
 
   const amount = new BigNumber(transaction.amountGwei).dividedBy(
-    new BigNumber(10).pow(tokenForSale.decimals)
+    new BigNumber(10).pow(tokenForSale.decimals),
   );
   transaction.amount = amount.toNumber();
 
   const price = new BigNumber(transaction.priceGwei).dividedBy(
-    new BigNumber(10).pow(tokenBuyWith.decimals)
+    new BigNumber(10).pow(tokenBuyWith.decimals),
   );
   transaction.price = price.toNumber();
   transaction.usdAmount = price.times(transaction.amount).toNumber();
@@ -153,6 +153,12 @@ export const associateTransactionWithOffer = (
     ? parseInt(correspondingOffer.amount)
     : undefined;
   transaction.initialOfferAmount = correspondingOffer?.initialAmount;
+
+  //console.log('correspondingOffer', correspondingOffer);
+
+  transaction.isPrivate = correspondingOffer
+    ? correspondingOffer.buyerAddress !== undefined
+    : false;
 
   return { transactionWithOffer: transaction };
 };
