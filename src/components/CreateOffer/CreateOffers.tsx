@@ -44,7 +44,7 @@ const approveOffer = (
   account: string | undefined,
   realTokenYamUpgradeable: Contract | undefined,
   setSubmitting: (status: boolean) => void,
-  activeChain: Chain | undefined
+  activeChain: Chain | undefined,
 ): Promise<void> => {
   return new Promise<void>(async (resolve, reject) => {
     if (
@@ -61,7 +61,7 @@ const approveOffer = (
         offerTokenAddress,
         coinBridgeTokenABI,
         provider,
-        account
+        account,
       );
 
       if (!offerToken) {
@@ -71,7 +71,7 @@ const approveOffer = (
 
       const oldAllowance = await offerToken.allowance(
         account,
-        realTokenYamUpgradeable.address
+        realTokenYamUpgradeable.address,
       );
       const amountInWeiToPermit = amountToApprove
         .plus(new BigNumber(oldAllowance.toString()))
@@ -85,7 +85,7 @@ const approveOffer = (
       BigNumber.set({ EXPONENTIAL_AT: 35 });
       const approveTx = await offerToken.approve(
         realTokenYamUpgradeable.address,
-        amountInWeiToPermit
+        amountInWeiToPermit,
       );
 
       const notificationApprove = {
@@ -95,7 +95,7 @@ const approveOffer = (
       };
 
       showNotification(
-        NOTIFICATIONS[NotificationsID.approveOfferLoading](notificationApprove)
+        NOTIFICATIONS[NotificationsID.approveOfferLoading](notificationApprove),
       );
 
       approveTx
@@ -106,8 +106,8 @@ const approveOffer = (
               status === 1
                 ? NotificationsID.approveOfferSuccess
                 : NotificationsID.approveOfferError
-            ](notificationApprove)
-          )
+            ](notificationApprove),
+          ),
         );
 
       await approveTx.wait(1);
@@ -154,7 +154,7 @@ export const CreateOffer = () => {
   const { t } = useTranslation('modals', { keyPrefix: 'sell' });
 
   const realTokenYamUpgradeable = useContract(
-    ContractsID.realTokenYamUpgradeable
+    ContractsID.realTokenYamUpgradeable,
   );
   const { account, provider } = useWeb3React();
   const activeChain = useActiveChain();
@@ -171,7 +171,7 @@ export const CreateOffer = () => {
       const approveForOfferToken = approves[offer.offerTokenAddress];
       if (approves[offer.offerTokenAddress]) {
         approves[offer.offerTokenAddress] = approveForOfferToken.plus(
-          offer.amount
+          offer.amount,
         );
       } else {
         approves[offer.offerTokenAddress] = new BigNumber(offer.amount);
@@ -187,7 +187,7 @@ export const CreateOffer = () => {
         account,
         realTokenYamUpgradeable,
         setLoading,
-        activeChain
+        activeChain,
       );
     }
   };
@@ -207,19 +207,19 @@ export const CreateOffer = () => {
           offer.offerTokenAddress,
           coinBridgeTokenABI,
           provider,
-          account
+          account,
         );
         const buyerToken = getContract<Erc20>(
           offer.buyerTokenAddress,
           Erc20ABI,
           provider,
-          account
+          account,
         );
 
         if (!offer.price || !offer.amount || !offerToken) return;
 
         let offerTokenType = await realTokenYamUpgradeable.getTokenType(
-          offer.offerTokenAddress
+          offer.offerTokenAddress,
         );
 
         const buyerTokenDecimals = await buyerToken?.decimals();
@@ -243,7 +243,7 @@ export const CreateOffer = () => {
               new BigNumber(offer.amount).toString(10),
               transactionDeadline,
               offerToken,
-              provider
+              provider,
             );
           } else if (offerTokenType == 2 && !isSafe) {
             // TokenType = 2: ERC20 With Permit
@@ -254,7 +254,7 @@ export const CreateOffer = () => {
               new BigNumber(offer.amount).toString(10),
               transactionDeadline,
               offerToken,
-              provider
+              provider,
             );
           } else if (offerTokenType == 3 || isSafe) {
             await approveOffer(
@@ -264,18 +264,18 @@ export const CreateOffer = () => {
               account,
               realTokenYamUpgradeable,
               setLoading,
-              activeChain
+              activeChain,
             );
           }
         } catch (e) {
           const error: { code: number; message: string } = JSON.parse(
-            JSON.stringify(e)
+            JSON.stringify(e),
           );
           console.log('Error erc20PermitSignature', e, error.code);
           if (error.code === -32601 || error.code === undefined) {
             console.log(
               'Error erc20PermitSignature : BUY WITH PERMIT FAIL, TRY BUY WITHOUT PERMIT',
-              error.code
+              error.code,
             );
             offerTokenType = 3;
             needPermit = false;
@@ -286,12 +286,12 @@ export const CreateOffer = () => {
               account,
               realTokenYamUpgradeable,
               setLoading,
-              activeChain
+              activeChain,
             );
           } else {
             console.log(
               'Error erc20PermitSignature : BUY WITH PERMIT FAIL',
-              error.code
+              error.code,
             );
             throw e;
           }
@@ -316,7 +316,7 @@ export const CreateOffer = () => {
             transactionDeadline,
             v,
             r,
-            s
+            s,
           );
         } else {
           createOfferTx = await realTokenYamUpgradeable.createOffer(
@@ -324,7 +324,7 @@ export const CreateOffer = () => {
             offer.buyerTokenAddress,
             offer.buyerAddress,
             priceInWei,
-            new BigNumber(offer.amount).toString(10)
+            new BigNumber(offer.amount).toString(10),
           );
         }
 
@@ -340,7 +340,9 @@ export const CreateOffer = () => {
         };
 
         showNotification(
-          NOTIFICATIONS[NotificationsID.createOfferLoading](notificationPayload)
+          NOTIFICATIONS[NotificationsID.createOfferLoading](
+            notificationPayload,
+          ),
         );
 
         createOfferTx.wait().then(({ status }) => {
@@ -349,7 +351,7 @@ export const CreateOffer = () => {
               status === 1
                 ? NotificationsID.createOfferSuccess
                 : NotificationsID.createOfferError
-            ](notificationPayload)
+            ](notificationPayload),
           );
 
           if (status == 1) {
@@ -374,13 +376,13 @@ export const CreateOffer = () => {
             createdOffer.offerTokenAddress,
             coinBridgeTokenABI,
             provider,
-            account
+            account,
           );
           const buyerToken = getContract<Erc20>(
             createdOffer.buyerTokenAddress,
             Erc20ABI,
             provider,
-            account
+            account,
           );
 
           const buyerTokenDecimals = await buyerToken?.decimals();
@@ -413,7 +415,7 @@ export const CreateOffer = () => {
             _buyerTokens,
             _buyers,
             _prices,
-            _amounts
+            _amounts,
           );
 
         const notificationPayload = {
@@ -423,7 +425,9 @@ export const CreateOffer = () => {
         };
 
         showNotification(
-          NOTIFICATIONS[NotificationsID.createOfferLoading](notificationPayload)
+          NOTIFICATIONS[NotificationsID.createOfferLoading](
+            notificationPayload,
+          ),
         );
 
         createBatchOffersTx.wait().then(({ status }) => {
@@ -432,7 +436,7 @@ export const CreateOffer = () => {
               status === 1
                 ? NotificationsID.createOfferSuccess
                 : NotificationsID.createOfferError
-            ](notificationPayload)
+            ](notificationPayload),
           );
 
           if (status == 1) {
@@ -471,8 +475,8 @@ export const CreateOffer = () => {
             />
           ))}
         </Flex>
-        {false && offers.length > 0 ? <Divider /> : undefined}
-        {offers.length === 0 && <CreateOfferPane isCreating={true} />}
+        {offers.length > 0 ? <Divider /> : undefined}
+        {<CreateOfferPane isCreating={true} />}
       </Flex>
       {errorNotification && (
         <Notification
