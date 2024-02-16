@@ -32,6 +32,8 @@ import { OfferDate } from './widgets/OfferDate';
 import { OfferPrice } from './widgets/OfferPrice';
 import { OfferPriceDelta } from './widgets/OfferPriceDelta';
 import { OfferSeller } from './widgets/OfferSeller';
+import { selectedOfferAtom } from 'src/states';
+import { useAtom } from 'jotai';
 
 interface ItemElementProps {
   offer: OfferData;
@@ -49,6 +51,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
   const { t } = useTranslation(offer.type.toLowerCase(), { keyPrefix: 'list' });
   const columnLabels = mapColumnLabels(t);
   //console.log('ITEM OFFER', JSON.stringify(offer, null, 4));
+  const [, setOfferSelected] = useAtom(selectedOfferAtom);
 
   const lastCardStyle = isLastItem
     ? {
@@ -71,9 +74,10 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
 
   const onOpenOffer = useCallback(
     (offerAction: Offer) => {
+      setOfferSelected(offerAction.offerId);
       dispatch({ type: buyOfferOpen, payload: offerAction });
     },
-    [dispatch]
+    [dispatch, setOfferSelected],
   );
 
   const handleClickEvent = (event: React.PointerEvent<HTMLDivElement>) => {

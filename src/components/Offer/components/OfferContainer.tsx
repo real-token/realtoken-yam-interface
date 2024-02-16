@@ -11,8 +11,9 @@ import { buyOfferClose } from 'src/store/features/buyOffer/buyOfferSlice';
 import { fetchProperties } from 'src/store/features/interface/interfaceSlice';
 import { OFFER_TYPE, Offer } from 'src/types/offer';
 import { calcRem } from 'src/utils/style';
-
+import { selectedOfferAtom } from 'src/states';
 import { OfferHeader, OfferTitle } from './Header';
+import { useAtom } from 'jotai';
 
 const useStyle = createStyles((theme) => ({
   center: {
@@ -54,11 +55,12 @@ export const OfferContainer: FC<OfferContainerProps> = ({
   const { getPropertyToken, propertiesIsloading } = usePropertiesToken();
   const offerProperty = getPropertyToken(getOfferPropertyAddress(offer));
   const [backgroundImage, setBackgroundImage] = useState<string>(
-    offerProperty ? offerProperty.imageLink[0] : ''
+    offerProperty ? offerProperty.imageLink[0] : '',
   );
   if (offerProperty?.location === undefined) {
     dispatch(fetchProperties());
   }
+  const [, setOfferSelected] = useAtom(selectedOfferAtom);
 
   useEffect(() => {
     if (!offer || propertiesIsloading) return;
@@ -82,6 +84,7 @@ export const OfferContainer: FC<OfferContainerProps> = ({
     if (onClose) {
       onClose();
     } else {
+      setOfferSelected('');
       dispatch({ type: buyOfferClose, payload: offer });
     }
   }, [dispatch, offer, onClose]);
@@ -91,7 +94,7 @@ export const OfferContainer: FC<OfferContainerProps> = ({
       <div
         className={cx(
           classes.container,
-          isMobile ? classes.containerMobile : undefined
+          isMobile ? classes.containerMobile : undefined,
         )}
       >
         <OfferTitle

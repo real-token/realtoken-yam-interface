@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
-
+import { useAtom } from 'jotai';
 import { Flex, Tabs } from '@mantine/core';
 import { IconFingerprint, IconList, IconPlus } from '@tabler/icons';
-
+import { selectedOfferAtom } from 'src/states';
 import { CreateOffer } from 'src/components/CreateOffer/CreateOffers';
 import { UserMarketList } from 'src/components/Market/MarketList/UserMarketList';
 import { MarketTablePrivate } from 'src/components/Market/MarketTable';
@@ -15,6 +15,7 @@ import {
 } from 'src/store/features/buyOffer/buyOfferSelector';
 
 const TransfersPage = () => {
+  const [offerSelected] = useAtom(selectedOfferAtom);
   const shallBuyInterfaceDisplay = useAppSelector(selectIsBuyOfferOpened);
   const offerToBuy = useAppSelector(selectBuyOffer);
   const menu = useTranslation('menu', { keyPrefix: 'subMenuMyOffer' });
@@ -55,7 +56,10 @@ const TransfersPage = () => {
         )}
         {shallBuyInterfaceDisplay && offerToBuy && (
           <>
-            <DisplayOffer offer={offerToBuy}></DisplayOffer>
+            <DisplayOffer
+              offerId={offerSelected}
+              offer={offerToBuy}
+            ></DisplayOffer>
           </>
         )}
       </Flex>

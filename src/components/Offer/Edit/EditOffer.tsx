@@ -54,7 +54,7 @@ export const EditOfferForms: FC<EditOfferProps> = ({ offer, onCloseEdit }) => {
 
   const activeChain = useActiveChain();
   const realTokenYamUpgradeable = useContract(
-    ContractsID.realTokenYamUpgradeable
+    ContractsID.realTokenYamUpgradeable,
   );
   const { t } = useTranslation('modals', { keyPrefix: 'update' });
   const { t: t1 } = useTranslation('modals', { keyPrefix: 'sell' });
@@ -79,7 +79,7 @@ export const EditOfferForms: FC<EditOfferProps> = ({ offer, onCloseEdit }) => {
           provider,
           realTokenYamUpgradeable,
           offer,
-          activeChain
+          activeChain,
         );
         isSubmittingRef.current = false;
       } catch (e) {
@@ -88,7 +88,7 @@ export const EditOfferForms: FC<EditOfferProps> = ({ offer, onCloseEdit }) => {
         isSubmittingRef.current = false;
       }
     },
-    [account, provider, realTokenYamUpgradeable, offer, activeChain]
+    [account, provider, realTokenYamUpgradeable, offer, activeChain],
   );
 
   let offerTokenSymbol: string | undefined = '';
@@ -98,14 +98,14 @@ export const EditOfferForms: FC<EditOfferProps> = ({ offer, onCloseEdit }) => {
     offer.buyerTokenAddress,
     coinBridgeTokenABI,
     provider as Web3Provider,
-    account
+    account,
   );
 
   const offerToken = getContract<Erc20>(
     offer.offerTokenAddress,
     Erc20ABI,
     provider as Web3Provider,
-    account
+    account,
   );
 
   const getOfferTokenInfos = async () => {
@@ -135,15 +135,6 @@ export const EditOfferForms: FC<EditOfferProps> = ({ offer, onCloseEdit }) => {
   }, [buyerToken]);
 
   const total = values?.amount * values?.price;
-
-  const onClose = useCallback(() => {
-    if (onCloseEdit) {
-      onCloseEdit();
-    } else {
-      dispatch({ type: buyOfferClose, payload: offer });
-      reset();
-    }
-  }, [reset, dispatch, offer, onCloseEdit]);
 
   return (
     <form onSubmit={onSubmit(onHandleSubmit)}>
@@ -189,9 +180,9 @@ export const EditOfferForms: FC<EditOfferProps> = ({ offer, onCloseEdit }) => {
         {values.price > 0 && values.amount > 0 && (
           <Text size={'md'} mb={10}>
             {` ${t1('summaryText1')} ${values?.amount} ${offerTokenSymbol} ${t1(
-              'summaryText2'
+              'summaryText2',
             )} ${cleanNumber(values?.price)} ${buyTokenSymbol} ${t1(
-              'summaryText3'
+              'summaryText3',
             )} ${total} ${buyTokenSymbol}`}
           </Text>
         )}
