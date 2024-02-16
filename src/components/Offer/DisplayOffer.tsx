@@ -13,21 +13,22 @@ import { ViewOffer } from './View/ViewOffer';
 
 type OfferProps = {
   offerId: string;
-  offer: Offer;
+  offer?: Offer;
 };
 
-export const DisplayOffer: FC<OfferProps> = ({ offerId, offer: offer0 }) => {
+export const DisplayOffer: FC<OfferProps> = ({ offerId }) => {
   const allOffers = useAppSelector(selectAllOffers);
   const offer = allOffers.find((offer) => offer.offerId === offerId);
   const isOwner = useSelector((state: RootState) =>
     offer ? selectIsOwnOffer(state, offer) : false,
   );
+  const isDeleted = offer ? offer.removed : false;
 
   return (
     <>
       {offer !== undefined && (
         <>
-          {isOwner ? (
+          {isOwner || isDeleted ? (
             <ViewOffer offer={offer}></ViewOffer>
           ) : (
             <BuyOffer offer={offer}></BuyOffer>
