@@ -7,9 +7,9 @@ export const modalStyles: ModalProps['styles'] = {
     width: "auto",
     maxWidth: "700px",
   },
-  root: { zIndex: 99 },
-  overlay: { zIndex: 99 },
-  inner: { zIndex: 99 },
+  root: { zIndex: 10 },
+  overlay: { zIndex: 10 },
+  inner: { zIndex: 10 },
   content: {
     maxHeight: '95%',
   }
