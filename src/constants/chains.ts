@@ -78,7 +78,7 @@ export const CHAINS: Record<ChainsID, Chain> = {
     chainName: 'Goerli',
     logo: EthereumLogo,
     nativeCurrency: ETH,
-    rpcUrl: 'https://rpc.ankr.com/eth_goerli',
+    rpcUrl: 'https://eth-goerli.public.blastapi.io',
     blockExplorerUrl: 'https://goerli.etherscan.io/',
     isTestnet: true,
     graphPrefixes: {
