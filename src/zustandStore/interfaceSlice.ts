@@ -16,6 +16,8 @@ import { fetchOffer } from "../utils/offers/fetchOffer";
 import { Historic } from "../types/historic";
 import { parseHistoric } from "../utils/historic/historic";
 import { reject } from "lodash";
+import { UserBalances } from "../types/UserBalance";
+import BigNumber from "bignumber.js";
 
 export interface InterfaceSlice {
   account: string;
@@ -36,6 +38,10 @@ export interface InterfaceSlice {
   refreshInterfaceDatas: () => Promise<void>;
   refreshOffers: () => Promise<void>;
   refreshInterface: () => void;
+
+  userBalances: UserBalances;
+  userBalancesAreLoading: boolean;
+  fetchUserBalances: () => Promise<void>;
 
   //Offers
   fetchOffers: () => Promise<void>;
@@ -101,29 +107,45 @@ export const createInterfaceSlice: StateCreator<
     abortController: new AbortController(),
     refreshInterfaceDatas: (): Promise<void> => {
       return new Promise<void>(async (resolve, reject) => {
-        try{
-          const { chainId, account, fetchAddressWlProperties, fetchProperties, fetchPrices, getProvider, setInterfaceIsLoading } = get();
+        // try{
+          const { 
+            chainId, account, getProvider, setInterfaceIsLoading,
+            fetchAddressWlProperties, fetchProperties, fetchPrices,  fetchUserBalances 
+          } = get();
           setInterfaceIsLoading(true);
     
           const provider = getProvider()
+
+          // await Promise.allSettled([
+          //   fetchProperties(chainId),
+          //   fetchAddressWlProperties(account, chainId),
+          //   fetchPrices(chainId,provider),
+          //   fetchUserBalances()
+          // ]);
     
           await fetchProperties(chainId);
           await fetchAddressWlProperties(account, chainId);
-          await fetchPrices(chainId,provider);
+          await fetchPrices(chainId,provider).catch(err => console.error('Failed to fetch prices: ', err));
+          await fetchUserBalances()
           resolve();
 
-        }catch(err){
-          reject(err);
-        }
+        // }catch(err){
+        //   reject(err);
+        // }
       });
     },
     refreshInterface: async () => {
       try{
 
-        set({ abortController: new AbortController() })
+        const { fetchOffers, fetchHistorics, setInterfaceIsLoading, refreshInterfaceDatas, abortController } = get();
 
-        const { fetchOffers, fetchHistorics, setInterfaceIsLoading, refreshInterfaceDatas } = get();
+        abortController.abort();
+
+        set({ abortController: new AbortController() })
+        
         setInterfaceIsLoading(true);
+
+        
   
         await refreshInterfaceDatas();
   
@@ -133,7 +155,7 @@ export const createInterfaceSlice: StateCreator<
         ]);
         setInterfaceIsLoading(false);
       }catch(err){
-        console.error('Error while refreshing interface: ');
+        console.error('Error while refreshing interface: ', err);
       }
     },
     refreshOffers: async () => {
@@ -147,6 +169,46 @@ export const createInterfaceSlice: StateCreator<
       }catch(err){
         console.error(err)
       }
+    },
+
+    userBalances: {},
+    userBalancesAreLoading: true,
+    fetchUserBalances: (): Promise<void> => {
+      return new Promise<void>(async (resolve, reject) => {
+
+        const { account } = get();
+
+        const chainDatas = CHAINS[get().chainId as ChainsID];
+        const prefix = chainDatas.graphPrefixes.realtoken;
+
+        const res = await apiClient.query({
+          query: gql`
+          query getBalances{
+              ${prefix}{
+                accountBalances(where: { account: "${account.toLowerCase()}" }){
+                  token{
+                    address
+                  }
+                  amount
+                }
+              }
+            }
+          `
+        });
+
+        const balances = res.data[prefix].accountBalances;
+        console.log('USER BALANCES: ', balances);
+
+        const userBalances: UserBalances = {};
+        balances.forEach((balance: any) => {
+          userBalances[balance.token.address.toLowerCase()] = new BigNumber(balance.amount);
+        });
+
+        set({ userBalances, userBalancesAreLoading: false });
+
+        resolve();
+
+      });
     },
 
     fetchOffers: async () => {
@@ -308,14 +370,18 @@ export const createInterfaceSlice: StateCreator<
               }
             `
           });
+
+          if(data.yamGnosis.purchases.length == 0){
+            throw new Error('No purchases found');
+          }
   
           const lastPurchase = data.yamGnosis.purchases[0].createdAtTimestamp;
-          console.log('LAST PURCHASE: ', lastPurchase)
+          // console.log('LAST PURCHASE: ', lastPurchase)
   
           const historics = [];
           let timestamp = lastPurchase+1;
           while(true){
-            console.log(historics.length, timestamp)
+            // console.log(historics.length, timestamp)
             const { data } = await apiClient.query({query: gql`
               query getHistorics{
                 ${graphNetworkPrefix} {
@@ -352,7 +418,7 @@ export const createInterfaceSlice: StateCreator<
             `});
   
             const purchases = data[graphNetworkPrefix].purchases;
-            console.log('PURCHASES: ', purchases.length)
+            // console.log('PURCHASES: ', purchases.length)
   
             if(purchases.length == 0) break;
   
@@ -364,7 +430,7 @@ export const createInterfaceSlice: StateCreator<
   
           }
   
-          console.log('FINISH TO FETCH HISTORICS: ', historics.length)
+          console.log('FINISH TO FETCH HISTORICS: ', historics.length);
   
           set({ 
             historics: historics,
@@ -378,7 +444,6 @@ export const createInterfaceSlice: StateCreator<
         }catch(err){
           console.error('Failed to fetch historics: ', err);
           set({ historicHasLoadingError: true })
-          reject(err);
         }
       });
     }

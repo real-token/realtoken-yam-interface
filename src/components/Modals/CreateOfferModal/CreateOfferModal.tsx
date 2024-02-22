@@ -1,5 +1,5 @@
 /* eslint-disable react/display-name */
-import { FC, forwardRef, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Checkbox, Flex, Group, Select, Stack, TextInput, Text, NumberInput as MantineInput, Skeleton, Divider, ComboboxItem } from '@mantine/core';
 import { useForm } from '@mantine/form';
@@ -28,6 +28,7 @@ import { Contract } from 'ethers';
 import { Web3Provider } from '@ethersproject/providers';
 import { MatchedOffers } from './MatchedOffers/MatchedOffers';
 import { useRootStore } from '../../../zustandStore/store';
+import { ComboboxOfferToken } from './ComboboxOfferToken/ComboboxOfferToken';
 
 export const approveOffer = (
   createdOffer: CreatedOffer, 
@@ -103,12 +104,6 @@ export const approveOffer = (
   });
 }
 
-interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
-  label: string;
-  uuid: string;
-  value: string;
-}
-
 type CreateOfferModalProps = {
   offer: CreatedOffer
 }
@@ -158,6 +153,8 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         buyerAddress: (value) => (value == account ? t('invalidPrivateOfferAddress'): null),
       },
     });
+
+    console.log("values: ", values.offerTokenAddress)
 
   const realT = t("realtTokenType");
   const others = t("otherTokenType");
@@ -315,42 +312,40 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   // COMPONENTS
   const getSelect = (offerTokenSelectData: ComboboxItem[], buyerTokenSelectData: ComboboxItem[]) => {
 
-    const selects = [
-      <Select
-        key={"select-0"}
-        label={t('offerTokenAddress')}
-        placeholder={t('placeholderOfferSellTokenAddress')}
-        searchable={true}
-        required={true}
-        style={{ width : "100%" }}
-        nothingFoundMessage={"No property found"}
-        data={offerTokenSelectData}
-        {...getInputProps('offerTokenAddress')}
-      />,
-      <Select
-        key={"select-1"}
-        label={t('buyerTokenAddress')}
-        placeholder={t('placeholderOfferBuyTokenAddress')}
-        searchable={true}
-        style={{ width : "100%" }}
-        nothingFoundMessage={"No property found"}
-        data={buyerTokenSelectData}
-        required={true}
-        {...getInputProps('buyerTokenAddress')}
-      />
-    ]
+    const selectParams = {
+        offerTokenAddress: {
+          key: "select-0", 
+          label: t('offerTokenAddress'),
+          data: offerTokenSelectData,
+          placeholder: t('placeholderOfferSellTokenAddress'),
+          disabled: false,
+          ...getInputProps('offerTokenAddress')
+        },
+        buyerToken: {
+          key: "select-1",
+          label: t('buyerTokenAddress'),
+          placeholder: t('placeholderOfferBuyTokenAddress'),
+          searchable: true,
+          style: { width : "100%" },
+          nothingFoundMessage: "No property found",
+          data: buyerTokenSelectData,
+          required: true,
+          disabled: false,
+          ...getInputProps('buyerTokenAddress')
+        }
+    };
 
     return(
       <>
         { offer.offerType == OFFER_TYPE.BUY ?
             <>
-              {selects[1]}
-              {selects[0]}
+              <Select {...selectParams.offerTokenAddress}/>
+              <ComboboxOfferToken {...selectParams.buyerToken}/>
             </>
             :
             <>
-            {selects[0]}
-            {selects[1]}
+              <ComboboxOfferToken {...selectParams.offerTokenAddress}/>
+              <Select {...selectParams.buyerToken}/>
           </>
         }
       </>
