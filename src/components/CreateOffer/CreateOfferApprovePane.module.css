@@ -1,0 +1,12 @@
+.container{
+    position: relative;
+    display: flex;
+    width: 100%;
+    border-color: var(--mantine-color-brand-9);
+    border-width: 2px;
+    border-radius: var(--mantine-spacing-xs);
+    padding: 10px 20px;
+    border-style: solid;
+    position: "relative";
+    background-color: var(--mantine-color-brand-9);
+}

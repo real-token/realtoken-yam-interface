@@ -34,6 +34,7 @@
     "buttonCreateOffer": "Add new offer",
     "buttonModifyCreateOffer": "Modify offer",
     "buttonCreateOfferWithNumber": "Create {{ nbr, Number }} offer(s)",
+    "approveOfferWithNumber": "Approve {{ nbr, Number }} offer(s)",
     "checkboxLabelPrivateOffre": "I want to create a private offer",
     "titleFormCreateOffer": "Create your offer",
     "invalidPrivateOfferAddress": "Unable to create an offer for your address",

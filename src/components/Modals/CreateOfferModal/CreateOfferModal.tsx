@@ -1,7 +1,12 @@
 /* eslint-disable react/display-name */
 import { FC, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Checkbox, Flex, Group, Select, Stack, TextInput, Text, NumberInput as MantineInput, Skeleton, Divider, ComboboxItem } from '@mantine/core';
+import { 
+  Button, Checkbox, Flex, 
+  Group, Select, Stack, TextInput, 
+  Text, NumberInput as MantineInput, 
+  Skeleton, Divider, ComboboxItem, Switch
+} from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { showNotification, updateNotification } from '@mantine/notifications';
 import BigNumber from 'bignumber.js';
@@ -112,6 +117,7 @@ type SellFormValues = {
   offerTokenAddress: string;
   buyerTokenAddress: string;
   price: number|undefined;
+  useBuyTokenPrice: boolean;
   amount: number|undefined;
   buyerAddress: string;
   isPrivateOffer: boolean;
@@ -130,6 +136,8 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
 
   const isModification  = offer.price !== undefined;
 
+  const [buttonLoading, setButtonLoading] = useState(false);
+
   const { getInputProps, onSubmit, values, isValid, setFieldValue } =
     useForm<SellFormValues>({
       // eslint-disable-next-line object-shorthand
@@ -146,6 +154,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
                 .shiftedBy(-offer.offerTokenDecimal)
                 .toNumber() / offer.price
             : undefined,
+        useBuyTokenPrice: false,
         buyerAddress: offer?.buyerAddress ?? ZERO_ADDRESS,
         isPrivateOffer: offer?.isPrivateOffer ?? false,
       },
@@ -153,8 +162,6 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         buyerAddress: (value) => (value == account ? t('invalidPrivateOfferAddress'): null),
       },
     });
-
-    console.log("values: ", values.offerTokenAddress)
 
   const realT = t("realtTokenType");
   const others = t("otherTokenType");
@@ -208,9 +215,25 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   const createdOffer = async (formValues: SellFormValues) => {
     try{
 
-      if(!provider || !values.amount) return;
+      console.log('createOffer/formValues', formValues);
 
-      const price = offer.offerType !== OFFER_TYPE.BUY ? formValues.price : formValues.price ? 1/formValues.price : undefined;
+      setButtonLoading(true);
+
+      if(!provider || !values.amount || !priceInDollar){
+        console.error('provider, amount or priceInDollar not found');
+        setButtonLoading(false);
+        return;
+      };
+
+      const choosedPrice = formValues.useBuyTokenPrice ? parseFloat(priceInDollar.toString()) : formValues.price;
+
+      const price = offer.offerType !== OFFER_TYPE.BUY ? choosedPrice : choosedPrice ? 1/choosedPrice : undefined;
+
+      if(!price){
+        console.error('price not found');
+        setButtonLoading(false);
+        return;
+      }
 
       const offerToken = getContract<CoinBridgeToken>(
         formValues.offerTokenAddress,
@@ -246,10 +269,12 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
 
       addOffer(createdOffer);
 
-      context.closeModal(id)
+      context.closeModal(id);
+      setButtonLoading(false);
 
     }catch(err){
-      console.log(err)
+      console.error(err);
+      setButtonLoading(false);
     }
   }
 
@@ -487,25 +512,37 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
     }
 
     return(
-      <Flex gap={10} align={"start"}>
-        {PriceNumberInput({ 
-          label: t("priceInCurrency", { currency: "$" }), 
-          width: "100%" ,
-          onBlur: setPrice
-        })}
-        <IconArrowsHorizontal style={{ marginTop: "22px" }} size={46}/>
-        <Flex direction={"column"} gap={"sm"} style={{ width: "100%" }}>
-          <MantineInput
-            hideControls={true}
-            label={t("convertBuyPrice", { buyerTokenSymbol: tokenSymbol, prep: t("in") })}
-            decimalScale={6}
-            {...getInputProps("price")}
-            style={{ width: "100%" }}
-            onBlur={() => setPInDollar()}
-            disabled={values.buyerTokenAddress == ''}
-          />
-          { tokenSymbol && price ? <Text fz={"sm"} fs={"italic"}>{t("withPrice", { buyerTokenSymbol: tokenSymbol, price: price.toString(), currency: "$" })}</Text> : undefined }
+      <Flex direction={'column'} gap={5}>
+        <Flex gap={10} align={"start"}>
+          {PriceNumberInput({ 
+            label: t("priceInCurrency", { currency: "$" }), 
+            width: "100%" ,
+            onBlur: setPrice
+          })}
+          <IconArrowsHorizontal style={{ marginTop: "22px" }} size={46}/>
+          <Flex direction={"column"} gap={"sm"} style={{ width: "100%" }}>
+            <MantineInput
+              hideControls={true}
+              label={t("convertBuyPrice", { buyerTokenSymbol: tokenSymbol, prep: t("in") })}
+              decimalScale={6}
+              {...getInputProps("price")}
+              style={{ width: "100%" }}
+              onBlur={() => setPInDollar()}
+              disabled={values.buyerTokenAddress == ''}
+            />
+            { tokenSymbol && price && !price.isNaN() ? <Text fz={"sm"} fs={"italic"}>{t("withPrice", { buyerTokenSymbol: tokenSymbol, price: price.toString(), currency: "$" })}</Text> : undefined }
+          </Flex>
         </Flex>
+        {buyTokenSymbol ? (
+            // TODO: add translation
+            <Switch
+              defaultChecked
+              label={`Use ${buyTokenSymbol} price rate`}
+              {...getInputProps('useBuyTokenPrice', { type: 'checkbox' })}
+            />
+          ):(
+            <Skeleton width={100} height={30} />
+          )} 
       </Flex>
     )
   }
@@ -563,8 +600,8 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
               <Button
                 type={'submit'}
                 aria-label={'submit'}
-                loading={(bigNumberbalance && bigNumberbalance == undefined)}
-                disabled={!isValid || shieldError}
+                loading={(bigNumberbalance && bigNumberbalance == undefined) || buttonLoading}
+                disabled={!isValid || shieldError || buttonLoading}
               >
                 {t("buttonCreateOffer")}
               </Button>
@@ -572,14 +609,15 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
           </Group>
         </Stack>
       </form>
-      <MatchedOffers 
+      {/** TODO: put back MatchedOffers component **/ }
+      {/* <MatchedOffers 
           offerType={offer.offerType}
           offerTokenAddress={values.offerTokenAddress}
           buyerTokenAddress={values.buyerTokenAddress}
           price={values.price}
           amount={values.amount}
           closeModal={closeModal}
-      />
+      /> */}
     </Flex>
   );
 };
