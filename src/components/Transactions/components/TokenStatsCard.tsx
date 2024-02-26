@@ -59,21 +59,21 @@ export const TokenStatsCard: FC<TokenStatsCardProps> = ({
 
   const mostRecentsTransaction = getFirstsTransactions(
     transactions,
-    TRANSACTION_STATS_SIZE
+    TRANSACTION_STATS_SIZE,
   );
   const nextTransactions: Transaction[] = getNextTransaction(
     mostRecentsTransaction,
-    transactions
+    transactions,
   );
   const numberOfTransaction = countTransactionsOfLastDays(
     transactions,
-    TRANSACTION_STATS_DAYS
+    TRANSACTION_STATS_DAYS,
   );
   const currentPrice = calculateAveragePrice(mostRecentsTransaction);
   const formerPrice = calculateAveragePrice(nextTransactions);
   const { priceColor, priceDiff, priceDiffPercent, Icon } = getPriceEvolution(
     formerPrice,
-    currentPrice
+    currentPrice,
   );
 
   const tokenEnabled =
@@ -101,7 +101,7 @@ export const TokenStatsCard: FC<TokenStatsCardProps> = ({
       <Card.Section>
         <Group position={'apart'} align={'start'}>
           <Image
-            src={'https://yam.cleansatmining.com/logo.svg'}
+            src={'https://yam.cleansatmining.net/logo.svg'}
             width={isMobile ? 30 : 40}
             alt={'csm logo'}
             sx={{ margin: '5px' }}
@@ -194,7 +194,7 @@ export const TokenStatsCard: FC<TokenStatsCardProps> = ({
 
 function getNextTransaction(
   mostRecentsTransaction: Transaction[],
-  transactions: Transaction[]
+  transactions: Transaction[],
 ) {
   let nextTransactions: Transaction[] = [];
   if (mostRecentsTransaction.length === TRANSACTION_STATS_SIZE) {
@@ -203,7 +203,7 @@ function getNextTransaction(
     nextTransactions = getNextTransactions(
       transactions,
       lastTimestamp,
-      TRANSACTION_STATS_SIZE
+      TRANSACTION_STATS_SIZE,
     );
   }
   return nextTransactions;
@@ -211,7 +211,7 @@ function getNextTransaction(
 
 export function getPriceEvolution(
   formerPrice: number | undefined,
-  currentPrice: number | undefined
+  currentPrice: number | undefined,
 ) {
   let priceDiff = undefined;
   let priceDiffPercent = undefined;
