@@ -553,10 +553,10 @@ export const CreateOffer = () => {
             gap={'sm'}
           >
             {showApprovePanel ? (
-              Object.keys(approves).map((token) => {
+              Object.keys(approves).map((token, index) => {
                 const amount = approves[token];
                 return(
-                  <CreateOfferApprovePane token={token} amount={amount}/>
+                  <CreateOfferApprovePane key={`approve-${index}`} token={token} amount={amount}/>
                 )
               })
             ):(
