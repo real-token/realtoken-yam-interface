@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useMemo, useRef } from 'react';
 
-import { Flex, Group, Space, em } from '@mantine/core';
+import { Flex, Group, Space, em, Tabs, Text } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 
 import { useAtom } from 'jotai';
@@ -15,11 +15,10 @@ import {
 } from 'src/store/features/buyOffer/buyOfferSelector';
 import { Displays } from 'src/types/Displays';
 
-import { MarketTable } from '../Market';
-import { MarketGrid } from '../Market/MarketGrid/MarketGrid';
 import { PublicMarketList } from '../Market/MarketList/PublicMarketList';
-import { MarketSort } from '../Market/MarketSort/MarketSort';
+import { MarketSort, MarketSortView } from '../Market/MarketSort/MarketSort';
 import { BuyOffer } from '../Offer/Buy/BuyOffer';
+import { useTranslation } from 'react-i18next';
 
 interface Display {
   display: Displays;
@@ -27,6 +26,7 @@ interface Display {
   component: React.ReactElement;
 }
 const Display: FC = () => {
+  const { t } = useTranslation('buy', { keyPrefix: 'grid' });
   const isMobile = useMediaQuery(`(max-width: ${em(750)})`);
   const shallBuyInterfaceDisplay = useAppSelector(selectIsBuyOfferOpened);
   const offerToBuy = useAppSelector(selectBuyOffer);
@@ -46,22 +46,6 @@ const Display: FC = () => {
           component: <PublicMarketList key={'list'} />,
         },
       ],
-      // [
-      //   Displays.TABLE,
-      //   {
-      //     display: Displays.TABLE,
-      //     title: 'Table',
-      //     component: <MarketTable key={'table'} />,
-      //   },
-      // ],
-      // [
-      //   Displays.GRID,
-      //   {
-      //     display: Displays.GRID,
-      //     title: 'Grid',
-      //     component: <MarketGrid key={'grid'} />,
-      //   },
-      // ],
     ]);
   }, []);
 
@@ -71,7 +55,7 @@ const Display: FC = () => {
     }
 
     return [...availableDisplays.values()].find(
-      (display) => display.display == Displays.LIST //choosenDisplay
+      (display) => display.display == Displays.LIST, //choosenDisplay
     );
   };
 
@@ -98,10 +82,12 @@ const Display: FC = () => {
             )}
           </Group>
 
-          <Flex justify={'space-between'} mb={16}>
+          {/* <Flex justify={'space-between'} mb={16}>
             <MarketSort />
-          </Flex>
-          {getDisplay() ? getDisplay()?.component : undefined}
+          </Flex> */}
+          <MarketSortView>
+            {getDisplay() ? getDisplay()?.component : undefined}
+          </MarketSortView>
         </>
       )}
       {shallBuyInterfaceDisplay && offerToBuy && offerToBuy.offerId !== '' && (
