@@ -3,6 +3,8 @@ import { TFunction } from 'i18next';
 import { BigNumber } from 'bignumber.js';
 
 import { Transaction } from 'src/types/transaction/Transaction';
+import { TRANSACTION_TYPE } from 'src/types/transaction/TransactionType';
+import { OFFER_TYPE } from 'src/types/offer';
 
 export function sortTransactions(transactions: Transaction[]): Transaction[] {
   // Triez les transactions par ordre décroissant du champ timestamp
@@ -12,7 +14,7 @@ export function sortTransactions(transactions: Transaction[]): Transaction[] {
 
 export function getFirstsTransactions(
   transactions: Transaction[],
-  firsts: number
+  firsts: number,
 ): Transaction[] {
   // Récupérez les 10 premières transactions après le tri
   const recentTransactions = transactions.slice(0, firsts);
@@ -23,17 +25,17 @@ export function getFirstsTransactions(
 export function getNextTransactions(
   transactions: Transaction[],
   lastTimestamp: number,
-  firsts: number
+  firsts: number,
 ): Transaction[] {
   // Trouvez l'index de la dernière transaction avec le timestamp donné
   const lastIndex = transactions.findIndex(
-    (transaction) => transaction.timeStamp === lastTimestamp
+    (transaction) => transaction.timeStamp === lastTimestamp,
   );
 
   // Récupérez les 10 transactions suivantes après le dernier index
   const nextTransactions = transactions.slice(
     lastIndex + 1,
-    lastIndex + firsts + 1
+    lastIndex + firsts + 1,
   );
 
   return nextTransactions;
@@ -78,18 +80,26 @@ export function formatTimestampHour(timestamp: number): string {
   // Retourner la date formatée
   return `${hours}:${minutes}:${seconds}`;
 }
-export function sumSpendingValues(transactions: Transaction[]): number {
+export function sumSpentUsdValues(transactions: Transaction[]): number {
   return transactions.reduce((total, transaction) => {
     return new BigNumber(total)
-      .plus(new BigNumber(transaction.price).times(transaction.amount))
+      .plus(
+        transaction.offerType === OFFER_TYPE.BUY
+          ? new BigNumber(transaction.amount)
+          : new BigNumber(transaction.price).times(transaction.amount),
+      )
       .toNumber();
   }, 0);
 }
 
-export function sumAmountValues(transactions: Transaction[]): number {
+export function sumTokenAmountValues(transactions: Transaction[]): number {
   return transactions.reduce((total, transaction) => {
     return new BigNumber(total)
-      .plus(new BigNumber(transaction.amount))
+      .plus(
+        transaction.offerType === OFFER_TYPE.BUY
+          ? new BigNumber(transaction.amount).times(transaction.price)
+          : new BigNumber(transaction.amount),
+      )
       .toNumber();
   }, 0);
 }
@@ -109,7 +119,7 @@ export function getTimestampRange(transactions: Transaction[]): {
 }
 
 export function calculateAverageExpense(
-  transactions: Transaction[]
+  transactions: Transaction[],
 ): number | undefined {
   if (transactions.length === 0) {
     return undefined;
@@ -127,25 +137,25 @@ export function calculateAverageExpense(
 }
 
 export function calculateAveragePrice(
-  transactions: Transaction[]
+  transactions: Transaction[],
 ): number | undefined {
   if (transactions.length === 0) {
     return undefined;
   }
 
-  const totalAmount = sumAmountValues(transactions);
+  const totalTokenAmount = sumTokenAmountValues(transactions);
 
   // Calcul de la somme des dépenses
-  const totalPrice = sumSpendingValues(transactions);
+  const totalSpentUsd = sumSpentUsdValues(transactions);
 
   // Calcul de la dépense moyenne
-  const averagePrice = new BigNumber(totalPrice).dividedBy(totalAmount);
+  const averagePrice = new BigNumber(totalSpentUsd).dividedBy(totalTokenAmount);
 
   return averagePrice.toNumber();
 }
 
 export function calculateExpenseStandardDeviation(
-  transactions: Transaction[]
+  transactions: Transaction[],
 ): number | undefined {
   // Calcul de la moyenne des dépenses
   const averageExpense = calculateAverageExpense(transactions);
@@ -154,27 +164,16 @@ export function calculateExpenseStandardDeviation(
     return undefined;
   }
 
-  console.log(transactions.map((t) => t.price * t.amount));
+  //console.log(transactions.map((t) => t.price * t.amount));
 
   // Calcul de la somme des carrés des écarts par rapport à la moyenne
   const sumOfSquares = transactions.reduce((acc, transaction) => {
     const expense = new BigNumber(transaction.price).times(transaction.amount);
     const difference = expense.minus(averageExpense);
     const square = difference.pow(2);
-    console.log(
-      'SQUARE ',
-      expense.toNumber(),
-      difference.toNumber(),
-      square.toNumber()
-    );
+
     return acc.plus(square);
   }, new BigNumber(0));
-
-  console.log('SUM ', sumOfSquares.toNumber());
-  console.log(
-    'SUM DIV',
-    sumOfSquares.dividedBy(transactions.length).toNumber()
-  );
 
   // Calcul de l'écart-type
   const standardDeviation = sumOfSquares
@@ -186,7 +185,7 @@ export function calculateExpenseStandardDeviation(
 }
 
 export function calculateAverageExpensesPerDay(
-  transactions: Transaction[]
+  transactions: Transaction[],
 ): Map<number, number> {
   const expensesPerDay = new Map<number, number>();
   const transactionsPerDay = new Map<number, Transaction[]>();
@@ -205,15 +204,15 @@ export function calculateAverageExpensesPerDay(
     const dailyExpense = dailyTransactions.reduce(
       (totalExpense, transaction) =>
         totalExpense.plus(
-          new BigNumber(transaction.price).times(transaction.amount)
+          new BigNumber(transaction.price).times(transaction.amount),
         ),
-      new BigNumber(0)
+      new BigNumber(0),
     );
 
     // Store the sum of expenses for each day
     expensesPerDay.set(
       Math.floor(dailyTransactions[0].timeStamp / 86400),
-      dailyExpense.toNumber()
+      dailyExpense.toNumber(),
     );
   });
 
@@ -223,7 +222,7 @@ export function calculateAverageExpensesPerDay(
 export function calculateExpensesPer24Hours(
   transactions: Transaction[],
   t0: number,
-  days = 7
+  days = 7,
 ): Map<number, number> {
   const expensesPer24Hours = new Map<number, number>();
   const transactionsPer24Hours = new Map<number, Transaction[]>();
@@ -244,13 +243,13 @@ export function calculateExpensesPer24Hours(
     const dailyExpense = dailyTransactions.reduce(
       (totalExpense, transaction) =>
         totalExpense.plus(
-          new BigNumber(transaction.price).times(transaction.amount)
+          new BigNumber(transaction.price).times(transaction.amount),
         ),
-      new BigNumber(0)
+      new BigNumber(0),
     );
 
     const hoursSinceT0 = Math.floor(
-      (dailyTransactions[0].timeStamp - t0) / 3600
+      (dailyTransactions[0].timeStamp - t0) / 3600,
     ); // Convert to hours since T0
     const periodIndex = Math.floor(hoursSinceT0 / (24 * days)); // Calculate the 24-hour period index
 
@@ -264,7 +263,7 @@ export function calculateExpensesPer24Hours(
 export function calculateTransactionsPerPeriod(
   transactions: Transaction[],
   t0: number,
-  days = 7
+  days = 7,
 ): Map<number, number> {
   const numberOftransactionsPer24Hours = new Map<number, number>();
   const transactionsPer24Hours = new Map<number, Transaction[]>();
@@ -284,18 +283,18 @@ export function calculateTransactionsPerPeriod(
   transactionsPer24Hours.forEach((dailyTransactions) => {
     const dailytransactions = dailyTransactions.reduce(
       (totalTransactions) => totalTransactions.plus(1),
-      new BigNumber(0)
+      new BigNumber(0),
     );
 
     const hoursSinceT0 = Math.floor(
-      (dailyTransactions[0].timeStamp - t0) / 3600
+      (dailyTransactions[0].timeStamp - t0) / 3600,
     ); // Convert to hours since T0
     const periodIndex = Math.floor(hoursSinceT0 / (24 * days)); // Calculate the 24-hour period index
 
     // Store the sum of expenses for each 24-hour period
     numberOftransactionsPer24Hours.set(
       periodIndex,
-      dailytransactions.toNumber()
+      dailytransactions.toNumber(),
     );
   });
 
@@ -305,7 +304,7 @@ export function calculateTransactionsPerPeriod(
 export function calculatePricesPerPeriod(
   transactions: Transaction[],
   t0: number,
-  days = 7
+  days = 7,
 ): Map<number, number> {
   const pricesPer24Hours = new Map<number, number>();
   const transactionPricesPer24Hours = new Map<number, Transaction[]>();
@@ -326,7 +325,7 @@ export function calculatePricesPerPeriod(
     const dailyPrice = calculateAveragePrice(dailyTransactions);
 
     const hoursSinceT0 = Math.floor(
-      (dailyTransactions[0].timeStamp - t0) / 3600
+      (dailyTransactions[0].timeStamp - t0) / 3600,
     ); // Convert to hours since T0
     const periodIndex = Math.floor(hoursSinceT0 / (24 * days)); // Calculate the 24-hour period index
 
@@ -339,7 +338,7 @@ export function calculatePricesPerPeriod(
 
 export function countTransactionsOfLastDays(
   transactions: Transaction[],
-  days: number
+  days: number,
 ): number {
   // Obtenez la date d'aujourd'hui
   const currentDate = new Date();
@@ -352,7 +351,7 @@ export function countTransactionsOfLastDays(
   const transactionsLastDays = transactions.filter(
     (transaction) =>
       transaction.timeStamp >=
-      new BigNumber(numberOfDaysAgo.getTime()).dividedBy(1000).toNumber()
+      new BigNumber(numberOfDaysAgo.getTime()).dividedBy(1000).toNumber(),
   );
 
   // Retournez le nombre de transactions dans la fenêtre temporelle spécifiée
@@ -361,7 +360,7 @@ export function countTransactionsOfLastDays(
 
 export function formatPeriod(
   days: number,
-  t: TFunction<'transactions', 'stats'>
+  t: TFunction<'transactions', 'stats'>,
 ): string {
   return days === 1 ? '24h' : days + ' ' + t('day') + 's';
 }
