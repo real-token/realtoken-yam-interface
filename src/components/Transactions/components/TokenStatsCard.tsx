@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -56,6 +56,12 @@ export const TokenStatsCard: FC<TokenStatsCardProps> = ({
   const { t } = useTranslation('transactions', { keyPrefix: 'stats' });
   const theme = useMantineTheme();
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`);
+  const [isHovered, setIsHovered] = useState<boolean>(
+    (tokenFilterStates &&
+    tokenFilterStates.has(token.contractAddress.toLowerCase())
+      ? tokenFilterStates.get(token.contractAddress.toLowerCase())
+      : true) ?? true,
+  );
 
   const mostRecentsTransaction = getFirstsTransactions(
     transactions,
@@ -76,11 +82,20 @@ export const TokenStatsCard: FC<TokenStatsCardProps> = ({
     currentPrice,
   );
 
-  const tokenEnabled =
-    tokenFilterStates &&
-    tokenFilterStates.has(token.contractAddress.toLowerCase())
-      ? tokenFilterStates.get(token.contractAddress.toLowerCase())
-      : true;
+  // const tokenEnabled =
+  //   tokenFilterStates &&
+  //   tokenFilterStates.has(token.contractAddress.toLowerCase())
+  //     ? tokenFilterStates.get(token.contractAddress.toLowerCase())
+  //     : true;
+
+  useEffect(() => {
+    setIsHovered(
+      (tokenFilterStates &&
+      tokenFilterStates.has(token.contractAddress.toLowerCase())
+        ? tokenFilterStates.get(token.contractAddress.toLowerCase())
+        : true) ?? true,
+    );
+  }, [tokenFilterStates, token.contractAddress]);
 
   //console.log('Token filter display', token.contractAddress, tokenEnabled);
 
@@ -118,7 +133,7 @@ export const TokenStatsCard: FC<TokenStatsCardProps> = ({
           )}
         </Group>
       </Card.Section>
-      {!tokenEnabled && (
+      {!isHovered && (
         <Overlay
           color={
             theme.colorScheme === 'dark'

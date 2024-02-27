@@ -8,7 +8,7 @@ import { MarketList } from './MarketList';
 
 export const PublicMarketList: FC = () => {
   const publicOffers = useAppSelector(selectPublicOffers);
-  const { offers } = useFilterOffers(publicOffers);
+  const { offers } = useFilterOffers(publicOffers, true);
 
   return <MarketList offers={offers}></MarketList>;
 };

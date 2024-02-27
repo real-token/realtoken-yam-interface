@@ -8,14 +8,20 @@ import { OFFER_LOADING, OFFER_TYPE, Offer } from 'src/types/offer';
 
 import { useAppSelector } from '../react-hooks';
 
-type UseFilterOffers = (offers: Offer[]) => {
+type UseFilterOffers = (
+  offers: Offer[],
+  activateTokenFilter?: boolean,
+) => {
   offers: Offer[];
   sellCount: number | undefined;
   buyCount: number | undefined;
   exchangeCount: number | undefined;
 };
 
-export const useFilterOffers: UseFilterOffers = (offers) => {
+export const useFilterOffers: UseFilterOffers = (
+  offers,
+  activateTokenFilter = false,
+) => {
   const offersLoading = useAppSelector<boolean>(selectOffersIsLoading);
   const tableOfferType = useAtomValue(tableOfferTypeAtom);
   const tokenOfferFilter = useAtomValue(statesFilterTokenAtom);
@@ -26,22 +32,25 @@ export const useFilterOffers: UseFilterOffers = (offers) => {
       return offers.filter((offer: Offer) => {
         const hasFilter = tokenOfferFilter.keys.length > 0;
         const offerTokenFilter = tokenOfferFilter.has(
-          offer.offerTokenAddress.toLowerCase()
+          offer.offerTokenAddress.toLowerCase(),
         )
           ? tokenOfferFilter.get(offer.offerTokenAddress.toLowerCase())
           : false;
         const buyerTokenFilter = tokenOfferFilter.has(
-          offer.buyerTokenAddress.toLowerCase()
+          offer.buyerTokenAddress.toLowerCase(),
         )
           ? tokenOfferFilter.get(offer.buyerTokenAddress.toLowerCase())
           : false;
         return (
           offer.type == type &&
-          (hasFilter || offerTokenFilter || buyerTokenFilter)
+          (hasFilter ||
+            offerTokenFilter ||
+            buyerTokenFilter ||
+            !activateTokenFilter)
         );
       });
     },
-    [offers, offersLoading, tokenOfferFilter]
+    [offers, offersLoading, tokenOfferFilter],
   );
 
   const sellCount: number | undefined = useMemo(() => {
