@@ -30,12 +30,25 @@
     "noPriceExplained": "Número de transacciones demasiado bajo"
   },
   "list": {
-    "search": "Buscar",
-    "buyingDate": "Fecha de compra",
+    "search": "Oferta, Comprador, TxHash, ...",
+    "buyingDate": "Fecha",
     "tokenAmount": "Cantidad",
     "usdAmount": "Monto",
     "offerDate": "Fecha de oferta",
     "offerPrice": "Precio",
-    "amountLeft": "Cantidad restante"
+    "amountLeft": "Cantidad restante",
+    "offerId": "Oferta"
+  },
+  "modal": {
+    "title": "Detalles de la transacción",
+    "date": "Fecha",
+    "amount": "Cantidad",
+    "price": "Precio",
+    "usdAmount": "Monto",
+    "offerId": "Oferta",
+    "txHash": "TxHash",
+    "block": "Block",
+    "seeOffer": "Ver oferta",
+    "buyer": "Comprador"
   }
 }

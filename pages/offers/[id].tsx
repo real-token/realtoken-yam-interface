@@ -10,7 +10,7 @@ const ShowOfferPage: FC = () => {
 
   return (
     <ConnectedProvider>
-      <DisplayOffer offerId={id as string}></DisplayOffer>
+      <DisplayOffer offerId={id as string} backArrow={false}></DisplayOffer>
     </ConnectedProvider>
   );
 };

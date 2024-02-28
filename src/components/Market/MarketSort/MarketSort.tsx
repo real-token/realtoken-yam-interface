@@ -46,8 +46,12 @@ export const MarketSort = ({
 
 interface MarketSortViewProps {
   children: React.ReactNode;
+  transactionChildren?: React.ReactNode;
 }
-export const MarketSortView = ({ children }: MarketSortViewProps) => {
+export const MarketSortView = ({
+  children,
+  transactionChildren,
+}: MarketSortViewProps) => {
   const [sorting, setSorting] = useAtom(tableOfferTypeAtom);
   const [activeTab, setActiveTab] = useState<string | null>(
     sorting === OFFER_TYPE.SELL
@@ -116,18 +120,8 @@ export const MarketSortView = ({ children }: MarketSortViewProps) => {
           </Tabs.Tab>
         </Tabs.List>
 
-        {/* <Tabs.Panel value={'sell'} pt={'xl'}>
-        {children}
-      </Tabs.Panel>
-      <Tabs.Panel value={'buy'} pt={'xl'}>
-        {children}
-      </Tabs.Panel>
-      <Tabs.Panel value={'exchange'} pt={'xl'}>
-        {children}
-      </Tabs.Panel> */}
-
         <Tabs.Panel value={'transactions'} pt={'xl'}>
-          {'Settings tab transactions'}
+          {transactionChildren}
         </Tabs.Panel>
       </Tabs>
       {activeTab !== 'transactions' && <>{children}</>}

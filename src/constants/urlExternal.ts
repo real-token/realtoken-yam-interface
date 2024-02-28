@@ -1,5 +1,11 @@
 export type UrlExternal = {
-  url: string;
+  url: string | ((id: string) => string);
+  name: string;
+  keyword: string;
+};
+
+export type UrlExternalParam = {
+  url: (id: string) => string;
   name: string;
   keyword: string;
 };
@@ -26,4 +32,22 @@ export const UrlDashboard: UrlExternal = {
   name: 'Dashboard',
   url: 'https://dashboard.cleansatmining.net',
   keyword: 'dashboard',
+};
+
+export const UrlGnosisscanTransaction: UrlExternalParam = {
+  name: 'Gnosisscan Transaction',
+  url: (hash: string) => `https://gnosisscan.io/tx/${hash}`,
+  keyword: 'transaction',
+};
+
+export const UrlGnosisscanBlock: UrlExternalParam = {
+  name: 'Gnosisscan Block',
+  url: (block: string) => `https://gnosisscan.io/block/${block}`,
+  keyword: 'block',
+};
+
+export const UrlGnosisscanAddress: UrlExternalParam = {
+  name: 'Gnosisscan Address',
+  url: (address: string) => `https://gnosisscan.io/address/${address}`,
+  keyword: 'address',
 };

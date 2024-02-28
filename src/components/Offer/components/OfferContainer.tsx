@@ -40,6 +40,7 @@ interface OfferContainerProps {
   action?: string;
   withSeparatedHeader?: boolean;
   onClose?: () => void;
+  backArrow?: boolean;
 }
 
 export const OfferContainer: FC<OfferContainerProps> = ({
@@ -48,6 +49,7 @@ export const OfferContainer: FC<OfferContainerProps> = ({
   action,
   withSeparatedHeader = true,
   onClose,
+  backArrow,
 }) => {
   const isMobile = useMediaQuery(`(max-width: ${em(750)})`);
   const { classes, cx } = useStyle();
@@ -101,6 +103,7 @@ export const OfferContainer: FC<OfferContainerProps> = ({
           offer={offer}
           onClose={onCloseView}
           action={action}
+          backArrow={backArrow}
         ></OfferTitle>
         <OfferContent
           withSeparatedHeader={withSeparatedHeader}

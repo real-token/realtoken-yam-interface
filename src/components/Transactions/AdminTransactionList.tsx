@@ -10,7 +10,7 @@ import { useAllowedTokens } from 'src/hooks/useAllowedTokens';
 import useTransaction from 'src/hooks/useTransactions';
 import { selectAllOffers } from 'src/store/features/interface/interfaceSelector';
 
-import TransactionList from './TransactionList';
+import TransactionList from './TransactionDataList';
 
 const AdminTransactionList = ({}) => {
   console.log('YamTransactionList rendered');
@@ -30,7 +30,7 @@ const AdminTransactionList = ({}) => {
     chain?.contracts[ContractsID.realTokenYamUpgradeable].address ?? '',
     1,
     allOffers,
-    allowedTokens
+    allowedTokens,
   );
 
   if (isLoading) {

@@ -55,7 +55,7 @@ const [walletConnectV2, walletConnectV2Hooks] = getWalletConnectV2<CustomChain>(
   customChains,
   env,
   walletConnectKey,
-  showAllNetworks
+  showAllNetworks,
 );
 const [readOnly, readOnlyHooks] = getReadOnlyConnector(customChains);
 

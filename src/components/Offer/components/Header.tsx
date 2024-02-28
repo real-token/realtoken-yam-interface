@@ -24,22 +24,30 @@ interface OfferTitleProps {
   offer: Offer;
   action?: string;
   onClose: () => void;
+  backArrow?: boolean;
 }
 
-export const OfferTitle: FC<OfferTitleProps> = ({ offer, action, onClose }) => {
+export const OfferTitle: FC<OfferTitleProps> = ({
+  offer,
+  action,
+  onClose,
+  backArrow = true,
+}) => {
   const { getI18OfferTypeName } = useOfferType();
 
   return (
     <>
       <>
-        <ActionIcon
-          variant={'transparent'}
-          size={'lg'}
-          color={'dark'}
-          onClick={onClose}
-        >
-          <IconArrowLeft size={'50px'}></IconArrowLeft>
-        </ActionIcon>
+        {backArrow && (
+          <ActionIcon
+            variant={'transparent'}
+            size={'lg'}
+            color={'dark'}
+            onClick={onClose}
+          >
+            <IconArrowLeft size={'50px'}></IconArrowLeft>
+          </ActionIcon>
+        )}
         <Space h={5}></Space>
         <Title>
           {action
@@ -52,7 +60,7 @@ export const OfferTitle: FC<OfferTitleProps> = ({ offer, action, onClose }) => {
           <Text color={'dimmed'}>
             {'Offre ' +
               getI18OfferTypeName(
-                offer.type ?? OFFER_TYPE.SELL
+                offer.type ?? OFFER_TYPE.SELL,
               )?.toLowerCase() +
               ' #' +
               offer.offerId}
@@ -93,14 +101,14 @@ export const OfferHeader: FC<OfferHeaderProps> = ({
   const allowedTokenOffer = allowedTokens
     ? allowedTokens.find(
         (t) =>
-          t.contractAddress.toLowerCase() === offerTokenAddress.toLowerCase()
+          t.contractAddress.toLowerCase() === offerTokenAddress.toLowerCase(),
       )
     : undefined;
 
   const allowedTokenBuy = allowedTokens
     ? allowedTokens.find(
         (t) =>
-          t.contractAddress.toLowerCase() === buyerTokenAddress.toLowerCase()
+          t.contractAddress.toLowerCase() === buyerTokenAddress.toLowerCase(),
       )
     : undefined;
 

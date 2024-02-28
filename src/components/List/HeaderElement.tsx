@@ -2,7 +2,7 @@ import React, { FC, useEffect, useState } from 'react';
 
 import { ActionIcon, Flex, Text, useMantineTheme } from '@mantine/core';
 import { IconChevronDown, IconChevronUp, IconSelector } from '@tabler/icons';
-
+import { useMediaQuery } from '@mantine/hooks';
 import { Arrow, SortDirection } from './Types';
 
 interface HeaderElementProps {
@@ -22,6 +22,9 @@ export const HeaderElement: FC<HeaderElementProps> = ({
   justify = 'right',
 }) => {
   const theme = useMantineTheme();
+  const isSmall = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
+  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`);
+
   const [selectedArrow, setSelectedArrow] = useState<Arrow>(Arrow.None);
 
   useEffect(() => {
@@ -34,9 +37,13 @@ export const HeaderElement: FC<HeaderElementProps> = ({
     theme.colorScheme === 'dark' ? theme.colors.gray[6] : theme.colors.gray[6];
 
   return (
-    <Flex gap={2} justify={justify} align={'center'} wrap={'wrap'}>
+    <Flex gap={2} justify={justify} align={'center'} wrap={'wrap'} h={'100%'}>
       <div>
-        <Text ta={justify as any} fw={500}>
+        <Text
+          ta={justify as any}
+          fz={isMobile || isSmall ? 'xs' : 'md'}
+          fw={500}
+        >
           {label}
         </Text>
         {description && (

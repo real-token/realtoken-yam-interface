@@ -23,11 +23,21 @@ import { UpdateFormValues } from './Types';
 type EditOfferProps = {
   offer: Offer;
   onCloseEdit?: () => void;
+  backArrow?: boolean;
 };
 
-export const EditOffer: FC<EditOfferProps> = ({ offer, onCloseEdit }) => {
+export const EditOffer: FC<EditOfferProps> = ({
+  offer,
+  onCloseEdit,
+  backArrow,
+}) => {
   return (
-    <OfferContainer offer={offer} action={'Editer Offre'} onClose={onCloseEdit}>
+    <OfferContainer
+      offer={offer}
+      action={'Editer Offre'}
+      onClose={onCloseEdit}
+      backArrow={backArrow}
+    >
       <EditOfferForms offer={offer} onCloseEdit={onCloseEdit}></EditOfferForms>
     </OfferContainer>
   );

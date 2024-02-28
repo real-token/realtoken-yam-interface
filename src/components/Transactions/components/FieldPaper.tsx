@@ -17,6 +17,8 @@ interface FieldPaperProps {
   value: string;
   copyButton?: boolean;
   truncate?: boolean;
+  link?: string;
+  shadow?: boolean;
 }
 
 export const FieldPaper: React.FC<FieldPaperProps> = ({
@@ -24,12 +26,19 @@ export const FieldPaper: React.FC<FieldPaperProps> = ({
   value,
   copyButton = false,
   truncate = true,
+  link,
+  shadow = true,
 }) => {
   const truncatedField = truncate ? truncateAddress(value) : value;
   const isTruncated = truncatedField.length !== value.length;
 
   return (
-    <Paper shadow={'xs'} sx={{ padding: '0 10px 0 10px' }} miw={200} w={'100%'}>
+    <Paper
+      shadow={shadow ? 'xs' : undefined}
+      sx={{ padding: '0 10px 0 10px' }}
+      miw={200}
+      w={'100%'}
+    >
       <Group spacing={5} position={'apart'} w={'100%'}>
         <Text fw={600} fz={'sm'}>
           {name}
@@ -41,9 +50,26 @@ export const FieldPaper: React.FC<FieldPaperProps> = ({
             position={'right'}
             disabled={!isTruncated}
           >
-            <Text fw={500} fz={'sm'}>
-              {truncatedField}
-            </Text>
+            {link ? (
+              <a
+                href={link}
+                target={'_blank'}
+                rel={'noopener noreferrer'}
+                style={{ textDecoration: 'none', color: 'inherit' }}
+              >
+                <Text
+                  fw={500}
+                  fz={'sm'}
+                  style={{ color: 'inherit', textDecoration: 'none' }}
+                >
+                  {truncatedField}
+                </Text>
+              </a>
+            ) : (
+              <Text fw={500} fz={'sm'}>
+                {truncatedField}
+              </Text>
+            )}
           </Tooltip>
           {copyButton && (
             <CopyButton value={value} timeout={2000}>

@@ -50,12 +50,11 @@ export enum Arrow {
 }
 
 export enum Columns {
-  timeStamp = 'timeStamp',
+  offerId = 'offerId',
+  price = 'price',
   amount = 'amount',
   usdAmount = 'usdAmount',
-  offerTimestamp = 'offerTimestamp',
-  price = 'price',
-  currentOfferAmount = 'currentOfferAmount',
+  timeStamp = 'timeStamp',
 }
 
 export function mapColumnLabels(t: TFunction<'transactions', 'list'>): {
@@ -67,7 +66,7 @@ export function mapColumnLabels(t: TFunction<'transactions', 'list'>): {
     timeStamp: t('buyingDate'),
     amount: t('tokenAmount'),
     usdAmount: t('usdAmount'),
-    offerTimestamp: t('offerDate'),
+    offerId: t('offerId'),
     price: t('offerPrice'),
     currentOfferAmount: t('amountLeft'),
   };

@@ -30,12 +30,25 @@
     "noPriceExplained": "Transaction count too low"
   },
   "list": {
-    "search": "Search",
-    "buyingDate": "Purchase Date",
+    "search": "Offer, Address, TxHash, ...",
+    "buyingDate": "Date",
     "tokenAmount": "Quantity",
     "usdAmount": "Amount",
     "offerDate": "Offer Creation",
     "offerPrice": "Price",
-    "amountLeft": "Remaining Quantity"
+    "amountLeft": "Remaining Quantity",
+    "offerId": "Offer"
+  },
+  "modal": {
+    "title": "Transaction details",
+    "date": "Date",
+    "amount": "Quantity",
+    "price": "Price",
+    "usdAmount": "Amount",
+    "offerId": "Offer",
+    "txHash": "TxHash",
+    "block": "Block",
+    "seeOffer": "See offer",
+    "buyer": "Buyer"
   }
 }

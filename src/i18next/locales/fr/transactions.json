@@ -1,5 +1,4 @@
 {
-  
   "loader": {
     "day": "jour",
     "heure": "heure",
@@ -18,12 +17,12 @@
     "filterFrom": "Filtrer du",
     "to": "au"
   },
-  "stats":{
+  "stats": {
     "day": "jour",
     "heure": "heure",
     "volume": "Volume",
     "transactions": "Transactions",
-    "expense":"Dépense moyenne",
+    "expense": "Dépense moyenne",
     "price": "Prix",
     "numberOfTransaction": " transaction(s) sur ",
     "update": "Mettre à jour",
@@ -31,12 +30,25 @@
     "noPriceExplained": "Nombre de transaction trop faible"
   },
   "list": {
-    "search": "Rechercher",
-    "buyingDate": "Date achat",
+    "search": "Offre, Adresse, TxHash, ...",
+    "buyingDate": "Date",
     "tokenAmount": "Quantité",
     "usdAmount": "Montant",
     "offerDate": "Création offre",
     "offerPrice": "Prix",
-    "amountLeft": "Quantité restante"
+    "amountLeft": "Quantité restante",
+    "offerId": "Offre"
+  },
+  "modal": {
+    "title": "Détails de la transaction",
+    "date": "Date",
+    "amount": "Quantité",
+    "price": "Prix",
+    "usdAmount": "Montant",
+    "offerId": "Offre",
+    "txHash": "TxHash",
+    "block": "Block",
+    "seeOffer": "Voir l'offre",
+    "buyer": "Acheteur"
   }
 }

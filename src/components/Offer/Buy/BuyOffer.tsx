@@ -29,6 +29,7 @@ import TokenExchange from './TokenExchange';
 
 interface BuyOffertProps {
   offer: Offer;
+  backArrow?: boolean;
 }
 
 type BuyOfferFormValues = {
@@ -42,17 +43,18 @@ type BuyOfferFormValues = {
   buyerTokenDecimals: number;
 };
 
-export const BuyOffer: FC<BuyOffertProps> = ({ offer }) => {
+export const BuyOffer: FC<BuyOffertProps> = ({ offer, backArrow }) => {
   const { t } = useTranslation('list');
   return (
     <OfferContainer
       offer={offer}
+      backArrow={backArrow}
       action={
         offer.type === OFFER_TYPE.EXCHANGE
           ? t('toExchange')
           : offer.type === OFFER_TYPE.BUY
-          ? t('toSell')
-          : t('toBuy')
+            ? t('toSell')
+            : t('toBuy')
       }
     >
       <BuyOfferForms offer={offer}></BuyOfferForms>
@@ -101,13 +103,13 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
     useERC20TokenInfo(offer.buyerTokenAddress);
 
   const realTokenYamUpgradeable = useContract(
-    ContractsID.realTokenYamUpgradeable
+    ContractsID.realTokenYamUpgradeable,
   );
   const offerToken = getContract<Erc20>(
     offer.offerTokenAddress,
     Erc20ABI,
     provider as Web3Provider,
-    account
+    account,
   );
 
   useEffect(() => {
@@ -172,10 +174,10 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
         formValues.amount,
         connector,
         setSubmitting,
-        onFinished
+        onFinished,
       );
     },
-    [account, provider, activeChain, realTokenYamUpgradeable, offer, connector]
+    [account, provider, activeChain, realTokenYamUpgradeable, offer, connector],
   );
 
   const maxTokenBuy: number | undefined = useMemo(() => {
@@ -227,11 +229,11 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
               <Title order={5}>{tswap('summary')}</Title>
               <Text mb={10}>
                 {` ${summaryText1} ${formatBigDecimals(
-                  totalAmountToken
+                  totalAmountToken,
                 )} ${tokenSymbol} ${tswap('summaryText2')} ${cleanNumber(
-                  formatBigDecimals(exchangeRate)
+                  formatBigDecimals(exchangeRate),
                 )} ${currencySymbol} ${tswap(
-                  'summaryText3'
+                  'summaryText3',
                 )} ${formatBigDecimals(totalAmountCurrency)} ${currencySymbol}`}
               </Text>
 

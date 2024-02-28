@@ -20,6 +20,7 @@ const useStyle = createStyles((theme, { offerTypeColor }: StyleProps) => ({
   },
 }));
 
+/* eslint-disable */
 interface OfferTypeBadgeProps {
   offerType: OFFER_TYPE | undefined;
   textSize?: number;
@@ -27,7 +28,9 @@ interface OfferTypeBadgeProps {
   id?: string;
   sx?: Sx;
   radius?: string | number;
+  prefix?: string;
 }
+/* eslint-enable */
 export const OfferTypeBadge = ({ offerType, sx }: OfferTypeBadgeProps) => {
   const { getColorCode, getI18OfferTypeName } = useOfferType();
   const { classes } = useStyle({
@@ -128,12 +131,14 @@ export const OfferText = ({
   style,
   id,
   sx,
+  prefix = '',
 }: OfferTypeBadgeProps) => {
   const { getI18OfferTypeName } = useOfferType();
 
   return (
     <Text fz={textSize} style={style} sx={sx}>
-      {(offerType ? getI18OfferTypeName(offerType)?.toUpperCase() : '') +
+      {prefix.toUpperCase() +
+        (offerType ? getI18OfferTypeName(offerType)?.toUpperCase() : '') +
         (id ? ' #' + id : '')}
     </Text>
   );

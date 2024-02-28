@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useMemo, useRef } from 'react';
 
-import { Flex, Group, Space, em, Tabs, Text } from '@mantine/core';
+import { Group, Space, em } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 
 import { useAtom } from 'jotai';
@@ -16,9 +16,10 @@ import {
 import { Displays } from 'src/types/Displays';
 
 import { PublicMarketList } from '../Market/MarketList/PublicMarketList';
-import { MarketSort, MarketSortView } from '../Market/MarketSort/MarketSort';
+import { MarketSortView } from '../Market/MarketSort/MarketSort';
 import { BuyOffer } from '../Offer/Buy/BuyOffer';
 import { useTranslation } from 'react-i18next';
+import { PublicTransactionList } from 'src/components/Transactions/PublicTransactionList';
 
 interface Display {
   display: Displays;
@@ -82,10 +83,11 @@ const Display: FC = () => {
             )}
           </Group>
 
-          {/* <Flex justify={'space-between'} mb={16}>
-            <MarketSort />
-          </Flex> */}
-          <MarketSortView>
+          <MarketSortView
+            transactionChildren={
+              <PublicTransactionList></PublicTransactionList>
+            }
+          >
             {getDisplay() ? getDisplay()?.component : undefined}
           </MarketSortView>
         </>

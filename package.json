@@ -29,6 +29,7 @@
     "@realtoken/realt-commons": "^1.2.8",
     "@reduxjs/toolkit": "^1.9.1",
     "@tabler/icons": "^1.74.0",
+    "@tabler/icons-react": "^2.47.0",
     "@tanstack/react-table": "^8.11.7",
     "@types/react-redux": "^7.1.33",
     "@types/redux": "^3.6.0",

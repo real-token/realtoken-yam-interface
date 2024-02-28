@@ -12,9 +12,9 @@ import {
   useMantineTheme,
 } from '@mantine/core';
 import { IconEdit, IconTrash } from '@tabler/icons';
-
+import { useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
-
+import { selectIsOwnOffer } from 'src/store/features/interface/interfaceSelector';
 import { OfferText } from 'src/components/Offer/components/OfferText';
 import { TextUrl } from 'src/components/TextUrl/TextUrl';
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
@@ -23,7 +23,7 @@ import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
 import { PropertiesToken } from 'src/types';
 import { Offer } from 'src/types/offer';
 import { calcRem } from 'src/utils/style';
-
+import { RootState } from 'src/store/store';
 import { EditOffer } from '../Edit/EditOffer';
 import { OfferContainer } from '../components/OfferContainer';
 
@@ -69,15 +69,16 @@ const useStyle = createStyles((theme) => ({
 
 type OfferProps = {
   offer: Offer;
+  backArrow?: boolean;
 };
 
-export const ViewOffer: FC<OfferProps> = ({ offer }) => {
+export const ViewOffer: FC<OfferProps> = ({ offer, backArrow }) => {
   const [isEdited, setIsEdited] = useState<boolean>(false);
   const onEdit = useCallback(
     (open: boolean) => {
       setIsEdited(open);
     },
-    [setIsEdited]
+    [setIsEdited],
   );
 
   window.scrollTo({ top: 0, left: 0 });
@@ -85,9 +86,17 @@ export const ViewOffer: FC<OfferProps> = ({ offer }) => {
   return (
     <>
       {isEdited ? (
-        <EditOffer offer={offer} onCloseEdit={() => onEdit(false)}></EditOffer>
+        <EditOffer
+          offer={offer}
+          onCloseEdit={() => onEdit(false)}
+          backArrow={backArrow}
+        ></EditOffer>
       ) : (
-        <ViewOfferComponent offer={offer} onEdit={onEdit}></ViewOfferComponent>
+        <ViewOfferComponent
+          offer={offer}
+          onEdit={onEdit}
+          backArrow={backArrow}
+        ></ViewOfferComponent>
       )}
     </>
   );
@@ -96,9 +105,14 @@ export const ViewOffer: FC<OfferProps> = ({ offer }) => {
 type ComponentOfferProps = {
   offer: Offer;
   onEdit: (open: boolean) => void;
+  backArrow?: boolean;
 };
 
-const ViewOfferComponent: FC<ComponentOfferProps> = ({ offer, onEdit }) => {
+const ViewOfferComponent: FC<ComponentOfferProps> = ({
+  offer,
+  onEdit,
+  backArrow,
+}) => {
   const [propertyTokens, setPropertyTokens] = useState<PropertiesToken[]>([]);
   const { getPropertyToken, propertiesIsloading } = usePropertiesToken();
 
@@ -119,7 +133,11 @@ const ViewOfferComponent: FC<ComponentOfferProps> = ({ offer, onEdit }) => {
   }, [getPropertyToken, offer, propertiesIsloading, propertyTokens.length]);
 
   return (
-    <OfferContainer offer={offer} withSeparatedHeader={false}>
+    <OfferContainer
+      offer={offer}
+      withSeparatedHeader={false}
+      backArrow={backArrow}
+    >
       <ViewOfferForms offer={offer} onEdit={onEdit}></ViewOfferForms>
     </OfferContainer>
   );
@@ -133,12 +151,16 @@ const ViewOfferForms: FC<ComponentOfferProps> = ({ offer, onEdit }) => {
   const { getPropertyToken, propertiesIsloading } = usePropertiesToken();
   const modals = useContextModals();
   const { refreshOffers } = useRefreshOffers(false);
+  const isOwner = useSelector((state: RootState) =>
+    offer ? selectIsOwnOffer(state, offer) : false,
+  );
+  const isEmpty = Number(offer.availableAmount) === 0 && !isOwner;
 
   const onOpenDeleteModal = useCallback(
     (offer: Offer) => {
       modals.openDeleteModal(offer, refreshOffers);
     },
-    [modals, refreshOffers]
+    [modals, refreshOffers],
   );
 
   useEffect(() => {
@@ -159,7 +181,7 @@ const ViewOfferForms: FC<ComponentOfferProps> = ({ offer, onEdit }) => {
 
   return (
     <div>
-      {offer.removed ? (
+      {offer.removed || isEmpty ? (
         <Group>
           <Button
             leftIcon={<IconTrash size={'1rem'} />}

@@ -1,34 +1,38 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { VariableSizeList as List } from 'react-window';
 
 import { Container, Group, Loader, Space } from '@mantine/core';
 
-import { Columns, SortDirection } from 'src/components/Transactions/Types';
-import { Transaction } from 'src/types/transaction/Transaction';
+import {
+  Columns,
+  SortDirection,
+  TransactionData,
+} from 'src/components/Transactions/Types';
 import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
 
+import { PRICE_PERIOD } from './Types';
+import { Filters } from './components/Filters';
+import { GlobalStat } from './components/GlobalStat';
 import HeaderCard from './components/HeaderCard';
-import { useMantineTheme } from '@mantine/core';
-import { useMediaQuery } from '@mantine/hooks';
-import TransactionRow from './components/TransactionSimpleRow';
-import { use } from 'i18next';
+import { TimeRange } from './components/TimeRange';
+import TransactionRow from './components/TransactionDataRow';
 
-const ROW_HEIGHT = 60;
-const SMALL_ROW_HEIGHT = 50;
+const ROW_HEIGHT = 160;
 const PAGE_SIZE = 10;
 
 interface TransactionListProps {
-  transactions: Transaction[];
+  transactions: TransactionData[];
+  children?: React.ReactNode;
 }
 
-export const TransactionList: FC<TransactionListProps> = ({ transactions }) => {
-  const theme = useMantineTheme();
-  const isSmall = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
-  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`);
-  const [rowHeight, setRowHeight] = useState<number>(
-    isSmall || isMobile ? SMALL_ROW_HEIGHT : ROW_HEIGHT,
-  );
+const TransactionList: FC<TransactionListProps> = ({
+  transactions,
+  children,
+}) => {
+  const { t } = useTranslation('transactions', { keyPrefix: 'list' });
   const { propertiesToken } = usePropertiesToken();
+
   const [searchText, setSearchText] = useState<string>('');
   const [transactionsDisplayed, setTransactionsDisplayed] =
     useState<number>(PAGE_SIZE);
@@ -39,13 +43,14 @@ export const TransactionList: FC<TransactionListProps> = ({ transactions }) => {
 
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
+  const [pricePeriod, setPricePeriod] = useState<string>(PRICE_PERIOD['7d']);
   const [selectedHeader, setSelectedHeader] = useState<Columns | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(
     SortDirection.Asc,
   );
-  const [filtedTransactions, setFilteredTransaction] = useState<Transaction[]>(
-    getFilteredTransactions(),
-  );
+  const [filtedTransactions, setFilteredTransaction] = useState<
+    TransactionData[]
+  >(getFilteredTransactions());
 
   const handleReachEndList = (entries: IntersectionObserverEntry[]) => {
     const isEndListReached = entries[0].isIntersecting;
@@ -57,10 +62,6 @@ export const TransactionList: FC<TransactionListProps> = ({ transactions }) => {
       );
     }
   };
-
-  useEffect(() => {
-    setRowHeight(isSmall || isMobile ? SMALL_ROW_HEIGHT : ROW_HEIGHT);
-  }, [isMobile, isSmall, setRowHeight]);
 
   useEffect(() => {
     setFilteredTransaction(getFilteredTransactions());
@@ -123,7 +124,6 @@ export const TransactionList: FC<TransactionListProps> = ({ transactions }) => {
         transaction={transaction}
         isLastRow={isLastRow}
         style={style}
-        height={rowHeight}
       />
     );
   };
@@ -171,6 +171,26 @@ export const TransactionList: FC<TransactionListProps> = ({ transactions }) => {
         padding: 0,
       }}
     >
+      <TimeRange transactions={transactions}>{children}</TimeRange>
+      <Space h={'xs'}></Space>
+      <Filters
+        tokenFilterStates={tokenFilterStates}
+        startDate={startDate}
+        endDate={endDate}
+        pricePeriod={pricePeriod} //{pricePeriod}
+        propertiesToken={propertiesToken}
+        handleTokenFilter={handleTokenFilter}
+        handlePricePeriodFilter={setPricePeriod}
+        handleStartDateFilter={handleStartDateFilter}
+        handleEndDateFilter={handleEndDateFilter}
+      ></Filters>
+
+      <Space h={'xs'}></Space>
+      <GlobalStat
+        transactions={filtedTransactions}
+        daysPeriod={parseInt(pricePeriod)}
+      ></GlobalStat>
+      <Space h={10}></Space>
       <HeaderCard
         filterText={searchText}
         handleFilterChange={handleFilterChange}
@@ -181,13 +201,13 @@ export const TransactionList: FC<TransactionListProps> = ({ transactions }) => {
       <List
         height={
           getTransactionsToDisplay()
-            ? Math.max(getTransactionsToDisplay().length, 1) * rowHeight
-            : rowHeight
+            ? Math.max(getTransactionsToDisplay().length, 1) * ROW_HEIGHT
+            : ROW_HEIGHT
         }
         itemCount={
           getTransactionsToDisplay() ? getTransactionsToDisplay().length : 1
         }
-        itemSize={() => rowHeight}
+        itemSize={() => ROW_HEIGHT}
         width={'100%'}
       >
         {Row}
@@ -224,7 +244,7 @@ export const TransactionList: FC<TransactionListProps> = ({ transactions }) => {
 export default TransactionList;
 
 function getDisplayedTransactions(
-  filtedTransactions: Transaction[],
+  filtedTransactions: TransactionData[],
   transactionsDisplayed: number,
 ) {
   return filtedTransactions.slice(0, transactionsDisplayed);
@@ -235,49 +255,46 @@ function filterTransaction(
   filterToken: Map<string, boolean>,
   filterStartDate: number | undefined,
   filterEndDate: number | undefined,
-): (value: Transaction, index: number, array: Transaction[]) => unknown {
+): (
+  value: TransactionData,
+  index: number,
+  array: TransactionData[],
+) => unknown {
   return (transaction) => {
     const searchTerms = filterText.toLowerCase();
     //console.log('FILTER TRANSACTION', filterStartDate, transaction.timeStamp);
 
     return (
-      ((!filterStartDate || transaction.timeStamp > filterStartDate / 1000) &&
-        (!filterEndDate ||
-          transaction.timeStamp < filterEndDate / 1000 + 86400) &&
-        (Array.from(filterToken).every(([, active]) => !active) ||
-          Array.from(filterToken).some(
-            ([address, active]) =>
-              active &&
-              (transaction.tokenForSale?.address.toLowerCase() ===
-                address.toLowerCase() ||
-                transaction.tokenBuyWith?.address.toLowerCase() ===
-                  address.toLowerCase()),
-          )) &&
-        (transaction.offerId.toLowerCase().includes(searchTerms) ||
-          transaction.tokenBuyWith?.name.toLowerCase().includes(searchTerms) ||
-          transaction.tokenForSale?.name.toLowerCase().includes(searchTerms) ||
-          transaction.tokenBuyWith?.symbol
-            ?.toLowerCase()
-            .includes(searchTerms) ||
-          transaction.tokenForSale?.symbol
-            ?.toLowerCase()
-            .includes(searchTerms) ||
-          transaction.blockNumber.toString().includes(searchTerms) ||
-          transaction.hash.toLowerCase().includes(searchTerms))) ||
-      transaction.from.toLowerCase().includes(searchTerms)
+      (!filterStartDate || transaction.timeStamp > filterStartDate / 1000) &&
+      (!filterEndDate ||
+        transaction.timeStamp < filterEndDate / 1000 + 86400) &&
+      (Array.from(filterToken).every(([address, active]) => !active) ||
+        Array.from(filterToken).some(
+          ([address, active]) =>
+            active &&
+            (transaction.tokenForSale?.address.toLowerCase() ===
+              address.toLowerCase() ||
+              transaction.tokenBuyWith?.address.toLowerCase() ===
+                address.toLowerCase()),
+        )) &&
+      (transaction.offerId.toLowerCase().includes(searchTerms) ||
+        transaction.tokenBuyWith?.name.toLowerCase().includes(searchTerms) ||
+        transaction.tokenForSale?.name.toLowerCase().includes(searchTerms) ||
+        transaction.tokenBuyWith?.symbol?.toLowerCase().includes(searchTerms) ||
+        transaction.tokenForSale?.symbol?.toLowerCase().includes(searchTerms))
     );
   };
 }
 
 function getFilterElements(
-  transactions: Transaction[],
+  transactions: TransactionData[],
   filterText: string,
   filterToken: Map<string, boolean>,
   filterStartDate: number | undefined,
   filterEndDate: number | undefined,
   sortedColumn: Columns | null,
   sortDirection: SortDirection,
-): Transaction[] {
+): TransactionData[] {
   if (sortedColumn) {
     const sorted = transactions
       .filter(
@@ -304,9 +321,9 @@ function getFilterElements(
 }
 
 function sortColumn(
-  column: keyof Transaction,
+  column: keyof TransactionData,
   sortDirection: SortDirection,
-): ((a: Transaction, b: Transaction) => number) | undefined {
+): ((a: TransactionData, b: TransactionData) => number) | undefined {
   return (a, b) => {
     const columnA = a[column];
     const columnB = b[column];

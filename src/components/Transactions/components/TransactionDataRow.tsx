@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import {
   Badge,
@@ -20,12 +20,11 @@ import {
   OfferText,
 } from 'src/components/Offer/components/OfferTypeBadge';
 import { TokenExchangeElement } from 'src/components/Offer/components/TokenExchangeElement';
-import { Transaction } from 'src/types/transaction/Transaction';
+import { TransactionData } from 'src/components/Transactions/Types';
 import { formatSmallToken, formatToken, formatUsd } from 'src/utils/format';
 
 import { formatTimestampDay, formatTimestampHour } from '../DataUtils';
 import { FieldPaper } from './FieldPaper';
-import { OFFER_TYPE } from 'src/types/offer';
 
 const ROW_HEIGHT = 160;
 
@@ -50,7 +49,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 interface TransactionRowProps {
-  transaction: Transaction;
+  transaction: TransactionData;
   isLastRow: boolean;
   style: React.CSSProperties;
 }
@@ -68,8 +67,6 @@ const TransactionRow: React.FC<TransactionRowProps> = ({
   const [opened, { close, open }] = useDisclosure(false);
 
   if (!transaction) return null;
-
-  console.log('Any logs ???', transaction.offerId);
 
   return (
     <>
@@ -105,7 +102,9 @@ const TransactionRow: React.FC<TransactionRowProps> = ({
             truncate={false}
           ></FieldPaper>
 
-          <Badge color={'green'}>{'Status: done'}</Badge>
+          <Badge color={transaction.txreceipt_status === '1' ? 'green' : 'red'}>
+            {'Status: ' + transaction.txreceipt_status}
+          </Badge>
         </Stack>
       </Modal>
       <div style={style} onClick={open}>
@@ -163,22 +162,11 @@ const TransactionRow: React.FC<TransactionRowProps> = ({
               >
                 <div>
                   <Text fz={'lg'} ta={'left'} fw={500}>
-                    {formatSmallToken(
-                      transaction.offerType === OFFER_TYPE.BUY
-                        ? new BigNumber(transaction.amount)
-                            .times(transaction.price)
-                            .toNumber()
-                        : transaction.amount,
-                      '',
-                      6,
-                    )}
+                    {formatSmallToken(transaction.amount, '', 6)}
                   </Text>
                   <Text fz={'xs'} color={'dimmed'} ta={'left'}>
-                    {transaction.offerType === OFFER_TYPE.BUY
-                      ? transaction.tokenBuyWith?.symbol ??
-                        transaction.tokenBuyWith?.name
-                      : transaction.tokenForSale?.symbol ??
-                        transaction.tokenForSale?.name}
+                    {transaction.tokenForSale?.symbol ??
+                      transaction.tokenForSale?.name}
                   </Text>
                 </div>
               </Stack>
@@ -193,29 +181,39 @@ const TransactionRow: React.FC<TransactionRowProps> = ({
                 <div>
                   <Text fz={'lg'} ta={'left'} fw={500}>
                     {formatUsd(
-                      transaction.offerType === OFFER_TYPE.BUY
-                        ? transaction.amount
-                        : new BigNumber(transaction.price)
-                            .times(transaction.amount)
-                            .toNumber(),
-                    )}
-                  </Text>
-                  <Text fz={'xs'} color={'dimmed'} ta={'left'}>
-                    {formatToken(
-                      transaction.offerType === OFFER_TYPE.BUY
-                        ? transaction.amount
-                        : new BigNumber(transaction.price)
-                            .times(transaction.amount)
-                            .toNumber(),
-                      transaction.offerType === OFFER_TYPE.BUY
-                        ? transaction.tokenForSale?.symbol ?? 'USDC'
-                        : transaction.tokenBuyWith?.symbol ?? 'USDC',
+                      new BigNumber(transaction.price)
+                        .times(transaction.amount)
+                        .toNumber()
                     )}
                   </Text>
                 </div>
               </Stack>
             </Col>
+            {/* <Col span={3}>
+              <Stack spacing={3} align={'flex-start'}>
+                <FieldPaper
+                  name={'Block'}
+                  value={transaction.blockNumber.toString()}
+                  copyButton={true}
+                ></FieldPaper>
+                <FieldPaper
+                  name={'Hash'}
+                  value={transaction.hash}
+                  copyButton={true}
+                ></FieldPaper>
+                <FieldPaper
+                  name={'Buyer'}
+                  value={transaction.from}
+                  copyButton={true}
+                ></FieldPaper>
 
+                <Badge
+                  color={transaction.txreceipt_status === '1' ? 'green' : 'red'}
+                >
+                  {'Status: ' + transaction.txreceipt_status}
+                </Badge>
+              </Stack>
+            </Col> */}
             <Col span={2}>
               <Stack
                 h={'100%'}
@@ -246,13 +244,7 @@ const TransactionRow: React.FC<TransactionRowProps> = ({
               >
                 <div>
                   <Text fz={'lg'} ta={'left'} fw={500}>
-                    {formatUsd(
-                      transaction.offerType === OFFER_TYPE.BUY
-                        ? new BigNumber(1)
-                            .dividedBy(transaction.price)
-                            .toNumber()
-                        : transaction.price,
-                    )}
+                    {formatUsd(transaction.price)}
                   </Text>
                 </div>
               </Stack>
