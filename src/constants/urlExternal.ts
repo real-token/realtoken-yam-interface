@@ -1,5 +1,5 @@
 export type UrlExternal = {
-  url: string | ((id: string) => string);
+  url: string;
   name: string;
   keyword: string;
 };
