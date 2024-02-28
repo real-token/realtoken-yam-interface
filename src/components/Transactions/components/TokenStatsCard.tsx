@@ -55,6 +55,7 @@ export const TokenStatsCard: FC<TokenStatsCardProps> = ({
 }) => {
   const { t } = useTranslation('transactions', { keyPrefix: 'stats' });
   const theme = useMantineTheme();
+  const isSmall = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`);
   const [isHovered, setIsHovered] = useState<boolean>(
     (tokenFilterStates &&
@@ -103,7 +104,7 @@ export const TokenStatsCard: FC<TokenStatsCardProps> = ({
     <Card
       key={token.contractAddress}
       shadow={'sm'}
-      padding={isMobile ? 'xs' : 'lg'}
+      padding={isMobile ? 0 : isSmall ? 'xs' : 'lg'}
       radius={'md'}
       withBorder={true}
       style={{ cursor: 'pointer' }}
@@ -114,20 +115,20 @@ export const TokenStatsCard: FC<TokenStatsCardProps> = ({
       }}
     >
       <Card.Section>
-        <Group position={'apart'} align={'start'}>
+        <Group position={'apart'} align={'start'} spacing={0}>
           <Image
             src={'https://yam.cleansatmining.net/logo.svg'}
-            width={isMobile ? 30 : 40}
+            width={isMobile ? 20 : 40}
             alt={'csm logo'}
             sx={{ margin: '5px' }}
           ></Image>
-          <Group>
+          <Group spacing={0}>
             <Text
               weight={500}
               color={'dimmed'}
               size={isMobile ? 10 : 'sm'}
-              mr={10}
-              mt={10}
+              mr={isMobile ? 5 : 10}
+              mt={isMobile ? 5 : 10}
             >
               {token.shortName}
             </Text>

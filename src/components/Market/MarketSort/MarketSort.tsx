@@ -4,7 +4,8 @@ import { useAtom } from 'jotai';
 import { useTranslation } from 'react-i18next';
 import { tableOfferTypeAtom } from 'src/states';
 import { OFFER_TYPE } from 'src/types/offer';
-import { use } from 'i18next';
+import { useMantineTheme } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 
 interface MarketSortProps {
   sellCount?: number | undefined;
@@ -52,6 +53,10 @@ export const MarketSortView = ({
   children,
   transactionChildren,
 }: MarketSortViewProps) => {
+  const theme = useMantineTheme();
+  const isSmall = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
+  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`);
+
   const [sorting, setSorting] = useAtom(tableOfferTypeAtom);
   const [activeTab, setActiveTab] = useState<string | null>(
     sorting === OFFER_TYPE.SELL
@@ -107,16 +112,22 @@ export const MarketSortView = ({
       >
         <Tabs.List>
           <Tabs.Tab value={'sell'}>
-            <Text fz={'lg'}>{t('sell')}</Text>
+            <Text fz={isMobile ? 'xs' : isSmall ? 'sm' : 'lg'}>
+              {t('sell')}
+            </Text>
           </Tabs.Tab>
           <Tabs.Tab value={'buy'}>
-            <Text fz={'lg'}>{t('buy')}</Text>
+            <Text fz={isMobile ? 'xs' : isSmall ? 'sm' : 'lg'}>{t('buy')}</Text>
           </Tabs.Tab>
           <Tabs.Tab value={'exchange'}>
-            <Text fz={'lg'}>{t('exchange')}</Text>
+            <Text fz={isMobile ? 'xs' : isSmall ? 'sm' : 'lg'}>
+              {t('exchange')}
+            </Text>
           </Tabs.Tab>
           <Tabs.Tab value={'transactions'} ml={'auto'} color={'blue'}>
-            <Text fz={'lg'}>{'Transactions'}</Text>
+            <Text fz={isMobile ? 'xs' : isSmall ? 'sm' : 'lg'}>
+              {'Transactions'}
+            </Text>
           </Tabs.Tab>
         </Tabs.List>
 

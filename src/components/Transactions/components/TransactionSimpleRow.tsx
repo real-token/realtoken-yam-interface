@@ -191,7 +191,7 @@ const TransactionRow: React.FC<TransactionRowProps> = ({
                 spacing={0}
                 p={0}
               >
-                <Group>
+                <Group spacing={isMobile ? 5 : undefined}>
                   <Tooltip
                     position={'right'}
                     label={
@@ -207,7 +207,7 @@ const TransactionRow: React.FC<TransactionRowProps> = ({
                           : TriangleInvertedSVG.src
                       }
                       alt={'Up'}
-                      width={12}
+                      width={isMobile ? 8 : 12}
                     />
                   </Tooltip>
                   {transaction.tokenForSale && transaction.tokenBuyWith && (
