@@ -74,12 +74,12 @@ export const fetchTransactionsTheGraph = (
         (t) => t.type === TRANSACTION_TYPE.BUY,
       );
 
-      console.log(
-        'Query dataYAM transaction',
-        parsedTransactions.length,
-        JSON.stringify(parsedTransactions, null, 4),
-        //parsedTransactions.map((t) => t.offerId)
-      );
+      // console.log(
+      //   'Query dataYAM transaction',
+      //   parsedTransactions.length,
+      //   JSON.stringify(parsedTransactions, null, 4),
+      //   //parsedTransactions.map((t) => t.offerId)
+      // );
 
       transactionsData.push(...parsedTransactions);
 

@@ -121,16 +121,27 @@ export const TokenStatsCard: FC<TokenStatsCardProps> = ({
             alt={'csm logo'}
             sx={{ margin: '5px' }}
           ></Image>
-          {refreshTransactions && (
-            <Tooltip label={t('update')}>
-              <ActionIcon
-                variant={'transparent'}
-                onClick={() => refreshTransactions()}
-              >
-                <IconReload size={isMobile ? '1.5rem' : '1.5rem'} />
-              </ActionIcon>
-            </Tooltip>
-          )}
+          <Group>
+            <Text
+              weight={500}
+              color={'dimmed'}
+              size={isMobile ? 10 : 'sm'}
+              mr={10}
+              mt={10}
+            >
+              {token.shortName}
+            </Text>
+            {refreshTransactions && (
+              <Tooltip label={t('update')}>
+                <ActionIcon
+                  variant={'transparent'}
+                  onClick={() => refreshTransactions()}
+                >
+                  <IconReload size={isMobile ? '1.5rem' : '1.5rem'} />
+                </ActionIcon>
+              </Tooltip>
+            )}
+          </Group>
         </Group>
       </Card.Section>
       {!isHovered && (
@@ -143,11 +154,6 @@ export const TokenStatsCard: FC<TokenStatsCardProps> = ({
           opacity={0.9}
         />
       )}
-      <Text weight={500} color={'dimmed'} size={isMobile ? 10 : 'md'}>
-        {token.shortName}
-      </Text>
-
-      <Space h={0}></Space>
 
       <Text weight={500} size={isMobile ? 15 : 25}>
         {currentPrice ? formatUsd(currentPrice) : '-'}

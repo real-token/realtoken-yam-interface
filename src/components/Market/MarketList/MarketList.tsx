@@ -48,7 +48,7 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
   const rowHeight = getRowHeight(screenSize);
   const { allowedTokens } = useAllowedTokens();
   const offersData: OfferData[] = offers.map((offer) =>
-    mapOfferToOfferData(offer, listOfferType, allowedTokens)
+    mapOfferToOfferData(offer, listOfferType, allowedTokens),
   );
   const { t: tList } = useTranslation('list');
   const { t: tOfferMode } = useTranslation(listOfferType.toLowerCase(), {
@@ -56,18 +56,18 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
   });
   const columnLabels = mapColumnLabels(tOfferMode);
   const [sortedColumn, setSortedColumn] = useState(
-    columnLabels[Columns.priceDelta]
+    columnLabels[Columns.priceDelta],
   );
 
   const [filterText, setFilterText] = useState('');
   const [sortedOffers, setSortedOffers] = useState(
-    offersData.filter(filterByText(filterText))
+    offersData.filter(filterByText(filterText)),
   );
   const [selectedHeader, setSelectedHeader] = useState<Columns | null>(null);
 
   const sortOffersByColumn = (
     column: keyof OfferData,
-    sortDirection: SortDirection
+    sortDirection: SortDirection,
   ) => {
     const sorted = [...sortedOffers];
     sorted.sort(sortColumn(column, sortDirection));
@@ -86,9 +86,15 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
     } else {
       return <ItemElement offer={offer} isLastItem={isLastItem}></ItemElement>;
     } */
-    return <>
-    {sortedOffers.length === 0 ? <ItemEmptyElement></ItemEmptyElement> : <ItemElement offer={offer} isLastItem={isLastItem}></ItemElement>}
-    </>;
+    return (
+      <>
+        {sortedOffers.length === 0 ? (
+          <ItemEmptyElement></ItemEmptyElement>
+        ) : (
+          <ItemElement offer={offer} isLastItem={isLastItem}></ItemElement>
+        )}
+      </>
+    );
   };
 
   const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -116,7 +122,7 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
     screenSize === SCREEN_SIZE.Medium || screenSize === SCREEN_SIZE.Small;
 
   useEffect(() => {
-    console.log('SORTED COL', sortedColumn);
+    //console.log('SORTED COL', sortedColumn);
     const offersData: OfferData[] = offers
       .map((offer) => mapOfferToOfferData(offer, listOfferType, allowedTokens))
       .sort(sortColumn(Columns.priceDelta, SortDirection.Asc));
@@ -240,7 +246,7 @@ export const MarketList: FC<MarketListProps> = ({ offers }) => {
 };
 function sortColumn(
   column: keyof OfferData,
-  sortDirection: SortDirection
+  sortDirection: SortDirection,
 ): ((a: OfferData, b: OfferData) => number) | undefined {
   //console.log('Sort', column, sortDirection);
   return (a, b) => {
@@ -264,7 +270,7 @@ function sortColumn(
 }
 
 function filterByText(
-  filterText: string
+  filterText: string,
 ): (value: OfferData, index: number, array: OfferData[]) => unknown {
   return (offer) => {
     const searchTerms = filterText.toLowerCase();

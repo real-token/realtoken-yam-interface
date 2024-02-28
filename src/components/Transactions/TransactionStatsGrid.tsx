@@ -106,7 +106,7 @@ export const TransactionStatsGrid = ({}) => {
       {
         <SimpleGrid
           cols={isSmall ? 3 : propertiesToken.length}
-          spacing={isMobile ? 'xs' : 'xl'}
+          spacing={isMobile ? 'xs' : 'sm'}
         >
           {propertiesToken.map((token) => (
             <TokenStatsCard
