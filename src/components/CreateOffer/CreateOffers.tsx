@@ -20,6 +20,9 @@ import { providerAtom } from "../../states";
 import classes from './CreateOffer.module.css';
 import { useRootStore } from "../../zustandStore/store";
 import { AvailableConnectors, ConnectorsDatas } from "@realtoken/realt-commons";
+import { getBatchApprove } from "../../hooks/getBatchApprove";
+import { IconArrowBack } from "@tabler/icons";
+import { CreateOfferApprovePane } from "./CreateOfferApprovePane";
 
 const approveOffer = (
   offerTokenAddress: string,
@@ -110,7 +113,18 @@ export const CreateOffer = () => {
 
   const { refreshOffers } = useRefreshOffers();
 
-  const [offers, resetOffers] = useRootStore(state => [state.offersToCreate, state.resetOffers]);
+  const [
+    offers, 
+    resetOffers, 
+    approvals, 
+    resetApprovals
+  ] = useRootStore(state => [
+    state.offersToCreate, 
+    state.resetOffers, 
+    state.approvals, 
+    state.resetApprovals
+  ]);
+  console.log('approvals', approvals);
 
   const { t } = useTranslation('modals', { keyPrefix: 'sell' });
 
@@ -121,6 +135,8 @@ export const CreateOffer = () => {
   const activeChain = useActiveChain();
 
   const connector = useAtomValue(providerAtom);
+
+  const { approves } = getBatchApprove();
 
   // Group approves for same token in unique approve tx to reduce gas consumption
   const createApproves = async () => {
@@ -152,6 +168,8 @@ export const CreateOffer = () => {
   };
   
   const createOffers = async () => {
+    console.log('createOffers');
+
     try {
       if (!account || !provider || !realTokenYamUpgradeable) return;
 
@@ -403,53 +421,201 @@ export const CreateOffer = () => {
     }
   };
 
+  const createBatchOffer = async () => {
+
+    console.log('createBatchOffer');
+
+    try{
+      if (!account || !provider || !realTokenYamUpgradeable){
+        console.error('account, provider or realTokenYamUpgradeable not found');
+        return;
+      };
+
+      setLoading(true);
+
+      // WANT TO CREATE MULTI OFFERS
+      const _offerTokens = [];
+      const _buyerTokens = [];
+      const _buyers = [];
+      const _prices = [];
+      const _amounts = [];
+
+      for await (const createdOffer of offers) {
+        const offerToken = getContract<CoinBridgeToken>(
+          createdOffer.offerTokenAddress,
+          coinBridgeTokenABI,
+          provider,
+          account
+        );
+        const buyerToken = getContract<Erc20>(
+          createdOffer.buyerTokenAddress,
+          Erc20ABI,
+          provider,
+          account
+        );
+
+        const buyerTokenDecimals = await buyerToken?.decimals();
+
+        if (!createdOffer.amount || !createdOffer.price) return;
+
+        if (!offerToken) {
+          console.log('offerToken not found');
+          return;
+        }
+
+        BigNumber.set({ EXPONENTIAL_AT: 37 });
+
+        const priceInWei = new BigNumber(createdOffer.price.toString())
+          .shiftedBy(Number(buyerTokenDecimals))
+          .toString(10);
+
+        _offerTokens.push(createdOffer.offerTokenAddress);
+        _buyerTokens.push(createdOffer.buyerTokenAddress);
+        _buyers.push(createdOffer.buyerAddress);
+        _prices.push(priceInWei);
+        _amounts.push(new BigNumber(createdOffer.amount).toString(10));
+      }
+
+      console.log(_offerTokens, _buyerTokens, _buyers, _prices, _amounts);
+
+      const createBatchOffersTx =
+        await realTokenYamUpgradeable.createOfferBatch(
+          _offerTokens,
+          _buyerTokens,
+          _buyers,
+          _prices,
+          _amounts
+        );
+
+      const notificationPayload = {
+        key: createBatchOffersTx.hash,
+        href: `${activeChain?.blockExplorerUrl}tx/${createBatchOffersTx.hash}`,
+        hash: createBatchOffersTx.hash,
+      };
+
+      showNotification(
+        NOTIFICATIONS[NotificationsID.createOfferLoading](notificationPayload)
+      );
+
+      createBatchOffersTx.wait().then(({ status }) => {
+        updateNotification(
+          NOTIFICATIONS[
+            status === 1
+              ? NotificationsID.createOfferSuccess
+              : NotificationsID.createOfferError
+          ](notificationPayload)
+        );
+
+        if (status == 1) {
+          console.log('test2')
+          resetOffers()
+          refreshOffers();
+          resetApprovals();
+          setShowApprovePanel(false);
+        }
+        setLoading(false);
+      });
+      
+    }catch(err){
+      // TODO: Add error notification
+      console.error(err);
+      setLoading(false);
+    }
+  }
+
+  const checkIfApproveNeeded = () => {
+    if(offers.length > 1){
+
+      // Batch offers, CANNOT permit
+      // Only approve available
+      setShowApprovePanel(true);
+
+    }else{
+      createOffers();
+    }
+  }
+
+  const [showApprovePanel, setShowApprovePanel] = useState<boolean>(false);
 
   return (
-    <Flex direction={'column'} align={'center'}>
-      <h3>{'Create offer(s)'}</h3>
-      <Flex
-        direction={'column'}
-        className={classes.container}
-        gap={'sm'}
-        mb={'sm'}
-      >
+    <Flex direction={'column'} align={'center'} justify={'center'}>
+      <h3>{showApprovePanel ? 'Approve offer(s)' : 'Create offer(s)'}</h3>
+      <Flex direction={'column'} w={'33%'} gap={'md'}>
         <Flex
           direction={'column'}
-          className={classes.offersContainer}
+          className={classes.container}
           gap={'sm'}
+          mb={'sm'}
         >
-          {offers?.map((offer: CreatedOffer, index: number) => (
-            <CreateOfferPane
-              key={`created-offer-${index}`}
-              isCreating={false}
-              offer={offer}
-            />
-          ))}
+          <Flex
+            direction={'column'}
+            className={classes.offersContainer}
+            gap={'sm'}
+          >
+            {showApprovePanel ? (
+              Object.keys(approves).map((token, index) => {
+                const amount = approves[token];
+                return(
+                  <CreateOfferApprovePane key={`approve-${index}`} token={token} amount={amount}/>
+                )
+              })
+            ):(
+              offers?.map((offer: CreatedOffer, index: number) => (
+                <CreateOfferPane
+                  key={`created-offer-${index}`}
+                  isCreating={false}
+                  offer={offer}
+                />
+              ))
+            )}
+          </Flex>
+          {offers.length > 0 ? <Divider /> : undefined}
+          <CreateOfferPane isCreating={true} />
         </Flex>
-        {offers.length > 0 ? <Divider /> : undefined}
-        <CreateOfferPane isCreating={true} />
+        {/* {notification && (
+          <Notification
+            icon={<IconX size={'1.1rem'} />}
+            color={'red'}
+            sx={{ position: 'absolute', bottom: '50vh' }}
+            onClose={() => {
+              setNotification(() => false);
+            }}
+          >
+            {'Error ! Offer(s) not created. Please retry.'}
+          </Notification>
+        )} */}
+        <Flex align={'center'} justify={showApprovePanel ? 'space-between' : 'center'} w={'100%'}>
+          {showApprovePanel ? (
+            <Button 
+              leftSection={<IconArrowBack/>}
+              color={'red'}
+              onClick={() => setShowApprovePanel(false)}
+              disabled={loading}
+            >
+              {'Back to offers'}
+            </Button>
+          ): undefined}
+          {showApprovePanel ? (
+            <Button
+              disabled={Object.values(approvals).some((approval) => !approval) || loading}
+              onClick={() => createBatchOffer()}
+              loading={loading}
+            >
+              {t('buttonCreateOfferWithNumber', { nbr: offers.length })}
+            </Button>
+          ):(
+            <Button
+              disabled={offers.length == 0 || loading}
+              onClick={() => checkIfApproveNeeded()}
+              loading={loading}
+            >
+              {offers.length < 2
+                ? t('buttonCreateOffer')
+                : t('approveOfferWithNumber', { nbr: offers.length })}
+            </Button>
+          )}
+        </Flex>
       </Flex>
-      {/* {notification && (
-        <Notification
-          icon={<IconX size={'1.1rem'} />}
-          color={'red'}
-          sx={{ position: 'absolute', bottom: '50vh' }}
-          onClose={() => {
-            setNotification(() => false);
-          }}
-        >
-          {'Error ! Offer(s) not created. Please retry.'}
-        </Notification>
-      )} */}
-      <Button
-        disabled={offers.length == 0 || loading}
-        onClick={() => createOffers()}
-        loading={loading}
-      >
-        {offers.length == 0
-          ? t('buttonCreateOffer')
-          : t('buttonCreateOfferWithNumber', { nbr: offers.length })}
-      </Button>
     </Flex>
   );
 };

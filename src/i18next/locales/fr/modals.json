@@ -35,6 +35,7 @@
     "buttonCreateOffer": "Ajouter une nouvelle offre",
     "buttonModifyCreateOffer": "Modifier l'offre",
     "buttonCreateOfferWithNumber": "Ajouter {{ nbr, Number }} offre(s)",
+    "approveOfferWithNumber": "Approve {{ nbr, Number }} offre(s)",
     "checkboxLabelPrivateOffre": "Je veux créer une offre privée",
     "invalidPrivateOfferAddress": "Impossible de créer une offre à destination de votre address",
     "zeroBalanceError": "Vous ne pouvez pas créer cette offre car vous ne possédez aucun token \"{{tokenSymbol}}\".",

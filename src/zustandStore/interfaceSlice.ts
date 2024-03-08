@@ -62,7 +62,7 @@ export interface InterfaceSlice {
   wlPropertiesAreLoading: boolean;
 
   // Prices
-  fetchPrices: (chainId: number, provider: Web3Provider|JsonRpcProvider) => Promise<void>;
+  fetchPrices: (chainId: number) => Promise<void>;
   prices: Price;
   pricesAreLoading: boolean;
 
@@ -125,7 +125,7 @@ export const createInterfaceSlice: StateCreator<
     
           await fetchProperties(chainId);
           await fetchAddressWlProperties(account, chainId);
-          await fetchPrices(chainId,provider).catch(err => console.error('Failed to fetch prices: ', err));
+          await fetchPrices(chainId).catch(err => console.error('Failed to fetch prices: ', err));
           await fetchUserBalances()
           resolve();
 
@@ -296,7 +296,7 @@ export const createInterfaceSlice: StateCreator<
     wlProperties: undefined,
     wlPropertiesAreLoading: true,
 
-    fetchPrices: (chainId, provider): Promise<void> => {
+    fetchPrices: (chainId): Promise<void> => {
       const { abortController } = get();
       return new Promise<void>(async (resolve, reject) => {
         try{
@@ -310,7 +310,7 @@ export const createInterfaceSlice: StateCreator<
           // console.log('FETCH PRICES')
   
           const tokens = getRightAllowBuyTokens(chainId);
-          const p = await Promise.all(tokens.map((allowedToken: AllowedToken) => getPrice(provider,allowedToken)));
+          const p = await Promise.all(tokens.map((allowedToken: AllowedToken) => getPrice(allowedToken)));
     
           const prices: Price = {};
           p.forEach((p: P) => prices[p.contractAddress.toLowerCase()] = p.price);

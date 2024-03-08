@@ -7,15 +7,22 @@ import { Offer, OFFER_TYPE } from "src/types/offer";
 import { chainLink } from "./chainlink/chainlink";
 import { getContract } from "./getContract";
 import { Price as P } from "src/types/price";
+import { useRootStore } from "../zustandStore/store";
+import { CHAINS } from "@realtoken/realt-commons";
 
 export interface Price{
   contractAddress: string;
   price: string;
 }
 
-export const getPrice = (provider: Web3Provider|JsonRpcProvider, allowedToken: AllowedToken) => {
+export const getPrice = (allowedToken: AllowedToken) => {
     return new Promise<Price>(async (resolve,reject) => {
       try{
+
+        const { chainId } = useRootStore.getState();
+
+        const rpcUrl = CHAINS[chainId].rpcUrl;
+        const provider = new JsonRpcProvider(rpcUrl);
   
         const tokenAddress = allowedToken.contractAddress;
         const oracleContractAddress: string|undefined = chainLink.get(tokenAddress.toLowerCase());

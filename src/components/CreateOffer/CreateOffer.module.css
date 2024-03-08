@@ -1,6 +1,5 @@
 .container {
     display: flex;
-    width: 33%;
     border-style: solid;
     border-color: var(--mantine-color-brand-9);
     border-width: 2px;
