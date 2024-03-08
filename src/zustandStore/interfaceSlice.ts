@@ -273,7 +273,9 @@ export const createInterfaceSlice: StateCreator<
               signal: abortController.signal
             }
           }
-          });
+        });
+
+        console.log('WL: ', data[prefix]?.account)
   
         const userIds = data[prefix]?.account?.userIds;
   
