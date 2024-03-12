@@ -18,7 +18,7 @@ import { MarketSubRow } from '../MarketSubRow';
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 import { adminActionsColumn, adminAmount,adminAllowance,adminWalletBlanace, adminHeader, buyerTokenNameColumn, buyShortTokenNameColumn, exchangeBuyShortTokenNameColumn, exchangeOfferShortTokenNameColumn, idColumn, offerDateColumn, offerShortTokenNameColumn, offerTokenNameColumn, priceColumn, priceDeltaColumn, sellerAddressColumn, yieldDeltaColumn, offerYieldColumn } from 'src/hooks/column';
 import React from 'react';
-import { Offer, OFFER_TYPE } from 'src/types/offer';
+import { Offer, OFFER_LOADING, OFFER_TYPE } from 'src/types/offer';
 import { useModals } from '@mantine/modals';
 import { MarketSort } from '../MarketSort/MarketSort';
 import { useAtomValue } from 'jotai';
@@ -28,6 +28,7 @@ import { USER_ROLE } from 'src/types/admin';
 import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
 import { selectAllPublicOffers, selectPublicOffers } from '../../../zustandStore/selectors';
 import { useRootStore } from '../../../zustandStore/store';
+import BigNumber from 'bignumber.js';
 
 export const MarketTableAdmin: FC = () => {
 
@@ -49,7 +50,27 @@ export const MarketTableAdmin: FC = () => {
   const [rowSelection, setRowSelection] = useState<{ [key: number]: boolean }>({});
   
   const { role } = useRole();
-  const { offers } = useTypedOffers(role);
+
+  const [allOffers, offersLoading] = useRootStore((state) => [state.offers, state.offersAreLoading]);
+  const { publicOffers, allPublicOffers } = useMemo(() => {
+
+    const pOffers = allOffers.filter((offer: Offer) =>
+        !offer.buyerAddress &&
+        BigNumber(offer.amount).isPositive() &&
+        !BigNumber(offer.amount).isZero()
+    );
+
+    const pAllOffers = allOffers.filter((offer: Offer) =>
+        !offer.buyerAddress && BigNumber(offer.amount).isPositive()
+    );
+
+    return {
+        publicOffers: !allOffers || offersLoading ? OFFER_LOADING : pOffers,
+        allPublicOffers: !allOffers || offersLoading ? OFFER_LOADING : pAllOffers,
+    }
+  },[allOffers])
+
+  const { offers } = useTypedOffers(USER_ROLE.ADMIN ? allPublicOffers : publicOffers);
 
   const modals = useModals();
   const { t: t3 } = useTranslation('modals');
