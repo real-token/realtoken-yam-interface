@@ -127,6 +127,8 @@ export const createInterfaceSlice: StateCreator<
           await fetchAddressWlProperties(account, chainId);
           await fetchPrices(chainId).catch(err => console.error('Failed to fetch prices: ', err));
           await fetchUserBalances()
+
+          setInterfaceIsLoading(false);
           resolve();
 
         // }catch(err){

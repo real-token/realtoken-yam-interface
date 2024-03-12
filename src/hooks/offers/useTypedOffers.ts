@@ -3,48 +3,51 @@ import { useCallback, useMemo } from "react"
 import { tableOfferTypeAtom } from "src/states"
 import { Offer, OFFER_LOADING, OFFER_TYPE } from "src/types/offer"
 import { useRootStore } from "../../zustandStore/store"
-import { selectOffersIsLoading } from "../../zustandStore/selectors"
+import { selectAllPublicOffers, selectOffersIsLoading, selectPublicOffers } from "../../zustandStore/selectors"
+import { USER_ROLE } from "../../types/admin"
+import BigNumber from "bignumber.js"
 
-type UseTypedOffers = (offers: Offer[]) => {
+const getTypedOffers = (type: OFFER_TYPE, offers: Offer[], offersLoading: boolean): Offer[] => {
+    if (!offers || offersLoading) return OFFER_LOADING;
+    return offers.filter((offer: Offer) => offer.type == type);
+}
+
+type UseTypedOffers = (role: USER_ROLE) => {
     offers: Offer[];
     sellCount: number|undefined;
     buyCount: number|undefined;
     exchangeCount: number|undefined;
 }
 
-export const useTypedOffers: UseTypedOffers = (offers)  => {
+export const useTypedOffers: UseTypedOffers = (role)  => {
 
-    const offersLoading = useRootStore(selectOffersIsLoading);
     const tableOfferType = useAtomValue(tableOfferTypeAtom);
+    const [allOffers, offersLoading] = useRootStore((state) => [state.offers, state.offersAreLoading]);
 
-    const getTypedOffers = useCallback((type: OFFER_TYPE): Offer[] => {
-        if (!offers || offersLoading) return OFFER_LOADING;
-        return offers.filter((offer: Offer) => offer.type == type);
-    },[offers, offersLoading]);
+    const { publicOffers, allPublicOffers } = useMemo(() => {
 
-    const sellCount: number|undefined = useMemo(() => {
-        if(offersLoading) return undefined;
-        return getTypedOffers(OFFER_TYPE.SELL).length;
-    },[getTypedOffers, offersLoading]);
+        const pOffers = allOffers.filter((offer: Offer) =>
+            !offer.buyerAddress &&
+            BigNumber(offer.amount).isPositive() &&
+            !BigNumber(offer.amount).isZero()
+        );
 
-    const buyCount: number|undefined = useMemo(() => {
-        if(offersLoading) return undefined;
-        return getTypedOffers(OFFER_TYPE.BUY).length;
-    },[getTypedOffers, offersLoading]);
+        const pAllOffers = allOffers.filter((offer: Offer) =>
+            !offer.buyerAddress && BigNumber(offer.amount).isPositive()
+        );
 
-    const exchangeCount: number|undefined = useMemo(() => {
-        if(offersLoading) return undefined;
-        return getTypedOffers(OFFER_TYPE.EXCHANGE).length;
-    },[getTypedOffers, offersLoading])
+        return {
+            publicOffers: !allOffers || offersLoading ? OFFER_LOADING : pOffers,
+            allPublicOffers: !allOffers || offersLoading ? OFFER_LOADING : pAllOffers,
+        }
+    },[allOffers])
 
-    const rightTypedOffers: Offer[]  = useMemo(() => {
-        return getTypedOffers(tableOfferType)
-    },[getTypedOffers, tableOfferType]);
- 
-    return{
-        offers: rightTypedOffers,
-        sellCount: sellCount,
-        buyCount: buyCount,
-        exchangeCount: exchangeCount
-    }
+    const offers = useMemo(() => role == USER_ROLE.ADMIN ? allPublicOffers : publicOffers, [role, allPublicOffers, publicOffers]);
+
+    return useMemo(() => ({
+        offers: [...getTypedOffers(tableOfferType, offers, offersLoading)],
+        sellCount: !offersLoading ? getTypedOffers(OFFER_TYPE.SELL, offers, offersLoading).length : undefined,
+        buyCount: !offersLoading ? getTypedOffers(OFFER_TYPE.BUY, offers, offersLoading).length : undefined,
+        exchangeCount: !offersLoading ? getTypedOffers(OFFER_TYPE.EXCHANGE, offers, offersLoading).length : undefined,
+    }),[offersLoading, tableOfferType, offers])
 }

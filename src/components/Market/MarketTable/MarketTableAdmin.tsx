@@ -31,7 +31,7 @@ import { useRootStore } from '../../../zustandStore/store';
 
 export const MarketTableAdmin: FC = () => {
 
-  const { refreshOffers, offersIsLoading } = useRefreshOffers();
+  const [offersIsLoading, refreshOffers] = useRootStore((state) => [state.interfaceIsLoading, state.refreshOffers]);
 
   const [globalFilter,setGlobalFilter] = useState<string>("");
   const [sorting, setSorting] = useState<SortingState>([
@@ -49,9 +49,7 @@ export const MarketTableAdmin: FC = () => {
   const [rowSelection, setRowSelection] = useState<{ [key: number]: boolean }>({});
   
   const { role } = useRole();
-  
-  const [publicOffers, allPublicOffers] = useRootStore((state) => [selectPublicOffers(state), selectAllPublicOffers(state)]);
-  const { offers } = useTypedOffers(role == USER_ROLE.ADMIN ? allPublicOffers : publicOffers);
+  const { offers } = useTypedOffers(role);
 
   const modals = useModals();
   const { t: t3 } = useTranslation('modals');
@@ -196,6 +194,7 @@ export const MarketTableAdmin: FC = () => {
     }
   },[sortingType, sellAdminColumns, buyAdminColumns, exchangeAdminColumns]);
 
+  console.log("refresh")
 
   const table = useReactTable({
     data: offers,

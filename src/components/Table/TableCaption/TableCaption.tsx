@@ -11,13 +11,12 @@ import {
   PaginationProps,
   Select,
 } from '@mantine/core';
-import { range, useDisclosure, useMediaQuery } from '@mantine/hooks';
+import { range, useDisclosure } from '@mantine/hooks';
 import { IconAdjustmentsHorizontal, IconRefresh } from '@tabler/icons';
 import { Table } from '@tanstack/react-table';
 
 import { useAtom } from 'jotai';
 import { isRefreshedAutoAtom } from 'src/states';
-import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 
 import classes from "./TableCaption.module.css"
 import { SelectCreatable } from '../../CreatableSelect/CreatableSelect';
@@ -34,6 +33,7 @@ type TableCaptionProps<T> = {
 
 export const TableCaption = <T,>({
   table,
+  tablecaptionOptions
 }: TableCaptionProps<T>) => {
   const [isOpen, handlers] = useDisclosure(false);
   const [data, setData] = useState<string[]>([
@@ -54,12 +54,11 @@ export const TableCaption = <T,>({
     radius: 'md',
     size: 'md',
     siblings: 1,
-    onChange: (page) => table.setPageIndex(page - 1),
+    boundaries: 1,
+    onChange: (page) => table.setPageIndex(page - 1)
   };
 
   const { t } = useTranslation('table', { keyPrefix: 'caption' });
-
-  const { refreshOffers, offersIsLoading } = useRefreshOffers();
 
   return (
     <Group
@@ -75,14 +74,14 @@ export const TableCaption = <T,>({
     <ActionIcon
         size={32}
         color={'brand'}
-        loading={offersIsLoading}
+        loading={tablecaptionOptions && tablecaptionOptions.refreshState ? tablecaptionOptions.refreshState[0] : false}
         loaderProps={{ size: 'xs' }}
-        onClick={() => refreshOffers()}
+        onClick={() => { tablecaptionOptions && tablecaptionOptions.refreshState ? tablecaptionOptions.refreshState[1](true) : undefined} }
       >
         <IconRefresh size={16}/>
       </ActionIcon>
 
-      <Pagination {...paginationProps} boundaries={1} />
+      <Pagination {...paginationProps} />
 
       <Menu
         position={'top'}

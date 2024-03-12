@@ -21,22 +21,22 @@ export const selectPublicOffers = (state: RootStore) => {
     const offers = selectOffers(state);
     const offersIsLoading = selectOffersIsLoading(state);
     if (!offers || offersIsLoading) return OFFER_LOADING;
-    return offers.filter(
+    return [...offers.filter(
       (offer: Offer) =>
         !offer.buyerAddress &&
         BigNumber(offer.amount).isPositive() &&
         !BigNumber(offer.amount).isZero()
-    );
+    )];
   };
   
   export const selectAllPublicOffers = (state: RootStore) => {
     const offers = selectOffers(state);
     const offersIsLoading = selectOffersIsLoading(state);
     if (!offers || offersIsLoading) return OFFER_LOADING;
-    return offers.filter(
+    return [...offers.filter(
       (offer: Offer) =>
         !offer.buyerAddress && BigNumber(offer.amount).isPositive()
-    );
+    )];
   };
   
   export const selectPrivateOffers = (state: RootStore) => {
