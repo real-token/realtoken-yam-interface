@@ -12,38 +12,20 @@ const getTypedOffers = (type: OFFER_TYPE, offers: Offer[], offersLoading: boolea
     return offers.filter((offer: Offer) => offer.type == type);
 }
 
-type UseTypedOffers = (role: USER_ROLE) => {
+type UseTypedOffers = (offers: Offer[]) => {
     offers: Offer[];
     sellCount: number|undefined;
     buyCount: number|undefined;
     exchangeCount: number|undefined;
 }
 
-export const useTypedOffers: UseTypedOffers = (role)  => {
+export const useTypedOffers: UseTypedOffers = (
+    offers
+)  => {
 
     const tableOfferType = useAtomValue(tableOfferTypeAtom);
-    const [allOffers, offersLoading] = useRootStore((state) => [state.offers, state.offersAreLoading]);
-
-    const { publicOffers, allPublicOffers } = useMemo(() => {
-
-        const pOffers = allOffers.filter((offer: Offer) =>
-            !offer.buyerAddress &&
-            BigNumber(offer.amount).isPositive() &&
-            !BigNumber(offer.amount).isZero()
-        );
-
-        const pAllOffers = allOffers.filter((offer: Offer) =>
-            !offer.buyerAddress && BigNumber(offer.amount).isPositive()
-        );
-
-        return {
-            publicOffers: !allOffers || offersLoading ? OFFER_LOADING : pOffers,
-            allPublicOffers: !allOffers || offersLoading ? OFFER_LOADING : pAllOffers,
-        }
-    },[allOffers])
-
-    const offers = useMemo(() => role == USER_ROLE.ADMIN ? allPublicOffers : publicOffers, [role, allPublicOffers, publicOffers]);
-
+    const [ offersLoading] = useRootStore((state) => [state.offersAreLoading]);
+    
     return useMemo(() => ({
         offers: [...getTypedOffers(tableOfferType, offers, offersLoading)],
         sellCount: !offersLoading ? getTypedOffers(OFFER_TYPE.SELL, offers, offersLoading).length : undefined,
