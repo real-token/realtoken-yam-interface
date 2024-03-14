@@ -144,8 +144,6 @@ export const createInterfaceSlice: StateCreator<
         set({ abortController: new AbortController() })
         
         setInterfaceIsLoading(true);
-
-        
   
         await refreshInterfaceDatas();
   
