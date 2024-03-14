@@ -88,7 +88,7 @@ const App = ({ Component, pageProps }: AppProps) => {
                   <Layout
                     currentWebsite={Websites.YAM}
                     chains={customChains}
-                    head={<Head title='Realtoken YAM (You And Me)' description='Realtoken YAM (You And Me)'/>}
+                    head={<Head title='YAM (You And Me)' description='YAM (You And Me)'/>}
                     headerNav={<HeaderNav/>}
                     footerCustomLinks={<FooterLinks/>}
                     headerBanner={<Banners/>}
