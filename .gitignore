@@ -2,6 +2,8 @@
 
 .yalc
 yalc.lock
+.npmrc
+.yarnrc
 
 .env
 
