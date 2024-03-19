@@ -2852,10 +2852,10 @@
   dependencies:
     "@babel/runtime" "^7.13.10"
 
-"@realtoken/realt-commons@^1.4.8":
-  version "1.4.8"
-  resolved "https://registry.yarnpkg.com/@realtoken/realt-commons/-/realt-commons-1.4.8.tgz#9e56312c08d6415124dce20bfd6e5127893d2ef1"
-  integrity sha512-Mqnln2hTbGh3YrmDyOanto4b0I+VhY4nV5yKTUuWc/9IIO+/B4qWJXL40XML0JM0HgUXlo/LJfhni/o52LOrEA==
+"@realtoken/realt-commons@^1.4.9":
+  version "1.4.9"
+  resolved "https://registry.yarnpkg.com/@realtoken/realt-commons/-/realt-commons-1.4.9.tgz#f153a22786294ca9417850c884a65ded867367aa"
+  integrity sha512-USGYUwJt5irrq+EnMuo75q6dD355A9/8Dexo6zziAdWjUkt+dmCOTIhmJF9+vzwGqNCPYT9WPMDlMaWtM8pCIA==
   dependencies:
     "@coinbase/wallet-sdk" "^3.6.5"
     "@emotion/react" "^11.10.6"

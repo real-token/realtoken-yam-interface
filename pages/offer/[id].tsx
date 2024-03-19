@@ -1,7 +1,7 @@
-import { Flex, Text, Skeleton, Divider } from "@mantine/core";
-import { IconError404, IconExclamationCircle } from "@tabler/icons";
+import { Flex, Text, Skeleton, Divider, Card, Affix, Transition } from "@mantine/core";
+import { IconError404, IconExclamationCircle, IconSettings } from "@tabler/icons";
 import { useRouter } from "next/router"
-import { FC, useEffect, useState } from "react"
+import { FC, useEffect, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next";
 import { OfferText } from "src/components/Offer/OfferText";
 import { useOffer } from "src/hooks/offers/useOffer";
@@ -12,6 +12,9 @@ import { PropertyCard } from "src/components/Offer/PropertyCard/PropertyCard";
 import { ConnectedProvider } from "src/providers/ConnectProvider";
 import classes from './Offer.module.css';
 import { BuyActionsWithPermit } from "../../src/components/Market/BuyActions";
+import { UpdateActionsWithPermit } from "../../src/components/Market/UpdateActions";
+import { DeleteActions } from "../../src/components/Market/DeleteActions";
+import { useWeb3React } from '@web3-react/core';
 
 const ShowOfferPage: FC = () => {
 
@@ -21,6 +24,12 @@ const ShowOfferPage: FC = () => {
     const offerId: number = parseInt(id as string);
 
     const { offer, isLoading, hasError } = useOffer(offerId);
+    const { account } = useWeb3React();
+
+    const isAccountOffer: boolean = useMemo(() => {
+        if(!offer || !account) return false;
+        return offer.sellerAddress == account.toLowerCase()
+    },[offer, account]);
 
     const { t } = useTranslation('modals', { keyPrefix: 'buy' });
 
@@ -44,11 +53,35 @@ const ShowOfferPage: FC = () => {
 
     return(
         <ConnectedProvider>
-            <Flex direction={"column"} mt={"xl"} h={offer == undefined ? '100%': 'unset'}>
+            <Flex direction={"column"} my={"xl"} h={offer == undefined ? '100%': 'unset'}>
             { 
                 isLoading || offer !== undefined ? (
                     <Flex gap={"md"}>
                         <Flex className={classes.container} direction={"column"} gap={"md"}>
+                            <Affix position={{ bottom: 80, right: 20 }}>
+                                <Transition transition="slide-up" mounted={isAccountOffer && offer !== undefined}>
+                                    {(transitionStyles) => (
+                                        <Card withBorder shadow="sm" radius="md"  style={transitionStyles}>
+                                            <Card.Section withBorder inheritPadding p="xs">
+                                                <Flex align={'center'} gap={'xs'}>
+                                                    <IconSettings size={18}/>
+                                                    <Text>Actions</Text>
+                                                </Flex>
+                                            </Card.Section>
+                                            <Card.Section inheritPadding mt="sm" pb="md">
+                                                <Flex gap={'md'}>
+                                                    {offer ? (
+                                                        <>
+                                                         <UpdateActionsWithPermit updateOffer={offer} />
+                                                        <DeleteActions deleteOffer={offer} />
+                                                        </>
+                                                    ): undefined}
+                                                </Flex>
+                                            </Card.Section>
+                                        </Card>
+                                    )}
+                                </Transition>
+                            </Affix>
                             <div className={classes.offerId}>
                                 {offerId}
                             </div>

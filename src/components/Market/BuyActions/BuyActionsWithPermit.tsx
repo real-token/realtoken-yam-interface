@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ActionIcon, Group, Title, Popover, Text, Flex } from '@mantine/core';
+import { ActionIcon, Group, Title, Popover, Text, Flex, Button } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { IconShoppingCart } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
@@ -11,6 +11,8 @@ import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 import { PropertiesToken } from '../../../types';
 import { getNotWhitelistedTokens } from '../../../utils/whitelist';
 import { useRootStore } from '../../../zustandStore/store';
+import { UpdateActionsWithPermit } from '../UpdateActions';
+import { DeleteActions } from '../DeleteActions';
 
 type BuyActions = {
   buyOffer: Offer | undefined;
@@ -81,6 +83,10 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
 
   }, [wlProperties, buyOffer, properties]);
 
+  const cannotBuy = useMemo(() => {
+    return isAccountOffer || buyOffer == undefined
+  },[isAccountOffer, buyOffer])
+
   return (
     <>
       { !isLoading ? (
@@ -99,20 +105,18 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
               onMouseEnter={() => { if(tokenNotWhitelisted.length > 0) setOpened(true) }}
               onMouseLeave={() => { setOpened(false) }}
             >
-              {!isAccountOffer && buyOffer ? (
-                <ActionIcon
-                  color={'green'}
-                  onClick={() =>
-                    account ? onOpenBuyModal(buyOffer) : onOpenWalletModal()
-                  }
-                  className={buttonClassName ?? ""}
-                  disabled={tokenNotWhitelisted.length > 0 || !buyOffer}
-                >
-                  <IconShoppingCart size={16} aria-label={'Buy'} />
-                </ActionIcon>
-              ) : (
-                <ActionIcon disabled={true} variant={"transparent"}/>
-              )}
+              <Button
+                color={'green'}
+                onClick={() =>
+                  account && buyOffer ? onOpenBuyModal(buyOffer) : onOpenWalletModal()
+                }
+                className={buttonClassName ?? ""}
+                disabled={tokenNotWhitelisted.length > 0 || !buyOffer || cannotBuy}
+                leftSection={<IconShoppingCart size={16} aria-label={'Buy'} />}
+                style={{ width: '100%' }}
+              >
+                {!isAccountOffer && buyOffer ? t('') : "Cannot buy your own offer"}
+              </Button>
             </Group> 
           </Popover.Target>
           <Popover.Dropdown>
