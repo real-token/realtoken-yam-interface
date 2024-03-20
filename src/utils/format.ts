@@ -8,7 +8,7 @@ export const formatUsd = (
   symbol = '$',
   currency = 'USD',
   oraclePrice = 1,
-  hasData = true
+  hasData = true,
 ) => {
   if (!hasData) return ' - ' + symbol;
 
@@ -36,12 +36,14 @@ export const formatUsd = (
   return num < 999
     ? sign + prefix + Math.abs(num).toFixed(digitSmallNumber) + unitToDisplay
     : sign +
-        Math.abs(tvl).toLocaleString('en-US', {
-          style: 'currency',
-          currency: currency,
-          maximumFractionDigits: digit,
-          minimumFractionDigits: digit,
-        });
+        Math.abs(tvl)
+          .toLocaleString('en-US', {
+            style: 'currency',
+            currency: currency,
+            maximumFractionDigits: digit,
+            minimumFractionDigits: digit,
+          })
+          .replace(',', ' ');
 };
 
 export const formatSimpleUsd = (
@@ -50,7 +52,7 @@ export const formatSimpleUsd = (
   digit = 0,
   symbol = '$',
   currency = 'USD',
-  oraclePrice = 1
+  oraclePrice = 1,
 ) => {
   return formatUsd(tvl, digit, symbol, currency, oraclePrice, hasData);
 };
@@ -64,7 +66,7 @@ export const formatSimpleUsd = (
 export const formatPercent = (
   percent: number | null | undefined,
   dp = 2,
-  placeholder = '?'
+  placeholder = '?',
 ) => {
   if (!percent && percent !== 0) return placeholder;
 
@@ -92,7 +94,7 @@ export const formatPercent = (
   // Format output
   return num < 999
     ? `${num.toFixed(dp)}${unitToDisplay}%`
-    : numberPercent.toLocaleString('en-US', {
+    : numberPercent.toLocaleString('fr-FR', {
         maximumFractionDigits: 0,
         minimumFractionDigits: 0,
       }) + '%';
@@ -103,7 +105,7 @@ export function formatSmallPercent(
   maxPlaces = 2,
   minPlaces = 0,
   formatZero = false,
-  hasData = true
+  hasData = true,
 ): string {
   if (!hasData) return '- %';
   return !formatZero && percent === 0
@@ -149,7 +151,7 @@ export function getBigNumOrder(num: BigNumber): number {
 export function formatFullNumber(
   num: number,
   maxDp = 2,
-  roundMode: BigNumber.RoundingMode = BigNumber.ROUND_HALF_UP
+  roundMode: BigNumber.RoundingMode = BigNumber.ROUND_HALF_UP,
 ) {
   let value = new BigNumber(num);
   value = value.decimalPlaces(2, BigNumber.ROUND_HALF_UP);
@@ -163,13 +165,13 @@ export function formatFullNumber(
       fractionGroupSeparator: '.',
       fractionGroupSize: 0,
       suffix: '',
-    })
+    }),
   );
 }
 export function formatFullBigNumber(
   value: BigNumber,
   maxDp = 2,
-  roundMode: BigNumber.RoundingMode = BigNumber.ROUND_HALF_UP
+  roundMode: BigNumber.RoundingMode = BigNumber.ROUND_HALF_UP,
 ) {
   value = value.decimalPlaces(2, BigNumber.ROUND_HALF_UP);
   return stripTrailingZeros(
@@ -182,7 +184,7 @@ export function formatFullBigNumber(
       fractionGroupSeparator: '.',
       fractionGroupSize: 0,
       suffix: '',
-    })
+    }),
   );
 }
 
@@ -243,7 +245,7 @@ export const formatUsdCentsPerKWh = (
   digit = 4,
   symbol = '$',
   currency = 'USD',
-  oraclePrice = 1
+  oraclePrice = 1,
 ) => {
   const usd = formatUsd(tvl, digit, symbol, currency, oraclePrice);
   const suffix = ' cts/kWh';
@@ -254,7 +256,7 @@ export const formatUsdCentsPerKWh = (
 export function formatPeriod(
   d: number,
   t: TFunction<'site', 'card'>,
-  inDay = false
+  inDay = false,
 ): string {
   let label = '';
   if (inDay) {
