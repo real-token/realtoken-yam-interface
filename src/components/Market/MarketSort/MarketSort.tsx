@@ -48,10 +48,18 @@ export const MarketSort = ({
 interface MarketSortViewProps {
   children: React.ReactNode;
   transactionChildren?: React.ReactNode;
+  sellCount?: number | undefined;
+  buyCount?: number | undefined;
+  transactionCount?: number | undefined;
+  exchangeCount?: number | undefined;
 }
 export const MarketSortView = ({
   children,
   transactionChildren,
+  sellCount,
+  buyCount,
+  transactionCount,
+  exchangeCount,
 }: MarketSortViewProps) => {
   const theme = useMantineTheme();
   const isSmall = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
@@ -113,20 +121,26 @@ export const MarketSortView = ({
         <Tabs.List>
           <Tabs.Tab value={'sell'}>
             <Text fz={isMobile ? 'xs' : isSmall ? 'sm' : 'lg'}>
-              {t('sell')}
+              {!sellCount ? t('sell') : `${t('sell')} (${sellCount})`}
             </Text>
           </Tabs.Tab>
           <Tabs.Tab value={'buy'}>
-            <Text fz={isMobile ? 'xs' : isSmall ? 'sm' : 'lg'}>{t('buy')}</Text>
+            <Text fz={isMobile ? 'xs' : isSmall ? 'sm' : 'lg'}>
+              {!buyCount ? t('buy') : `${t('buy')} (${buyCount})`}
+            </Text>
           </Tabs.Tab>
           <Tabs.Tab value={'exchange'}>
             <Text fz={isMobile ? 'xs' : isSmall ? 'sm' : 'lg'}>
-              {t('exchange')}
+              {!exchangeCount
+                ? t('exchange')
+                : `${t('exchange')} (${exchangeCount})`}
             </Text>
           </Tabs.Tab>
           <Tabs.Tab value={'transactions'} ml={'auto'} color={'blue'}>
             <Text fz={isMobile ? 'xs' : isSmall ? 'sm' : 'lg'}>
-              {'Transactions'}
+              {!transactionCount
+                ? 'Transactions'
+                : `Transactions (${transactionCount})`}
             </Text>
           </Tabs.Tab>
         </Tabs.List>

@@ -81,6 +81,16 @@ export const selectPublicTransactions = (state: RootState) => {
   );
 };
 
+export const selectUserTransactions = (state: RootState) => {
+  const address = selectAddress(state);
+  const transactions = selectTransactions(state);
+  const transactionsIsLoading = selectTransactionsIsLoading(state);
+  if (!transactions || transactionsIsLoading) return [];
+  return transactions.filter(
+    (transaction: Transaction) => transaction.from === address,
+  );
+};
+
 export const selectPricesIsLoading = (state: RootState): boolean => {
   return state.interface.prices.isLoading;
 };
