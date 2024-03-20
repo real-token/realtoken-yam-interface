@@ -1,15 +1,15 @@
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
-import { useAtom } from 'jotai';
-
 import { useAppSelector } from 'src/hooks/react-hooks';
 import { useRefreshTransactions } from 'src/hooks/transactions/useRefreshTransactions';
-import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
-import { statesFilterTokenAtom } from 'src/states';
+
 import { selectUserTransactions } from 'src/store/features/interface/interfaceSelector';
-import { selectTransactionsIsLoading } from 'src/store/features/interface/interfaceSelector';
-import { useFilterTransactions } from 'src/hooks/transactions/useFilterTransactions';
+import {
+  selectTransactionsIsLoading,
+  selectOffersIsLoading,
+} from 'src/store/features/interface/interfaceSelector';
+
 import { sortTransactions } from './Utils';
 import { TransactionList } from './TransactionList';
 
@@ -23,32 +23,20 @@ export const UserTransactionList = ({
   setTransactionCount,
 }: UserTransactionListProps) => {
   const { refreshTransactions } = useRefreshTransactions(false);
+
   const transactionsIsLoading = useSelector(selectTransactionsIsLoading);
+  const offersIsLoading = useSelector(selectOffersIsLoading);
   const userTransactions = useAppSelector(selectUserTransactions);
-  const { propertiesToken } = usePropertiesToken();
 
-  const [, setTokenFilterStates] = useAtom(statesFilterTokenAtom);
-  const { transactions } = useFilterTransactions(userTransactions);
-  const sortedTransactions = sortTransactions(transactions);
+  const sortedTransactions = sortTransactions(userTransactions);
 
   useEffect(() => {
-    if (setTransactionCount) setTransactionCount(transactions.length);
-  }, [setTransactionCount, transactions]);
-
-  useEffect(() => {
-    setTokenFilterStates(
-      new Map(
-        propertiesToken.map((token) => [
-          token.contractAddress.toLowerCase(),
-          true,
-        ]),
-      ),
-    );
-  }, [propertiesToken, setTokenFilterStates]);
+    if (setTransactionCount) setTransactionCount(userTransactions.length);
+  }, [setTransactionCount, userTransactions]);
 
   useEffect(() => {
     if (!transactionsIsLoading) return refreshTransactions();
-  }, [transactionsIsLoading, refreshTransactions]);
+  }, [offersIsLoading, refreshTransactions]);
 
   return <TransactionList transactions={sortedTransactions}></TransactionList>;
 };
