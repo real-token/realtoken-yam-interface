@@ -4,29 +4,31 @@ import { useSelector } from 'react-redux';
 import { useAppSelector } from 'src/hooks/react-hooks';
 import { useRefreshTransactions } from 'src/hooks/transactions/useRefreshTransactions';
 
-import { selectUserTransactions } from 'src/store/features/interface/interfaceSelector';
+import { selectOfferTransactions } from 'src/store/features/interface/interfaceSelector';
 import {
   selectTransactionsIsLoading,
   selectOffersIsLoading,
 } from 'src/store/features/interface/interfaceSelector';
 
-import { sortTransactions } from './Utils';
-import { TransactionList } from './TransactionList';
+import { sortTransactions } from '../Utils';
+import { TransactionTable } from '../TransactionTable';
 
-interface UserTransactionListProps {
+interface OfferTransactionTableProps {
+  offerId: string;
   setTransactionCount?: React.Dispatch<
     React.SetStateAction<number | undefined>
   >;
 }
 
-export const UserTransactionList = ({
+export const OfferTransactionList = ({
+  offerId,
   setTransactionCount,
-}: UserTransactionListProps) => {
+}: OfferTransactionTableProps) => {
   const { refreshTransactions } = useRefreshTransactions(false);
 
   const transactionsIsLoading = useSelector(selectTransactionsIsLoading);
   const offersIsLoading = useSelector(selectOffersIsLoading);
-  const userTransactions = useAppSelector(selectUserTransactions);
+  const userTransactions = useAppSelector(selectOfferTransactions(offerId));
 
   const sortedTransactions = sortTransactions(userTransactions);
 
@@ -38,5 +40,7 @@ export const UserTransactionList = ({
     if (!transactionsIsLoading) return refreshTransactions();
   }, [offersIsLoading, refreshTransactions]);
 
-  return <TransactionList transactions={sortedTransactions}></TransactionList>;
+  return (
+    <TransactionTable transactions={sortedTransactions}></TransactionTable>
+  );
 };

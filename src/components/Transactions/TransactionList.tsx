@@ -11,7 +11,6 @@ import HeaderCard from './components/HeaderCard';
 import { useMantineTheme } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import TransactionRow from './components/TransactionSimpleRow';
-import { use } from 'i18next';
 
 const ROW_HEIGHT = 60;
 const SMALL_ROW_HEIGHT = 50;

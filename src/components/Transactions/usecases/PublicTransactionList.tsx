@@ -10,8 +10,8 @@ import {
   selectTransactionsIsLoading,
 } from 'src/store/features/interface/interfaceSelector';
 import { useFilterTransactions } from 'src/hooks/transactions/useFilterTransactions';
-import { sortTransactions } from './Utils';
-import { TransactionList } from './TransactionList';
+import { sortTransactions } from '../Utils';
+import { TransactionList } from '../TransactionList';
 
 export const PublicTransactionList = ({}) => {
   const { refreshTransactions } = useRefreshTransactions(false);

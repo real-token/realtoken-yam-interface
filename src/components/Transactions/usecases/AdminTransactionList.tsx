@@ -10,7 +10,7 @@ import { useAllowedTokens } from 'src/hooks/useAllowedTokens';
 import useTransaction from 'src/hooks/useTransactions';
 import { selectAllOffers } from 'src/store/features/interface/interfaceSelector';
 
-import TransactionList from './TransactionDataList';
+import TransactionList from '../TransactionDataList';
 
 const AdminTransactionList = ({}) => {
   console.log('YamTransactionList rendered');

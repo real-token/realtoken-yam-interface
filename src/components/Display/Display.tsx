@@ -19,7 +19,7 @@ import { PublicMarketList } from '../Market/MarketList/PublicMarketList';
 import { MarketSortView } from '../Market/MarketSort/MarketSort';
 import { BuyOffer } from '../Offer/Buy/BuyOffer';
 import { useTranslation } from 'react-i18next';
-import { PublicTransactionList } from 'src/components/Transactions/PublicTransactionList';
+import { PublicTransactionList } from 'src/components/Transactions/usecases/PublicTransactionList';
 
 interface Display {
   display: Displays;

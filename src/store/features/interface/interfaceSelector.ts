@@ -7,15 +7,11 @@ import { Transaction } from 'src/types/transaction/Transaction';
 
 import { selectAddress } from '../settings/settingsSelector';
 
-// export const selectOffersIsLoading = (state: RootState) =>
-//   state.interface.offers.isLoading;
 export const selectOffersIsLoading = createSelector(
   (state: RootState) => state.interface.offers.isLoading, // Remplacez par la logique appropriée
   (isLoading) => isLoading,
 );
 
-// export const selectTransactionsIsLoading = (state: RootState) =>
-//   state.interface.transactions.isLoading;
 export const selectTransactionsIsLoading = createSelector(
   (state: RootState) => state.interface.transactions.isLoading, // Remplacez par la logique appropriée
   (isLoading) => isLoading,
@@ -26,27 +22,15 @@ export const selectProperties = (state: RootState) =>
 export const selectPropertiesIsLoading = (state: RootState) =>
   state.interface.properties.isloading;
 
-// export const selectOffers = (state: RootState): Offer[] =>
-//   state.interface.offers.offers;
 export const selectOffers = createSelector(
   (state: RootState) => state.interface.offers.offers, // Remplacez par la logique appropriée
   (offers) => offers,
 );
 
-// export const selectTransactions = (state: RootState): Transaction[] =>
-//   state.interface.transactions.transactions;
 export const selectTransactions = createSelector(
   (state: RootState) => state.interface.transactions.transactions, // Remplacez par la logique appropriée
   (transactions) => transactions,
 );
-
-// export const selectAddressOffers = (state: RootState) => {
-//   const address = selectAddress(state);
-//   const offers = selectOffers(state);
-
-//   if (!address || !offers) return OFFER_LOADING;
-//   return offers.filter((offer: Offer) => offer.sellerAddress == address);
-// };
 
 export const selectAddressOffers = (state: RootState) => {
   const address = selectAddress(state);
@@ -62,18 +46,6 @@ export const selectIsOwnOffer = (state: RootState, offer: Offer) => {
   if (!address) return OFFER_LOADING;
   return offer.sellerAddress === address;
 };
-
-// export const selectPublicOffers = (state: RootState) => {
-//   const offers = selectOffers(state);
-//   const offersIsLoading = selectOffersIsLoading(state);
-//   if (!offers || offersIsLoading) return OFFER_LOADING;
-//   return offers.filter(
-//     (offer: Offer) =>
-//       !offer.buyerAddress &&
-//       BigNumber(offer.amount).times(offer.price).gt(0.01) &&
-//       offer.removed === false,
-//   );
-// };
 
 export const selectPublicOffers = createSelector(
   [selectOffers, selectOffersIsLoading],
@@ -111,15 +83,6 @@ export const selectAllTransactions = (state: RootState) => {
   return transactions;
 };
 
-// export const selectPublicTransactions = (state: RootState) => {
-//   const transactions = selectTransactions(state);
-//   const transactionsIsLoading = selectTransactionsIsLoading(state);
-//   if (!transactions || transactionsIsLoading) return [];
-//   return transactions.filter(
-//     (transaction: Transaction) => !transaction.isPrivate,
-//   );
-// };
-
 export const selectPublicTransactions = createSelector(
   [selectTransactions, selectTransactionsIsLoading],
   (transactions, transactionsIsLoading) => {
@@ -130,15 +93,6 @@ export const selectPublicTransactions = createSelector(
   },
 );
 
-// export const selectUserTransactions = (state: RootState) => {
-//   const address = selectAddress(state);
-//   const transactions = selectTransactions(state);
-//   const transactionsIsLoading = selectTransactionsIsLoading(state);
-//   if (!transactions || transactionsIsLoading) return [];
-//   return transactions.filter(
-//     (transaction: Transaction) => transaction.from === address,
-//   );
-// };
 export const selectUserTransactions = createSelector(
   [selectAddress, selectTransactions, selectTransactionsIsLoading],
   (address, transactions, transactionsIsLoading) => {
@@ -148,6 +102,17 @@ export const selectUserTransactions = createSelector(
     );
   },
 );
+
+export const selectOfferTransactions = (offerId: string) =>
+  createSelector(
+    [selectTransactions, selectTransactionsIsLoading],
+    (transactions, transactionsIsLoading) => {
+      if (!transactions || transactionsIsLoading) return [];
+      return transactions.filter(
+        (transaction: Transaction) => transaction.offerId === offerId,
+      );
+    },
+  );
 
 export const selectPricesIsLoading = (state: RootState): boolean => {
   return state.interface.prices.isLoading;

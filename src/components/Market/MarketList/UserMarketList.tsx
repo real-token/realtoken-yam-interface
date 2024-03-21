@@ -8,7 +8,7 @@ import { selectAddressOffers } from 'src/store/features/interface/interfaceSelec
 import { Offer } from 'src/types/offer/Offer';
 import { MarketSortView } from '../MarketSort/MarketSort';
 import { MarketList } from './MarketList';
-import { UserTransactionList } from 'src/components/Transactions/UserTransactionList';
+import { UserTransactionList } from 'src/components/Transactions/usecases/UserTransactionList';
 
 export const UserMarketList: FC = () => {
   const addressOffers: Offer[] = useSelector(selectAddressOffers);

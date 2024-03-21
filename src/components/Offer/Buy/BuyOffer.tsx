@@ -26,6 +26,8 @@ import { OfferContainer } from '../components/OfferContainer';
 import { ModalSuccess } from './ModalSuccess';
 import OfferSummary from './OfferSummary';
 import TokenExchange from './TokenExchange';
+import { OfferTransactionList } from 'src/components/Transactions/usecases/OfferTransactionList';
+import { TransactionView } from './components/TransactionView';
 
 interface BuyOffertProps {
   offer: Offer;
@@ -207,7 +209,7 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
         modalFinishOpened={modalFinishOpened}
       ></ModalSuccess>
       <form onSubmit={onSubmit(onHandleSubmit)}>
-        <Stack justify={'center'} align={'stretch'}>
+        <Stack justify={'center'} align={'stretch'} spacing={5}>
           <Flex direction={'column'} gap={'sm'}>
             <TokenExchange
               buyerTokenBalance={balance ?? '0'}
@@ -223,9 +225,9 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
               sellerTokenBalance={offerTokenSellerBalance ?? '0'}
             ></OfferSummary>
           </Flex>
-
-          <Flex direction={'column'} gap={'sm'}>
-            <Flex direction={'column'} gap={8}>
+          <TransactionView offerId={offer.offerId}></TransactionView>
+          <Flex direction={'column'} gap={'xs'}>
+            <Flex direction={'column'} gap={8} ml={20} mr={20}>
               <Title order={5}>{tswap('summary')}</Title>
               <Text mb={10}>
                 {` ${summaryText1} ${formatBigDecimals(

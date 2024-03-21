@@ -11,39 +11,27 @@ import {
   Group,
   Image,
   Tooltip,
-  Space,
   Title,
-  Button,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { useMantineTheme } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { BigNumber } from 'bignumber.js';
-
-import { OfferBadge } from 'src/components/Offer/components/OfferTypeBadge';
 import { Transaction } from 'src/types/transaction/Transaction';
 import { formatSmallToken, formatToken, formatUsd } from 'src/utils/format';
-import {
-  UrlGnosisscanBlock,
-  UrlGnosisscanAddress,
-  UrlGnosisscanTransaction,
-} from 'src/constants/urlExternal';
-import {
-  formatTimestamp,
-  formatTimestampDay,
-  formatTimestampHour,
-} from '../DataUtils';
-import { FieldPaper } from './FieldPaper';
+
+import { formatTimestampDay, formatTimestampHour } from '../DataUtils';
+
 import { OFFER_TYPE } from 'src/types/offer';
 import { TriangleSVG, TriangleInvertedSVG } from 'src/assets/icons';
 import {
   csmTokenAmount,
-  csmTokenPrice,
   usdAmount,
   csmTokenSymbol,
   currencyTokenSymbol,
 } from '../Utils';
 import { useTranslation } from 'react-i18next';
+import TransactionDetail from './TransactionDetail';
 
 const ROW_HEIGHT = 60;
 
@@ -99,79 +87,7 @@ const TransactionRow: React.FC<TransactionRowProps> = ({
         title={<Title order={2}>{t('title')}</Title>}
         centered={true}
       >
-        <Stack spacing={3} align={'flex-start'}>
-          <Group pl={10} pr={10} position={'apart'} w={'100%'}>
-            <OfferBadge
-              offerType={transaction.offerType}
-              id={transaction.offerId}
-            ></OfferBadge>
-            <Text fz={'sm'} fw={500}>
-              {formatTimestamp(transaction.timeStamp)}
-            </Text>
-          </Group>
-
-          <Space h={'xs'}></Space>
-          <FieldPaper
-            name={t('block')}
-            value={transaction.blockNumber.toString()}
-            link={UrlGnosisscanBlock.url(transaction.blockNumber.toString())}
-            copyButton={true}
-            truncate={false}
-            shadow={false}
-          ></FieldPaper>
-          <FieldPaper
-            name={t('txHash')}
-            value={transaction.hash}
-            link={UrlGnosisscanTransaction.url(transaction.hash)}
-            copyButton={true}
-            truncate={isSmall || isMobile ? true : false}
-            shadow={false}
-          ></FieldPaper>
-          <FieldPaper
-            name={'Buyer'}
-            value={transaction.from}
-            link={UrlGnosisscanAddress.url(transaction.from)}
-            copyButton={true}
-            truncate={isSmall || isMobile ? true : false}
-            shadow={false}
-          ></FieldPaper>
-          <Space h={'xs'}></Space>
-          <FieldPaper
-            name={t('price')}
-            value={formatUsd(csmTokenPrice(transaction))}
-            copyButton={false}
-            truncate={false}
-            shadow={false}
-          ></FieldPaper>
-          <FieldPaper
-            name={t('amount')}
-            value={formatSmallToken(
-              csmTokenAmount(transaction),
-              csmTokenSymbol(transaction),
-              6,
-            )}
-            copyButton={false}
-            truncate={false}
-            shadow={false}
-          ></FieldPaper>
-          <FieldPaper
-            name={t('usdAmount')}
-            value={`${formatUsd(usdAmount(transaction))} (${formatSmallToken(usdAmount(transaction), currencyTokenSymbol(transaction), 2)})`}
-            copyButton={false}
-            truncate={false}
-            shadow={false}
-          ></FieldPaper>
-          <Space h={'xs'}></Space>
-          <Group position={'center'} w={'100%'}>
-            <a
-              href={`/offers/${transaction.offerId}`}
-              target={'_blank'}
-              rel={'noopener noreferrer'}
-            >
-              <Button>{t('seeOffer')}</Button>
-            </a>
-          </Group>
-        </Stack>
+        <TransactionDetail transaction={transaction}></TransactionDetail>
       </Modal>
       <div style={style} onClick={open}>
         <Card

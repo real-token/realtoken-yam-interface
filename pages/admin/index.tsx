@@ -6,7 +6,7 @@ import { IconClick, IconFileDollar, IconList } from '@tabler/icons';
 
 import { AdminActions } from 'src/components/Admin/AdminActions';
 import { MarketTableAdmin } from 'src/components/Market/MarketTable/MarketTableAdmin';
-import AdminTransactionList from 'src/components/Transactions/AdminTransactionList';
+import AdminTransactionList from 'src/components/Transactions/usecases/AdminTransactionList';
 import { ConnectedProvider } from 'src/providers/ConnectProvider';
 
 export const Admin = () => {
