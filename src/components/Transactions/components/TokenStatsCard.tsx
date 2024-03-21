@@ -33,7 +33,7 @@ import {
   formatPeriod,
   getFirstsTransactions,
   getNextTransactions,
-} from '../Utils';
+} from '../utils/Utils';
 
 interface TokenStatsCardProps {
   transactions: Transaction[];

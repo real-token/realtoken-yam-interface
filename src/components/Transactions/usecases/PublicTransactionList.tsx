@@ -10,7 +10,7 @@ import {
   selectTransactionsIsLoading,
 } from 'src/store/features/interface/interfaceSelector';
 import { useFilterTransactions } from 'src/hooks/transactions/useFilterTransactions';
-import { sortTransactions } from '../Utils';
+import { sortTransactions } from '../utils/Utils';
 import { TransactionList } from '../TransactionList';
 
 export const PublicTransactionList = ({}) => {

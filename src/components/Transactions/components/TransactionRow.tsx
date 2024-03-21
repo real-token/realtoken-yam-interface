@@ -23,7 +23,7 @@ import { TokenExchangeElement } from 'src/components/Offer/components/TokenExcha
 import { Transaction } from 'src/types/transaction/Transaction';
 import { formatSmallToken, formatToken, formatUsd } from 'src/utils/format';
 
-import { formatTimestampDay, formatTimestampHour } from '../DataUtils';
+import { formatTimestampDay, formatTimestampHour } from '../utils/DataUtils';
 import { FieldPaper } from './FieldPaper';
 import { OFFER_TYPE } from 'src/types/offer';
 

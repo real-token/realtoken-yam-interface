@@ -7,7 +7,7 @@ import { HeaderElement } from 'src/components/List/HeaderElement';
 import { SortDirection } from 'src/components/List/Types';
 import { useMantineTheme } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
-import { Columns, mapColumnLabels } from '../Types';
+import { Columns, mapColumnLabels } from '../utils/Types';
 
 const useStyle = createStyles((theme) => ({
   card: {

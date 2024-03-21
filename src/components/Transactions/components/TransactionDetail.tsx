@@ -13,7 +13,7 @@ import {
   UrlGnosisscanAddress,
   UrlGnosisscanTransaction,
 } from 'src/constants/urlExternal';
-import { formatTimestamp } from '../DataUtils';
+import { formatTimestamp } from '../utils/DataUtils';
 import { FieldPaper } from './FieldPaper';
 
 import {
@@ -22,7 +22,7 @@ import {
   usdAmount,
   csmTokenSymbol,
   currencyTokenSymbol,
-} from '../Utils';
+} from '../utils/Utils';
 import { useTranslation } from 'react-i18next';
 
 interface TransactionRowProps {

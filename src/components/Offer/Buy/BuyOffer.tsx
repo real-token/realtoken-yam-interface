@@ -25,9 +25,9 @@ import { buy } from 'src/utils/tx/buy';
 import { OfferContainer } from '../components/OfferContainer';
 import { ModalSuccess } from './ModalSuccess';
 import OfferSummary from './OfferSummary';
-import TokenExchange from './TokenExchange';
+import TokenExchange from './components/TokenExchange';
 import { OfferTransactionList } from 'src/components/Transactions/usecases/OfferTransactionList';
-import { TransactionView } from './components/TransactionView';
+import { TransactionView } from './components/TransactionTableAccordion';
 
 interface BuyOffertProps {
   offer: Offer;

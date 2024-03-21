@@ -10,7 +10,7 @@ import {
   selectOffersIsLoading,
 } from 'src/store/features/interface/interfaceSelector';
 
-import { sortTransactions } from '../Utils';
+import { sortTransactions } from '../utils/Utils';
 import { TransactionList } from '../TransactionList';
 
 interface UserTransactionListProps {

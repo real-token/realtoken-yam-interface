@@ -6,9 +6,10 @@ import { IconArrowDown } from '@tabler/icons';
 
 import BigNumber from 'bignumber.js';
 
-import { TokenInput } from 'src/components/Offer/Buy/TokenInput';
+import { TokenInput } from 'src/components/Offer/Buy/components/TokenInput';
 import { Offer } from 'src/types/offer';
 
+/* eslint-disable */
 interface TokenInputGroupProps {
   offer: Offer;
   price: number;
@@ -18,6 +19,7 @@ interface TokenInputGroupProps {
   setFieldValue: SetFieldValue<any>;
   getInputProps: any;
 }
+/* eslint-enable */
 
 const TokenExchange: React.FC<TokenInputGroupProps> = ({
   offer,

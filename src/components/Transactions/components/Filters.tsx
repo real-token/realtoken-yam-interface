@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, Group, NativeSelect, Space, Text } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 
-import { PRICE_PERIOD } from 'src/components/Transactions/Types';
+import { PRICE_PERIOD } from 'src/components/Transactions/utils/Types';
 import { PropertiesToken } from 'src/types/PropertiesToken';
 
 interface FiltersProps {

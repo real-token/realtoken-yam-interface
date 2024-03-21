@@ -8,10 +8,10 @@ import {
   Columns,
   SortDirection,
   TransactionData,
-} from 'src/components/Transactions/Types';
+} from 'src/components/Transactions/utils/Types';
 import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
 
-import { PRICE_PERIOD } from './Types';
+import { PRICE_PERIOD } from './utils/Types';
 import { Filters } from './components/Filters';
 import { GlobalStat } from './components/GlobalStat';
 import HeaderCard from './components/HeaderCard';

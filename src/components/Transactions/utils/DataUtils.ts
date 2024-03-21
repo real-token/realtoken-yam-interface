@@ -1,7 +1,10 @@
 import { BigNumber } from 'bignumber.js';
 
 import { CsmSvg } from 'src/assets/currency/Csm';
-import { TokenData, TransactionData } from 'src/components/Transactions/Types';
+import {
+  TokenData,
+  TransactionData,
+} from 'src/components/Transactions/utils/Types';
 import { AllowedToken } from 'src/types/allowedTokens';
 import { Offer } from 'src/types/offer/Offer';
 
@@ -9,7 +12,7 @@ export const associateTransactionWithOffer = (
   transactions: TransactionData[],
   createOfferTransactions: TransactionData[],
   offers: Offer[],
-  allowedTokens?: AllowedToken[]
+  allowedTokens?: AllowedToken[],
 ): {
   transactionsWithOffers: TransactionData[];
   createTransactionsWithOffers: TransactionData[];
@@ -18,17 +21,17 @@ export const associateTransactionWithOffer = (
   const transactionsWithOffers = transactions.map((transaction) => {
     // Trouve l'offre correspondante en utilisant offerId
     const correspondingOffer = offers.find(
-      (offer) => offer.offerId === transaction.offerId
+      (offer) => offer.offerId === transaction.offerId,
     );
 
     const tokenForSaleData = getTokenInfo(
       allowedTokens,
-      correspondingOffer?.offerTokenAddress
+      correspondingOffer?.offerTokenAddress,
     );
 
     const tokenBuyWithData = getTokenInfo(
       allowedTokens,
-      correspondingOffer?.buyerTokenAddress
+      correspondingOffer?.buyerTokenAddress,
     );
 
     const tokenForSale: TokenData = {
@@ -49,14 +52,14 @@ export const associateTransactionWithOffer = (
 
     if (transaction.tokenForSale) {
       const amount = new BigNumber(transaction.amountGwei).dividedBy(
-        new BigNumber(10).pow(tokenForSale.decimals)
+        new BigNumber(10).pow(tokenForSale.decimals),
       );
       transaction.amount = amount.toNumber();
     }
 
     if (transaction.tokenBuyWith) {
       const price = new BigNumber(transaction.priceGwei).dividedBy(
-        new BigNumber(10).pow(tokenBuyWith.decimals)
+        new BigNumber(10).pow(tokenBuyWith.decimals),
       );
       transaction.price = price.toNumber();
     }
@@ -80,7 +83,8 @@ export const associateTransactionWithOffer = (
     (createofferTransaction) => {
       // Trouve l'offre correspondante en utilisant offerId
       const correspondingOffer = offers.find(
-        (offer) => offer.createdAtTimestamp === createofferTransaction.timeStamp
+        (offer) =>
+          offer.createdAtTimestamp === createofferTransaction.timeStamp,
       );
 
       if (correspondingOffer)
@@ -90,7 +94,7 @@ export const associateTransactionWithOffer = (
       return {
         ...createofferTransaction,
       };
-    }
+    },
   );
 
   // Affiche le résultat dans la console
@@ -104,7 +108,7 @@ export const associateTransactionWithOffer = (
 
 export const guessCreateOfferTransactionId = (
   transactions: TransactionData[],
-  createOfferTransactions: TransactionData[]
+  createOfferTransactions: TransactionData[],
 ): TransactionData[] => {
   const offerIds = new Set(createOfferTransactions.map((t) => t.offerId));
 
@@ -126,7 +130,7 @@ export const guessCreateOfferTransactionId = (
       });
 
       const correspondingIdsSet = new Set(
-        correspondingTransactions.map((c) => c.offerId)
+        correspondingTransactions.map((c) => c.offerId),
       );
 
       offerIds.forEach((value) => {
@@ -155,7 +159,7 @@ export const guessCreateOfferTransactionId = (
       return {
         ...createOfferTransaction,
       };
-    }
+    },
   );
 
   // Affiche le résultat dans la console
@@ -169,23 +173,23 @@ export const guessCreateOfferTransactionId = (
 
 export const associateBuyWithCreateOfferTransaction = (
   transactions: TransactionData[],
-  createOfferTransactions: TransactionData[]
+  createOfferTransactions: TransactionData[],
 ): TransactionData[] => {
   // Boucle à travers chaque transaction
   console.log(
-    'createOfferTransactions'
+    'createOfferTransactions',
     //JSON.stringify(createOfferTransactions, null, 4)
   );
   const transactionsWithInitData = transactions.map((transaction) => {
     // Trouve l'offre correspondante en utilisant offerId
     const correspondingTransaction = createOfferTransactions.find(
       (createOfferTransaction) =>
-        createOfferTransaction.timeStamp === transaction.offerTimestamp
+        createOfferTransaction.timeStamp === transaction.offerTimestamp,
     );
 
     if (transaction.tokenForSale && correspondingTransaction) {
       const amount = new BigNumber(
-        correspondingTransaction?.amountGwei
+        correspondingTransaction?.amountGwei,
       ).dividedBy(new BigNumber(10).pow(transaction.tokenForSale.decimals));
       transaction.initialOfferAmount = amount.toNumber();
     } else {
@@ -212,11 +216,11 @@ export const associateBuyWithCreateOfferTransaction = (
 
 export function getTokenInfo(
   allowedTokens: AllowedToken[] | undefined,
-  tokenAddress: string | undefined
+  tokenAddress: string | undefined,
 ) {
   return allowedTokens && tokenAddress
     ? allowedTokens.find(
-        (t) => t.contractAddress.toLowerCase() === tokenAddress.toLowerCase()
+        (t) => t.contractAddress.toLowerCase() === tokenAddress.toLowerCase(),
       )
     : undefined;
 }
@@ -291,7 +295,7 @@ export function getTimestampRange(transactions: TransactionData[]): {
 }
 
 export function calculateAverageExpense(
-  transactions: TransactionData[]
+  transactions: TransactionData[],
 ): number | undefined {
   if (transactions.length === 0) {
     return undefined;
@@ -309,7 +313,7 @@ export function calculateAverageExpense(
 }
 
 export function calculateAveragePrice(
-  transactions: TransactionData[]
+  transactions: TransactionData[],
 ): number | undefined {
   if (transactions.length === 0) {
     return undefined;
@@ -327,7 +331,7 @@ export function calculateAveragePrice(
 }
 
 export function calculateExpenseStandardDeviation(
-  transactions: TransactionData[]
+  transactions: TransactionData[],
 ): number | undefined {
   // Calcul de la moyenne des dépenses
   const averageExpense = calculateAverageExpense(transactions);
@@ -347,7 +351,7 @@ export function calculateExpenseStandardDeviation(
       'SQUARE ',
       expense.toNumber(),
       difference.toNumber(),
-      square.toNumber()
+      square.toNumber(),
     );
     return acc.plus(square);
   }, new BigNumber(0));
@@ -355,7 +359,7 @@ export function calculateExpenseStandardDeviation(
   console.log('SUM ', sumOfSquares.toNumber());
   console.log(
     'SUM DIV',
-    sumOfSquares.dividedBy(transactions.length).toNumber()
+    sumOfSquares.dividedBy(transactions.length).toNumber(),
   );
 
   // Calcul de l'écart-type
@@ -368,7 +372,7 @@ export function calculateExpenseStandardDeviation(
 }
 
 export function calculateAverageExpensesPerDay(
-  transactions: TransactionData[]
+  transactions: TransactionData[],
 ): Map<number, number> {
   const expensesPerDay = new Map<number, number>();
   const transactionsPerDay = new Map<number, TransactionData[]>();
@@ -387,15 +391,15 @@ export function calculateAverageExpensesPerDay(
     const dailyExpense = dailyTransactions.reduce(
       (totalExpense, transaction) =>
         totalExpense.plus(
-          new BigNumber(transaction.price).times(transaction.amount)
+          new BigNumber(transaction.price).times(transaction.amount),
         ),
-      new BigNumber(0)
+      new BigNumber(0),
     );
 
     // Store the sum of expenses for each day
     expensesPerDay.set(
       Math.floor(dailyTransactions[0].timeStamp / 86400),
-      dailyExpense.toNumber()
+      dailyExpense.toNumber(),
     );
   });
 
@@ -405,7 +409,7 @@ export function calculateAverageExpensesPerDay(
 export function calculateExpensesPer24Hours(
   transactions: TransactionData[],
   t0: number,
-  days = 7
+  days = 7,
 ): Map<number, number> {
   const expensesPer24Hours = new Map<number, number>();
   const transactionsPer24Hours = new Map<number, TransactionData[]>();
@@ -426,13 +430,13 @@ export function calculateExpensesPer24Hours(
     const dailyExpense = dailyTransactions.reduce(
       (totalExpense, transaction) =>
         totalExpense.plus(
-          new BigNumber(transaction.price).times(transaction.amount)
+          new BigNumber(transaction.price).times(transaction.amount),
         ),
-      new BigNumber(0)
+      new BigNumber(0),
     );
 
     const hoursSinceT0 = Math.floor(
-      (dailyTransactions[0].timeStamp - t0) / 3600
+      (dailyTransactions[0].timeStamp - t0) / 3600,
     ); // Convert to hours since T0
     const periodIndex = Math.floor(hoursSinceT0 / (24 * days)); // Calculate the 24-hour period index
 
@@ -446,7 +450,7 @@ export function calculateExpensesPer24Hours(
 export function calculateTransactionsPerPeriod(
   transactions: TransactionData[],
   t0: number,
-  days = 7
+  days = 7,
 ): Map<number, number> {
   const numberOftransactionsPer24Hours = new Map<number, number>();
   const transactionsPer24Hours = new Map<number, TransactionData[]>();
@@ -466,18 +470,18 @@ export function calculateTransactionsPerPeriod(
   transactionsPer24Hours.forEach((dailyTransactions) => {
     const dailytransactions = dailyTransactions.reduce(
       (totalTransactions) => totalTransactions.plus(1),
-      new BigNumber(0)
+      new BigNumber(0),
     );
 
     const hoursSinceT0 = Math.floor(
-      (dailyTransactions[0].timeStamp - t0) / 3600
+      (dailyTransactions[0].timeStamp - t0) / 3600,
     ); // Convert to hours since T0
     const periodIndex = Math.floor(hoursSinceT0 / (24 * days)); // Calculate the 24-hour period index
 
     // Store the sum of expenses for each 24-hour period
     numberOftransactionsPer24Hours.set(
       periodIndex,
-      dailytransactions.toNumber()
+      dailytransactions.toNumber(),
     );
   });
 
@@ -487,7 +491,7 @@ export function calculateTransactionsPerPeriod(
 export function calculatePricesPerPeriod(
   transactions: TransactionData[],
   t0: number,
-  days = 7
+  days = 7,
 ): Map<number, number> {
   const pricesPer24Hours = new Map<number, number>();
   const transactionPricesPer24Hours = new Map<number, TransactionData[]>();
@@ -508,7 +512,7 @@ export function calculatePricesPerPeriod(
     const dailyPrice = calculateAveragePrice(dailyTransactions);
 
     const hoursSinceT0 = Math.floor(
-      (dailyTransactions[0].timeStamp - t0) / 3600
+      (dailyTransactions[0].timeStamp - t0) / 3600,
     ); // Convert to hours since T0
     const periodIndex = Math.floor(hoursSinceT0 / (24 * days)); // Calculate the 24-hour period index
 

@@ -13,7 +13,7 @@ import { statesFilterTokenAtom } from 'src/states';
 import { selectPublicTransactions } from 'src/store/features/interface/interfaceSelector';
 import { selectOffersIsLoading } from 'src/store/features/interface/interfaceSelector';
 
-import { sortTransactions } from './Utils';
+import { sortTransactions } from './utils/Utils';
 import { TokenStatsCard } from './components/TokenStatsCard';
 
 export const TransactionStatsGrid = ({}) => {

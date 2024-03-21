@@ -4,9 +4,9 @@ import { TFunction } from 'i18next';
 
 import { Group, Paper, Text, useMantineTheme } from '@mantine/core';
 
-import { TransactionData } from 'src/components/Transactions/Types';
+import { TransactionData } from 'src/components/Transactions/utils/Types';
 
-import { formatTimestamp, getTimestampRange } from '../DataUtils';
+import { formatTimestamp, getTimestampRange } from '../utils/DataUtils';
 import DownloadButton from './DownloadButton';
 
 interface TimeRangeProps {
@@ -54,7 +54,7 @@ export const TimeRange: FC<TimeRangeProps> = ({ transactions, children }) => {
 
 function formatTimestampRange(
   transactions: TransactionData[],
-  t: TFunction
+  t: TFunction,
 ): string {
   if (transactions.length === 0) {
     return '';

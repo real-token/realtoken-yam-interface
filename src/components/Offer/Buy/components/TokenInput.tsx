@@ -28,6 +28,7 @@ export const truncDigits = (inputNumber: number, digits: number): number => {
   return Math.floor(inputNumber * fact) / fact;
 };
 
+/* eslint-disable */
 type TokenInputProps = {
   offer: Offer;
   mode: 'buying' | 'selling';
@@ -38,6 +39,7 @@ type TokenInputProps = {
   sellerTokenBalance?: string;
   setFieldValue?: SetFieldValue<any>;
 } & MantineNumberInputProps;
+/* eslint-enable */
 
 export const TokenInput: FRC<TokenInputProps, HTMLInputElement> = forwardRef(
   (
@@ -53,7 +55,7 @@ export const TokenInput: FRC<TokenInputProps, HTMLInputElement> = forwardRef(
       setFieldValue,
       ...props
     },
-    ref
+    ref,
   ) => {
     const { t: tswap } = useTranslation('swap');
     const handlers = useRef<NumberInputHandlers>();
@@ -192,6 +194,6 @@ export const TokenInput: FRC<TokenInputProps, HTMLInputElement> = forwardRef(
         </Paper>
       </>
     );
-  }
+  },
 );
 TokenInput.displayName = 'NumberInput';

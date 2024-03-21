@@ -6,7 +6,7 @@ import { Card, Container, Group, SimpleGrid, Text } from '@mantine/core';
 
 import { BigNumber } from 'bignumber.js';
 
-import { TransactionData } from 'src/components/Transactions/Types';
+import { TransactionData } from 'src/components/Transactions/utils/Types';
 import { formatPercent, formatUsd } from 'src/utils/format';
 
 import {
@@ -16,7 +16,7 @@ import {
   calculatePricesPerPeriod,
   calculateTransactionsPerPeriod,
   sumSpendingValues,
-} from '../DataUtils';
+} from '../utils/DataUtils';
 
 interface GlobalStatProps {
   transactions: TransactionData[];
@@ -31,7 +31,7 @@ export const GlobalStat: FC<GlobalStatProps> = ({
 
   const { color, performance, volume, volumeBefore } = getPeriodVolume(
     transactions,
-    daysPeriod
+    daysPeriod,
   );
   const {
     color: transactionColor,
@@ -83,7 +83,7 @@ export const GlobalStat: FC<GlobalStatProps> = ({
             {formatPeriodPerformance(
               performance,
               volume ?? 0,
-              volumeBefore ?? 0
+              volumeBefore ?? 0,
             )}
           </Text>
         </Card>
@@ -105,7 +105,7 @@ export const GlobalStat: FC<GlobalStatProps> = ({
               transactionPerformance,
               transactionAmount ?? 0,
               amountBefore ?? 0,
-              false
+              false,
             )}
           </Text>
         </Card>
@@ -132,7 +132,7 @@ export const GlobalStat: FC<GlobalStatProps> = ({
               {formatPeriodPerformance(
                 expensePerformance,
                 expense ?? 0,
-                expenseBefore ?? 0
+                expenseBefore ?? 0,
               )}
             </Text>
           </>
@@ -154,7 +154,7 @@ export const GlobalStat: FC<GlobalStatProps> = ({
             {formatPeriodPerformance(
               pricePerformance,
               price ?? 0,
-              priceBefore ?? 0
+              priceBefore ?? 0,
             )}
           </Text>
         </Card>
@@ -165,7 +165,7 @@ export const GlobalStat: FC<GlobalStatProps> = ({
 
 function formatPeriod(
   days: number,
-  t: TFunction<'transactions', 'stats'>
+  t: TFunction<'transactions', 'stats'>,
 ): string {
   return days === 1 ? '24h' : days + ' ' + t('day') + 's';
 }
@@ -174,7 +174,7 @@ function formatPeriodPerformance(
   performance: number | undefined,
   value: number,
   valueBefore: number,
-  isUsd = true
+  isUsd = true,
 ): React.ReactNode {
   const gain = new BigNumber(value).minus(valueBefore).toNumber();
   const formatedGain = isUsd ? formatUsd(gain) : gain;
@@ -189,7 +189,7 @@ function formatPeriodPerformance(
 }
 
 function formatAverageSpendingPertransaction(
-  transactions: TransactionData[]
+  transactions: TransactionData[],
 ): string {
   if (transactions.length === 0) {
     return '';
@@ -208,7 +208,7 @@ function formatTotalVolume(transactions: TransactionData[]): string {
 
 function getPeriodVolume(
   transactions: TransactionData[],
-  days: number
+  days: number,
 ): {
   volume: number | undefined;
   volumeBefore: number | undefined;
@@ -222,7 +222,7 @@ function getPeriodVolume(
   const expensesPer24Hours = calculateExpensesPer24Hours(
     transactions,
     t0,
-    days
+    days,
   );
 
   const last24H = expensesPer24Hours.has(-1) ? expensesPer24Hours.get(-1) : 0;
@@ -256,7 +256,7 @@ function getPeriodVolume(
 
 function getPeriodTransaction(
   transactions: TransactionData[],
-  days: number
+  days: number,
 ): {
   amount: number | undefined;
   amountBefore: number | undefined;
@@ -270,7 +270,7 @@ function getPeriodTransaction(
   const transactionsPer24Hours = calculateTransactionsPerPeriod(
     transactions,
     t0,
-    days
+    days,
   );
 
   const last24H = transactionsPer24Hours.has(-1)
@@ -308,7 +308,7 @@ function getPeriodTransaction(
 
 function getPeriodExpensePerTransaction(
   transactions: TransactionData[],
-  days: number
+  days: number,
 ): {
   expense: number | undefined;
   expenseBefore: number | undefined;
@@ -322,12 +322,12 @@ function getPeriodExpensePerTransaction(
   const transactionsPer24Hours = calculateTransactionsPerPeriod(
     transactions,
     t0,
-    days
+    days,
   );
   const expensesPer24Hours = calculateExpensesPer24Hours(
     transactions,
     t0,
-    days
+    days,
   );
 
   const last24HTransaction = transactionsPer24Hours.has(-1)
@@ -397,7 +397,7 @@ function getPeriodExpensePerTransaction(
 
 function getPeriodPrice(
   transactions: TransactionData[],
-  days: number
+  days: number,
 ): {
   price: number | undefined;
   priceBefore: number | undefined;

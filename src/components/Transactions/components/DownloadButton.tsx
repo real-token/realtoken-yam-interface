@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Button } from '@mantine/core';
 
-import { TransactionData } from 'src/components/Transactions/Types';
+import { TransactionData } from 'src/components/Transactions/utils/Types';
 
 interface DownloadButtonProps {
   transactions: TransactionData[];

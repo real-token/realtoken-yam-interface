@@ -20,7 +20,7 @@ import { BigNumber } from 'bignumber.js';
 import { Transaction } from 'src/types/transaction/Transaction';
 import { formatSmallToken, formatToken, formatUsd } from 'src/utils/format';
 
-import { formatTimestampDay, formatTimestampHour } from '../DataUtils';
+import { formatTimestampDay, formatTimestampHour } from '../utils/DataUtils';
 
 import { OFFER_TYPE } from 'src/types/offer';
 import { TriangleSVG, TriangleInvertedSVG } from 'src/assets/icons';
@@ -29,7 +29,7 @@ import {
   usdAmount,
   csmTokenSymbol,
   currencyTokenSymbol,
-} from '../Utils';
+} from '../utils/Utils';
 import { useTranslation } from 'react-i18next';
 import TransactionDetail from './TransactionDetail';
 

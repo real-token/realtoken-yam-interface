@@ -6,8 +6,8 @@ import useSWRInfinite, { SWRInfiniteResponse } from 'swr/infinite';
 import { AllowedToken } from 'src/types/allowedTokens';
 import { Offer } from 'src/types/offer/Offer';
 
-import { associateTransactionWithOffer } from '../components/Transactions/DataUtils';
-import { TransactionData } from '../components/Transactions/Types';
+import { associateTransactionWithOffer } from '../components/Transactions/utils/DataUtils';
+import { TransactionData } from '../components/Transactions/utils/Types';
 
 interface Transaction {
   blockNumber: number;
@@ -56,7 +56,7 @@ function useTransaction(
   address: string,
   initPage = 1,
   offers: Offer[] = [],
-  allowedTokens: AllowedToken[] = []
+  allowedTokens: AllowedToken[] = [],
 ) {
   console.log('HOOK useTransaction', initPage);
 
@@ -108,10 +108,10 @@ function useTransaction(
       data
         ? data.reduce(
             (acc, page) => acc.concat(page.result),
-            [] as Transaction[]
+            [] as Transaction[],
           )
         : [],
-    [data]
+    [data],
   );
 
   const buyTransactions = useMemo(
@@ -123,9 +123,9 @@ function useTransaction(
             transaction.methodId.toLowerCase() ==
               BUY_OFFER_BATCH_METHOD.toLowerCase() ||
             transaction.methodId.toLowerCase() ==
-              BUY_OFFER_WITH_PERMIT_METHOD.toLowerCase())
+              BUY_OFFER_WITH_PERMIT_METHOD.toLowerCase()),
       ),
-    [allTransactions]
+    [allTransactions],
   );
 
   const createOfferTransactions = useMemo(
@@ -138,9 +138,9 @@ function useTransaction(
             transaction.methodId.toLowerCase() ==
               CREATE_OFFER_WITH_PERMIT_METHOD.toLowerCase() ||
             transaction.methodId.toLowerCase() ==
-              CREATE_OFFER_BATCH_METHOD.toLowerCase())
+              CREATE_OFFER_BATCH_METHOD.toLowerCase()),
       ),
-    [allTransactions]
+    [allTransactions],
   );
 
   const formattedBuyTransactions: TransactionData[] | undefined = useMemo(
@@ -164,7 +164,7 @@ function useTransaction(
           amountGwei: amountGwei,
         };
       }),
-    [buyTransactions]
+    [buyTransactions],
   );
 
   const formattedCreateOfferTransactions: TransactionData[] | undefined =
@@ -207,7 +207,7 @@ function useTransaction(
             initialOfferAmountGwei: amountGwei,
           };
         }),
-      [createOfferTransactions]
+      [createOfferTransactions],
     );
 
   if (formattedBuyTransactions && formattedCreateOfferTransactions) {
@@ -215,7 +215,7 @@ function useTransaction(
       formattedBuyTransactions,
       formattedCreateOfferTransactions,
       offers,
-      allowedTokens
+      allowedTokens,
     );
   }
 
@@ -236,13 +236,13 @@ function aggregateTransactions(
   formattedBuyTransactions: TransactionData[],
   formattedCreateOfferTransactions: TransactionData[],
   offers: Offer[],
-  allowedTokens: AllowedToken[]
+  allowedTokens: AllowedToken[],
 ) {
   associateTransactionWithOffer(
     formattedBuyTransactions,
     formattedCreateOfferTransactions,
     offers,
-    allowedTokens
+    allowedTokens,
   );
 }
 
@@ -307,10 +307,10 @@ function formatCreateOfferInput(inputString: string): {
   const tokenBuyWith = parseInt(inputString.slice(74, 138), 16).toString();
   //const buyer = parseInt(inputString.slice(138, 202), 16).toString();
   const priceGwei = new BigNumber(
-    parseInt(inputString.slice(202, 266), 16)
+    parseInt(inputString.slice(202, 266), 16),
   ).toNumber();
   const amountGwei = new BigNumber(
-    parseInt(inputString.slice(266, 330), 16)
+    parseInt(inputString.slice(266, 330), 16),
   ).toNumber();
 
   const price = new BigNumber(parseInt(inputString.slice(202, 266), 16))

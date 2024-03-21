@@ -18,7 +18,7 @@ import {
   Columns,
   SortDirection,
   mapColumnLabels,
-} from 'src/components/Transactions/Types';
+} from 'src/components/Transactions/utils/Types';
 import { Transaction } from 'src/types/transaction/Transaction';
 
 import {

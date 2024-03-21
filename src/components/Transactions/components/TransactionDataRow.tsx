@@ -20,10 +20,10 @@ import {
   OfferText,
 } from 'src/components/Offer/components/OfferTypeBadge';
 import { TokenExchangeElement } from 'src/components/Offer/components/TokenExchangeElement';
-import { TransactionData } from 'src/components/Transactions/Types';
+import { TransactionData } from 'src/components/Transactions/utils/Types';
 import { formatSmallToken, formatToken, formatUsd } from 'src/utils/format';
 
-import { formatTimestampDay, formatTimestampHour } from '../DataUtils';
+import { formatTimestampDay, formatTimestampHour } from '../utils/DataUtils';
 import { FieldPaper } from './FieldPaper';
 
 const ROW_HEIGHT = 160;
@@ -183,7 +183,7 @@ const TransactionRow: React.FC<TransactionRowProps> = ({
                     {formatUsd(
                       new BigNumber(transaction.price)
                         .times(transaction.amount)
-                        .toNumber()
+                        .toNumber(),
                     )}
                   </Text>
                 </div>
