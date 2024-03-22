@@ -18,7 +18,7 @@ import { Displays } from 'src/types/Displays';
 import { PublicMarketList } from '../Market/MarketList/PublicMarketList';
 import { MarketSortView } from '../Market/MarketSort/MarketSort';
 import { BuyOffer } from '../Offer/Buy/BuyOffer';
-import { useTranslation } from 'react-i18next';
+import { useRouter } from 'next/router';
 import { PublicTransactionList } from 'src/components/Transactions/usecases/PublicTransactionList';
 
 interface Display {
@@ -27,7 +27,8 @@ interface Display {
   component: React.ReactElement;
 }
 const Display: FC = () => {
-  const { t } = useTranslation('buy', { keyPrefix: 'grid' });
+  const router = useRouter();
+  const baseUrl = `${router.basePath}`;
   const isMobile = useMediaQuery(`(max-width: ${em(750)})`);
   const shallBuyInterfaceDisplay = useAppSelector(selectIsBuyOfferOpened);
   const offerToBuy = useAppSelector(selectBuyOffer);
@@ -68,34 +69,56 @@ const Display: FC = () => {
   }, [shallBuyInterfaceDisplay, offerToBuy]);
 
   return (
-    <div ref={displayRef}>
-      {(!shallBuyInterfaceDisplay ||
-        !offerToBuy ||
-        offerToBuy.offerId === '') && (
-        <>
-          <TransactionStatsGrid></TransactionStatsGrid>
-          <Space h={'sm'}></Space>
-          <Group>
-            {choosenDisplay !== Displays.LIST ? (
-              <MarketTableFilter />
-            ) : (
-              <div></div>
-            )}
-          </Group>
+    <>
+      {shallBuyInterfaceDisplay && (
+        <div
+          style={{
+            position: 'absolute',
+            left: '50%',
+            marginLeft: '-10%',
+            transform: 'translateX(-50%)',
+            pointerEvents: 'none',
+            marginTop: '-25px', // -20 Tailwind units, assuming 1 unit = 0.25rem
 
-          <MarketSortView
-            transactionChildren={
-              <PublicTransactionList></PublicTransactionList>
-            }
-          >
-            {getDisplay() ? getDisplay()?.component : undefined}
-          </MarketSortView>
-        </>
+            zIndex: '-10',
+            width: '100%',
+            height: 'calc(100vh - 150px)',
+            backgroundImage: `url(${baseUrl}/Degrade_Homepage_CSM.svg)`,
+            backgroundSize: 'cover',
+          }}
+          aria-hidden={'true'}
+        ></div>
       )}
-      {shallBuyInterfaceDisplay && offerToBuy && offerToBuy.offerId !== '' && (
-        <BuyOffer offer={offerToBuy}></BuyOffer>
-      )}
-    </div>
+
+      <div ref={displayRef}>
+        {(!shallBuyInterfaceDisplay ||
+          !offerToBuy ||
+          offerToBuy.offerId === '') && (
+          <>
+            <TransactionStatsGrid></TransactionStatsGrid>
+            <Space h={'sm'}></Space>
+            <Group>
+              {choosenDisplay !== Displays.LIST ? (
+                <MarketTableFilter />
+              ) : (
+                <div></div>
+              )}
+            </Group>
+
+            <MarketSortView
+              transactionChildren={
+                <PublicTransactionList></PublicTransactionList>
+              }
+            >
+              {getDisplay() ? getDisplay()?.component : undefined}
+            </MarketSortView>
+          </>
+        )}
+        {shallBuyInterfaceDisplay &&
+          offerToBuy &&
+          offerToBuy.offerId !== '' && <BuyOffer offer={offerToBuy}></BuyOffer>}
+      </div>
+    </>
   );
 };
 export default Display;

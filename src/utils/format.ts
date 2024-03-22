@@ -217,7 +217,12 @@ export function formatToken(num: number, symbol = '', digit = -1) {
   return formatFullNumber(num, maxDp) + (symbol == '' ? '' : ' ' + symbol);
 }
 
-export function formatSmallToken(num: number, symbol = '', digit = -1) {
+export function formatSmallToken(
+  num: number,
+  symbol = '',
+  digit = -1,
+  strip = true,
+) {
   let maxDp = 4;
   if (num > 99 && digit === -1) {
     maxDp = 0;
@@ -230,7 +235,9 @@ export function formatSmallToken(num: number, symbol = '', digit = -1) {
   } else if (digit >= 0) {
     maxDp = digit;
   }
-  return formatBigDecimals(num, maxDp) + (symbol == '' ? '' : ' ' + symbol);
+  return (
+    formatBigDecimals(num, maxDp, strip) + (symbol == '' ? '' : ' ' + symbol)
+  );
 }
 
 export function formatHashrate(num: number, hasData = true) {

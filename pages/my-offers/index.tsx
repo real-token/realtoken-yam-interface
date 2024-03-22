@@ -13,7 +13,7 @@ import {
   selectBuyOffer,
   selectIsBuyOfferOpened,
 } from 'src/store/features/buyOffer/buyOfferSelector';
-import { use } from 'i18next';
+import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
 const TransfersPage = () => {
@@ -22,13 +22,33 @@ const TransfersPage = () => {
   const offerToBuy = useAppSelector(selectBuyOffer);
   const menu = useTranslation('menu', { keyPrefix: 'subMenuMyOffer' });
   const [, setTokenFilterStates] = useAtom(statesFilterTokenAtom);
-
+  const router = useRouter();
+  const baseUrl = `${router.basePath}`;
   useEffect(() => {
     setTokenFilterStates(new Map());
   }, []);
 
   return (
     <ConnectedProvider>
+      {shallBuyInterfaceDisplay && (
+        <div
+          style={{
+            position: 'absolute',
+            left: '50%',
+            marginLeft: '-10%',
+            transform: 'translateX(-50%)',
+            pointerEvents: 'none',
+            marginTop: '-5px', // -20 Tailwind units, assuming 1 unit = 0.25rem
+
+            zIndex: '-10',
+            width: '100%',
+            height: 'calc(100vh - 150px)',
+            backgroundImage: `url(${baseUrl}/Degrade_Homepage_CSM.svg)`,
+            backgroundSize: 'cover',
+          }}
+          aria-hidden={'true'}
+        ></div>
+      )}
       <Flex direction={'column'} my={'xl'}>
         {!shallBuyInterfaceDisplay && (
           <Tabs color={'brand'} variant={'pills'} defaultValue={'myOffers'}>

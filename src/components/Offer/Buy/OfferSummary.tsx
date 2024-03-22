@@ -53,7 +53,7 @@ const useStyles = createStyles((theme) => ({
     // subscribe to color scheme changes right in your styles
     backgroundColor:
       theme.colorScheme === 'dark'
-        ? theme.colors.dark[5]
+        ? theme.colors.dark[4]
         : theme.colors.gray[2],
     display: 'flex',
     width: '100%',
@@ -68,7 +68,7 @@ const useStyles = createStyles((theme) => ({
     alignItems: 'center',
     backgroundColor:
       theme.colorScheme === 'dark'
-        ? theme.colors.dark[5]
+        ? theme.colors.dark[4]
         : theme.colors.brand[5],
     borderRadius: theme.radius.md,
     padding: 5,
@@ -112,7 +112,7 @@ function AccordionLabel({
   const exchangeRate = new BigNumber(
     offer.type === OFFER_TYPE.BUY
       ? (1 / new BigNumber(offer.price).toNumber()).toString()
-      : offer.price
+      : offer.price,
   );
 
   const hexColor = priceColor
@@ -184,7 +184,7 @@ const OfferSummary: React.FC<OfferSummaryProps> = ({
   const { t } = useTranslation('swap');
   const prices: Price = useAppSelector(selectPrices);
   const { logoUrl: offerTokenLogo } = useERC20TokenInfo(
-    offer.offerTokenAddress
+    offer.offerTokenAddress,
   );
   const emphasis =
     offer.priceDelta && Math.abs(offer.priceDelta) > EMPHASIS_RATE
@@ -203,8 +203,8 @@ const OfferSummary: React.FC<OfferSummaryProps> = ({
 
   const borderColor = priceColor
     ? theme.colorScheme === 'dark'
-      ? theme.colors[priceColor][9]
-      : theme.colors[priceColor][5]
+      ? 'orange' //theme.colors[priceColor][9]
+      : 'orange' // theme.colors[priceColor][5]
     : undefined;
 
   const symbolCurrency =
@@ -218,7 +218,7 @@ const OfferSummary: React.FC<OfferSummaryProps> = ({
 
   const availableAmount = BigNumber.minimum(
     offer.amount,
-    sellerTokenBalance
+    sellerTokenBalance,
   ).toNumber();
 
   const availableAmountPayable = new BigNumber(availableAmount)
@@ -370,6 +370,19 @@ const OfferSummary: React.FC<OfferSummaryProps> = ({
       chevronPosition={'right'}
       variant={'contained'}
       defaultValue={emphasis ? 'general' : undefined}
+      styles={{
+        control: {
+          paddingRight: '10px',
+        },
+        chevron: {
+          margin: 0,
+          transform: 'rotate(270deg)',
+          // styles added to chevron when it should rotate
+          '&[data-rotate]': {
+            //transform: 'rotate(-90deg)',
+          },
+        },
+      }}
     >
       {items}
     </Accordion>
@@ -382,7 +395,7 @@ function offerPrices(
   offer: Offer,
   buyTokenSymbol: string | undefined,
   prices: Price,
-  scheme: ColorScheme
+  scheme: ColorScheme,
 ) {
   let offerPrice: string | undefined = undefined;
   let initialPrice: string | undefined = undefined;
@@ -395,7 +408,7 @@ function offerPrices(
         .dividedBy(offer.officialPrice ?? 1)
         .toNumber();
       const tokenInitialUsdPrice = new BigNumber(
-        offer.officialPrice ?? 1
+        offer.officialPrice ?? 1,
       ).toNumber();
 
       if (offer.priceDelta && offer.priceDelta > 0) {
@@ -404,7 +417,7 @@ function offerPrices(
         priceColor = 'red';
       }
       const tokenUsdPrice = new BigNumber(
-        prices[offer.offerTokenAddress.toLowerCase()]
+        prices[offer.offerTokenAddress.toLowerCase()],
       );
       const deltaUsdPrice = tokenUsdPrice
         .dividedBy(parseFloat(offer.price))
@@ -439,7 +452,7 @@ function offerPrices(
       }
 
       const tokenUsdPrice = new BigNumber(
-        prices[offer.buyerTokenAddress.toLowerCase()]
+        prices[offer.buyerTokenAddress.toLowerCase()],
       );
 
       const deltaUsdPrice = tokenUsdPrice
@@ -461,7 +474,7 @@ function offerPrices(
     case OFFER_TYPE.EXCHANGE: {
       if (offer.sites.buying.tokenOfficialPrice > 0) {
         const initalRate = new BigNumber(
-          offer.sites.selling.tokenOfficialPrice
+          offer.sites.selling.tokenOfficialPrice,
         ).dividedBy(offer.sites.buying.tokenOfficialPrice);
 
         const rate = exchangeRates(offer);
@@ -525,23 +538,23 @@ function sign(num: number): string {
 
 function exchangeRates(offer: Offer): { delta: number; percent: number } {
   const usdInitPerTokenForSale = new BigNumber(
-    offer.sites.selling.tokenOfficialPrice
+    offer.sites.selling.tokenOfficialPrice,
     //offer.sites.transfered.tokenOfficialPrice
   );
   const usdInitPerTokenBuyWith = new BigNumber(
-    offer.sites.buying.tokenOfficialPrice
+    offer.sites.buying.tokenOfficialPrice,
   );
 
   const numberOfTokenForSalePerTokenBuyWith = new BigNumber(1).dividedBy(
-    parseFloat(offer.price)
+    parseFloat(offer.price),
   );
 
   const usdPerTokenForSale = usdInitPerTokenBuyWith.dividedBy(
-    numberOfTokenForSalePerTokenBuyWith
+    numberOfTokenForSalePerTokenBuyWith,
   );
 
   const usdDeltaPerTokenForSale = usdPerTokenForSale.minus(
-    usdInitPerTokenForSale
+    usdInitPerTokenForSale,
   );
 
   return {

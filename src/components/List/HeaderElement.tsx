@@ -39,11 +39,13 @@ export const HeaderElement: FC<HeaderElementProps> = ({
   return (
     <Flex gap={2} justify={justify} align={'center'} wrap={'wrap'} h={'100%'}>
       <div>
+        {/* eslint-disable */}
         <Text
           ta={justify as any}
           fz={isMobile || isSmall ? 'xs' : 'md'}
           fw={500}
         >
+          {/* eslint-enable */}
           {label}
         </Text>
         {description && (

@@ -26,6 +26,7 @@ import { calcRem } from 'src/utils/style';
 import { RootState } from 'src/store/store';
 import { EditOffer } from '../Edit/EditOffer';
 import { OfferContainer } from '../components/OfferContainer';
+import { TransactionViewAccordion } from '../components/TransactionListView';
 
 const useStyle = createStyles((theme) => ({
   center: {
@@ -225,7 +226,7 @@ const ViewOfferForms: FC<ComponentOfferProps> = ({ offer, onEdit }) => {
         </Group>
       )}
       <Space h={'md'}></Space>
-      <Flex direction={'column'} gap={'md'}>
+      <Flex direction={'column'} gap={'md'} mb={20}>
         <div className={classes.title}>
           <TextUrl url={propertyTokens[0]?.marketplaceLink}>
             {propertyTokens[0]?.fullName}
@@ -255,6 +256,9 @@ const ViewOfferForms: FC<ComponentOfferProps> = ({ offer, onEdit }) => {
           )}
         </Flex>
       </Flex>
+      <TransactionViewAccordion
+        offerId={offer.offerId}
+      ></TransactionViewAccordion>
     </div>
   );
 };

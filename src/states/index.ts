@@ -23,6 +23,8 @@ export const shieldDisabledAtom = atomWithStorage<boolean>(
   'shieldDisabled',
   false,
 );
+export const offerDetailEnabledAtom = atom<boolean>(false);
+
 export const selectedOfferAtom = atom<string>('');
 
 export const shieldValueAtom = atomWithStorage<number>('shieldValue', 0.05);

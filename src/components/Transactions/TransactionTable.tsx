@@ -169,7 +169,7 @@ export const TransactionTable: FC<TransactionTableProps> = ({
           ></TransactionDetail>
         )}
       </Modal>
-      <ScrollArea h={250} type={'never'}>
+      <ScrollArea h={'100%'} type={'never'}>
         <Table highlightOnHover={true}>
           <thead>
             <tr>{header}</tr>

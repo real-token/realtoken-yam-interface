@@ -14,6 +14,7 @@ import { buyOfferReset } from 'src/store/features/buyOffer/buyOfferSlice';
 const HomePage: NextPage = () => {
   const dispatch = useAppDispatch();
   dispatch({ type: buyOfferReset });
+
   return (
     <ConnectedProvider>
       <Flex my={'xl'} direction={'column'}>

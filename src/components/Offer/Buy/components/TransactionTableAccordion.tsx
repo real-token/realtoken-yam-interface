@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Accordion } from '@mantine/core';
 
-import { OfferTransactionList } from 'src/components/Transactions/usecases/OfferTransactionList';
+import { OfferTransactionTable } from 'src/components/Transactions/usecases/OfferTransactionTable';
 
 interface TransactionViewProps {
   offerId: string;
@@ -30,10 +30,10 @@ export const TransactionView: React.FC<TransactionViewProps> = ({
             : 'Transactions'}
         </Accordion.Control>
         <Accordion.Panel>
-          <OfferTransactionList
+          <OfferTransactionTable
             offerId={offerId}
             setTransactionCount={setTransactionCount}
-          ></OfferTransactionList>
+          ></OfferTransactionTable>
         </Accordion.Panel>
       </Accordion.Item>
     </Accordion>

@@ -1,7 +1,16 @@
 import React, { FC, ReactNode, useCallback, useEffect, useState } from 'react';
 
 import { createStyles, em } from '@mantine/core';
-import { Card, Space, useMantineColorScheme } from '@mantine/core';
+import {
+  Card,
+  Space,
+  useMantineColorScheme,
+  SimpleGrid,
+  Stack,
+  Group,
+  Text,
+  CloseButton,
+} from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 
 import { getOfferPropertyAddress } from 'src/components/Offer/Utils';
@@ -14,6 +23,8 @@ import { calcRem } from 'src/utils/style';
 import { selectedOfferAtom } from 'src/states';
 import { OfferHeader, OfferTitle } from './Header';
 import { useAtom } from 'jotai';
+import { offerDetailEnabledAtom } from 'src/states';
+import { TransactionView } from '../components/TransactionListView';
 
 const useStyle = createStyles((theme) => ({
   center: {
@@ -28,6 +39,9 @@ const useStyle = createStyles((theme) => ({
     alignItems: 'center',
     textAlign: 'start',
     width: calcRem(500),
+  },
+  containerGrid: {
+    width: calcRem(1000),
   },
   containerMobile: {
     width: '100%',
@@ -52,12 +66,16 @@ export const OfferContainer: FC<OfferContainerProps> = ({
   backArrow,
 }) => {
   const isMobile = useMediaQuery(`(max-width: ${em(750)})`);
+  const isMaxGrid = useMediaQuery(`(max-width: ${em(1050)})`);
   const { classes, cx } = useStyle();
   const dispatch = useAppDispatch();
   const { getPropertyToken, propertiesIsloading } = usePropertiesToken();
   const offerProperty = getPropertyToken(getOfferPropertyAddress(offer));
   const [backgroundImage, setBackgroundImage] = useState<string>(
     offerProperty ? offerProperty.imageLink[0] : '',
+  );
+  const [offerDetailEnabled, setOfferDetailEnabled] = useAtom(
+    offerDetailEnabledAtom,
   );
   if (offerProperty?.location === undefined) {
     dispatch(fetchProperties());
@@ -96,7 +114,11 @@ export const OfferContainer: FC<OfferContainerProps> = ({
       <div
         className={cx(
           classes.container,
-          isMobile ? classes.containerMobile : undefined,
+          isMobile || (offerDetailEnabled && isMaxGrid)
+            ? classes.containerMobile
+            : offerDetailEnabled
+              ? classes.containerGrid
+              : undefined,
         )}
       >
         <OfferTitle
@@ -105,7 +127,8 @@ export const OfferContainer: FC<OfferContainerProps> = ({
           action={action}
           backArrow={backArrow}
         ></OfferTitle>
-        <OfferContent
+        <OfferView
+          offerId={offer.offerId}
           withSeparatedHeader={withSeparatedHeader}
           header={
             <OfferHeader
@@ -122,11 +145,85 @@ export const OfferContainer: FC<OfferContainerProps> = ({
               offerType={offer.type ?? OFFER_TYPE.SELL}
             ></OfferHeader>
           }
+          isMobile={isMobile}
+          offerDetailEnabled={offerDetailEnabled}
+          setOfferDetailEnabled={setOfferDetailEnabled}
         >
           {children}
-        </OfferContent>
+        </OfferView>
       </div>
     </div>
+  );
+};
+
+interface OfferViewProps {
+  offerId: string;
+  withSeparatedHeader?: boolean;
+  header: ReactNode;
+  children: ReactNode;
+  isMobile?: boolean;
+  offerDetailEnabled?: boolean;
+  /* eslint-disable  */
+  setOfferDetailEnabled?: any;
+  /* eslint-enable  */
+}
+
+export const OfferView: FC<OfferViewProps> = ({
+  offerId,
+  withSeparatedHeader = true,
+  header,
+  children,
+  isMobile = false,
+  offerDetailEnabled = false,
+  setOfferDetailEnabled,
+}) => {
+  const { colorScheme } = useMantineColorScheme();
+  return (
+    <>
+      <SimpleGrid cols={isMobile || !offerDetailEnabled ? 1 : 2}>
+        <div>
+          <OfferContent
+            header={header}
+            withSeparatedHeader={withSeparatedHeader}
+          >
+            {children}
+          </OfferContent>
+        </div>
+        {offerDetailEnabled && (
+          <Stack>
+            {!isMobile && false && <div style={{ height: '130px' }}></div>}
+            <div style={{ height: '100%' }}>
+              <Card
+                radius={'lg'}
+                h={'100%'}
+                mih={'500px'}
+                style={{
+                  backgroundColor:
+                    colorScheme === 'light' ? '#FFFFFF' : undefined,
+                }}
+              >
+                <Card.Section inheritPadding={true} p={'lg'}>
+                  <Group position={'apart'}>
+                    <Text weight={500} fz={'xl'}>
+                      {'Transactions'}
+                    </Text>
+                    <CloseButton
+                      aria-label={'Close transaction'}
+                      variant={'transparent'}
+                      iconSize={'xl'}
+                      onClick={() => {
+                        if (setOfferDetailEnabled) setOfferDetailEnabled(false);
+                      }}
+                    />
+                  </Group>
+                </Card.Section>
+                <TransactionView offerId={offerId}></TransactionView>
+              </Card>
+            </div>
+          </Stack>
+        )}
+      </SimpleGrid>
+    </>
   );
 };
 

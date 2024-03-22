@@ -2,7 +2,7 @@ import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Web3Provider } from '@ethersproject/providers';
-import { Button, Flex, Group, Stack, Text, Title } from '@mantine/core';
+import { Button, Flex, Stack } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
 import { useWeb3React } from '@web3-react/core';
@@ -18,16 +18,15 @@ import { useWalletERC20Balance } from 'src/hooks/useWalletERC20Balance';
 import { providerAtom } from 'src/states';
 import { OFFER_TYPE, Offer } from 'src/types/offer';
 import { getContract } from 'src/utils';
-import { formatBigDecimals } from 'src/utils/format';
-import { cleanNumber } from 'src/utils/number';
+
 import { buy } from 'src/utils/tx/buy';
 
 import { OfferContainer } from '../components/OfferContainer';
 import { ModalSuccess } from './ModalSuccess';
 import OfferSummary from './OfferSummary';
 import TokenExchange from './components/TokenExchange';
-import { OfferTransactionList } from 'src/components/Transactions/usecases/OfferTransactionList';
-import { TransactionView } from './components/TransactionTableAccordion';
+
+import { TransactionViewAccordion } from '../components/TransactionListView';
 
 interface BuyOffertProps {
   offer: Offer;
@@ -66,8 +65,7 @@ export const BuyOffer: FC<BuyOffertProps> = ({ offer, backArrow }) => {
 
 export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
   const { t: tswap } = useTranslation('swap');
-  const { t: tswapSell } = useTranslation('swap', { keyPrefix: 'sell' });
-  const { t: tswapBuy } = useTranslation('swap', { keyPrefix: 'buy' });
+
   const [
     modalFinishOpened,
     { open: modalFinishOpen, close: modalFinishClose },
@@ -92,17 +90,15 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
   const [offerTokenSellerBalance, setOfferTokenSellerBalance] = useState<
     string | undefined
   >('');
-  const summaryText1 =
-    offer.type === OFFER_TYPE.BUY
-      ? tswapBuy('summaryText1')
-      : tswapSell('summaryText1');
+
   const {
     symbol: offerTokenSymbol,
     logoUrl: offerTokenLogo,
     decimals: offerTokenDecimals,
   } = useERC20TokenInfo(offer.offerTokenAddress);
-  const { symbol: buyTokenSymbol, address: buyerTokenAddress } =
-    useERC20TokenInfo(offer.buyerTokenAddress);
+  const { address: buyerTokenAddress } = useERC20TokenInfo(
+    offer.buyerTokenAddress,
+  );
 
   const realTokenYamUpgradeable = useContract(
     ContractsID.realTokenYamUpgradeable,
@@ -130,31 +126,6 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
 
   const { balance } = useWalletERC20Balance(buyerTokenAddress);
   const connector = useAtomValue(providerAtom);
-
-  const totalAmountCurrency =
-    offer.type === OFFER_TYPE.BUY
-      ? values?.amount
-      : values?.amount * values?.price;
-  const totalAmountToken =
-    offer.type === OFFER_TYPE.BUY
-      ? values?.amount * values?.price
-      : values?.amount;
-
-  const currencySymbol =
-    offer.type === OFFER_TYPE.BUY
-      ? offer.offerTokenSymbol
-      : offer.buyerTokenSymbol;
-  const tokenSymbol =
-    offer.type === OFFER_TYPE.BUY
-      ? offer.buyerTokenSymbol
-      : offer.offerTokenSymbol;
-
-  const exchangeRate =
-    offer.type === OFFER_TYPE.BUY
-      ? new BigNumber(1).dividedBy(values?.price).toNumber()
-      : values?.price;
-
-  //console.log('connector', connector);
 
   const onHandleSubmit = useCallback(
     async (formValues: BuyOfferFormValues) => {
@@ -210,7 +181,7 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
       ></ModalSuccess>
       <form onSubmit={onSubmit(onHandleSubmit)}>
         <Stack justify={'center'} align={'stretch'} spacing={5}>
-          <Flex direction={'column'} gap={'sm'}>
+          <Flex direction={'column'} gap={'sm'} mb={10}>
             <TokenExchange
               buyerTokenBalance={balance ?? '0'}
               sellerTokenBalance={offerTokenSellerBalance ?? '0'}
@@ -225,37 +196,26 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
               sellerTokenBalance={offerTokenSellerBalance ?? '0'}
             ></OfferSummary>
           </Flex>
-          <TransactionView offerId={offer.offerId}></TransactionView>
-          <Flex direction={'column'} gap={'xs'}>
-            <Flex direction={'column'} gap={8} ml={20} mr={20}>
-              <Title order={5}>{tswap('summary')}</Title>
-              <Text mb={10}>
-                {` ${summaryText1} ${formatBigDecimals(
-                  totalAmountToken,
-                )} ${tokenSymbol} ${tswap('summaryText2')} ${cleanNumber(
-                  formatBigDecimals(exchangeRate),
-                )} ${currencySymbol} ${tswap(
-                  'summaryText3',
-                )} ${formatBigDecimals(totalAmountCurrency)} ${currencySymbol}`}
-              </Text>
 
-              <Group grow={true} sx={{ padding: '0 50px 0 50px' }}>
-                <Button
-                  type={'submit'}
-                  radius={'xl'}
-                  loading={isSubmitting}
-                  aria-label={tswap('confirm')}
-                  disabled={
-                    process.env.NEXT_PUBLIC_ENV === 'development'
-                      ? false
-                      : values?.amount == 0 || !values.amount
-                  }
-                >
-                  {tswap('confirm')}
-                </Button>
-              </Group>
-            </Flex>
-          </Flex>
+          <TransactionViewAccordion
+            offerId={offer.offerId}
+            isSmall={true}
+          ></TransactionViewAccordion>
+          <Button
+            mt={10}
+            h={48}
+            type={'submit'}
+            radius={'md'}
+            loading={isSubmitting}
+            aria-label={tswap('confirm')}
+            disabled={
+              process.env.NEXT_PUBLIC_ENV === 'development'
+                ? false
+                : values?.amount == 0 || !values.amount
+            }
+          >
+            {tswap('confirm')}
+          </Button>
         </Stack>
       </form>
     </>

@@ -22,7 +22,7 @@ import {
   usdAmount,
   csmTokenSymbol,
   currencyTokenSymbol,
-} from '../utils/Utils';
+} from 'src/utils/transaction';
 import { useTranslation } from 'react-i18next';
 
 interface TransactionRowProps {
