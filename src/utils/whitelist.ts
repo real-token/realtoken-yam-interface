@@ -9,7 +9,7 @@ export const getNotWhitelistedTokens = (
 ): PropertiesToken[] => {
 
     // Bypass 
-    if(wlTokenId.some(r=> WHITLISTED_ON_ALL_ID_RULE.includes(r))) return []
+    if(wlTokenId.some(r=> WHITLISTED_ON_ALL_ID_RULE.includes(r))) return [];
 
     let tokenAddressToCheck: string[] = [];
     switch(offer.type){
@@ -24,10 +24,13 @@ export const getNotWhitelistedTokens = (
         break;
     }
 
+    const tokenNoWlNeeded = [100508];
+
     const notWlTokens: PropertiesToken[] = [];
     tokenAddressToCheck.forEach((tokenAddress: string) => {
         const token = properties.find((token: PropertiesToken) => token.contractAddress.toLowerCase() == tokenAddress.toLowerCase());
-        if (token && !wlTokenId.includes(token.tokenIdRules)) {
+        
+        if (token && !wlTokenId.includes(token.tokenIdRules) && !tokenNoWlNeeded.includes(token?.tokenIdRules)) {
             notWlTokens.push(token);
         }
     });
