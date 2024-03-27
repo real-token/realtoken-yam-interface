@@ -154,7 +154,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
                 .shiftedBy(-offer.offerTokenDecimal)
                 .toNumber() / offer.price
             : undefined,
-        useBuyTokenPrice: false,
+        useBuyTokenPrice: true,
         buyerAddress: offer?.buyerAddress ?? ZERO_ADDRESS,
         isPrivateOffer: offer?.isPrivateOffer ?? false,
       },
@@ -167,8 +167,12 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   const others = t("otherTokenType");
   const data = [{ value: realT, label: realT },{ value: others, label: others }];
 
+
   const [offers, addOffer] = useRootStore(state => [state.offersToCreate, state.addOffer]);
   const [exchangeType,setExchangeType] = useState<string|null>(null);
+
+  const [priceInDollar,setPriceInDollar] = useState<number|undefined|string>(undefined);
+  const choosedPrice = values.useBuyTokenPrice ? values.price : Number(priceInDollar);
 
   const privateOffer = () => {
     if (getInputProps('isPrivateOffer', { type: 'checkbox' }).checked) {
@@ -201,14 +205,14 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
 
   const offerTokenSymbol = offerTokens.find(value => value.value == values.offerTokenAddress)?.label ?? exchangeOfferTokens.find(value => value.value == values.offerTokenAddress)?.label;
   const buyTokenSymbol =  buyerTokens.find(value => value.value == values.buyerTokenAddress)?.label ?? exchangeBuyerToken.find(value => value.value == values.buyerTokenAddress)?.label;
-  const total = (values.amount ?? 0) * (values.price ?? 0);
+  const total = (values.amount ?? 0) * (choosedPrice ?? 0);
 
   const { getPropertyToken } = usePropertiesToken();
   const propertyTokenAddress = offer.offerType == OFFER_TYPE.BUY ? values.buyerTokenAddress : values.offerTokenAddress;
   const officialPrice = getPropertyToken ? getPropertyToken(propertyTokenAddress)?.officialPrice : undefined;
   const officialSellCurrency = getPropertyToken ? getPropertyToken(propertyTokenAddress)?.currency : undefined;
 
-  const { isError: shieldError, maxPriceDifference, priceDifference } = useShield(offer.offerType,values.price,officialPrice);
+  const { isError: shieldError, maxPriceDifference, priceDifference } = useShield(offer.offerType,choosedPrice,officialPrice);
 
   const { bigNumberbalance, balance } = useWalletERC20Balance(values.offerTokenAddress);
 
@@ -226,6 +230,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
       };
 
       const choosedPrice = formValues.useBuyTokenPrice ? parseFloat(priceInDollar.toString()) : formValues.price;
+      console.log('createOffer/choosedPrice', choosedPrice)
 
       const price = offer.offerType !== OFFER_TYPE.BUY ? choosedPrice : choosedPrice ? 1/choosedPrice : undefined;
 
@@ -291,7 +296,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
               {t("txBuySummary", {
                 amount: values?.amount,
                 buyTokenSymbol: buyTokenSymbol,
-                price: cleanNumber(values.price ?? 0),
+                price: cleanNumber(choosedPrice ?? 0),
                 offerTokenSymbol: offerTokenSymbol,
                 total: total.toFixed(6)
               })}
@@ -305,7 +310,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
               {t("txSellSummary", {
                 amount: values?.amount,
                 buyTokenSymbol: buyTokenSymbol,
-                price: cleanNumber(values.price ?? 0),
+                price: cleanNumber(choosedPrice ?? 0),
                 offerTokenSymbol: offerTokenSymbol,
                 total: total.toFixed(6)
               })}
@@ -331,8 +336,6 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
       return undefined;
     }
   }
-
-  const [priceInDollar,setPriceInDollar] = useState<number|undefined|string>(undefined);
 
   // COMPONENTS
   const getSelect = (offerTokenSelectData: ComboboxItem[], buyerTokenSelectData: ComboboxItem[]) => {
@@ -537,7 +540,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
             // TODO: add translation
             <Switch
               defaultChecked
-              label={`Use ${buyTokenSymbol} price rate`}
+              label={`Use ${offer.offerType == OFFER_TYPE.BUY ? offerTokenSymbol : buyTokenSymbol} price rate`}
               {...getInputProps('useBuyTokenPrice', { type: 'checkbox' })}
             />
           ):(
