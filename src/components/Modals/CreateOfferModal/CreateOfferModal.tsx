@@ -5,7 +5,8 @@ import {
   Button, Checkbox, Flex, 
   Group, Select, Stack, TextInput, 
   Text, NumberInput as MantineInput, 
-  Skeleton, Divider, ComboboxItem, Switch
+  Skeleton, Divider, ComboboxItem, Switch,
+  Popover, StylesApiProps
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { showNotification, updateNotification } from '@mantine/notifications';
@@ -23,7 +24,7 @@ import { useCreateOfferTokens } from 'src/hooks/useCreateOfferTokens';
 import { OfferTypeBadge } from 'src/components/Offer/OfferTypeBadge/OfferTypeBadge';
 import { OFFER_TYPE } from 'src/types/offer';
 import { useOraclePriceFeed } from 'src/hooks/useOraclePriceFeed';
-import { IconArrowRight, IconArrowsHorizontal } from '@tabler/icons';
+import { IconArrowRight, IconArrowsHorizontal, IconFocus, IconInfoCircle } from '@tabler/icons';
 import { Shield } from 'src/components/Shield/Shield';
 import { useWalletERC20Balance } from 'src/hooks/useWalletERC20Balance';
 import { useShield } from 'src/hooks/useShield';
@@ -34,6 +35,7 @@ import { Web3Provider } from '@ethersproject/providers';
 import { MatchedOffers } from './MatchedOffers/MatchedOffers';
 import { useRootStore } from '../../../zustandStore/store';
 import { ComboboxOfferToken } from './ComboboxOfferToken/ComboboxOfferToken';
+import { useDisclosure } from '@mantine/hooks';
 
 export const approveOffer = (
   createdOffer: CreatedOffer, 
@@ -216,6 +218,8 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
 
   const { bigNumberbalance, balance } = useWalletERC20Balance(values.offerTokenAddress);
 
+  const [infoOpened, { close: closeInfoOpened, open: openInfoOpened }] = useDisclosure(false);
+
   const createdOffer = async (formValues: SellFormValues) => {
     try{
 
@@ -395,6 +399,12 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
           max={undefined}
           step={undefined}
           showMax={false}
+          styles={(theme) => ({ 
+            input: { 
+              borderColor: values.useBuyTokenPrice ? 'var(--_input-bd)' : theme.colors.brand[9],
+              borderWidth: values.useBuyTokenPrice ? 'calc(0.0625rem* var(--mantine-scale))' : '2px',
+            } 
+          })}
           style={{ flexGrow: 1 }}
           onBlur={() => onBlur()}
           error={shieldError && priceDifference ? t("shieldError", { priceDifference: (priceDifference*100).toFixed(2), maxPriceDifference: maxPriceDifference*100 }) : undefined}
@@ -532,17 +542,37 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
               style={{ width: "100%" }}
               onBlur={() => setPInDollar()}
               disabled={values.buyerTokenAddress == ''}
+              styles={(theme) => ({ 
+                input: { 
+                  borderColor: values.useBuyTokenPrice ? theme.colors.brand[9] : 'var(--_input-bd)',
+                  borderWidth: values.useBuyTokenPrice ? '2px' : 'calc(0.0625rem* var(--mantine-scale))',
+                } 
+              })}
             />
             { tokenSymbol && price && !price.isNaN() ? <Text fz={"sm"} fs={"italic"}>{t("withPrice", { buyerTokenSymbol: tokenSymbol, price: price.toString(), currency: "$" })}</Text> : undefined }
           </Flex>
         </Flex>
         {buyTokenSymbol ? (
             // TODO: add translation
-            <Switch
-              defaultChecked
-              label={`Use ${offer.offerType == OFFER_TYPE.BUY ? offerTokenSymbol : buyTokenSymbol} price rate`}
-              {...getInputProps('useBuyTokenPrice', { type: 'checkbox' })}
-            />
+            <Flex gap={'sm'}>
+              <Switch
+                defaultChecked
+                label={t('useBuyTokenPriceInfoLabel', { token: offer.offerType == OFFER_TYPE.BUY ? offerTokenSymbol : buyTokenSymbol })}
+                {...getInputProps('useBuyTokenPrice', { type: 'checkbox' })}
+              />
+              <Popover width={200} position="top" withArrow shadow="md" opened={infoOpened}>
+                <Popover.Target>
+                  <div onMouseEnter={openInfoOpened} onMouseLeave={closeInfoOpened}>
+                    <IconInfoCircle size={16}/>
+                  </div>
+                </Popover.Target>
+                <Popover.Dropdown style={{ pointerEvents: 'none' }}>
+                  <Text size="xs" style={{ padding: '0.5rem' }}>
+                    {t('useBuyTokenPriceInfo')}
+                  </Text>
+                </Popover.Dropdown>
+              </Popover>
+            </Flex>
           ):(
             <Skeleton width={100} height={30} />
           )} 

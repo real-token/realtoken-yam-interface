@@ -46,7 +46,9 @@
     "txExchangeSummary": "You wish to exchange up to {{amount}} \"{{buyTokenSymbol}}\" with a unit price of {{price}} \"{{offerTokenSymbol}}\" and for a total of {{total}} \"{{offerTokenSymbol}}\".",
     "summaryText1": "You will sell",
     "summaryText2": "with a unit price of",
-    "summaryText3": "and for a total of"
+    "summaryText3": "and for a total of",
+    "useBuyTokenPriceInfo": "If checked the price in left price will be used. If not the price in right price will be used.",
+    "useBuyTokenPriceInfoLabel": "Use {{token}} price rate"
   },
   "buy": {
     "title": "Buy Offer",

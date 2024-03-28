@@ -46,7 +46,9 @@
     "txExchangeSummary": "Vous souhaitez échanger jusqu'a {{amount}} \"{{buyTokenSymbol}}\" avec un prix unitaire de {{price}} \"{{offerTokenSymbol}}\" et pour un total de {{total}} \"{{offerTokenSymbol}}\".",
     "summaryText1": "Vous vendez",
     "summaryText2": "avec un prix unitaire de",
-    "summaryText3": "et pour un total de"
+    "summaryText3": "et pour un total de",
+    "useBuyTokenPriceInfo": "Si coché le prix utilisé sera la case de gauche. Sinon la case de droite sera utilisé.",
+    "useBuyTokenPriceInfoLabel": "Utiliser le ratio de conversion du jeton {{token}}"
   },
   "buy": {
     "title": "Acheter",
