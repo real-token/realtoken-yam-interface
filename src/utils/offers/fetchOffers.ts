@@ -124,7 +124,7 @@ export const fetchOffersTheGraph = (
         query: gql`
           query {
             ${graphNetworkPrefix} {
-              offers (first: ${offersToFetch}) {
+              offers (first: 10000) {
                 id
                 seller {
                     id
@@ -172,8 +172,11 @@ export const fetchOffersTheGraph = (
       })
 
       const offers: OfferGraphQl[] = offersRes.data[graphNetworkPrefix].offers;
-
       console.log('offers: ', offers.length)
+
+      const offer = offers.find((offer) => offer.id === "0x91da");
+      console.log('offer: ', offer)
+
 
       const accountRealtokenDuplicates: string[] = offers.map(
         (val) => val.seller.address + '-' + val.offerToken.address
