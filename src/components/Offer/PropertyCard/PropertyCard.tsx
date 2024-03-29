@@ -23,7 +23,7 @@ export const PropertyCard = ({ propertyToken, offer }: PropertyCardProps) => {
                     <div className={classes.propertyNameContainer}>
                     {   propertyToken ?
                             <Flex className={classes.propertyName} gap={5} align={"center"} onClick={() => openInNewTab(propertyToken.marketplaceLink)}>
-                                <Text color={"brand"} fw={700} fz={"xl"}>{propertyToken.shortName}</Text>
+                                <Text c={"brand"} fw={700} fz={"xl"}>{propertyToken.shortName}</Text>
                                 <IconExternalLink size={20} color={colors.brand[9]}/>
                             </Flex>
                         : 

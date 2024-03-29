@@ -22,12 +22,13 @@ export const useOffer: UseOfferProps = (offerId: number) => {
     const { propertiesToken, propertiesIsloading } = usePropertiesToken();
 
     const [prices, wlProperties] = useRootStore((state) => [state.prices, state.wlProperties])
+    console.log('prices',prices)
 
     const { } = useQuery({
         queryKey: [offerId],
         // @ts-ignore
         queryFn: () => fetchOffer(provider, account, chainId,offerId, propertiesToken, wlProperties, prices),
-        enabled: !!offerId && !!chainId && !!provider && !!account && !!propertiesToken && !propertiesIsloading && propertiesToken.length > 0 && wlProperties !== undefined,
+        enabled: !!offerId && !!chainId && !!provider && !!account && !!propertiesToken && !propertiesIsloading && propertiesToken.length > 0 && wlProperties !== undefined && Object.keys(prices).length > 0,
         onSuccess: (offer: Offer|undefined) => {
             if(offer){
                 setOffer(offer);
