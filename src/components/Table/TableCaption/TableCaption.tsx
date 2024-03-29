@@ -46,8 +46,6 @@ export const TableCaption = <T,>({
   ]);
   const [isAutoRefresh,setIsAutoRefresh] = useAtom(isRefreshedAutoAtom);
 
-  console.log('table: ', table.getPageCount())
-
   const paginationProps: PaginationProps & { page: number } = {
     total: table.getPageCount(),
     page: table.getState().pagination.pageIndex + 1,

@@ -197,7 +197,7 @@ export const createInterfaceSlice: StateCreator<
         });
 
         const balances = res.data[prefix].accountBalances;
-        console.log('USER BALANCES: ', balances);
+        // console.log('USER BALANCES: ', balances);
 
         const userBalances: UserBalances = {};
         balances.forEach((balance: any) => {

@@ -26,7 +26,6 @@ import { tableOfferTypeAtom } from 'src/states';
 import { useRole } from 'src/hooks/useRole';
 import { USER_ROLE } from 'src/types/admin';
 import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
-import { selectAllPublicOffers, selectPublicOffers } from '../../../zustandStore/selectors';
 import { useRootStore } from '../../../zustandStore/store';
 import BigNumber from 'bignumber.js';
 
@@ -52,25 +51,26 @@ export const MarketTableAdmin: FC = () => {
   const { role } = useRole();
 
   const [allOffers, offersLoading] = useRootStore((state) => [state.offers, state.offersAreLoading]);
-  const { publicOffers, allPublicOffers } = useMemo(() => {
+  // const { publicOffers, allPublicOffers } = useMemo(() => {
 
-    const pOffers = allOffers.filter((offer: Offer) =>
-        !offer.buyerAddress &&
-        BigNumber(offer.amount).isPositive() &&
-        !BigNumber(offer.amount).isZero()
-    );
+  //   const pOffers = allOffers.filter((offer: Offer) =>
+  //       !offer.buyerAddress &&
+  //       BigNumber(offer.amount).isPositive() &&
+  //       !BigNumber(offer.amount).isZero()
+  //   );
 
-    const pAllOffers = allOffers.filter((offer: Offer) =>
-        !offer.buyerAddress && BigNumber(offer.amount).isPositive()
-    );
+  //   const pAllOffers = allOffers.filter((offer: Offer) =>
+  //       !offer.buyerAddress && BigNumber(offer.amount).isPositive()
+  //   );
 
-    return {
-        publicOffers: !allOffers || offersLoading ? OFFER_LOADING : pOffers,
-        allPublicOffers: !allOffers || offersLoading ? OFFER_LOADING : pAllOffers,
-    }
-  },[allOffers])
+  //   return {
+  //       publicOffers: !allOffers || offersLoading ? OFFER_LOADING : pOffers,
+  //       allPublicOffers: !allOffers || offersLoading ? OFFER_LOADING : pAllOffers,
+  //   }
+  // },[allOffers])
 
-  const { offers } = useTypedOffers(USER_ROLE.ADMIN ? allPublicOffers : publicOffers);
+  const { offers } = useTypedOffers(allOffers);
+  console.log('admin offers', offers.length)
 
   const modals = useModals();
   const { t: t3 } = useTranslation('modals');
@@ -215,8 +215,6 @@ export const MarketTableAdmin: FC = () => {
     }
   },[sortingType, sellAdminColumns, buyAdminColumns, exchangeAdminColumns]);
 
-  console.log("refresh")
-
   const table = useReactTable({
     data: offers,
     columns: rightColumn,
@@ -244,12 +242,6 @@ export const MarketTableAdmin: FC = () => {
           highlightOnHover: true,
           verticalSpacing: 'sm',
           horizontalSpacing: 'xs',
-          style: (theme) => ({
-            border: theme.other.border(theme),
-            borderRadius: theme.radius[theme.defaultRadius as MantineSize],
-            borderCollapse: 'separate',
-            borderSpacing: 0,
-          }),
         }}
         table={table}
         tablecaptionOptions={{ refreshState: [offersIsLoading, refreshOffers], visible: true }}
