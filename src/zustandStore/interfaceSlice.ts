@@ -185,7 +185,7 @@ export const createInterfaceSlice: StateCreator<
           query: gql`
           query getBalances{
               ${prefix}{
-                accountBalances(where: { account: "${account.toLowerCase()}" }){
+                accountBalances(where: { account: "${account.toLowerCase()}" }, first: 1000){
                   token{
                     address
                   }
