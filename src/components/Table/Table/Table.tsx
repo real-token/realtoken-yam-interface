@@ -31,7 +31,7 @@ export const Table = <T,>({
       //
       <div style={{ border: 'thin solid #424242', borderRadius: '0.5em' }}>
         <MantineTable  {...tableProps} stickyHeader={true} withRowBorders={true}>
-          <MantineTable.Thead style={{ zIndex: 999999 }}>
+          <MantineTable.Thead style={{ zIndex: 10 }}>
             {table.getHeaderGroups().map(({ id, headers }) => (
               <MantineTable.Tr key={id}>
                 {headers.map((header) => (
