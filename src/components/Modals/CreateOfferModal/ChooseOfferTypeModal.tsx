@@ -8,6 +8,19 @@ import { useOfferType } from 'src/hooks/useOfferType';
 import { OFFER_TYPE } from 'src/types/offer';
 import { calcRem } from 'src/utils/style';
 import classes from './OfferTypePane.module.css';
+import styled from 'styled-components';
+
+const OfferTypePaneStyled = styled('div')<{ $isSelected: boolean }>`
+  display: flex;
+  height: 6rem;
+  width: 33%;
+  padding: 7px;
+  border: 3px;
+  border-style: solid;
+  border-width: 3px;
+  border-radius: var(--mantine-radius-lg);
+  border-color: ${({ $isSelected }) => ($isSelected ? 'light-dark("black","white")' : "transparent" )};
+`;
 
 interface OfferTypePaneProps{
   setOfferType: Dispatch<OFFER_TYPE|undefined>;
@@ -35,18 +48,7 @@ const OfferTypePane: FC<OfferTypePaneProps> = ({ offerType, selectedOfferType, s
 
   return(
     <Tooltip label={tooltipText.get(offerType)} position={"bottom"} multiline={true}>
-      <Flex
-        style={(theme) => ({
-          display: "flex",
-          height: calcRem(100),
-          width: "33%",
-          padding: "7px",
-          borderStyle: "solid",
-          borderWidth: "3px",
-          borderRadius: theme.radius.lg,
-          borderColor: isSelected ? "white" : "transparent"
-        })}
-      >
+      <OfferTypePaneStyled $isSelected={isSelected}>
         <Flex
           onClick={() => setO()}
           style={(theme) => ({
@@ -66,9 +68,9 @@ const OfferTypePane: FC<OfferTypePaneProps> = ({ offerType, selectedOfferType, s
           })}
         >
           <div className={classes.info}><IconInfoCircle size={20} color={"white"}/></div>
-          <Text color={"white"} fw={700}>{getI18OfferTypeName(offerType)}</Text>
+          <Text c={"white"} fw={700}>{getI18OfferTypeName(offerType)}</Text>
         </Flex>
-      </Flex>
+      </OfferTypePaneStyled>
     </Tooltip>
   )
 }

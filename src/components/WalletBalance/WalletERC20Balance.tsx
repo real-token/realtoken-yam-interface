@@ -31,7 +31,7 @@ export const WalletERC20Balance: FC<WalletERC20BalanceProps> = ({ balance, symbo
           <div className={classes.container}>
               <div className={classes.wallet}><IconWallet color={"white"} size={24}/></div>
               <BalanceContainer $isLoading={!balance && !symbol}>
-                { symbol ? <Text fw={700}>{symbol}</Text> : <Skeleton width={"100%"} height={20} color={"brand"}/>} 
+                { symbol ? <Text fw={700} className={classes.text}>{symbol}</Text> : <Skeleton width={"100%"} height={20} color={"brand"}/>} 
                 { balance ? <Text className={classes.balance}>{balance}</Text> : <Skeleton width={"100%"} height={15} color={"brand"}/>}
               </BalanceContainer>
           </div>

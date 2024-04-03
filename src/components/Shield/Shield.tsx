@@ -31,7 +31,7 @@ export const Shield = () => {
                             :
                                 <IconShieldX size={24} color={"red"} />
                         }
-                        <Text fw={700}>{`${(value*100).toFixed(0)}%`}</Text>
+                        <Text fw={700} className={classes.text}>{`${(value*100).toFixed(0)}%`}</Text>
                     </Flex>
                 </Tooltip>
             </Menu.Target>
