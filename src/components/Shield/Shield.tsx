@@ -26,7 +26,7 @@ export const Shield = () => {
                 <Tooltip label={t("shieldExplanations")}>
                     <Flex className={classes.container}>
                         {
-                            !isDisabled ? 
+                            !isDisabled ?
                                 <IconShieldCheck size={24} color={"green"} />
                             :
                                 <IconShieldX size={24} color={"red"} />

@@ -20,9 +20,9 @@
 
 .balance {
     flex-grow: 1;
-    color: light-dark(white,black);
+    color: light-dark(white,black) !important;
 }
 
 .text{
-    color: light-dark(white,black);
+    color: light-dark(white,black) !important;
 }

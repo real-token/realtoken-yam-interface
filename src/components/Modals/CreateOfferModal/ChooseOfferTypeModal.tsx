@@ -19,7 +19,7 @@ const OfferTypePaneStyled = styled('div')<{ $isSelected: boolean }>`
   border-style: solid;
   border-width: 3px;
   border-radius: var(--mantine-radius-lg);
-  border-color: ${({ $isSelected }) => ($isSelected ? 'light-dark("black","white")' : "transparent" )};
+  border-color: ${({ $isSelected }) => ($isSelected ? 'light-dark(black,white)' : "transparent" )};
 `;
 
 interface OfferTypePaneProps{
