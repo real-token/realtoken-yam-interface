@@ -24,6 +24,7 @@ const ShowOfferPage: FC = () => {
     const offerId: number = parseInt(id as string);
 
     const { offer, isLoading, hasError } = useOffer(offerId);
+
     const { account } = useWeb3React();
 
     const isAccountOffer: boolean = useMemo(() => {

@@ -34,7 +34,7 @@ export const fetchOffer = (
           }
         `,  
         variables: {
-          "id": `0x${offerId.toString(16)}`
+          "id": offerId.toString()
         }}
       );
 
