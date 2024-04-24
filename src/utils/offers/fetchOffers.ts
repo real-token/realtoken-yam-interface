@@ -120,11 +120,13 @@ export const fetchOffersTheGraph = (
         activeOfferResult.data[graphNetworkPrefix].global.activeOffersCount;
       console.log('Amount of offersToFetch: ', offersToFetch);
 
+      const offersToFetchMax = graphNetworkPrefix == 'yamEth' ? offersToFetch : 10000;
+
       const offersRes = await apiClient.query({
         query: gql`
           query {
             ${graphNetworkPrefix} {
-              offers (first: 10000) {
+              offers (first: ${offersToFetchMax}) {
                 id
                 seller {
                     id
@@ -238,6 +240,7 @@ export const fetchOffersTheGraph = (
       );
 
       const parsedOffers = await Promise.all(promises);
+      console.log('Offers formated', parsedOffers.length);
 
       // ERROR_RANGE is used to check if the number of offers fetched is correctly
       // This is the -/+ range difference accepted
