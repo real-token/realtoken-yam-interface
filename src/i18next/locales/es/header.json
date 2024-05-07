@@ -1,6 +1,7 @@
 {
-    "title": "YAM",
-    "titleCat1": "Explorar",
-    "titleCat2": "Tus Ofertas",
-    "titleAdmin": "Admin"
+  "title": "YAM",
+  "titleCat1": "Explorar",
+  "titleCat2": "Tus Ofertas",
+  "titleHelp": "Help",
+  "titleAdmin": "Admin"
 }
