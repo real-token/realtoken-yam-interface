@@ -1,7 +1,4 @@
-import { Web3Provider } from '@ethersproject/providers';
-
 import BigNumber from 'bignumber.js';
-
 import { PropertiesToken } from 'src/types';
 import { DataRealtokenType } from 'src/types/offer/DataRealTokenType';
 import { Offer } from 'src/types/offer/Offer';
@@ -10,6 +7,7 @@ import { Price } from 'src/types/price';
 import { Offer as OfferGraphQl } from '../../../gql/graphql';
 import { getPriceInDollar } from '../price';
 import { getNotWhitelistedTokens } from '../whitelist';
+import { AllowedToken } from '../../types/allowedTokens';
 
 // TOKEN TYPE
 // 1 = RealToken
@@ -33,7 +31,8 @@ export const parseOffer = (
     accountUserRealtoken: DataRealtokenType,
     propertiesToken: PropertiesToken[],
     wlPropertiesId: number[],
-    prices: Price
+    prices: Price,
+    extendedTokensAddress: string[]
   ): Promise<Offer> => {
     return new Promise<Offer>(async (resolve, reject) => {
       try {
@@ -79,6 +78,8 @@ export const parseOffer = (
           }); */
         }
 
+        const isExtendedToken = extendedTokensAddress.includes(offer.seller.address) || extendedTokensAddress.includes(offer.offerToken.address);
+
         const o: Offer = {
           offerId: BigNumber(offer.id).toString(),
           offerTokenAddress: (offer.offerToken.address as string)?.toLowerCase(),
@@ -114,18 +115,14 @@ export const parseOffer = (
           yieldDelta: undefined,
           accountWhitelisted: false
         };
-
-        // if(offer.id == "0x5320"){
-        //   console.log(propertiesToken, prices)
-        // }
-
+      
         o.type = getOfferType(o.offerTokenType,o.buyerTokenType);
-
+      
         const propertyToken = getProperty(
           o.type == OFFER_TYPE.BUY ? o.buyerTokenAddress : o.offerTokenAddress,
           propertiesToken
         );
-
+      
         //add price and yield infos
         o.buyCurrency = propertyToken?.currency ?? "";
         o.officialPrice = getOfficialPrice(propertyToken);
@@ -144,6 +141,70 @@ export const parseOffer = (
       }
   });
 };
+
+const parseRealtoken = (
+  offer: OfferGraphQl, 
+  propertiesToken: PropertiesToken[],
+  wlPropertiesId: number[],
+  prices: Price,
+  balanceWallet: string,
+  allowance: string,
+): Offer => {
+  const o: Offer = {
+    offerId: BigNumber(offer.id).toString(),
+    offerTokenAddress: (offer.offerToken.address as string)?.toLowerCase(),
+    offerTokenName: offer.offerToken.name ?? '',
+    offerTokenDecimals: offer.offerToken.decimals?.toString() ?? '',
+    offerTokenType: offer.offerToken.tokenType ?? 0,
+    buyerTokenAddress: (offer.buyerToken.address as string)?.toLowerCase(),
+    buyerTokenName: offer.buyerToken.name ?? '',
+    buyerTokenDecimals: offer.buyerToken.decimals?.toString() ?? '',
+    buyerTokenType: offer.buyerToken.tokenType ?? 0,
+    sellerAddress: (offer.seller.address as string)?.toLowerCase(),
+    buyerAddress: (offer.buyer?.address as string)?.toLowerCase(),
+    price: offer.price.price.toString(),
+    amount:
+      BigNumber.minimum(
+        offer.availableAmount, //5.4
+        balanceWallet, // 0
+        allowance //0
+      ).toString(10) ?? '0',
+    availableAmount: offer.availableAmount.toString(),
+    balanceWallet: balanceWallet ?? '0',
+    allowanceToken: allowance ?? '0',
+    hasPropertyToken: false,
+    type: undefined,
+    removed: false,
+    createdAtTimestamp: offer.createdAtTimestamp,
+    buyCurrency: "",
+    officialPrice: undefined,
+    offerPrice: undefined,
+    priceDelta: undefined,
+    officialYield: undefined,
+    offerYield: undefined,
+    yieldDelta: undefined,
+    accountWhitelisted: false
+  };
+
+  o.type = getOfferType(o.offerTokenType,o.buyerTokenType);
+
+  const propertyToken = getProperty(
+    o.type == OFFER_TYPE.BUY ? o.buyerTokenAddress : o.offerTokenAddress,
+    propertiesToken
+  );
+
+  //add price and yield infos
+  o.buyCurrency = propertyToken?.currency ?? "";
+  o.officialPrice = getOfficialPrice(propertyToken);
+  o.offerPrice = getPriceInDollar(prices,o);
+  o.officialYield = getOfficialYield(propertyToken);
+  o.offerYield = getOfferYield(prices,o,propertyToken);
+  o.yieldDelta = getYieldDelta(o);
+  o.priceDelta = getPriceDelta(prices,o);
+  o.accountWhitelisted = getNotWhitelistedTokens(wlPropertiesId, o, propertiesToken).length == 0;
+
+  return o;
+}
 
 const getProperty = (
   propertyAddress: string,

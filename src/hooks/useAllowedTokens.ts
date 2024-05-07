@@ -1,11 +1,6 @@
 import { useWeb3React } from '@web3-react/core';
-
-import {
-  ethereumAllowedTokens,
-  gnosisAllowedTokens,
-  goerliAllowedTokens,
-} from 'src/constants/allowedBuyTokens';
 import { AllowedToken } from 'src/types/allowedTokens';
+import { getAllowedBuyTokens } from '../constants/GetPriceToken';
 
 type useAllowedBuyTokensReturn = {
   allowedTokens: AllowedToken[];
@@ -14,16 +9,8 @@ type useAllowedBuyTokensReturn = {
 export const getRightAllowBuyTokens = (
   chainId: number | undefined
 ): AllowedToken[] => {
-  switch (chainId) {
-    case 1:
-      return ethereumAllowedTokens;
-    case 5:
-      return goerliAllowedTokens ;
-    case 100:
-      return gnosisAllowedTokens;
-    default:
-      return [];
-  }
+  if(!chainId) return [];
+  return getAllowedBuyTokens(chainId);
 };
 
 export const useAllowedTokens = (): useAllowedBuyTokensReturn => {

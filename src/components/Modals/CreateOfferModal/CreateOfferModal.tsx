@@ -6,7 +6,7 @@ import {
   Group, Select, Stack, TextInput, 
   Text, NumberInput as MantineInput, 
   Skeleton, Divider, ComboboxItem, Switch,
-  Popover, StylesApiProps
+  Popover, Portal
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { showNotification, updateNotification } from '@mantine/notifications';
@@ -643,14 +643,16 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         </Stack>
       </form>
       {/** TODO: put back MatchedOffers component **/ }
-      {/* <MatchedOffers 
-          offerType={offer.offerType}
-          offerTokenAddress={values.offerTokenAddress}
-          buyerTokenAddress={values.buyerTokenAddress}
-          price={values.price}
-          amount={values.amount}
-          closeModal={closeModal}
-      /> */}
+      <Portal>
+        <MatchedOffers 
+            offerType={offer.offerType}
+            offerTokenAddress={values.offerTokenAddress}
+            buyerTokenAddress={values.buyerTokenAddress}
+            price={values.price}
+            amount={values.amount}
+            closeModal={closeModal}
+        />
+      </Portal>
     </Flex>
   );
 };

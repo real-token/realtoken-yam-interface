@@ -4,20 +4,16 @@ import { OFFER_LOADING, Offer } from "../types/offer";
 import { PropertiesToken } from "../types";
 import { Price } from "../types/price";
 import { fetchOffersTheGraph } from "../utils/offers/fetchOffers";
-import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
+import { JsonRpcProvider } from "@ethersproject/providers";
 import { CHAINS, ChainsID } from "../constants";
 import { apiClient } from "../utils/offers/getClientURL";
 import { gql } from "@apollo/client";
-import { getRightAllowBuyTokens } from "../hooks/useAllowedTokens";
-import { AllowedToken } from "../types/allowedTokens";
-import { getPrice } from "../utils/price";
-import { Price as P } from "src/utils/price";
-import { fetchOffer } from "../utils/offers/fetchOffer";
 import { Historic } from "../types/historic";
 import { parseHistoric } from "../utils/historic/historic";
-import { reject } from "lodash";
 import { UserBalances } from "../types/UserBalance";
 import BigNumber from "bignumber.js";
+import { mergeExtendedProperties } from "../utils/properties";
+import { getExtendedTokens } from "../constants/GetPriceToken";
 
 export interface InterfaceSlice {
   account: string;
@@ -107,33 +103,37 @@ export const createInterfaceSlice: StateCreator<
     abortController: new AbortController(),
     refreshInterfaceDatas: (): Promise<void> => {
       return new Promise<void>(async (resolve, reject) => {
-        // try{
-          const { 
-            chainId, account, getProvider, setInterfaceIsLoading,
-            fetchAddressWlProperties, fetchProperties, fetchPrices,  fetchUserBalances 
-          } = get();
-          setInterfaceIsLoading(true);
-    
-          const provider = getProvider()
+        try{
+          // try{
+            const { 
+              chainId, account, getProvider, setInterfaceIsLoading,
+              fetchAddressWlProperties, fetchProperties, fetchPrices,  fetchUserBalances 
+            } = get();
+            setInterfaceIsLoading(true);
+      
+            const provider = getProvider()
 
-          // await Promise.allSettled([
-          //   fetchProperties(chainId),
-          //   fetchAddressWlProperties(account, chainId),
-          //   fetchPrices(chainId,provider),
-          //   fetchUserBalances()
-          // ]);
-    
-          await fetchProperties(chainId);
-          await fetchAddressWlProperties(account, chainId);
-          await fetchPrices(chainId).catch(err => console.error('Failed to fetch prices: ', err));
-          await fetchUserBalances()
+            // await Promise.allSettled([
+            //   fetchProperties(chainId),
+            //   fetchAddressWlProperties(account, chainId),
+            //   fetchPrices(chainId,provider),
+            //   fetchUserBalances()
+            // ]);
+      
+            await fetchProperties(chainId);
+            await fetchAddressWlProperties(account, chainId);
+            await fetchPrices(chainId).catch(err => console.error('Failed to fetch prices: ', err));
+            await fetchUserBalances()
 
-          setInterfaceIsLoading(false);
-          resolve();
+            setInterfaceIsLoading(false);
+            resolve();
 
-        // }catch(err){
-        //   reject(err);
-        // }
+          // }catch(err){
+          //   reject(err);
+          // }
+        }catch(err){
+          reject(err); 
+        }
       });
     },
     refreshInterface: async () => {
@@ -175,39 +175,42 @@ export const createInterfaceSlice: StateCreator<
     userBalancesAreLoading: true,
     fetchUserBalances: (): Promise<void> => {
       return new Promise<void>(async (resolve, reject) => {
+        try{
 
-        const { account } = get();
+          const { account } = get();
 
-        const chainDatas = CHAINS[get().chainId as ChainsID];
-        const prefix = chainDatas.graphPrefixes.realtoken;
+          const chainDatas = CHAINS[get().chainId as ChainsID];
+          const prefix = chainDatas.graphPrefixes.realtoken;
 
-        const res = await apiClient.query({
-          query: gql`
-          query getBalances{
-              ${prefix}{
-                accountBalances(where: { account: "${account.toLowerCase()}" }, first: 1000){
-                  token{
-                    address
+          const res = await apiClient.query({
+            query: gql`
+            query getBalances{
+                ${prefix}{
+                  accountBalances(where: { account: "${account.toLowerCase()}" }, first: 1000){
+                    token{
+                      address
+                    }
+                    amount
                   }
-                  amount
                 }
               }
-            }
-          `
-        });
+            `
+          });
 
-        const balances = res.data[prefix].accountBalances;
-        // console.log('USER BALANCES: ', balances);
+          const balances = res.data[prefix].accountBalances;
+          // console.log('USER BALANCES: ', balances);
 
-        const userBalances: UserBalances = {};
-        balances.forEach((balance: any) => {
-          userBalances[balance.token.address.toLowerCase()] = new BigNumber(balance.amount);
-        });
+          const userBalances: UserBalances = {};
+          balances.forEach((balance: any) => {
+            userBalances[balance.token.address.toLowerCase()] = new BigNumber(balance.amount);
+          });
 
-        set({ userBalances, userBalancesAreLoading: false });
+          set({ userBalances, userBalancesAreLoading: false });
+          resolve();
 
-        resolve();
-
+        }catch(err){
+          reject(err)
+        }
       });
     },
 
@@ -236,7 +239,9 @@ export const createInterfaceSlice: StateCreator<
         const response = await fetch(`/api/properties/${chainId}`, { signal: abortController.signal });
         if (response.ok) {
           const responseJson: PropertiesToken[] = await response.json();
-          set({ properties: responseJson, propertiesAreLoading: false });
+          const tokens = mergeExtendedProperties(responseJson, getExtendedTokens(chainId));
+
+          set({ properties: tokens, propertiesAreLoading: false });
         }
       } catch (err) {
         console.log('Failed to load properties from API: ', err);
@@ -297,23 +302,11 @@ export const createInterfaceSlice: StateCreator<
     wlPropertiesAreLoading: true,
 
     fetchPrices: (chainId): Promise<void> => {
-      const { abortController } = get();
       return new Promise<void>(async (resolve, reject) => {
         try{
 
-          const abortListener = ({ target }: { target: any }) => {
-            abortController.signal.removeEventListener('abort', abortListener);
-            reject(target.reason);
-          }
-          abortController.signal.addEventListener('abort', abortListener);
-
-          // console.log('FETCH PRICES')
-  
-          const tokens = getRightAllowBuyTokens(chainId);
-          const p = await Promise.all(tokens.map((allowedToken: AllowedToken) => getPrice(allowedToken)));
-    
-          const prices: Price = {};
-          p.forEach((p: P) => prices[p.contractAddress.toLowerCase()] = p.price);
+          const res = await fetch('/api/prices/'+chainId);
+          const prices: Price = await res.json();
   
           set({
             prices: prices,

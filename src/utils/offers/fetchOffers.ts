@@ -16,6 +16,7 @@ import { Price } from 'src/types/price';
 import { apiClient } from './getClientURL';
 import { parseOffer } from './parseOffer';
 import { useRootStore } from '../../zustandStore/store';
+import { getExtendedTokens } from '../../constants/GetPriceToken';
 
 const nbrFirst = 1000;
 
@@ -206,6 +207,8 @@ export const fetchOffersTheGraph = (
 
       // //console.log('Debug Query dataRealtoken', dataRealtoken);
 
+      const extendedTokensAddress = getExtendedTokens(chainId).map((token) => token.contractAddress);
+
       const promises = offers.map(
         (offer: OfferGraphQl) =>
           new Promise<Offer>(async (resolve, reject) => {
@@ -224,7 +227,8 @@ export const fetchOffersTheGraph = (
                 accountUserRealtoken,
                 propertiesToken,
                 wlProperties,
-                prices
+                prices,
+                extendedTokensAddress
               );
 
               offerData.hasPropertyToken =

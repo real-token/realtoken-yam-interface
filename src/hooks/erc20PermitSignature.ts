@@ -1,6 +1,7 @@
 import type { Web3Provider } from '@ethersproject/providers';
 import { Contract, utils } from 'ethers';
-import { gnosisAllowedTokens } from '../constants/allowedBuyTokens';
+import { tokenToGetPrice } from '../constants/GetPriceToken';
+import { ChainsID } from '@realtoken/realt-commons';
 
 // This function is used for general tokens with permit function
 const erc20PermitSignature = async (
@@ -15,7 +16,8 @@ const erc20PermitSignature = async (
     // const transactionDeadline = Date.now() + 3600; // permit valable during 1h
 
     let nonce;
-    if(contract.address.toLowerCase() == gnosisAllowedTokens[2].contractAddress.toLowerCase()){
+    const tokenException = tokenToGetPrice.get(ChainsID.Gnosis);
+    if(tokenException && contract.address.toLowerCase() == tokenException[2].contractAddress.toLowerCase()){
       nonce = await contract._nonces(owner);
     }else{
       nonce = await contract.nonces(owner);

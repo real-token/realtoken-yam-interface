@@ -29,6 +29,7 @@ export type Chain = Omit<RealtChains, 'blockExplorerUrl'> & {
     yam: string;
     realtoken: string;
   };
+  coingeckoNetworkId: string;
 };
 
 export const CHAINS: Record<ChainsID, Chain> = {
@@ -51,6 +52,7 @@ export const CHAINS: Record<ChainsID, Chain> = {
         metadata: { fromBlock: 25530390 },
       },
     },
+    coingeckoNetworkId: 'xdai'
   },
   [ChainsID.Ethereum]: {
     chainId: ChainsID.Ethereum,
@@ -71,6 +73,7 @@ export const CHAINS: Record<ChainsID, Chain> = {
         metadata: { fromBlock: 16220000 },
       },
     },
+    coingeckoNetworkId: 'eth'
   },
 
   [ChainsID.Goerli]: {
@@ -93,7 +96,8 @@ export const CHAINS: Record<ChainsID, Chain> = {
         metadata: { fromBlock: 7385668 },
       },
     },
-  },
+    coingeckoNetworkId: 'goerli-testnet'
+  }
 };
 
 export const URLS = Object.keys(CHAINS).reduce<Record<number, string>>(

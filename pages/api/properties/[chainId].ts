@@ -1,7 +1,7 @@
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import { APIPropertiesToken, PropertiesToken, ShortProperty } from "src/types";
-import { getWhitelistedProperties } from "src/utils/properties";
 import axios from "axios";
+import { tokenToGetPrice } from "../../../src/constants/GetPriceToken";
 
 const getTokenFromCommunityAPI = new Promise<APIPropertiesToken[]>( async (resolve, reject) => {
     try{
@@ -244,6 +244,9 @@ const handler: NextApiHandler = async (req: NextApiRequest, res: NextApiResponse
         // const [communityApiToken,wlTokens] = await Promise.all([getTokenFromCommunityAPI,getWhitelistedProperties(parseInt(chainId))]);
         const [communityApiToken] = await Promise.all([getTokenFromCommunityAPI]);
         const tokens = getTokens(parseInt(chainId), communityApiToken, []);
+
+        const extendedTokens = tokenToGetPrice.get(parseInt(chainId))?.filter(token => !token.isBuyToken) ?? [] as PropertiesToken[];
+        console.log(extendedTokens);
 
         return res
             .setHeader('cache-control', 'public, s-maxage=1200, stale-while-revalidate=600')
