@@ -34,7 +34,12 @@ const erc20PermitSignature = async (
           version = await contract.EIP712_REVISION();
         } catch (e) {
           console.log('No EIP712_REVISION function in contract.', e)
-          throw Error("Cannot get permit version from contract.");
+          try {
+            version = await contract.eip712Domain();
+          } catch (e) {
+            console.log('No EIP712_REVISION function in contract.', e)
+            throw Error("Cannot get permit version from contract.");
+          }
         }
       }
     }

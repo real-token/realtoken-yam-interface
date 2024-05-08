@@ -72,7 +72,6 @@ export const useMatchedOffers: UseMatchedOffers = (offerType, offerTokenAddress,
                     !(shieldDisabled && 1/price >= priceMinLimit && 1/price <= priceMaxLimit)
                 );
         }else if(offerType == OFFER_TYPE.SELL) {
-            console.log('HERE')
             return matchedOffersWithType
                 .filter((offer) => 
                     offer.offerTokenAddress.toLowerCase() == buyerTokenAddress.toLowerCase() &&
@@ -87,8 +86,6 @@ export const useMatchedOffers: UseMatchedOffers = (offerType, offerTokenAddress,
             );
         }
     },[buyerTokenAddress, matchedOffersWithType, offerTokenAddress, offerType, price, priceMaxLimit, priceMinLimit, shieldDisabled]);
-
-    console.log(matchedOffers)
 
     // Those are only filter by offerToken
     const matchedRawOffers = useMemo(() => {
@@ -204,8 +201,6 @@ export const useMatchedOffers: UseMatchedOffers = (offerType, offerTokenAddress,
     useEffect(() => {
         if(sortedAmount && amount) getBestMultiPath();
     },[amount, getBestMultiPath, sortedAmount]);
-
-    console.log(multiPath)
 
     const multiPathAmountFilled = useMemo(() => {
         if(!multiPath) return 0;

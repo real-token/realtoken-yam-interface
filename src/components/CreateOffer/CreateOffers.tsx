@@ -270,6 +270,20 @@ export const CreateOffer = () => {
             JSON.stringify(permitAnswer, null, 4)
           );
           const { r, s, v } = permitAnswer;
+
+          console.log(
+            offer.offerTokenAddress,
+            offer.buyerTokenAddress,
+            offer.buyerAddress,
+            priceInWei,
+            new BigNumber(offer.amount).toString(10),
+            new BigNumber(offer.amount).toString(10),
+            transactionDeadline,
+            v,
+            r,
+            s
+          )
+
           createOfferTx = await realTokenYamUpgradeable.createOfferWithPermit(
             offer.offerTokenAddress,
             offer.buyerTokenAddress,

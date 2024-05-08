@@ -568,6 +568,16 @@ export interface CoinBridgeTokenInterface extends ethers.utils.Interface {
   ): EventFragment;
 }
 
+export type Domain = {
+  fields: string;
+  name: string,
+  version: BigNumber,
+  chainId: BigNumber,
+  verifyingContract: string,
+  salt: string,
+  extensions: BigNumber[]
+}
+
 export type AdministratorAddedEvent = TypedEvent<
   [string] & { administrator: string }
 >;
@@ -706,6 +716,7 @@ export interface CoinBridgeToken extends BaseContract {
     ): Promise<[string]>;
 
     DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<[string]>;
+    eip712Domain(overrides?: CallOverrides): Promise<[Domain]>;
 
     INCREASE_APPROVAL_WITH_AUTHORIZATION_TYPEHASH(
       overrides?: CallOverrides

@@ -169,7 +169,6 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   const others = t("otherTokenType");
   const data = [{ value: realT, label: realT },{ value: others, label: others }];
 
-
   const [offers, addOffer] = useRootStore(state => [state.offersToCreate, state.addOffer]);
   const [exchangeType,setExchangeType] = useState<string|null>(null);
 

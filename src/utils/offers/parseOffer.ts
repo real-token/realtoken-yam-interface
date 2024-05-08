@@ -7,7 +7,6 @@ import { Price } from 'src/types/price';
 import { Offer as OfferGraphQl } from '../../../gql/graphql';
 import { getPriceInDollar } from '../price';
 import { getNotWhitelistedTokens } from '../whitelist';
-import { AllowedToken } from '../../types/allowedTokens';
 
 // TOKEN TYPE
 // 1 = RealToken

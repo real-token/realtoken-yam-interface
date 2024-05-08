@@ -9,6 +9,7 @@ import { parseOffer } from './parseOffer';
 import { CHAINS } from '../../constants';
 import { Price } from '../../types/price';
 import { Offer as OfferGraphQl } from '../../../gql/graphql';
+import { getExtendedTokens } from '../../constants/GetPriceToken';
 
 export const fetchOffer = (
   provider: Web3Provider, 
@@ -46,7 +47,9 @@ export const fetchOffer = (
       const realtokenData: [DataRealtokenType] = await getBigDataGraphRealtoken(chainId, apiClient, batch);
 
       const accountUser = realtokenData[0];
-      const offer = await parseOffer(account, offerFromTheGraph,accountUser, propertiesToken, wlProperties, prices);
+
+      const extendedTokensAddress = getExtendedTokens(chainId).map((token) => token.contractAddress);
+      const offer = await parseOffer(account, offerFromTheGraph,accountUser, propertiesToken, wlProperties, prices, extendedTokensAddress);
 
       const hasPropertyToken = propertiesToken.find(propertyToken => (propertyToken.contractAddress == offer.buyerTokenAddress || propertyToken.contractAddress == offer.offerTokenAddress));
       offer.hasPropertyToken = hasPropertyToken ? true : false;

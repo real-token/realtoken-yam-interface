@@ -19,6 +19,16 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
+export type Domain = {
+  fields: string;
+  name: string,
+  version: BigNumber,
+  chainId: BigNumber,
+  verifyingContract: string,
+  salt: string,
+  extensions: BigNumber[]
+}
+
 export interface Erc20Interface extends ethers.utils.Interface {
   functions: {
     "allowance(address,address)": FunctionFragment;
@@ -171,6 +181,8 @@ export interface Erc20 extends BaseContract {
     balanceOf(account: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
     decimals(overrides?: CallOverrides): Promise<[number]>;
+
+    eip712Domain(overrides?: CallOverrides): Promise<[Domain]>;
 
     decreaseAllowance(
       spender: string,
