@@ -114,17 +114,6 @@ export const tokenToGetPrice = new Map<number, (GetPriceTokenChainLink|GetPriceT
       }
     },
     {
-      name: 'RMMv2 Xdai',
-      symbol: 'armmWXDAI',
-      contractAddress: '0x7349C9eaA538e118725a6130e0f8341509b9f8A0',
-      logo: DaiSvg,
-      isBuyToken: true,
-      priceFnc: {
-        type: 'chainlink',
-        contractAddress: '0x678df3415fc31947dA4324eC63212874be5a82f8'
-      }
-    },
-    {
       name: 'RMMv3 Xdai',
       symbol: 'armmv3WXDAI',
       contractAddress: '0x0ca4f5554dd9da6217d62d8df2816c82bba4157b',
