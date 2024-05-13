@@ -25,7 +25,7 @@ const handler: NextApiHandler = async (req: NextApiRequest, res: NextApiResponse
 
         const pricesParsed = prices.reduce((acc, price) => {
             if(price == null || !acc) return acc;
-            acc[price.contractAddress] = price.price;
+            acc[price.contractAddress.toLowerCase()] = price.price;
             return acc;
         }, {});
 
