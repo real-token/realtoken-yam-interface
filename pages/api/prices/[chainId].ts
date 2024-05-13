@@ -3,6 +3,12 @@ import { tokenToGetPrice } from "../../../src/constants/GetPriceToken";
 import { getChainlinkPrice } from "../../../src/controllers/ChainLinkCall";
 import { GetPriceTokenChainLink, GetPriceTokenCoingecko } from "../../../src/types/GetPriceTokens";
 import { getCoingeckoApiPrice } from "../../../src/controllers/CoingeckoApiCall";
+import { ChainsID } from "../../../src/constants";
+
+const rpcUrls = new Map<number, string>([
+    [ChainsID.Gnosis, process.env.GNOSIS_RPC_URL as string],
+    [ChainsID.Ethereum, process.env.ETHEREUM_RPC_URL as string]
+]);
 
 const handler: NextApiHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     try{
@@ -14,10 +20,13 @@ const handler: NextApiHandler = async (req: NextApiRequest, res: NextApiResponse
         const tokens = tokenToGetPrice.get(Number(chainId));
         if(!tokens) return res.status(400).json({ "error": "ChainId is invalid." });
 
+        const rpcUrl = rpcUrls.get(chainId);
+        if(!rpcUrl) return res.status(400).json({ "error": "Cannot find rpc url" });
+
         const prices = await Promise.all(tokens.map((token) => {
             const getPriceType = token.priceFnc.type;
             if(getPriceType == 'chainlink'){
-                return getChainlinkPrice(token as GetPriceTokenChainLink, chainId);
+                return getChainlinkPrice(token as GetPriceTokenChainLink, rpcUrl);
             }else if(getPriceType == 'coingecko-api'){
                 return getCoingeckoApiPrice(token as GetPriceTokenCoingecko, chainId)
             }

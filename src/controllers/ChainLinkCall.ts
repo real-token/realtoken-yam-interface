@@ -6,14 +6,10 @@ import { Offer, OFFER_TYPE } from "src/types/offer";
 import { Price as P, Price } from "src/types/price";
 import { getContract } from "../utils";
 import { GetPriceTokenChainLink } from "../types/GetPriceTokens";
-import { CHAINS, ChainsID } from "../constants";
 
-export const getChainlinkPrice = (allowedToken: GetPriceTokenChainLink, chainId: number) => {
+export const getChainlinkPrice = (allowedToken: GetPriceTokenChainLink, rpcUrl: string) => {
     return new Promise<Price>(async (resolve,reject) => {
       try{
-
-        const rpcUrl = CHAINS[chainId as ChainsID].rpcUrl;
-        console.log("rpcUrl: ", rpcUrl);
 
         const provider = new JsonRpcProvider(rpcUrl);
 
