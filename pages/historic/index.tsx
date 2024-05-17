@@ -88,7 +88,7 @@ export default function HistoricPage(){
             accessorKey: 'purchaseId',
             header: t("table.columnTitle.txHash"),
             cell: ({ getValue }: { getValue: () => string }) => {
-                const txhash = getValue().split('-')[0];
+                const txhash = getValue() ? getValue().split('-')[0] : "";
                 return (
                     <Flex justify={'center'}>
                         <Anchor href={`${blockExplorerUrl}tx/${txhash}`} target="_blank">

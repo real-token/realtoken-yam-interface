@@ -9,7 +9,7 @@ import { CHAINS, ChainsID } from "../constants";
 import { apiClient } from "../utils/offers/getClientURL";
 import { gql } from "@apollo/client";
 import { Historic } from "../types/historic";
-import { parseHistoric } from "../utils/historic/historic";
+import { getPurchases, getSales, parseHistoric } from "../utils/historic/historic";
 import { UserBalances } from "../types/UserBalance";
 import BigNumber from "bignumber.js";
 import { mergeExtendedProperties } from "../utils/properties";
@@ -338,95 +338,25 @@ export const createInterfaceSlice: StateCreator<
           }
           abortController.signal.addEventListener('abort', abortListener);
 
-
           console.log('FETCH HISTORICS')
   
           const graphNetworkPrefix = CHAINS[chainId as ChainsID].graphPrefixes.yam;
   
-          // GET LAST PURCHASES
-          const { data } = await apiClient.query({
-            query: gql`
-              query getHistorics {
-                yamGnosis {
-                  purchases(
-                    where: {
-                      buyer: "${account.toLowerCase()}", 
-                      createdAtTimestamp_lte: "${Math.floor(Date.now() / 1000)}"
-                    }
-                    orderBy: createdAtTimestamp      
-                    orderDirection: desc
-                    first: 1
-                  ) {
-                      createdAtTimestamp
-                  } 
-                }
-              }
-            `
-          });
+          const [buyerHistorics, sellerHistorics] = await Promise.all([
+            getPurchases(account, graphNetworkPrefix),
+            getSales(account, graphNetworkPrefix)
+          ]);
 
-          if(data.yamGnosis.purchases.length == 0){
-            throw new Error('No purchases found');
-          }
-  
-          const lastPurchase = data.yamGnosis.purchases[0].createdAtTimestamp;
-          // console.log('LAST PURCHASE: ', lastPurchase)
-  
-          const historics = [];
-          let timestamp = lastPurchase+1;
-          while(true){
-            // console.log(historics.length, timestamp)
-            const { data } = await apiClient.query({query: gql`
-              query getHistorics{
-                ${graphNetworkPrefix} {
-                  purchases(where: { 
-                    buyer: "${account.toLowerCase()}", 
-                    createdAtTimestamp_gt: "0",
-                    createdAtTimestamp_lt: "${timestamp}"
-                  }, orderBy: createdAtTimestamp, orderDirection: desc, first: 300){
-                    id
-                    offer{
-                      id
-                      offerToken{
-                        address
-                        tokenType
-                        name
-                        symbol
-                      }
-                      buyerToken{
-                        address
-                        tokenType
-                        name
-                        symbol
-                      }
-                    }
-                    seller{
-                      address
-                    }
-                    price
-                    quantity
-                    createdAtTimestamp
-                  }
-                }
-              }
-            `});
-  
-            const purchases = data[graphNetworkPrefix].purchases;
-            // console.log('PURCHASES: ', purchases.length)
-  
-            if(purchases.length == 0) break;
-  
-            const historic: Historic[] | undefined = parseHistoric(purchases);
-            if(historic) {
-              historics.push(...historic);
-              timestamp = purchases[purchases.length-1].createdAtTimestamp;
-            }
-  
-          }
+          const historics = buyerHistorics.concat(sellerHistorics);
+
+          console.log('HISTORICS: ', historics);
+
+          const sortedHistorics = historics.sort((a, b) => a.createdAtTimestamp > b.createdAtTimestamp ? -1 : 1);
   
           console.log('FINISH TO FETCH HISTORICS: ', historics.length);
   
           set({ 
-            historics: historics,
+            historics: sortedHistorics,
             // historics: [],
             historicsAreLoading: false,
             historicHasLoadingError: false
