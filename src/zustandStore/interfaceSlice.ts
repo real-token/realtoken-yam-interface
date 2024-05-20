@@ -349,11 +349,11 @@ export const createInterfaceSlice: StateCreator<
 
           const historics = buyerHistorics.concat(sellerHistorics);
 
-          console.log('HISTORICS: ', historics);
+          // console.log('HISTORICS: ', historics);
 
           const sortedHistorics = historics.sort((a, b) => a.createdAtTimestamp > b.createdAtTimestamp ? -1 : 1);
   
-          console.log('FINISH TO FETCH HISTORICS: ', historics.length);
+          // console.log('FINISH TO FETCH HISTORICS: ', historics.length);
   
           set({ 
             historics: sortedHistorics,

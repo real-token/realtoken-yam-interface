@@ -1,8 +1,8 @@
-import { Flex, Text, Anchor, Button, Loader } from "@mantine/core";
+import { Flex, Text, Anchor, Button, Loader, Select } from "@mantine/core";
 import { IconDownload } from "@tabler/icons";
 import { useRootStore } from "../../src/zustandStore/store"
 import { IconExclamationCircle } from "@tabler/icons";
-import { ColumnDef, PaginationState, getCoreRowModel, getPaginationRowModel, useReactTable } from "@tanstack/react-table";
+import { ColumnDef, ColumnFiltersState, PaginationState, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { Table } from "../../src/components/Table";
 import { getReduceAddress } from "../../src/utils/address";
@@ -15,6 +15,7 @@ import { useWeb3React } from "@web3-react/core";
 import { Historic } from "../../src/types/historic";
 import { useTranslation } from "react-i18next";
 import { ConnectedProvider } from "../../src/providers/ConnectProvider";
+import { OfferTypeBadge } from "../../src/components/Offer/OfferTypeBadge/OfferTypeBadge";
 
 export default function HistoricPage(){
 
@@ -46,6 +47,7 @@ export default function HistoricPage(){
             const txhash = historic.purchaseId.split('-')[0];
         
             return {
+                type: historic.type,
                 purchase_tx: `${blockExplorerUrl}tx/${txhash}`,
                 date: moment.unix(parseInt(historic.createdAtTimestamp)).format('DD/MM/YYYY hh:mm:ss'),
                 token_bought_name: buyerToken.name,
@@ -57,14 +59,13 @@ export default function HistoricPage(){
             }
         })
 
-        // console.log(parsedHistorics);
-
         saveAs(
             new File(
               [
                 stringify(parsedHistorics, { 
                     header: true,
                     columns: [
+                        { key: 'type', header: 'Type' },
                         { key: 'purchase_tx', header: 'Purchase tx hash' },
                         { key: 'date', header: 'Purchase date' },
                         { key: 'token_bought_name', header: 'Bought token name' },
@@ -72,7 +73,7 @@ export default function HistoricPage(){
                         { key: 'token_bought_quantity', header: 'Bought token quantity' },
                         { key: 'sold_token_name', header: 'Sold token name' },
                         { key: 'sold_token_symbol', header: 'Sold token symbol' },
-                        { key: 'sold_token_quantity', header: 'Sold tolen quantity' },
+                        { key: 'sold_token_quantity', header: 'Sold token quantity' },
                       ],
                 })],
               `purchase-historic-${account}.csv`,
@@ -83,6 +84,18 @@ export default function HistoricPage(){
     }
 
     const columns: ColumnDef<Historic,any>[] = useMemo(() => ([
+        {
+            id: 'type',
+            accessorKey: 'type',
+            header: 'Type',
+            cell: (cell) => {
+                return (
+                    <Flex justify={'center'}>
+                        <OfferTypeBadge offerType={cell.row.original.type}/>
+                    </Flex>
+                )
+            },
+        },
         {
             id: 'purchase-txhash',
             accessorKey: 'purchaseId',
@@ -130,17 +143,23 @@ export default function HistoricPage(){
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
         pageSize: 20,
-      });
+    });
+
+    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
     const table = useReactTable({
         columns,
         data,
         state: {
-            pagination: pagination, 
+            pagination: pagination,
+            columnFilters
         },
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         onPaginationChange: setPagination,
+        getFilteredRowModel: getFilteredRowModel(),
+        onColumnFiltersChange: setColumnFilters,
+        enableColumnFilters: true,
         meta: { colSpan: 16 }
     });
 
@@ -187,6 +206,25 @@ export default function HistoricPage(){
                     >
                         {t('downloadButton')}
                     </Button>
+                </Flex>
+                <Flex mb={'md'}>
+                    <Select
+                        label={'Filter type'}
+                        data={[
+                            {
+                                label: 'All',
+                                value: 'all'
+                            },{
+                                label: 'Buy',
+                                value: 'buy'
+                            },{
+                                label: 'Sell',
+                                value: 'sell'
+                            }
+                        ]}
+                        value={columnFilters.length > 0 ? (columnFilters[0].value as string) : 'all'}
+                        onChange={(value) => setColumnFilters(value == 'all' ? [] : [{ id: 'type', value }])}
+                    />
                 </Flex>
                 <Table
                     tableProps={{

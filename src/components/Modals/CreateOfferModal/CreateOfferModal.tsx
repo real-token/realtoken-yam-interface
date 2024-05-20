@@ -512,6 +512,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
       buyerTokens.find(token => token.value == values.buyerTokenAddress)?.label;
       
     const { price } = useOraclePriceFeed(offer.offerType == OFFER_TYPE.BUY ? values.offerTokenAddress : values.buyerTokenAddress);
+    console.log('price', price);
 
     const setPInDollar = () => {
       if(values.price && price) setPriceInDollar(parseFloat(new BigNumber(values.price).multipliedBy(price).toString()))

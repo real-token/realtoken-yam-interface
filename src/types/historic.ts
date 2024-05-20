@@ -1,3 +1,4 @@
+import { OFFER_TYPE } from "./offer";
 
 export interface HistoricToken{
     address: string;
@@ -7,6 +8,7 @@ export interface HistoricToken{
 }
 
 export interface Historic{
+    type: OFFER_TYPE;
     purchaseId: string;
     offer: {
         id: string;
