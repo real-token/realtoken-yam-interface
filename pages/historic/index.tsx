@@ -1,4 +1,4 @@
-import { Flex, Text, Anchor, Button, Loader, Select } from "@mantine/core";
+import { Flex, Text, Anchor, Button, Loader, Select, Checkbox } from "@mantine/core";
 import { IconDownload } from "@tabler/icons";
 import { useRootStore } from "../../src/zustandStore/store"
 import { IconExclamationCircle } from "@tabler/icons";
@@ -35,6 +35,9 @@ export default function HistoricPage(){
     const { account } = useWeb3React();
     const blockExplorerUrl = CHAINS[chainId as ChainsID].blockExplorerUrl;
 
+    const [parseLocalDate, setParseLocalDate] = useState(false);
+    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+
     const [downloadLoading, setDownloadLoading] = useState(false);
     const download = () => {
         setDownloadLoading(true);
@@ -45,11 +48,16 @@ export default function HistoricPage(){
         
             const outQuantity = parseFloat(historic.quantity)*parseFloat(historic.price);
             const txhash = historic.purchaseId.split('-')[0];
+
+            const date = parseLocalDate ?
+                            moment.unix(parseInt(historic.createdAtTimestamp)).format('YYYY-MM-DD HH:mm Z')
+                        :
+                            moment.unix(parseInt(historic.createdAtTimestamp)).utc().format('YYYY-MM-DD HH:mm Z')
         
             return {
                 type: historic.type,
                 purchase_tx: `${blockExplorerUrl}tx/${txhash}`,
-                date: moment.unix(parseInt(historic.createdAtTimestamp)).format('DD/MM/YYYY hh:mm:ss'),
+                date,
                 token_bought_name: buyerToken.name,
                 token_bought_symbol: buyerToken.symbol,
                 token_bought_quantity: parseFloat(historic.quantity),
@@ -117,7 +125,13 @@ export default function HistoricPage(){
             header: t('table.columnTitle.purchaseDate'),
             cell: ({ row }) => (
                 <Flex justify={'center'}>
-                    <Text>{moment.unix(parseInt(row.original.createdAtTimestamp)).format('DD/MM/YYYY hh:mm:ss')}</Text>
+                    <Text>
+                        {parseLocalDate ?
+                            moment.unix(parseInt(row.original.createdAtTimestamp)).format('YYYY-MM-DD HH:mm Z')
+                        :
+                            moment.unix(parseInt(row.original.createdAtTimestamp)).utc().format('YYYY-MM-DD HH:mm Z')
+                        }
+                    </Text>
                 </Flex>
             ),
             meta: { colSpan: 3 },
@@ -134,7 +148,7 @@ export default function HistoricPage(){
             },
             meta: { colSpan: 10 },
         },
-    ]),[t, blockExplorerUrl]);
+    ]),[t, blockExplorerUrl, parseLocalDate]);
 
     const data = useMemo(() => {
         return historics ?? [];
@@ -144,8 +158,6 @@ export default function HistoricPage(){
         pageIndex: 0,
         pageSize: 20,
     });
-
-    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
     const table = useReactTable({
         columns,
@@ -207,7 +219,7 @@ export default function HistoricPage(){
                         {t('downloadButton')}
                     </Button>
                 </Flex>
-                <Flex mb={'md'}>
+                <Flex mb={'md'} gap={'xl'} align={'center'}>
                     <Select
                         label={'Filter type'}
                         data={[
@@ -224,6 +236,11 @@ export default function HistoricPage(){
                         ]}
                         value={columnFilters.length > 0 ? (columnFilters[0].value as string) : 'all'}
                         onChange={(value) => setColumnFilters(value == 'all' ? [] : [{ id: 'type', value }])}
+                    />
+                    <Checkbox 
+                        label={'Show date in local timezone'}
+                        value={parseLocalDate.toString()}
+                        onChange={(event) => setParseLocalDate(event.target.checked)}
                     />
                 </Flex>
                 <Table
