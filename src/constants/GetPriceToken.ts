@@ -140,7 +140,7 @@ export const tokenToGetPrice = new Map<number, (GetPriceTokenChainLink|GetPriceT
       symbol: 'REG',
       contractAddress: '0x0aa1e96d2a46ec6beb2923de1e61addf5f5f1dce',
       logo: RegLogo,
-      isBuyToken: false,
+      isBuyToken: true,
       priceFnc: {
         type: 'coingecko-api'
       }
