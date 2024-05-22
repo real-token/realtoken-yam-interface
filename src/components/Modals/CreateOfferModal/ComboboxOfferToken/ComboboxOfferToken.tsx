@@ -1,10 +1,13 @@
 import { Combobox, useCombobox, ComboboxItem, InputBase, Flex, Text, Loader, Skeleton, Input } from '@mantine/core';
 import classes from "./ComboboxOfferToken.module.css";
 import { useRootStore } from '../../../../zustandStore/store';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { IconCheck } from '@tabler/icons';
+import { useWeb3React } from '@web3-react/core';
+import { Erc20, Erc20ABI } from '../../../../abis';
+import { getContract } from '@realtoken/realt-commons';
 
 export type DataWithBalance = ComboboxItem & {
   balance: BigNumber;
@@ -54,7 +57,8 @@ export const ComboboxOfferToken = ({
     value,
     placeholder,
     disabled,
-    onChange
+    onChange,
+    type
  } : {
     data: ComboboxItem[],
     label: string;
@@ -62,7 +66,12 @@ export const ComboboxOfferToken = ({
     placeholder: string
     disabled: boolean;
     onChange: any;
+    type: 'realtoken' | 'others';
  }) => {
+
+  console.log('type: ', type)
+
+  const { provider, account } = useWeb3React();
 
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -72,7 +81,55 @@ export const ComboboxOfferToken = ({
       onDropdownClose: () => combobox.resetSelectedOption(),
   });
 
-  const [userBalances, userBalancesAreLoading] = useRootStore((state) => [state.userBalances, state.userBalancesAreLoading]);
+  const [realTokenUserBalances, realTokenUserBalancesAreLoading] = useRootStore((state) => [state.userBalances, state.userBalancesAreLoading]);
+
+  const [assetsBalances, setAssetsBalances] = useState<any>([]);
+  const [assetsBalancesAreLoading, setAssetsBalancesAreLoading] = useState<boolean>(true);
+  const fetchBalances = async () => {
+    try{
+      setAssetsBalancesAreLoading(true);
+
+      const assetsBalance = await Promise.all(data.map(async (item) => {
+        if(!provider) return {};
+        const contract = getContract<Erc20>(
+          item.value ?? "",
+          Erc20ABI,
+          provider,
+          account,
+        );
+        if(!contract || !account) return {};
+        const decimals = new BigNumber((await contract.decimals()).toString());
+        const balance = new BigNumber((await contract.balanceOf(account)).toString()).shiftedBy(-decimals.toNumber());
+        return {[item.value.toLowerCase()]: balance}
+      }))
+
+      const assets: { [addr: string ]: BigNumber } = {};
+      assetsBalance.forEach((item) => {
+        Object.keys(item).forEach((key) => {
+          assets[key] = item[key]
+        })
+      })
+
+      setAssetsBalances(assets);
+      setAssetsBalancesAreLoading(false);
+
+    }catch(err){
+      console.error(err)
+    }
+  }
+  useEffect(() => {
+    if(type == 'others'){
+      fetchBalances();
+    }
+  },[type])
+
+  const [userBalances, userBalancesAreLoading] = useMemo(() => {
+    if(type == 'realtoken'){
+      return [realTokenUserBalances, realTokenUserBalancesAreLoading]
+    }else{
+      return [assetsBalances, assetsBalancesAreLoading]
+    }
+  },[realTokenUserBalances, realTokenUserBalances, type, assetsBalances, assetsBalancesAreLoading])
 
   const dataWithAmounts: DataWithBalance[] = useMemo(() => data.map((item) => {
     const balance = userBalances[item.value.toLowerCase()] || new BigNumber(0);
@@ -81,7 +138,7 @@ export const ComboboxOfferToken = ({
       balance,
       selected: item.value === value
     }
-  }), [userBalances, userBalancesAreLoading]);
+  }), [userBalances, userBalancesAreLoading, data]);
 
   const sortedDatas = useMemo(() => dataWithAmounts.sort((a, b) => {
     return b.balance.comparedTo(a.balance);
@@ -116,7 +173,7 @@ export const ComboboxOfferToken = ({
             pointer={false}
             rightSection={userBalancesAreLoading ? <Loader size={18} /> : <Combobox.Chevron />}
             rightSectionPointerEvents="none"
-            classNames={{ input: classes.input }}
+            classNames={{ root: classes.root, input: classes.input }}
             onClick={() => combobox.openDropdown()}
             onFocus={() => combobox.openDropdown()}
             placeholder={placeholder}

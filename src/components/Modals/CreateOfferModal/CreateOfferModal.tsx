@@ -6,7 +6,7 @@ import {
   Group, Select, Stack, TextInput, 
   Text, NumberInput as MantineInput, 
   Skeleton, Divider, ComboboxItem, Switch,
-  Popover, Portal
+  Popover, Portal, Card
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { showNotification, updateNotification } from '@mantine/notifications';
@@ -24,7 +24,7 @@ import { useCreateOfferTokens } from 'src/hooks/useCreateOfferTokens';
 import { OfferTypeBadge } from 'src/components/Offer/OfferTypeBadge/OfferTypeBadge';
 import { OFFER_TYPE } from 'src/types/offer';
 import { useOraclePriceFeed } from 'src/hooks/useOraclePriceFeed';
-import { IconArrowRight, IconArrowsHorizontal, IconFocus, IconInfoCircle } from '@tabler/icons';
+import { IconArrowRight, IconArrowsHorizontal, IconFocus, IconInfoCircle, IconSwitchHorizontal, IconSwitchVertical } from '@tabler/icons';
 import { Shield } from 'src/components/Shield/Shield';
 import { useWalletERC20Balance } from 'src/hooks/useWalletERC20Balance';
 import { useShield } from 'src/hooks/useShield';
@@ -167,10 +167,10 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
 
   const realT = t("realtTokenType");
   const others = t("otherTokenType");
-  const data = [{ value: realT, label: realT },{ value: others, label: others }];
+  const data = [{ value: 'realtoken', label: realT },{ value: 'others', label: others }];
 
   const [offers, addOffer] = useRootStore(state => [state.offersToCreate, state.addOffer]);
-  const [exchangeType,setExchangeType] = useState<string|null>(null);
+  const [exchangeType,setExchangeType] = useState<'realtoken'|'others'>('realtoken');
 
   const [priceInDollar,setPriceInDollar] = useState<number|undefined|string>(undefined);
   const choosedPrice = values.useBuyTokenPrice ? values.price : Number(priceInDollar);
@@ -195,11 +195,11 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   const { allowedTokens, properties, buyerTokens, offerTokens } = useCreateOfferTokens(offer.offerType, values.offerTokenAddress, values.buyerTokenAddress);
 
   // NEEDED because when offer type is exchange, user cannot exchange token from different type and cannot exchange two same token
-  const exchangeOfferTokens = exchangeType == realT ? 
+  const exchangeOfferTokens = exchangeType == 'realtoken' ? 
       properties.filter(property => property.value != values.buyerTokenAddress)
     : 
       allowedTokens.filter(allowedToken => allowedToken.value != values.buyerTokenAddress);
-  const exchangeBuyerToken = exchangeType == realT ? 
+  const exchangeBuyerToken = exchangeType == 'realtoken' ? 
       properties.filter(property => property.value != values.offerTokenAddress)
     : 
       allowedTokens.filter(allowedToken => allowedToken.value != values.offerTokenAddress)
@@ -207,6 +207,9 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   const offerTokenSymbol = offerTokens.find(value => value.value == values.offerTokenAddress)?.label ?? exchangeOfferTokens.find(value => value.value == values.offerTokenAddress)?.label;
   const buyTokenSymbol =  buyerTokens.find(value => value.value == values.buyerTokenAddress)?.label ?? exchangeBuyerToken.find(value => value.value == values.buyerTokenAddress)?.label;
   const total = (values.amount ?? 0) * (choosedPrice ?? 0);
+  console.log('values', values);
+  console.log('choosedPrice', choosedPrice);
+  console.log('total', total);
 
   const { getPropertyToken } = usePropertiesToken();
   const propertyTokenAddress = offer.offerType == OFFER_TYPE.BUY ? values.buyerTokenAddress : values.offerTokenAddress;
@@ -322,14 +325,15 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
       }
 
       if(offer.offerType == OFFER_TYPE.EXCHANGE){
+        const price = values.price ? 1/values.price : 0;
         return (
           <Text size={"md"} mb={10}>
               {t("txExchangeSummary", {
                 amount: values?.amount,
-                buyTokenSymbol: buyTokenSymbol,
-                price: cleanNumber(values.price ?? 0),
-                offerTokenSymbol: offerTokenSymbol,
-                total: total.toFixed(6)
+                buyTokenSymbol: offerTokenSymbol,
+                price: cleanNumber(price),
+                offerTokenSymbol: buyTokenSymbol,
+                total: ((values?.amount ?? 0)*price).toFixed(6)
               })}
           </Text>
         )
@@ -341,7 +345,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   }
 
   // COMPONENTS
-  const getSelect = (offerTokenSelectData: ComboboxItem[], buyerTokenSelectData: ComboboxItem[]) => {
+  const getSelect = (offerTokenSelectData: ComboboxItem[], buyerTokenSelectData: ComboboxItem[], isExchange: boolean = false) => {
 
     const selectParams = {
         offerTokenAddress: {
@@ -370,13 +374,14 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
       <>
         { offer.offerType == OFFER_TYPE.BUY ?
             <>
-              <Select {...selectParams.offerTokenAddress}/>
-              <ComboboxOfferToken {...selectParams.buyerToken}/>
+              <Select w={'100%'} {...selectParams.offerTokenAddress}/>
+              <ComboboxOfferToken {...selectParams.buyerToken} type={exchangeType}/>
             </>
             :
             <>
-              <ComboboxOfferToken {...selectParams.offerTokenAddress}/>
-              <Select {...selectParams.buyerToken}/>
+              <ComboboxOfferToken {...selectParams.offerTokenAddress} type={exchangeType}/>
+              {isExchange ? <IconSwitchVertical/> : undefined }
+              <Select w={'100%'} {...selectParams.buyerToken}/>
           </>
         }
       </>
@@ -422,12 +427,14 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   // EXCHANGE
   const GetExchange = () => {
 
+    // @ts-ignore
     useEffect(() => { setExchangeType(data[0].value) },[]);
 
     const setE = (value: string | null) => {
       setFieldValue("offerTokenAddress","");
       setFieldValue("buyerTokenAddress","");
 
+      // @ts-ignore
       setExchangeType(value);
     }
 
@@ -439,10 +446,12 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
           value={exchangeType}
           onChange={setE}
         />
-        <Flex gap={"md"}>
+        <Divider />
+        <Flex gap={"md"} direction={'column'} align={'center'}>
           {getSelect(
             exchangeOfferTokens,
-            exchangeBuyerToken
+            exchangeBuyerToken,
+            true
           )}
         </Flex>
       </>
