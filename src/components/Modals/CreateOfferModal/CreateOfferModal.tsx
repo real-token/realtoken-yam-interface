@@ -427,15 +427,14 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   // EXCHANGE
   const GetExchange = () => {
 
-    // @ts-ignore
-    useEffect(() => { setExchangeType(data[0].value) },[]);
+    useEffect(() => { setExchangeType(data[0].value as 'realtoken' | 'others') },[]);
 
     const setE = (value: string | null) => {
       setFieldValue("offerTokenAddress","");
       setFieldValue("buyerTokenAddress","");
 
-      // @ts-ignore
-      setExchangeType(value);
+      if(value == null) return;
+      setExchangeType(value as 'realtoken' | 'others');
     }
 
     return(
