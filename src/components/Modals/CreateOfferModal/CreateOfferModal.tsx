@@ -345,7 +345,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   }
 
   // COMPONENTS
-  const getSelect = (offerTokenSelectData: ComboboxItem[], buyerTokenSelectData: ComboboxItem[], isExchange: boolean = false) => {
+  const getSelect = (offerTokenSelectData: ComboboxItem[], buyerTokenSelectData: ComboboxItem[], isExchange: boolean) => {
 
     const selectParams = {
         offerTokenAddress: {
