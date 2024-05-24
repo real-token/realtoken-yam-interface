@@ -345,7 +345,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   }
 
   // COMPONENTS
-  const getSelect = (offerTokenSelectData: ComboboxItem[], buyerTokenSelectData: ComboboxItem[], isExchange: boolean = false) => {
+  const getSelect = (offerTokenSelectData: ComboboxItem[], buyerTokenSelectData: ComboboxItem[], isExchange: boolean) => {
 
     const selectParams = {
         offerTokenAddress: {
@@ -603,7 +603,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
           { offer.offerType == OFFER_TYPE.EXCHANGE ? 
               GetExchange() 
             : 
-              getSelect(offerTokens,buyerTokens) 
+              getSelect(offerTokens,buyerTokens, false) 
           }
 
           { offer.offerType == OFFER_TYPE.EXCHANGE ?
