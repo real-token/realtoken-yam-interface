@@ -40,7 +40,7 @@ export const NumberInput: FRC<NumberInputProps, HTMLInputElement> = forwardRef(
     }
 
     return (
-      <Flex gap={5} align={'flex-end'} mb={groupMarginBottom ?? 0} style={{ width: width ? width : "auto" }}>
+      <Flex gap={5} align={'flex-end'} mb={groupMarginBottom ?? 0}>
         <MantineInput
           hideControls={true}
           handlersRef={handlers}

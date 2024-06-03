@@ -1,0 +1,13 @@
+.priceComputingPane {
+    flex-direction: column;
+    background-color: var(--mantine-color-indigo-7);
+    padding: var(--mantine-spacing-xs);
+    border-radius: var(--mantine-radius-md);
+}
+
+.priceComputingPaneError {
+    flex-direction: column;
+    background-color: var(--mantine-color-red-9);
+    padding: var(--mantine-spacing-xs);
+    border-radius: var(--mantine-radius-md);
+}

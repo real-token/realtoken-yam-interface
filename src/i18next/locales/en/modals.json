@@ -2,6 +2,43 @@
   "wallet": {
     "title": "Connect wallet"
   },
+  "createOffer": {
+    "common": {
+      "currentPrice": "Current price is ${{price}}",
+      "offerTokenAddress": "Offer Token",
+      "buyerTokenAddress": "Buyer Token",
+      "placeholderOfferTokenAddress": "Token you want to sell",
+      "placeholderBuyerTokenAddress": "Token you want to get",
+      "token": "Token",
+      "realtTokenType": "RealT token",
+      "otherTokenType": "Others (USDC, XDAI, etc...)"
+    },
+    "sell": {
+      "price": "Sell price in ${{unit}}",
+      "unit": "Unit for sell price",
+      "shieldError": {
+        "line1": "Your are selling at a price of ${{price}, which represent a price difference of {{difference}}%",
+        "line2": "But you choose a maximum price difference of +/-${{difference}%"
+      },
+      "priceInfo": "Your are selling with at a price of ${{price}}, which represent a price difference of {{difference}}%",
+      "txSellSummary": "You wish to sell up to {{amount}} \"{{offerTokenSymbol}}\" with a unit price of {{price}} \"{{buyTokenSymbol}}\" and for a total of {{total}} \"{{buyTokenSymbol}}\"."
+    },
+    "buy": {
+      "price": "Buy price in ${{unit}}",
+      "unit": "Unit for buy price",
+      "shieldError": {
+        "line1": "Your are buying at a price of ${{price}}, which represent a price difference of {{difference}}%",
+        "line2": "But you choose a maximum price difference of +/-${{difference}}%"
+      },
+      "priceInfo": "Your are buying with at a price of ${{price}}, which represent a price difference of {{difference}}%",
+      "txBuySummary": "You wish to buy up to {{amount}} \"{{buyTokenSymbol}}\" with a unit price of {{price}} \"{{offerTokenSymbol}}\" and for a total of {{total}} \"{{offerTokenSymbol}}\"."
+    },
+    "exchange": {
+      "chooseExchangeTokenType": "Choose exchange token type",
+      "priceComputing": "Enter how many \"{{exchangeBuyerTokenSymbol}}\" token(s) you want to receive in exchange of 1 \"{{exchangeOfferTokenSymbol}}\" token.",
+      "priceComputingTitle": "Exchange rate computing"
+    }
+  },
   "sell": {
     "sell": "Sell",
     "offerTokenAddress": "Offer Token",
@@ -15,11 +52,7 @@
     "convertBuyPrice": "Buy price {{prep}} {{buyerTokenSymbol}}",
     "priceInCurrency": "Buy price in {{ currency }}",
     "withPrice": "With {{buyerTokenSymbol}} = {{price}}{{ currency }}",
-    "priceComputing": "Enter how many \"{{exchangeBuyerTokenSymbol}}\" token(s)you want to receive in exchange of 1 \"{{exchangeOfferTokenSymbol}}\" token.",
-    "priceComputingTitle": "Exchange rate computing",
     "chooseExchangeTokenType": "Choose exchange token type",
-    "realtTokenType": "RealT token",
-    "otherTokenType": "Others (USDC, XDAI, etc...)",
     "amount": "Quantity",
     "exchangeAmount": "Quantity of selled tokens to exchange", 
     "cancel": "Cancel",
@@ -41,8 +74,6 @@
     "zeroBalanceError": "You cannot create this offer because you don't have \"{{tokenSymbol}}\" token",
     "shieldError": "Price difference is {{priceDifference}}% but limit fixed by shield is +/-{{maxPriceDifference}}%. (\"shield\" setting on top right corner, for more informations)",
     "officialPriceInfos": "The official property has been selled for {{officialPrice}} ${{officialSellCurrency}}. But you are free to choose the price.",
-    "txSellSummary": "You wish to sell up to {{amount}} \"{{offerTokenSymbol}}\" with a unit price of {{price}} \"{{buyTokenSymbol}}\" and for a total of {{total}} \"{{buyTokenSymbol}}\".",
-    "txBuySummary": "You wish to buy up to {{amount}} \"{{buyTokenSymbol}}\" with a unit price of {{price}} \"{{offerTokenSymbol}}\" and for a total of {{total}} \"{{offerTokenSymbol}}\".",
     "txExchangeSummary": "You wish to exchange up to {{amount}} \"{{buyTokenSymbol}}\" with a unit price of {{price}} \"{{offerTokenSymbol}}\" and for a total of {{total}} \"{{offerTokenSymbol}}\".",
     "summaryText1": "You will sell",
     "summaryText2": "with a unit price of",

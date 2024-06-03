@@ -305,6 +305,8 @@ export const createInterfaceSlice: StateCreator<
       return new Promise<void>(async (resolve, reject) => {
         try{
 
+          console.log('FETCH PRICES: ', chainId)
+
           const res = await fetch('/api/prices/'+chainId);
           const prices: Price = await res.json();
   

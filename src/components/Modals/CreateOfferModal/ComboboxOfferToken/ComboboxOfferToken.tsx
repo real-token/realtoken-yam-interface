@@ -58,7 +58,8 @@ export const ComboboxOfferToken = ({
     placeholder,
     disabled,
     onChange,
-    type
+    type,
+    required
  } : {
     data: ComboboxItem[],
     label: string;
@@ -67,9 +68,8 @@ export const ComboboxOfferToken = ({
     disabled: boolean;
     onChange: any;
     type: 'realtoken' | 'others';
+    required?: boolean;
  }) => {
-
-  console.log('type: ', type)
 
   const { provider, account } = useWeb3React();
 
@@ -177,6 +177,7 @@ export const ComboboxOfferToken = ({
             onClick={() => combobox.openDropdown()}
             onFocus={() => combobox.openDropdown()}
             placeholder={placeholder}
+            required={required ?? false}
           >
             {selectedOption?.label || <Input.Placeholder>{placeholder}</Input.Placeholder>}
           </InputBase>

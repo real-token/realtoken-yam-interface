@@ -44,11 +44,11 @@ export const useRole: UseRole = () => {
         });
     }
 
-    const { data, refetch, isLoading } = useQuery(["isAdmin"],getAddressIsAdmin,{ enabled: (realTokenYamUpgradeable !== undefined && account !== undefined) });
+    const { data, refetch } = useQuery(["isAdmin"],getAddressIsAdmin,{ enabled: (realTokenYamUpgradeable !== undefined && account !== undefined) });
 
     useEffect(() => {
-        if(account && !isLoading) refetch();
-    },[account,isLoading])
+        if(account) refetch();
+    },[account])
 
     useEffect(() => {
         if(data !== undefined) setRole(data);
