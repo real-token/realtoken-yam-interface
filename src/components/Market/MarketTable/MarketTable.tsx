@@ -107,7 +107,7 @@ export const MarketTable: FC = () => {
         highlightOnHover: true,
         verticalSpacing: 'sm',
         horizontalSpacing: 'xs',
-        style: (theme) => ({
+        style: () => ({
           // border: theme.other.border(theme),
           // borderRadius: theme.radius[theme.defaultRadius as MantineSize],
           // borderCollapse: 'separate',

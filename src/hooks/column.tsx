@@ -296,6 +296,11 @@ export const amountColumn: ColumnFn<string> = (t,span) => {
             {BigNumber(getValue()).toString(10)}
           </Text>
         ),
+        sortingFn: (rowA, rowB) => {
+          const valueA = parseFloat(rowA.original.amount);
+          const valueB = parseFloat(rowB.original.amount);
+          return valueA - valueB;
+        },
         enableSorting: true,
         enableGlobalFilter: true,
         meta: { colSpan: span },
@@ -428,7 +433,18 @@ export const yieldDeltaColumn: ColumnFn<number> = (t,span) => {
         accessorFn: (offer) => offer.yieldDelta,
         cell: ({ row }) => <OfferYieldDelta offer={row.original} />,
         enableSorting: true,
-        sortingFn: "alphanumeric",
+        sortingFn: (rowA, rowB) => {
+          const valueA = parseFloat(rowA.original.yieldDelta?.toString() ?? '0');
+          const valueB = parseFloat(rowB.original.yieldDelta?.toString() ?? '0');
+
+          if(rowA.original.offerId == '41790'){
+            console.log(valueA, valueB)
+          }
+
+          if(valueA == undefined || valueB == undefined) return -1;
+          if(valueA == valueB) return 0;
+          return valueA > valueB ? -1 : 1;
+        },
         enableGlobalFilter: true,
         meta: { colSpan: span },
   }
