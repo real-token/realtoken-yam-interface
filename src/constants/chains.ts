@@ -15,6 +15,7 @@ export enum ChainsID {
   Ethereum = 0x01,
   Gnosis = 0x64,
   Goerli = 0x05,
+  Sepolia = 0xaa36a7
 }
 
 export type Chain = Omit<RealtChains, 'blockExplorerUrl'> & {
@@ -97,6 +98,28 @@ export const CHAINS: Record<ChainsID, Chain> = {
       },
     },
     coingeckoNetworkId: 'goerli-testnet'
+  },
+
+  [ChainsID.Sepolia]: {
+    chainId: ChainsID.Goerli,
+    chainName: 'Sepolia',
+    logo: EthereumLogo,
+    nativeCurrency: ETH,
+    rpcUrl: 'https://ethereum-sepolia-rpc.publicnode.com',
+    blockExplorerUrl: 'https://sepolia.etherscan.io/',
+    isTestnet: true,
+    graphPrefixes: {
+      yam: 'yamSepolia',
+      realtoken: 'realTokenSepolia',
+    },
+    contracts: {
+      [ContractsID.realTokenYamUpgradeable]: {
+        abi: realTokenYamUpgradeableABI,
+        address: '0x1d27e09C95422629A88b865026bfB270Eed7bc18',
+        metadata: { fromBlock: 5913460 },
+      },
+    },
+    coingeckoNetworkId: 'eth'
   }
 };
 
