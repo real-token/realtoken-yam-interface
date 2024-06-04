@@ -30,6 +30,7 @@ export interface InterfaceSlice {
   setInterfaceIsLoading: (status: boolean) => void;
 
   abortController: AbortController;
+  setAbortController: (abortController: AbortController) => void;
 
   refreshInterfaceDatas: () => Promise<void>;
   refreshOffers: () => Promise<void>;
@@ -101,29 +102,32 @@ export const createInterfaceSlice: StateCreator<
     setInterfaceIsLoading: (interfaceIsLoading: boolean) => set({ interfaceIsLoading }),
 
     abortController: new AbortController(),
+    setAbortController: (abortController) => set({ abortController }),
+
     refreshInterfaceDatas: (): Promise<void> => {
       return new Promise<void>(async (resolve, reject) => {
         try{
           // try{
             const { 
-              chainId, account, getProvider, setInterfaceIsLoading,
+              chainId, account, abortController, setAbortController, setInterfaceIsLoading,
               fetchAddressWlProperties, fetchProperties, fetchPrices,  fetchUserBalances 
             } = get();
             setInterfaceIsLoading(true);
+            
+            abortController.abort('chain changed');
+            setAbortController(new AbortController())
       
-            const provider = getProvider()
-
-            // await Promise.allSettled([
-            //   fetchProperties(chainId),
-            //   fetchAddressWlProperties(account, chainId),
-            //   fetchPrices(chainId,provider),
-            //   fetchUserBalances()
-            // ]);
+            await Promise.allSettled([
+              fetchProperties(chainId),
+              fetchAddressWlProperties(account, chainId),
+              fetchPrices(chainId),
+              fetchUserBalances()
+            ]);
       
-            await fetchProperties(chainId);
-            await fetchAddressWlProperties(account, chainId);
-            await fetchPrices(chainId).catch(err => console.error('Failed to fetch prices: ', err));
-            await fetchUserBalances()
+            // await fetchProperties(chainId);
+            // await fetchAddressWlProperties(account, chainId);
+            // await fetchPrices(chainId).catch(err => console.error('Failed to fetch prices: ', err));
+            // await fetchUserBalances()
 
             setInterfaceIsLoading(false);
             resolve();
@@ -305,9 +309,14 @@ export const createInterfaceSlice: StateCreator<
       return new Promise<void>(async (resolve, reject) => {
         try{
 
+          const { abortController } = get(); 
+
           console.log('FETCH PRICES: ', chainId)
 
-          const res = await fetch('/api/prices/'+chainId);
+          const res = await fetch(
+            '/api/prices/'+chainId,
+            { ...(abortController ? { signal: abortController.signal } : {}) }
+          );
           const prices: Price = await res.json();
   
           set({
