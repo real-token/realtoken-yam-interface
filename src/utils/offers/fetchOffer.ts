@@ -1,12 +1,12 @@
 import { gql } from '@apollo/client';
 import { Web3Provider } from '@ethersproject/providers';
-import { PropertiesToken, ChainsID } from '@realtoken/realt-commons';
+import { PropertiesToken } from '@realtoken/realt-commons';
 import { Offer, DataRealtokenType } from '../../types/offer';
 import { getBigDataGraphRealtoken } from './fetchOffers';
 import { apiClient } from './getClientURL';
 import { getOfferQuery } from './getOfferQuery';
 import { parseOffer } from './parseOffer';
-import { CHAINS } from '../../constants';
+import { CHAINS, ChainsID } from '../../constants';
 import { Price } from '../../types/price';
 import { Offer as OfferGraphQl } from '../../../gql/graphql';
 import { getExtendedTokens } from '../../constants/GetPriceToken';

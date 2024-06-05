@@ -181,28 +181,33 @@ export const createInterfaceSlice: StateCreator<
       return new Promise<void>(async (resolve, reject) => {
         try{
 
-          const { account } = get();
+          const { account, abortController } = get();
 
           const chainDatas = CHAINS[get().chainId as ChainsID];
           const prefix = chainDatas.graphPrefixes.realtoken;
 
           const res = await apiClient.query({
             query: gql`
-            query getBalances{
-                ${prefix}{
-                  accountBalances(where: { account: "${account.toLowerCase()}" }, first: 1000){
-                    token{
-                      address
+              query getBalances{
+                  ${prefix}{
+                    accountBalances(where: { account: "${account.toLowerCase()}" }, first: 1000){
+                      token{
+                        address
+                      }
+                      amount
                     }
-                    amount
                   }
                 }
+              `,
+              context: {
+                fetchOptions: {
+                  signal: abortController.signal,
+                },
               }
-            `
           });
 
           const balances = res.data[prefix].accountBalances;
-          // console.log('USER BALANCES: ', balances);
+          console.log('USER BALANCES: ', balances);
 
           const userBalances: UserBalances = {};
           balances.forEach((balance: any) => {
