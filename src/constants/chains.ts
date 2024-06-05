@@ -14,7 +14,6 @@ import { Currency, DAI, ETH } from './currencies';
 export enum ChainsID {
   Ethereum = 0x01,
   Gnosis = 0x64,
-  Goerli = 0x05,
   Sepolia = 0xaa36a7
 }
 
@@ -77,31 +76,8 @@ export const CHAINS: Record<ChainsID, Chain> = {
     coingeckoNetworkId: 'eth'
   },
 
-  [ChainsID.Goerli]: {
-    chainId: ChainsID.Goerli,
-    chainName: 'Goerli',
-    logo: EthereumLogo,
-    nativeCurrency: ETH,
-    rpcUrl: 'https://eth-goerli.public.blastapi.io',
-    blockExplorerUrl: 'https://goerli.etherscan.io/',
-    isTestnet: true,
-    graphPrefixes: {
-      yam: 'yamGoerli',
-      realtoken: 'realTokenGoerli',
-    },
-    contracts: {
-      [ContractsID.realTokenYamUpgradeable]: {
-        abi: realTokenYamUpgradeableABI,
-        address: '0xba2e37248804eb636cf4e0b0aba50cf48ab49e2b',
-        //address: "0xBDAa060F27D00b9e135C005Ae5Ad0F51C8ba4FD9",
-        metadata: { fromBlock: 7385668 },
-      },
-    },
-    coingeckoNetworkId: 'goerli-testnet'
-  },
-
   [ChainsID.Sepolia]: {
-    chainId: ChainsID.Goerli,
+    chainId: ChainsID.Sepolia,
     chainName: 'Sepolia',
     logo: EthereumLogo,
     nativeCurrency: ETH,
