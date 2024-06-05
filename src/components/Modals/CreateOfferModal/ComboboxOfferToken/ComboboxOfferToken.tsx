@@ -118,6 +118,7 @@ export const ComboboxOfferToken = ({
     }
   }
   useEffect(() => {
+    console.log(type)
     if(type == 'others'){
       fetchBalances();
     }

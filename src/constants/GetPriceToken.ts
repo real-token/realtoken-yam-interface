@@ -10,38 +10,49 @@ import { AllowedToken } from '../types/allowedTokens';
 
 // This is token which we want to get price because not given by TheGraph
 export const tokenToGetPrice = new Map<number, (GetPriceTokenChainLink|GetPriceTokenCoingecko)[]>([
-  [ChainsID.Goerli, [
+
+  [ChainsID.Sepolia, [
     {
       name: 'USDCRealT',
       symbol: 'USDCRealT',
-      contractAddress: '0x3e7493506Bc350Ed7f5344196B1842185753bde1',
+      contractAddress: '0x803029DB36f37D130d8A005A62c55D17383f6f15',
       logo: UsdcSvg,
       isBuyToken: true,
       priceFnc: {
         type: 'chainlink',
-        contractAddress: '0x0d79df66BE487753B02D015Fb622DED7f0E9798d'
+        contractAddress: '0xA2F78ab2355fe2f984D808B5CeE7FD0A93D5270E'
       }
     },
     {
       name: 'WETHRealT',
       symbol: 'WETHRealT',
-      contractAddress: '0x292C5840EfE7C3282Ad2EB88a53cDBF2841F0917',
+      contractAddress: '0xBDAa060F27D00b9e135C005Ae5Ad0F51C8ba4FD9',
       logo: EthSvg,
       isBuyToken: true,
       priceFnc: {
         type: 'chainlink',
-        contractAddress: '0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e'
+        contractAddress: '0x694AA1769357215DE4FAC081bf1f309aDC325306'
       }
     },
     {
       name: 'WXDAIRealT',
       symbol: 'WXDAIRealT',
-      contractAddress: '0x803029DB36f37D130d8A005A62c55D17383f6f15',
+      contractAddress: '0x292C5840EfE7C3282Ad2EB88a53cDBF2841F0917',
       logo: DaiSvg,
       isBuyToken: true,
       priceFnc: {
         type: 'chainlink',
-        contractAddress: '0xAb5c49580294Aff77670F839ea425f5b78ab3Ae7'
+        contractAddress: '0x14866185B1962B63C3Ea9E03Bc1da838bab34C19'
+      }
+    },
+    {
+      name: 'REG',
+      symbol: 'REG',
+      contractAddress: '0x79A55e21ac9332C21c4D190B418Ec0AEBE5916a1',
+      logo: RegLogo,
+      isBuyToken: true,
+      priceFnc: {
+        type: 'coingecko-api'
       }
     }
   ]],

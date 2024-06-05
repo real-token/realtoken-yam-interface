@@ -28,7 +28,7 @@ export const BuyOfferModal = ({ offer, form }: BuyOfferModalProps) => {
                 <>
                 <Flex direction={'column'}>
                     <ComboboxOfferToken
-                        type={'realtoken'}
+                        type={'others'}
                         key="sell-select-0"
                         label={t('common.offerTokenAddress')}
                         data={offerTokens}
