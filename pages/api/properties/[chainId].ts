@@ -2,6 +2,9 @@ import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import { APIPropertiesToken, PropertiesToken, ShortProperty } from "src/types";
 import axios from "axios";
 import { tokenToGetPrice } from "../../../src/constants/GetPriceToken";
+import { CHAINS, ChainsID } from "../../../src/constants";
+import { apiClient } from "../../../src/utils/offers/getClientURL";
+import { gql } from "@apollo/client";
 
 const getTokenFromCommunityAPI = new Promise<APIPropertiesToken[]>( async (resolve, reject) => {
     try{
@@ -34,169 +37,40 @@ const getContractAddressFromChainId = (propertyToken: APIPropertiesToken, chainI
     }
 }
 
-const getTokens = (chainId: number, communityProperties: APIPropertiesToken[], wlProperties: ShortProperty[]): PropertiesToken[] => {
+const getTokens = async (chainId: number, communityProperties: APIPropertiesToken[], wlProperties: ShortProperty[]): Promise<PropertiesToken[]> => {
     const propertiesNonFiltered: PropertiesToken[] = []; 
-    if(chainId == 5){
-        const propertiesGoerli: PropertiesToken[] = [
-            {
-                uuid: "15777 Ardmore",
-                shortName: "15777 Ardmore",
-                fullName: "RealToken S 15777 Ardmore St Detroit M",
-                contractAddress: "0x7401F1A495c4d13aF56fd1d880F1aA646FD1017C",
-                officialPrice: 48.37,
-                currency: "USDC",
-                imageLink: [],
-                marketplaceLink: "",
-                netRentYearPerToken: 4.8929230769231,
-                tokenIdRules: 100038
-            },
-            {
-                uuid: "14319 Rosemary",
-                shortName: "14319 Rosemary",
-                fullName: "RealToken S 14319 Rosemary St Detroit MI",
-                contractAddress: "0x50620ab68605C43aD8f29f2EA2Bb98d4931C28CD",
-                officialPrice: 49.69,
-                currency: "USDC",
-                imageLink: [],
-                marketplaceLink: "",
-                netRentYearPerToken: 5.28,
-                tokenIdRules: 100040
-            },
-            {
-                uuid: "14078 Carlisle",
-                shortName: "14078 Carlisle",
-                fullName: "RealToken S 14078 Carlisle St Detroit MI",
-                contractAddress: "0xF1AAaCdB0E5acd8f725b4f1eB33e4d976bAE87A7",
-                officialPrice: 54.25,
-                currency: "USDC",
-                imageLink: [],
-                marketplaceLink: "",
-                netRentYearPerToken: 5.6167,
-                tokenIdRules: 100041
-            },
-            {
-                uuid: "13895 Saratoga",
-                shortName: "13895 Saratoga",
-                fullName: "RealToken S 13895 Saratoga St Detroit MI",
-                contractAddress: "0x2c30612Fb6dAD2cE58Eb703C261162f1B42B290b",
-                officialPrice: 58.5,
-                currency: "USDC",
-                imageLink: [],
-                marketplaceLink: "",
-                netRentYearPerToken: 6.0808333333333,
-                tokenIdRules: 100042
-            },
-            {
-                uuid: "4380 Beaconsfield",
-                shortName: "4380 Beaconsfield",
-                fullName: "RealToken S 4380 Beaconsfield St Detroit MI",
-                contractAddress: "0xf9DE16b821545D78295E50d944C9e1fF075Cd969",
-                officialPrice: 53.88,
-                currency: "USDC",
-                imageLink: [],
-                marketplaceLink: "",
-                netRentYearPerToken: 5.7141666666667,
-                tokenIdRules: 100043
-            },
-            {
-                uuid: "17813 Bradford",
-                shortName: "17813 Bradford",
-                fullName: "RealToken S 17813 Bradford St Detroit MI",
-                contractAddress: "0x8364A90496Be1c47261aca2563845496c91C8d69",
-                officialPrice: 51.33,
-                currency: "USDC",
-                imageLink: [],
-                marketplaceLink: "",
-                netRentYearPerToken: 5.5625,
-                tokenIdRules: 100044
-            },
-            {
-                uuid: "15796 Hartwell",
-                shortName: "15796 Hartwell",
-                fullName: "RealToken S 15796 Hartwell St Detroit MI",
-                contractAddress: "0xB3D3C1bBcEf737204AADb4fA6D90e974bc262197",
-                officialPrice: 53.04,
-                currency: "USDC",
-                imageLink: [],
-                marketplaceLink: "",
-                netRentYearPerToken: 5.6866666666667,
-                tokenIdRules: 100045
-            },
-            {
-                uuid: "9717 Everts",
-                shortName: "9717 Everts",
-                fullName: "RealToken S 9717 Everts St Detroit MI",
-                contractAddress: "0x73BdE888664DF8DDfD156B52e6999EEaBAB57C94",
-                officialPrice: 50.5,
-                currency: "USDC",
-                imageLink: [],
-                marketplaceLink: "",
-                netRentYearPerToken: 5.2358333333333,
-                tokenIdRules: 100046
-            },
-            {
-                uuid: "19201 Westphalia",
-                shortName: "19201 Westphalia",
-                fullName: "RealToken S 19201 Westphalia St Detroit MI",
-                contractAddress: "0x830B0e9a5ecf36D0A886D21e1C20043cD2d16515",
-                officialPrice: 52.17,
-                currency: "USDC",
-                imageLink: [],
-                marketplaceLink: "",
-                netRentYearPerToken: 5.4633333333333,
-                tokenIdRules: 100047
-            },
-            {
-                uuid: "19163 Mitchell",
-                shortName: "19163 Mitchell",
-                fullName: "RealToken S 19163 Mitchell St Detroit MI",
-                contractAddress: "0x4Cc53Ee5ef306a95d407321d4B4acc30814C04ee",
-                officialPrice: 56.33,
-                currency: "USDC",
-                imageLink: [],
-                marketplaceLink: "",
-                netRentYearPerToken: 5.7441666666667,
-                tokenIdRules: 100048
-            },
-            {
-                uuid: "4061 Grand",
-                shortName: "4061 Grand",
-                fullName: "RealToken S 4061 Grand St Detroit MI",
-                contractAddress: "0xd9e89bFebAe447B42C1Fa85C590716eC8820f737",
-                officialPrice: 71.11,
-                currency: "USDC",
-                imageLink: [],
-                marketplaceLink: "",
-                netRentYearPerToken: 5.8627777777778,
-                tokenIdRules: 100049
-            },
-            {
-                uuid: "15039 Ward",
-                shortName: "15039 Ward",
-                fullName: "RealToken S 15039 Ward Ave Detroit MI",
-                contractAddress: "0xc89bff212a860f2d888a748636eabe8b18069922",
-                officialPrice: 52.13,
-                currency: "USDC",
-                imageLink: [],
-                marketplaceLink: "",
-                netRentYearPerToken: 6.44,
-                tokenIdRules: 100052
-            },
-            {
-                uuid: "19311 Keystone",
-                shortName: "19311 Keystone",
-                fullName: "RealToken S 19311 Keystone St Detroit MI",
-                contractAddress: "0xd5fe60558266675a6b02ec61176054ae0de8178f",
-                officialPrice: 52.13,
-                currency: "USDC",
-                imageLink: [],
-                marketplaceLink: "",
-                netRentYearPerToken: 5.54,
-                tokenIdRules: 100051
+    if(chainId == ChainsID.Sepolia){
+
+        const chainConfig = CHAINS[ChainsID.Sepolia];
+        const { graphPrefixes } = chainConfig;
+
+        // 
+        const res = await apiClient.query({
+            query: gql`
+                query getTokens{
+                    ${graphPrefixes.realtoken}{
+                        tokens{
+                            tokenId
+                            address
+                        }
+                    }
+                }
+            `
+        })
+        const properties: any[] = res.data[graphPrefixes.realtoken].tokens;
+        
+        properties.forEach((propertie) => {
+            const propertiesCommunity = communityProperties.find((token) => token.tokenIdRules == propertie.tokenId);
+            if(propertiesCommunity){
+                propertiesNonFiltered.push({
+                    ...propertiesCommunity,
+                    contractAddress: propertie.address,
+                    officialPrice: propertiesCommunity.tokenPrice,
+                    annualYield: propertiesCommunity.tokenPrice ? propertiesCommunity.netRentYearPerToken/propertiesCommunity.tokenPrice : 0
+                })
             }
-        ]
-        propertiesGoerli.forEach((token) => token.annualYield = token.officialPrice ? token.netRentYearPerToken/token.officialPrice : 0)
-        propertiesNonFiltered.push(...propertiesGoerli);
+        })
+        
     }else{
         communityProperties.forEach((propertyToken: APIPropertiesToken) => {
             const contractAddress = getContractAddressFromChainId(propertyToken,chainId);
@@ -243,7 +117,7 @@ const handler: NextApiHandler = async (req: NextApiRequest, res: NextApiResponse
 
         // const [communityApiToken,wlTokens] = await Promise.all([getTokenFromCommunityAPI,getWhitelistedProperties(parseInt(chainId))]);
         const [communityApiToken] = await Promise.all([getTokenFromCommunityAPI]);
-        const tokens = getTokens(parseInt(chainId), communityApiToken, []);
+        const tokens = await getTokens(parseInt(chainId), communityApiToken, []);
 
         const extendedTokens = tokenToGetPrice.get(parseInt(chainId))?.filter(token => !token.isBuyToken) ?? [] as PropertiesToken[];
         console.log(extendedTokens);
