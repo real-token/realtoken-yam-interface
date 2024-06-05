@@ -7,10 +7,12 @@ import { ChainsID } from "../../../src/constants";
 
 const gnosisRpcUrl = process.env.GNOSIS_RPC_URL as string;
 const ethereumRpcUrl = process.env.ETHEREUM_RPC_URL as string;
+const sepoliaRpcUrl = process.env.SEPOLIA_RPC_URL as string;
 
 const rpcUrls = new Map<number, string>([
     [ChainsID.Gnosis, gnosisRpcUrl],
-    [ChainsID.Ethereum, ethereumRpcUrl]
+    [ChainsID.Ethereum, ethereumRpcUrl],
+    [ChainsID.Sepolia, sepoliaRpcUrl]
 ]);
 
 const handler: NextApiHandler = async (req: NextApiRequest, res: NextApiResponse) => {
