@@ -17,7 +17,7 @@ interface ComponentProps{
     tokenPrice: React.ReactNode;
     summary: React.ReactNode;
 }
-export const OfferModalWrapper: React.FC<ComponentProps> = ({offer, form, tokenPrice, summary }) => {
+export const OfferModalWrapper: React.FC<ComponentProps> = ({ offer, form, tokenPrice, summary }) => {
 
     const { values, isValid, getInputProps, setFieldValue } = form;
     const { t } = useTranslation('modals', { keyPrefix: 'sell' });
@@ -25,8 +25,6 @@ export const OfferModalWrapper: React.FC<ComponentProps> = ({offer, form, tokenP
     const { offerTokenSymbol, shieldError, onSubmit, isLoading } = useCreateOfferContext();
     const { bigNumberbalance, balance } = useWalletERC20Balance(values.offerTokenAddress);
 
-    const missingOfferInfos = values.amount !== undefined || values.price !== undefined || !values.offerTokenAddress || !offer.buyerTokenAddress || (values.isPrivateOffer && !values.buyerTokenAddress);
-    
     return (
         <Flex direction={"column"} mx={'auto'} gap={"md"} style={{ padding: '1rem' }}>
             <Flex style={{ justifyContent: "space-between", alignItems: "center", height: "50px" }}>
@@ -58,7 +56,7 @@ export const OfferModalWrapper: React.FC<ComponentProps> = ({offer, form, tokenP
                         type={'submit'}
                         aria-label={'submit'}
                         loading={(bigNumberbalance && bigNumberbalance == undefined) || isLoading}
-                        disabled={!isValid || shieldError || isLoading || missingOfferInfos}
+                        disabled={!isValid() || shieldError || isLoading}
                     >
                         {t("buttonCreateOffer")}
                     </Button>

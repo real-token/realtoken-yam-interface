@@ -163,7 +163,11 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
       isPrivateOffer: offer?.isPrivateOffer ?? false,
     },
     validate: {
-      buyerAddress: (value) => (value == account ? t('invalidPrivateOfferAddress'): null),
+      offerTokenAddress: (value) => !value || value == "" ? 'You need to choose an offerTokenAddress' : null,
+      buyerTokenAddress: (value) => !value || value == "" ? 'You need to choose an buyerTokenAddress' : null,
+      price: (value) => !value || value <= 0 ? 'Price cannot be undefined, or equal or less than 0' : null,
+      amount: (value) => !value || value <= 0 ? '' : null,
+      isPrivateOffer: (value, values) => value ? !values.buyerAddress || values.buyerAddress == "" ? 'You need to choose a buyer address if offer is private' : null : null
     },
   });
 
