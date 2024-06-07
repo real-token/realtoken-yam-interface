@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useWeb3React } from "@web3-react/core";
 import { useRootStore } from "../zustandStore/store";
-import { useGetOffers } from "./useGetOffers";
 
 export default function useInitStore(){
 
@@ -17,10 +16,6 @@ export default function useInitStore(){
         state.chainId, 
         state.account
     ]);
-
-    // INIT REDUX STORE HERE
-    // useGetOffers();
-    // useAutoRefresh();
 
     useEffect(() => {
         if(account && currentAccount !== account){

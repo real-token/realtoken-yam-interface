@@ -5,7 +5,7 @@ import { PropertiesToken } from "../types";
 import { Price } from "../types/price";
 import { fetchOffersTheGraph } from "../utils/offers/fetchOffers";
 import { JsonRpcProvider } from "@ethersproject/providers";
-import { CHAINS, ChainsID } from "../constants";
+import { ALLOWED_CHAINS_ID, CHAINS, ChainsID } from "../constants";
 import { apiClient } from "../utils/offers/getClientURL";
 import { gql } from "@apollo/client";
 import { Historic } from "../types/historic";
@@ -143,7 +143,9 @@ export const createInterfaceSlice: StateCreator<
     refreshInterface: async () => {
       try{
 
-        const { fetchOffers, fetchHistorics, setInterfaceIsLoading, refreshInterfaceDatas, abortController } = get();
+        const { fetchOffers, fetchHistorics, setInterfaceIsLoading, refreshInterfaceDatas, abortController, chainId } = get();
+
+        console.log('TESSTTTTTTT: ', chainId)
 
         abortController.abort();
 
@@ -229,7 +231,7 @@ export const createInterfaceSlice: StateCreator<
       const { prices, properties, wlProperties, account, chainId, setTheGraphIssue } = get();
 
       let offersData;
-      if ((chainId == 1 || chainId == 100 || chainId == 5) && wlProperties && prices) {
+      if (ALLOWED_CHAINS_ID.includes(chainId.toString()) && wlProperties && prices) {
         //offersData = await fetchOfferTheGraph(chainId,properties);
         offersData = await fetchOffersTheGraph(account,chainId, properties, wlProperties, prices, setTheGraphIssue);
       }

@@ -111,4 +111,6 @@ export const ALLOWED_CHAINS = Object.keys(URLS).map((chainId) =>
   Number(chainId)
 );
 
+export const ALLOWED_CHAINS_ID = Object.keys(CHAINS);
+
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
