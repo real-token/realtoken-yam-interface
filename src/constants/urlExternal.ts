@@ -22,10 +22,22 @@ export const UrlContactUs: UrlExternal = {
   keyword: 'contact',
 };
 
-export const UrlForms: UrlExternal = {
-  name: 'Google forms',
-  url: 'https://forms.gle/QvfMfRELQDss6NAZ8',
-  keyword: 'form',
+export const UrlMarketplace: UrlExternal = {
+  name: 'Marketplace CSM',
+  url: 'https://marketplace.cleansatmining.com/',
+  keyword: 'marketplace',
+};
+
+export const UrlKyc: UrlExternal = {
+  name: 'KYC',
+  url: 'https://marketplace.cleansatmining.com/account/user/',
+  keyword: 'kyc',
+};
+
+export const UrlWallet: UrlExternal = {
+  name: 'Wallet',
+  url: 'https://marketplace.cleansatmining.com/account/token-address/',
+  keyword: 'wallet',
 };
 
 export const UrlDashboard: UrlExternal = {

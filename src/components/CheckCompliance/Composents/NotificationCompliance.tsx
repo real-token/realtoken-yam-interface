@@ -1,10 +1,16 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Notification, createStyles, useMantineTheme } from '@mantine/core';
 import { IconExternalLink } from '@tabler/icons';
 
-import { UrlContactUs, UrlForms, UrlMtPelerin } from 'src/constants';
+import {
+  UrlContactUs,
+  UrlMarketplace,
+  UrlMtPelerin,
+  UrlKyc,
+  UrlWallet,
+} from 'src/constants';
 
 const useStyle = createStyles((theme) => ({
   notification: {
@@ -163,15 +169,16 @@ export const NotificationCompliance = ({
           return (
             <React.Fragment key={'FC email' + key + j}>
               {j > 0 && link(j)}
-              {formatForms(subText, key + j)}
+              {formatWallet(subText, key + j)}
             </React.Fragment>
           );
         })}
       </React.Fragment>
     );
   }
-  function formatForms(text: string, key: number): JSX.Element {
-    const subTexts = text.split(t(UrlForms.keyword));
+
+  function formatWallet(text: string, key: number): JSX.Element {
+    const subTexts = text.split(t(UrlWallet.keyword));
 
     function link(j: number) {
       return (
@@ -179,10 +186,84 @@ export const NotificationCompliance = ({
           className={classes.link}
           target={'_blank'}
           rel={'noreferrer'}
-          href={UrlForms.url}
+          href={UrlWallet.url}
+          key={'aPelerin' + key + 'wallet' + j}
+        >
+          {t(UrlWallet.keyword)}
+          <IconExternalLink
+            key={'Pelerin' + key + 'wallet' + j}
+            size={14}
+            color={colors.brand[9]}
+            className={classes.imageLink}
+          />
+        </a>
+      );
+    }
+
+    return (
+      <React.Fragment key={'FC wallet' + key}>
+        {subTexts.map((subText, j) => {
+          return (
+            <React.Fragment key={'FC wallet' + key + j}>
+              {j > 0 && link(j)}
+              {formatKYC(subText, key + j)}
+            </React.Fragment>
+          );
+        })}
+      </React.Fragment>
+    );
+  }
+
+  function formatKYC(text: string, key: number): JSX.Element {
+    const subTexts = text.split(t(UrlKyc.keyword));
+
+    function link(j: number) {
+      return (
+        <a
+          className={classes.link}
+          target={'_blank'}
+          rel={'noreferrer'}
+          href={UrlKyc.url}
+          key={'aPelerin' + key + 'kyc' + j}
+        >
+          {t(UrlKyc.keyword)}
+          <IconExternalLink
+            key={'Pelerin' + key + 'kyc' + j}
+            size={14}
+            color={colors.brand[9]}
+            className={classes.imageLink}
+          />
+        </a>
+      );
+    }
+
+    return (
+      <React.Fragment key={'FC kyc' + key}>
+        {subTexts.map((subText, j) => {
+          return (
+            <React.Fragment key={'FC kyc' + key + j}>
+              {j > 0 && link(j)}
+              {formatMarketplace(subText, key + j)}
+            </React.Fragment>
+          );
+        })}
+      </React.Fragment>
+    );
+  }
+
+  function formatMarketplace(text: string, key: number): JSX.Element {
+    const subTexts = text.split(t(UrlMarketplace.keyword));
+
+    function link(j: number) {
+      return (
+        <a
+          className={classes.link}
+          target={'_blank'}
+          rel={'noreferrer'}
+          href={UrlMarketplace.url}
           key={'aPelerin' + key + 'form' + j}
         >
-          {t(UrlForms.keyword)}
+          {t(UrlMarketplace.keyword)}
           <IconExternalLink
             key={'Pelerin' + key + 'form' + j}
             size={14}
