@@ -2,7 +2,7 @@ sources:
   - name: yam-gnosis
     handler:
       graphql:
-        endpoint: https://api.thegraph.com/subgraphs/name/clean-sat-mining-thegraph/yam-csm
+        endpoint: https://api.studio.thegraph.com/query/78811/yam-csm/version/latest
   - name: yam-eth
     handler:
       graphql:

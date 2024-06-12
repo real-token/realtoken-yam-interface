@@ -58,7 +58,7 @@ function useTransaction(
   offers: Offer[] = [],
   allowedTokens: AllowedToken[] = [],
 ) {
-  console.log('HOOK useTransaction', initPage);
+  //console.log('HOOK useTransaction', initPage);
 
   // Définissez une fonction pour obtenir la clé de pagination
   const getKey = (pageIndex: number, previousPageData: Result | null) => {

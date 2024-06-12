@@ -35,7 +35,7 @@ export const CheckCompliance: FC<ComplianceProps> = ({ margin }) => {
 
         const isValid = await complianceRegistry.contract.isAddressValid(
           [COMPLIANCE_REGISTRY],
-          complianceRegistry.account ?? ''.toLocaleLowerCase()
+          complianceRegistry.account ?? ''.toLocaleLowerCase(),
         );
         setIsCompliant(isValid);
       } catch (err) {
@@ -90,7 +90,7 @@ export const ComplianceStatus: FC<ComplianceProps> = ({ margin }) => {
 
         const isValid = await complianceRegistry.contract.isAddressValid(
           [COMPLIANCE_REGISTRY],
-          complianceRegistry.account ?? ''.toLocaleLowerCase()
+          complianceRegistry.account ?? ''.toLocaleLowerCase(),
         );
         setIsCompliant(isValid);
       } catch (err) {

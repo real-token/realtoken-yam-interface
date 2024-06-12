@@ -12,8 +12,16 @@ interface UseComplianceReturn {
   account: string | undefined;
 }
 
-export const useCompliance = (): UseComplianceReturn | undefined => {
-  const { account, provider } = useWeb3React();
+interface UseComplianceParam {
+  account?: string | undefined;
+}
+
+export const useCompliance = (
+  param: UseComplianceParam = {},
+): UseComplianceReturn | undefined => {
+  const { account: connectedAccount, provider } = useWeb3React();
+
+  const account = param.account ?? connectedAccount;
 
   const activeChain = useActiveChain();
 

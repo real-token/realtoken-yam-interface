@@ -13,7 +13,7 @@ import { selectAllOffers } from 'src/store/features/interface/interfaceSelector'
 import TransactionList from '../TransactionDataList';
 
 const AdminTransactionList = ({}) => {
-  console.log('YamTransactionList rendered');
+  //console.log('YamTransactionList rendered');
   const { t } = useTranslation('transactions', { keyPrefix: 'loader' });
 
   const chain = useActiveChain();
