@@ -2,7 +2,7 @@ import React from 'react';
 
 import { ActionIcon, Flex, Group } from '@mantine/core';
 import { SetFieldValue } from '@mantine/form/lib/types';
-import { IconArrowDown } from '@tabler/icons';
+import { IconArrowDown } from '@tabler/icons-react';
 
 import BigNumber from 'bignumber.js';
 

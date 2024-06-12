@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Group, Skeleton, Stack, Text, Tooltip } from '@mantine/core';
-import { IconInfoCircle } from '@tabler/icons';
+import { IconInfoCircle } from '@tabler/icons-react';
 
 import { BigNumber } from 'bignumber.js';
 
@@ -34,9 +34,9 @@ export const OfferPrice: FC<OfferPriceProps> = ({
     priceDelta === 0
       ? 'dimmed'
       : (priceDelta < 0 && offer.type === OFFER_TYPE.BUY) ||
-        (priceDelta > 0 && offer.type !== OFFER_TYPE.BUY)
-      ? 'red'
-      : 'teal';
+          (priceDelta > 0 && offer.type !== OFFER_TYPE.BUY)
+        ? 'red'
+        : 'teal';
 
   return (
     <Stack
@@ -95,22 +95,22 @@ function calculatePriceDelta(offer: OfferData, prices: Price) {
   if (!priceDelta) {
     if (offer.initialSellingPrice) {
       const usdInitPerTokenForSale = new BigNumber(
-        offer.sites.transfered.tokenOfficialPrice
+        offer.sites.transfered.tokenOfficialPrice,
       );
       const usdInitPerTokenBuyWith = new BigNumber(
-        offer.sites.requested.tokenOfficialPrice
+        offer.sites.requested.tokenOfficialPrice,
       );
 
       const numberOfTokenForSalePerTokenBuyWith = new BigNumber(1).dividedBy(
-        offer.requestedRate
+        offer.requestedRate,
       );
 
       const usdPerTokenForSale = usdInitPerTokenBuyWith.dividedBy(
-        numberOfTokenForSalePerTokenBuyWith
+        numberOfTokenForSalePerTokenBuyWith,
       );
 
       const usdDeltaPerTokenForSale = usdPerTokenForSale.minus(
-        usdInitPerTokenForSale
+        usdInitPerTokenForSale,
       );
 
       priceDelta = usdDeltaPerTokenForSale
@@ -118,11 +118,11 @@ function calculatePriceDelta(offer: OfferData, prices: Price) {
         .toNumber();
     } else {
       const p1 = new BigNumber(
-        prices[offer.requestedTokenAddress.toLowerCase()]
+        prices[offer.requestedTokenAddress.toLowerCase()],
       );
 
       const p2 = new BigNumber(
-        prices[offer.transferedTokenAddress.toLowerCase()]
+        prices[offer.transferedTokenAddress.toLowerCase()],
       );
 
       priceDelta = p2

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Group, Notification, em, rem } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
-import { IconCheck, IconX } from '@tabler/icons';
+import { IconCheck, IconX } from '@tabler/icons-react';
 
 import { useCompliance } from 'src/hooks';
 

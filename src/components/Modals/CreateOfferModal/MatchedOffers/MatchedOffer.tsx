@@ -14,7 +14,7 @@ import {
   IconCash,
   IconExternalLink,
   IconScale,
-} from '@tabler/icons';
+} from '@tabler/icons-react';
 import { useWeb3React } from '@web3-react/core';
 
 import { useAtomValue } from 'jotai';
@@ -74,7 +74,7 @@ export const MatchedOffer = ({
   const { account, provider } = useWeb3React();
   const activeChain = useActiveChain();
   const realTokenYamUpgradeable = useContract(
-    ContractsID.realTokenYamUpgradeable
+    ContractsID.realTokenYamUpgradeable,
   );
   const connector = useAtomValue(providerAtom);
 
@@ -104,7 +104,7 @@ export const MatchedOffer = ({
         setSubmitting,
         () => {
           setSubmitting(false);
-        }
+        },
       );
     } catch (err) {
       console.log(err);

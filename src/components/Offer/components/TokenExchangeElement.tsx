@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Group, Skeleton, Stack, Text } from '@mantine/core';
-import { IconArrowRight } from '@tabler/icons';
+import { IconArrowRight } from '@tabler/icons-react';
 
 import { CsmSvg } from 'src/assets/currency/Csm';
 

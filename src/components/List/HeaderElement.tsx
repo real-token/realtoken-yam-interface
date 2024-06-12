@@ -1,7 +1,11 @@
 import React, { FC, useEffect, useState } from 'react';
 
 import { ActionIcon, Flex, Text, useMantineTheme } from '@mantine/core';
-import { IconChevronDown, IconChevronUp, IconSelector } from '@tabler/icons';
+import {
+  IconChevronDown,
+  IconChevronUp,
+  IconSelector,
+} from '@tabler/icons-react';
 import { useMediaQuery } from '@mantine/hooks';
 import { Arrow, SortDirection } from './Types';
 

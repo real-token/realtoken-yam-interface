@@ -2,7 +2,7 @@ import { FC, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ActionIcon, Group } from '@mantine/core';
-import { IconTrash } from '@tabler/icons';
+import { IconTrash } from '@tabler/icons-react';
 import { useWeb3React } from '@web3-react/core';
 
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
@@ -25,7 +25,7 @@ export const DeleteAdminAction: FC<DeleteActions> = ({ deleteOffer }) => {
     (offer: Offer) => {
       modals.openDeleteModal(offer, refreshOffers);
     },
-    [modals, refreshOffers]
+    [modals, refreshOffers],
   );
 
   const onOpenWalletModal = useCallback(() => {

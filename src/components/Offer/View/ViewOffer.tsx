@@ -11,7 +11,7 @@ import {
   createStyles,
   useMantineTheme,
 } from '@mantine/core';
-import { IconEdit, IconTrash } from '@tabler/icons';
+import { IconEdit, IconTrash } from '@tabler/icons-react';
 import { useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { selectIsOwnOffer } from 'src/store/features/interface/interfaceSelector';

@@ -12,7 +12,7 @@ import {
   createStyles,
 } from '@mantine/core';
 import { showNotification, updateNotification } from '@mantine/notifications';
-import { IconArrowRight } from '@tabler/icons';
+import { IconArrowRight } from '@tabler/icons-react';
 import { useWeb3React } from '@web3-react/core';
 
 import BigNumber from 'bignumber.js';
@@ -97,7 +97,7 @@ export const MultiPath = ({
   const { account, provider } = useWeb3React();
   const activeChain = useActiveChain();
   const realTokenYamUpgradeable = useContract(
-    ContractsID.realTokenYamUpgradeable
+    ContractsID.realTokenYamUpgradeable,
   );
 
   const { t } = useTranslation('modals', { keyPrefix: 'offerMatching' });
@@ -107,7 +107,7 @@ export const MultiPath = ({
   const { classes } = useStyle();
 
   const [multiCurrencies, setMultiCurrencies] = useAtom(
-    multiPathMultiCurrencyAtom
+    multiPathMultiCurrencyAtom,
   );
 
   const averagePrice: AveragePrice = useMemo(() => {
@@ -122,7 +122,7 @@ export const MultiPath = ({
       const numberOfTokenToBuyInOffer = parseFloat(
         new BigNumber(offer.multiPathAmount)
           .shiftedBy(-offer.offerTokenDecimals)
-          .toString()
+          .toString(),
       );
       const total = offer.offerPrice
         ? offer.offerPrice * numberOfTokenToBuyInOffer
@@ -154,19 +154,19 @@ export const MultiPath = ({
           offer.buyerTokenAddress,
           coinBridgeTokenABI,
           provider as Web3Provider,
-          account
+          account,
         );
 
         if (!buyerToken) return;
 
         // Price
         const priceInWei = new BigNumber(offer.price.toString()).shiftedBy(
-          Number(offer.buyerTokenDecimals)
+          Number(offer.buyerTokenDecimals),
         );
         prices.push(priceInWei.toString());
 
         const offerAmountToApprove = new BigNumber(
-          offer.multiPathAmountToApprove
+          offer.multiPathAmountToApprove,
         );
 
         // console.log("offer decimals: ", Number(offer.offerTokenDecimals), offer.offerTokenName)
@@ -179,7 +179,7 @@ export const MultiPath = ({
         amountsToBuy.push(offer.multiPathAmount);
 
         const userBalance = new BigNumber(
-          (await buyerToken.balanceOf(account)).toString()
+          (await buyerToken.balanceOf(account)).toString(),
         );
         // console.log("userBalance: ", userBalance.toString());
         // console.log("amountToApprove: ", amountToApprove.toString());
@@ -191,7 +191,7 @@ export const MultiPath = ({
               offerAmountToApprove
                 .minus(userBalance)
                 .shiftedBy(-Number(offer.buyerTokenDecimals))
-                .toString()
+                .toString(),
             ),
             contractAddress: offer.buyerTokenAddress,
           });
@@ -237,7 +237,7 @@ export const MultiPath = ({
           contractAddress,
           coinBridgeTokenABI,
           provider as Web3Provider,
-          account
+          account,
         );
 
         if (!buyerToken) return;
@@ -246,7 +246,7 @@ export const MultiPath = ({
         const oldAllowance = new BigNumber(
           (
             await buyerToken.allowance(account, realTokenYamUpgradeable.address)
-          ).toString()
+          ).toString(),
         );
 
         console.log(oldAllowance.toString(), amountToApprove.toString());
@@ -254,7 +254,7 @@ export const MultiPath = ({
         if (oldAllowance.lt(amountToApprove)) {
           const approveTx = await buyerToken.approve(
             realTokenYamUpgradeable.address,
-            amountToApprove.toString(10)
+            amountToApprove.toString(10),
           );
 
           const notificationApprove = {
@@ -265,8 +265,8 @@ export const MultiPath = ({
 
           showNotification(
             NOTIFICATIONS[NotificationsID.approveOfferLoading](
-              notificationApprove
-            )
+              notificationApprove,
+            ),
           );
 
           approveTx
@@ -277,8 +277,8 @@ export const MultiPath = ({
                   status === 1
                     ? NotificationsID.approveOfferSuccess
                     : NotificationsID.approveOfferError
-                ](notificationApprove)
-              )
+                ](notificationApprove),
+              ),
             );
 
           await approveTx.wait(1);
@@ -291,7 +291,7 @@ export const MultiPath = ({
       const buyBatchTx = await realTokenYamUpgradeable.buyOfferBatch(
         ids,
         prices,
-        amountsToBuy
+        amountsToBuy,
       );
 
       const notificationBuy = {
@@ -301,7 +301,7 @@ export const MultiPath = ({
       };
 
       showNotification(
-        NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationBuy)
+        NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationBuy),
       );
 
       buyBatchTx.wait().then(({ status }) => {
@@ -310,7 +310,7 @@ export const MultiPath = ({
             status === 1
               ? NotificationsID.buyOfferSuccess
               : NotificationsID.buyOfferError
-          ](notificationBuy)
+          ](notificationBuy),
         );
         if (status == 1) closeModal();
       });
@@ -318,8 +318,8 @@ export const MultiPath = ({
       console.log('Error when trying to buy with multipath: ', err);
       showNotification(
         NOTIFICATIONS[NotificationsID.buyOfferInvalid](
-          'Error when trying to buy with multipath'
-        )
+          'Error when trying to buy with multipath',
+        ),
       );
     }
   };
@@ -354,7 +354,7 @@ export const MultiPath = ({
             const Logo = getRightAllowBuyTokens(chainId).find(
               (allowedToken) =>
                 allowedToken.contractAddress.toLowerCase() ==
-                offer.buyerTokenAddress.toLowerCase()
+                offer.buyerTokenAddress.toLowerCase(),
             )?.logo;
             return (
               <Flex
@@ -422,7 +422,7 @@ export const MultiPath = ({
               const Logo = getRightAllowBuyTokens(chainId).find(
                 (allowedToken) =>
                   allowedToken.contractAddress.toLowerCase() ==
-                  missingToken.contractAddress.toLowerCase()
+                  missingToken.contractAddress.toLowerCase(),
               )?.logo;
               return (
                 <li key={`missing-token-${missingToken.symbol}`}>

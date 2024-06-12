@@ -13,7 +13,7 @@ import {
   useMantineTheme,
 } from '@mantine/core';
 import { SetFieldValue } from '@mantine/form/lib/types';
-import { IconCoins, IconWallet } from '@tabler/icons';
+import { IconCoins, IconWallet } from '@tabler/icons-react';
 
 import BigNumber from 'bignumber.js';
 

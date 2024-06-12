@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Flex, Tabs } from '@mantine/core';
-import { IconClick, IconFileDollar, IconList } from '@tabler/icons';
+import { IconClick, IconFileDollar, IconList } from '@tabler/icons-react';
 
 import { AdminActions } from 'src/components/Admin/AdminActions';
 import { MarketTableAdmin } from 'src/components/Market/MarketTable/MarketTableAdmin';

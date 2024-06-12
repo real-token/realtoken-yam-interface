@@ -10,7 +10,11 @@ import {
   createStyles,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconPercentage, IconShieldCheck, IconShieldX } from '@tabler/icons';
+import {
+  IconPercentage,
+  IconShieldCheck,
+  IconShieldX,
+} from '@tabler/icons-react';
 
 import { useAtom } from 'jotai';
 

@@ -12,7 +12,7 @@ import {
   useMantineTheme,
 } from '@mantine/core';
 import { AvailableConnectors } from '@realtoken/realt-commons';
-import { IconCheck, IconCopy } from '@tabler/icons';
+import { IconCheck, IconCopy } from '@tabler/icons-react';
 
 import { useAtomValue } from 'jotai';
 
@@ -84,7 +84,7 @@ export const AddErc20ToWalletWidget: FC<Erc20Props> = ({
                     erc20TokenAddress,
                     erc20TokenSymbol,
                     erc20TokenDecimal,
-                    erc20TokenImage
+                    erc20TokenImage,
                   )
                 }
                 variant={'transparent'}
@@ -124,7 +124,7 @@ export const AddErc20ToWallet: FC<Erc20Props> = ({
                 erc20TokenAddress,
                 erc20TokenSymbol,
                 erc20TokenDecimal,
-                erc20TokenImage
+                erc20TokenImage,
               )
             }
             variant={'transparent'}
@@ -308,7 +308,7 @@ export async function addErc20TokenToMetaMask(
   erc20TokenAddress: string,
   erc20TokenSymbol: string,
   erc20TokenDecimal: number,
-  erc20TokenImage: string
+  erc20TokenImage: string,
 ) {
   const { ethereum } = window;
   if (ethereum) {
@@ -342,7 +342,7 @@ export async function addErc20TokenToMetaMask(
 
 async function addNftToMetaMask(
   nftContractAddress: string,
-  nftTokenId: string
+  nftTokenId: string,
 ) {
   const { ethereum } = window;
   if (ethereum) {
@@ -376,13 +376,13 @@ export function handleAddErc20ToWallet(
   erc20TokenAddress: string,
   erc20TokenSymbol: string,
   erc20TokenDecimal: number,
-  erc20TokenImage: string
+  erc20TokenImage: string,
 ): React.MouseEventHandler<HTMLButtonElement> | undefined {
   return () =>
     addErc20TokenToMetaMask(
       erc20TokenAddress,
       erc20TokenSymbol,
       erc20TokenDecimal,
-      erc20TokenImage
+      erc20TokenImage,
     );
 }

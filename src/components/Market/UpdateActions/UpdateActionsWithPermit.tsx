@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ActionIcon, Group, Title } from '@mantine/core';
 import { useModals } from '@mantine/modals';
-import { IconEdit } from '@tabler/icons';
+import { IconEdit } from '@tabler/icons-react';
 import { useWeb3React } from '@web3-react/core';
 
 import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
@@ -24,7 +24,7 @@ export const UpdateActionsWithPermit: FC<UpdateActions> = ({ updateOffer }) => {
     (offer: Offer) => {
       modals.openUpdatePermitModal(offer, refreshOffers);
     },
-    [modals, refreshOffers]
+    [modals, refreshOffers],
   );
 
   const onOpenWalletModal = useCallback(() => {

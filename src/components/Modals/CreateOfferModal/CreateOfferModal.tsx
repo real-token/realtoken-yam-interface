@@ -20,7 +20,7 @@ import {
 import { useForm } from '@mantine/form';
 import { ContextModalProps } from '@mantine/modals';
 import { showNotification, updateNotification } from '@mantine/notifications';
-import { IconArrowRight, IconArrowsHorizontal } from '@tabler/icons';
+import { IconArrowRight, IconArrowsHorizontal } from '@tabler/icons-react';
 import { useWeb3React } from '@web3-react/core';
 
 import BigNumber from 'bignumber.js';
@@ -54,7 +54,7 @@ export const approveOffer = (
   account: string | undefined,
   realTokenYamUpgradeable: Contract | undefined,
   setSubmitting: (status: boolean) => void,
-  activeChain: Chain | undefined
+  activeChain: Chain | undefined,
 ): Promise<void> => {
   return new Promise<void>(async (resolve, reject) => {
     if (
@@ -70,7 +70,7 @@ export const approveOffer = (
         createdOffer.offerTokenAddress,
         coinBridgeTokenABI,
         provider,
-        account
+        account,
       );
 
       if (!offerToken) {
@@ -81,7 +81,7 @@ export const approveOffer = (
       const amount = new BigNumber(createdOffer.amount);
       const oldAllowance = await offerToken.allowance(
         account,
-        realTokenYamUpgradeable.address
+        realTokenYamUpgradeable.address,
       );
       const amountInWeiToPermit = amount
         .plus(new BigNumber(oldAllowance.toString()))
@@ -95,7 +95,7 @@ export const approveOffer = (
       BigNumber.set({ EXPONENTIAL_AT: 35 });
       const approveTx = await offerToken.approve(
         realTokenYamUpgradeable.address,
-        amountInWeiToPermit
+        amountInWeiToPermit,
       );
 
       const notificationApprove = {
@@ -105,7 +105,7 @@ export const approveOffer = (
       };
 
       showNotification(
-        NOTIFICATIONS[NotificationsID.approveOfferLoading](notificationApprove)
+        NOTIFICATIONS[NotificationsID.approveOfferLoading](notificationApprove),
       );
 
       approveTx
@@ -116,8 +116,8 @@ export const approveOffer = (
               status === 1
                 ? NotificationsID.approveOfferSuccess
                 : NotificationsID.approveOfferError
-            ](notificationApprove)
-          )
+            ](notificationApprove),
+          ),
         );
 
       await approveTx.wait(1);
@@ -217,25 +217,25 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
     useCreateOfferTokens(
       offer.offerType,
       values.offerTokenAddress,
-      values.buyerTokenAddress
+      values.buyerTokenAddress,
     );
 
   // NEEDED because when offer type is exchange, user cannot exchange token from different type and cannot exchange two same token
   const exchangeOfferTokens =
     exchangeType == realT
       ? properties.filter(
-          (property) => property.value != values.buyerTokenAddress
+          (property) => property.value != values.buyerTokenAddress,
         )
       : allowedTokens.filter(
-          (allowedToken) => allowedToken.value != values.buyerTokenAddress
+          (allowedToken) => allowedToken.value != values.buyerTokenAddress,
         );
   const exchangeBuyerToken =
     exchangeType == realT
       ? properties.filter(
-          (property) => property.value != values.offerTokenAddress
+          (property) => property.value != values.offerTokenAddress,
         )
       : allowedTokens.filter(
-          (allowedToken) => allowedToken.value != values.offerTokenAddress
+          (allowedToken) => allowedToken.value != values.offerTokenAddress,
         );
 
   const offerTokenSymbol =
@@ -269,7 +269,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   } = useShield(offer.offerType, values.price, officialPrice);
 
   const { bigNumberbalance, balance } = useWalletERC20Balance(
-    values.offerTokenAddress
+    values.offerTokenAddress,
   );
 
   const createdOffer = async (formValues: SellFormValues) => {
@@ -280,25 +280,25 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         offer.offerType !== OFFER_TYPE.BUY
           ? formValues.price
           : formValues.price
-          ? 1 / formValues.price
-          : undefined;
+            ? 1 / formValues.price
+            : undefined;
 
       const offerToken = getContract<CoinBridgeToken>(
         formValues.offerTokenAddress,
         coinBridgeTokenABI,
         provider,
-        account
+        account,
       );
       const offerTokenDecimals = await offerToken?.decimals();
 
       let amountInWei;
       if (offer.offerType != OFFER_TYPE.SELL) {
         amountInWei = new BigNumber(total).shiftedBy(
-          Number(offerTokenDecimals)
+          Number(offerTokenDecimals),
         );
       } else {
         amountInWei = new BigNumber(values?.amount).shiftedBy(
-          Number(offerTokenDecimals)
+          Number(offerTokenDecimals),
         );
       }
 
@@ -384,7 +384,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
           {value}
         </Text>
       </Flex>
-    )
+    ),
   );
 
   const [priceInDollar, setPriceInDollar] = useState<number | ''>('');
@@ -392,7 +392,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   // COMPONENTS
   const getSelect = (
     offerTokenSelectData: SelectItem[],
-    buyerTokenSelectData: SelectItem[]
+    buyerTokenSelectData: SelectItem[],
   ) => {
     const selects = [
       <Select
@@ -516,10 +516,10 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
     const [price, setPrice] = useState<number>(1);
 
     const exchangeOfferTokenSymbol = exchangeOfferTokens.find(
-      (value) => value.value == values.offerTokenAddress
+      (value) => value.value == values.offerTokenAddress,
     )?.label;
     const exchangeBuyerTokenSymbol = exchangeBuyerToken.find(
-      (value) => value.value == values.buyerTokenAddress
+      (value) => value.value == values.buyerTokenAddress,
     )?.label;
 
     // const { getPropertyToken } = usePropertiesToken();
@@ -568,7 +568,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
               </Flex>
             </Flex>
             <Text>{`1 "${exchangeBuyerTokenSymbol}" = ${(1 / price).toFixed(
-              3
+              3,
             )} "${exchangeOfferTokenSymbol}"`}</Text>
           </>
         ) : (
@@ -590,13 +590,15 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
     const { price } = useOraclePriceFeed(
       offer.offerType == OFFER_TYPE.BUY
         ? values.offerTokenAddress
-        : values.buyerTokenAddress
+        : values.buyerTokenAddress,
     );
 
     const setPInDollar = () => {
       if (values.price && price)
         setPriceInDollar(
-          parseFloat(new BigNumber(values.price).multipliedBy(price).toString())
+          parseFloat(
+            new BigNumber(values.price).multipliedBy(price).toString(),
+          ),
         );
     };
 
@@ -606,10 +608,10 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
           'price',
           truncDigits(
             parseFloat(
-              new BigNumber(priceInDollar).dividedBy(price).toString()
+              new BigNumber(priceInDollar).dividedBy(price).toString(),
             ),
-            6
-          )
+            6,
+          ),
         );
       }
     };

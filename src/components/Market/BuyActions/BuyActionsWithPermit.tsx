@@ -2,7 +2,7 @@ import { FC, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 import { ActionIcon, Group } from '@mantine/core';
-import { IconShoppingCart } from '@tabler/icons';
+import { IconShoppingCart } from '@tabler/icons-react';
 import { useWeb3React } from '@web3-react/core';
 
 import { useAppDispatch } from 'src/hooks/react-hooks';
@@ -35,7 +35,7 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
       dispatch({ type: buyOfferOpen, payload: offer });
       //modals.openBuyModal(offer, refreshOffers);
     },
-    [dispatch]
+    [dispatch],
   );
 
   const onOpenWalletModal = useCallback(() => {

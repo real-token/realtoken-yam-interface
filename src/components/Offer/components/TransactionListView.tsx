@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconCurrencyDollar } from '@tabler/icons';
+import { IconCurrencyDollar } from '@tabler/icons-react';
 
 import {
   ScrollArea,

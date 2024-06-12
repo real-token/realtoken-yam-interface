@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { useAtom } from 'jotai';
 import { Flex, Tabs } from '@mantine/core';
-import { IconFingerprint, IconList, IconPlus } from '@tabler/icons';
+import { IconFingerprint, IconList, IconPlus } from '@tabler/icons-react';
 import { selectedOfferAtom, statesFilterTokenAtom } from 'src/states';
 import { CreateOffer } from 'src/components/CreateOffer/CreateOffers';
 import { UserMarketList } from 'src/components/Market/MarketList/UserMarketList';

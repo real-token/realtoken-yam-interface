@@ -3,7 +3,7 @@ import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Flex, Skeleton, Text, createStyles } from '@mantine/core';
-import { IconWallet } from '@tabler/icons';
+import { IconWallet } from '@tabler/icons-react';
 
 interface Param {
   isLoading: boolean;

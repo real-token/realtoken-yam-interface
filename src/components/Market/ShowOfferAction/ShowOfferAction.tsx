@@ -2,7 +2,7 @@ import React, { FC, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 
 import { ActionIcon } from '@mantine/core';
-import { IconEye } from '@tabler/icons';
+import { IconEye } from '@tabler/icons-react';
 
 import { useContextModals } from 'src/hooks/useModals';
 import { selectOffersIsLoading } from 'src/store/features/interface/interfaceSelector';
@@ -23,7 +23,7 @@ export const ShowOfferAction: FC<ShowOfferActionProps> = ({
     (offer: Offer) => {
       useModals.openOfferModal(offer);
     },
-    [useModals]
+    [useModals],
   );
 
   return (

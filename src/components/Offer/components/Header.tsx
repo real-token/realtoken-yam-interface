@@ -12,7 +12,7 @@ import {
   em,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
-import { IconArrowLeft } from '@tabler/icons';
+import { IconArrowLeft } from '@tabler/icons-react';
 
 import { useAllowedTokens } from 'src/hooks/useAllowedTokens';
 import { useOfferType } from 'src/hooks/useOfferType';

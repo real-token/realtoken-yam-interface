@@ -8,7 +8,7 @@ import {
   MantineTheme,
   createStyles,
 } from '@mantine/core';
-import { IconSwitchHorizontal } from '@tabler/icons';
+import { IconSwitchHorizontal } from '@tabler/icons-react';
 
 import { OFFER_BEST_TYPE } from '../../../../hooks/useMatchedOfferBestType';
 import { useMatchedOffers } from '../../../../hooks/useMatchedOffers';
@@ -69,7 +69,7 @@ export const MatchedOffers: FC<MatchedOffersProps> = ({
     offerTokenAddress,
     buyerTokenAddress,
     price,
-    amount
+    amount,
   );
 
   return (

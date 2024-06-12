@@ -19,7 +19,7 @@ import {
   IconReload,
   IconTriangle,
   IconTriangleInverted,
-} from '@tabler/icons';
+} from '@tabler/icons-react';
 
 import { BigNumber } from 'bignumber.js';
 

@@ -10,7 +10,7 @@ import {
   Text,
   Title,
 } from '@mantine/core';
-import { IconChevronDown, IconChevronUp, IconTrash } from '@tabler/icons';
+import { IconChevronDown, IconChevronUp, IconTrash } from '@tabler/icons-react';
 import { ColumnDef, RowSelectionState, Table } from '@tanstack/react-table';
 
 import BigNumber from 'bignumber.js';
@@ -33,7 +33,7 @@ import { ENV, isEnvs } from 'src/utils/isEnv';
 
 type ColumnFn<T> = (
   t: TFunction<'buy', 'table'>,
-  span: number
+  span: number,
 ) => ColumnDef<Offer, T>;
 
 export const header = ({ title }: { title: string }) => {
@@ -49,7 +49,7 @@ export const adminHeader = (
   table: Table<Offer>,
   rowSelection: RowSelectionState,
   deleteOffers: () => void,
-  { title }: { title: string }
+  { title }: { title: string },
 ) => {
   const { getIsSomeRowsSelected, getIsAllRowsSelected } = table;
 
@@ -501,7 +501,7 @@ export const offerShortTokenNameColumn: ColumnFn<unknown> = (t, span) => {
 
 export const exchangeOfferShortTokenNameColumn: ColumnFn<unknown> = (
   t,
-  span
+  span,
 ) => {
   return {
     id: 'offer-token-name',

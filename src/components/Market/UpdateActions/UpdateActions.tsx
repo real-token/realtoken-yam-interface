@@ -2,7 +2,7 @@ import { Dispatch, FC, SetStateAction, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ActionIcon, Group } from '@mantine/core';
-import { IconEdit } from '@tabler/icons';
+import { IconEdit } from '@tabler/icons-react';
 import { useWeb3React } from '@web3-react/core';
 
 import { useContextModals } from 'src/hooks/useModals';
@@ -24,7 +24,7 @@ export const UpdateActions: FC<UpdateActions> = ({
     (offer: Offer) => {
       modals.openUpdateModal(offer, triggerRefresh);
     },
-    [modals, triggerRefresh]
+    [modals, triggerRefresh],
   );
 
   const onOpenWalletModal = useCallback(() => {

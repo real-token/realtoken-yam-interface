@@ -10,7 +10,7 @@ import {
   createStyles,
 } from '@mantine/core';
 import { showNotification, updateNotification } from '@mantine/notifications';
-import { IconCheck, IconX } from '@tabler/icons';
+import { IconCheck, IconX } from '@tabler/icons-react';
 import { useWeb3React } from '@web3-react/core';
 
 import BigNumber from 'bignumber.js';

@@ -3,8 +3,8 @@ import { Dispatch, FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Button, Flex, Text, Tooltip, createStyles } from '@mantine/core';
-import { ContextModalProps, useModals } from '@mantine/modals';
-import { IconInfoCircle } from '@tabler/icons';
+import { ContextModalProps } from '@mantine/modals';
+import { IconInfoCircle } from '@tabler/icons-react';
 
 import { useContextModals } from 'src/hooks/useModals';
 import { useOfferType } from 'src/hooks/useOfferType';
@@ -51,7 +51,7 @@ const offerTypePaneStyle = createStyles(
       justifyContent: 'end',
       width: '100%',
     },
-  })
+  }),
 );
 
 interface OfferTypePaneProps {

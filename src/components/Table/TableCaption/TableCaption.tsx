@@ -13,7 +13,7 @@ import {
   Select,
 } from '@mantine/core';
 import { range, useDisclosure } from '@mantine/hooks';
-import { IconAdjustmentsHorizontal, IconRefresh } from '@tabler/icons';
+import { IconAdjustmentsHorizontal, IconRefresh } from '@tabler/icons-react';
 import { Table } from '@tanstack/react-table';
 
 import { styles } from './TableCaption.styles';
@@ -31,9 +31,7 @@ type TableCaptionProps<T> = {
   tablecaptionOptions?: TableCaptionOptions;
 };
 
-export const TableCaption = <T,>({
-  table,
-}: TableCaptionProps<T>) => {
+export const TableCaption = <T,>({ table }: TableCaptionProps<T>) => {
   const [isOpen, handlers] = useDisclosure(false);
   const [data, setData] = useState<string[]>([
     '5',
@@ -43,7 +41,7 @@ export const TableCaption = <T,>({
     '50',
     '100',
   ]);
-  const [isAutoRefresh,setIsAutoRefresh] = useAtom(isRefreshedAutoAtom);
+  const [isAutoRefresh, setIsAutoRefresh] = useAtom(isRefreshedAutoAtom);
 
   const paginationProps: PaginationProps & { page: number } = {
     total: table.getPageCount(),
@@ -66,15 +64,14 @@ export const TableCaption = <T,>({
       p={'sm'}
       sx={styles.caption}
     >
-
-    <ActionIcon
+      <ActionIcon
         size={32}
         color={'brand'}
         loading={offersIsLoading}
         loaderProps={{ size: 'xs' }}
         onClick={() => refreshOffers()}
       >
-        <IconRefresh size={16}/>
+        <IconRefresh size={16} />
       </ActionIcon>
 
       <MediaQuery smallerThan={'xs'} styles={{ display: 'none' }}>
@@ -104,8 +101,7 @@ export const TableCaption = <T,>({
             searchable={true}
             creatable={true}
             getCreateLabel={(value) =>
-              Number.isInteger(Number(value)) &&
-              Number(value) > 0
+              Number.isInteger(Number(value)) && Number(value) > 0
                 ? value
                 : null
             }
@@ -134,7 +130,9 @@ export const TableCaption = <T,>({
             <Checkbox
               p={5}
               checked={isAutoRefresh}
-              onChange={(event) => setIsAutoRefresh(Boolean(event.currentTarget.checked))}
+              onChange={(event) =>
+                setIsAutoRefresh(Boolean(event.currentTarget.checked))
+              }
             />
           </Grid>
         </Menu.Dropdown>

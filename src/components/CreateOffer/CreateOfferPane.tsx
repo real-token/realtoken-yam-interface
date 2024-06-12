@@ -19,7 +19,7 @@ import {
   IconPlus,
   IconTrash,
   IconTrendingUp,
-} from '@tabler/icons';
+} from '@tabler/icons-react';
 
 import BigNumber from 'bignumber.js';
 

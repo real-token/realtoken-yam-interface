@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Notification, createStyles, useMantineTheme } from '@mantine/core';
-import { IconExternalLink } from '@tabler/icons';
+import { IconExternalLink } from '@tabler/icons-react';
 
 import {
   UrlContactUs,
@@ -298,7 +298,7 @@ export const NotificationCompliance = ({
           onClose={() => {
             setIsNotificationClosed(() => true);
           }}
-          sx={{ margin }}
+          style={{ margin }}
         >
           {t('message')
             .split('\n')

@@ -11,7 +11,7 @@ import {
   createStyles,
 } from '@mantine/core';
 import { ContextModalProps } from '@mantine/modals';
-import { IconShoppingCart } from '@tabler/icons';
+import { IconShoppingCart } from '@tabler/icons-react';
 import { useWeb3React } from '@web3-react/core';
 
 import BigNumber from 'bignumber.js';
@@ -146,7 +146,7 @@ export const OfferModal: FC<ContextModalProps<OfferModalProps>> = ({
       context.closeModal(id);
       //modals.openBuyModal(offer, refreshOffers);
     },
-    [modals, refreshOffers]
+    [modals, refreshOffers],
   );
 
   const onClose = useCallback(() => {

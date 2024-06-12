@@ -13,7 +13,7 @@ import {
   createStyles,
 } from '@mantine/core';
 import { useModals } from '@mantine/modals';
-import { IconShoppingCart } from '@tabler/icons';
+import { IconShoppingCart } from '@tabler/icons-react';
 import { useWeb3React } from '@web3-react/core';
 
 import BigNumber from 'bignumber.js';
@@ -140,7 +140,7 @@ const ShowOfferPage: FC = () => {
         },
       });
     },
-    [modals, refreshOffers, t2]
+    [modals, refreshOffers, t2],
   );
 
   return (
