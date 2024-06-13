@@ -32,7 +32,7 @@ if(!apiUrl){
 }
 
 const link = createHttpLink({
-  uri: apiUrl+'/graphql'
+  uri: apiUrl
 });
 
 const authLink = setContext((_, { headers }) => {

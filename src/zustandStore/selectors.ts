@@ -19,6 +19,7 @@ export const selectAddressOffers = (state: RootStore) => {
 
 export const selectPublicOffers = (state: RootStore) => {
     const offers = selectOffers(state);
+    console.log(offers)
     const offersIsLoading = selectOffersIsLoading(state);
     if (!offers || offersIsLoading) return OFFER_LOADING;
     return [...offers.filter(

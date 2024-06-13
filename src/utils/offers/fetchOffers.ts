@@ -117,17 +117,15 @@ export const fetchOffersTheGraph = (
         }
       });
 
-      const offersToFetch =
-        activeOfferResult.data[graphNetworkPrefix].global.activeOffersCount;
+      const offersToFetch = activeOfferResult.data[graphNetworkPrefix].global.activeOffersCount;
       console.log('Amount of offersToFetch: ', offersToFetch);
 
-      const offersToFetchMax = graphNetworkPrefix == 'yamEth' ? offersToFetch : 10000;
 
       const offersRes = await apiClient.query({
         query: gql`
           query {
             ${graphNetworkPrefix} {
-              offers (first: ${offersToFetchMax}) {
+              offers (first: ${offersToFetch}) {
                 id
                 seller {
                     id
