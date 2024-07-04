@@ -6,6 +6,7 @@
     "shieldExplanations": "Le bouclier de sécurité est une fonctionnalité",
     "shieldTitle": "Bouclier de sécurité",
     "shieldActivate": "Activé",
-    "shieldRate": "Différence de prix"
+    "shieldRate": "Différence de prix",
+    "saveButton": "Enregistrer"
   }
 }

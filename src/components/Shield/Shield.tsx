@@ -1,10 +1,11 @@
-import { Checkbox, Flex, Menu, NumberInput, Text, Tooltip } from "@mantine/core"
+import { Checkbox, Flex, Menu, NumberInput, Text, Tooltip, Button } from "@mantine/core"
 import { useDisclosure } from "@mantine/hooks";
 import { IconPercentage, IconShieldCheck, IconShieldX } from "@tabler/icons";
 import { useAtom } from "jotai";
 import { useTranslation } from "react-i18next";
 import { shieldDisabledAtom, shieldValueAtom } from "src/states";
 import classes from './Shield.module.css';
+import { useState } from "react";
 
 export const Shield = () => {
 
@@ -12,6 +13,8 @@ export const Shield = () => {
 
     const [isDisabled,setIsDisabled] = useAtom(shieldDisabledAtom);
     const [value,setValue] = useAtom(shieldValueAtom);
+
+    const [tmpShieldValue,setTmpShieldValue] = useState<number|''>(value);
 
     const { t } = useTranslation("components", { "keyPrefix": "shield" })
 
@@ -46,13 +49,25 @@ export const Shield = () => {
                     <NumberInput
                         label={t("shieldRate")}
                         hideControls={true}
-                        value={value*100}
+                        value={tmpShieldValue ? tmpShieldValue*100 : ''}
                         min={0}
                         max={100}
                         decimalScale={0}
+                        disabled={isDisabled}
                         rightSection={<IconPercentage size={16}/>}
-                        onChange={(value) => setValue(value ? Number(value)/100 : 0.05)}
+                        onChange={(value) => {
+                            setTmpShieldValue(value ? Number(value)/100 : '')
+                        }}
                     />
+                    <Button
+                        onClick={() => {
+                            setValue(tmpShieldValue ? tmpShieldValue : 0.05);
+                            handlers.close();
+                        }}
+                        disabled={tmpShieldValue === '' || tmpShieldValue < 0.05 || isDisabled}
+                    >
+                        {t('saveButton')}
+                    </Button>
                 </Flex>
             </Menu.Dropdown>
         </Menu>
