@@ -64,7 +64,7 @@ export const Shield = () => {
                             setValue(tmpShieldValue ? tmpShieldValue : 0.05);
                             handlers.close();
                         }}
-                        disabled={tmpShieldValue === '' || tmpShieldValue < 0.05 || isDisabled}
+                        disabled={tmpShieldValue === '' || isDisabled}
                     >
                         {t('saveButton')}
                     </Button>
