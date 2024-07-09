@@ -244,7 +244,7 @@ export const createInterfaceSlice: StateCreator<
           set({ properties: tokens, propertiesAreLoading: false });
         }
       } catch (err) {
-        console.log('Failed to load properties from API: ', err);
+        console.error('Failed to load properties from API: ', err);
       }
     },
     properties: [],
@@ -295,7 +295,7 @@ export const createInterfaceSlice: StateCreator<
         console.log('FINISH TO FETCH WL ADDRESSE PROPERTIES')
         
       } catch(err){
-        console.log("Failed to fetch wl properties for connected address.", err)
+        console.error("Failed to fetch wl properties for connected address.", err)
       }
     },
     wlProperties: undefined,
