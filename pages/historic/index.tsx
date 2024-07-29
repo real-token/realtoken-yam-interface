@@ -47,6 +47,8 @@ export default function HistoricPage(){
             const offerToken = historic.offer.offerToken;
         
             const outQuantity = parseFloat(historic.quantity)*parseFloat(historic.price);
+            const inQuantity = parseFloat(historic.quantity)
+            const realtTokenPrice = historic.type == "SELL" ? outQuantity / inQuantity else inQuantity
             const txhash = historic.purchaseId.split('-')[0];
 
             const date = parseLocalDate ?
@@ -60,10 +62,11 @@ export default function HistoricPage(){
                 date,
                 token_bought_name: buyerToken.name,
                 token_bought_symbol: buyerToken.symbol,
-                token_bought_quantity: parseFloat(historic.quantity),
+                token_bought_quantity: inQuantity,
                 sold_token_name: offerToken.name,
                 sold_token_symbol: offerToken.symbol,
-                sold_token_quantity: outQuantity
+                sold_token_quantity: outQuantity,
+                realt_token_price: realtTokenPrice,
             }
         })
 
@@ -82,6 +85,7 @@ export default function HistoricPage(){
                         { key: 'sold_token_name', header: 'Sold token name' },
                         { key: 'sold_token_symbol', header: 'Sold token symbol' },
                         { key: 'sold_token_quantity', header: 'Sold token quantity' },
+                        { key: 'realt_token_price', header: 'Realt token price' },
                       ],
                 })],
               `purchase-historic-${account}.csv`,
