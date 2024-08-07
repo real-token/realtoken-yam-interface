@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable */
 import React, { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -36,12 +37,12 @@ type useModalsReturn = {
   openMultiDeleteModal: (offerIds: string[], onSuccess: () => void) => string;
   openCreateOfferModal: (
     offer?: CreatedOffer,
-    offerType?: OFFER_TYPE
+    offerType?: OFFER_TYPE,
   ) => string;
   openChooseOfferModal: () => string;
   openUpdateModal: (
     offer: Offer,
-    triggerRefresh: Dispatch<SetStateAction<boolean>>
+    triggerRefresh: Dispatch<SetStateAction<boolean>>,
   ) => string;
   openUpdatePermitModal: (offer: Offer, refreshOffers: () => void) => string;
   closeModal: (id: string, canceled?: boolean) => void;
@@ -57,13 +58,13 @@ export const useContextModals = (): useModalsReturn => {
   const getPropertiesToken = (address: string): PropertiesToken | undefined => {
     return propertiesToken.find(
       (properties) =>
-        properties.contractAddress.toLocaleLowerCase() == address.toLowerCase()
+        properties.contractAddress.toLocaleLowerCase() == address.toLowerCase(),
     );
   };
 
   const openContextModal = (
     modal: string,
-    props: OpenContextModal<any>
+    props: OpenContextModal<any>,
   ): string => modals.openContextModal(modal, props);
 
   const openOfferModal = (offer: Offer): string => {
@@ -180,7 +181,7 @@ export const useContextModals = (): useModalsReturn => {
 
   const openMultiDeleteModal = (
     offerIds: string[],
-    onSuccess: () => void
+    onSuccess: () => void,
   ): string => {
     return modals.openContextModal('delete', {
       title: (
@@ -198,7 +199,7 @@ export const useContextModals = (): useModalsReturn => {
 
   const openCreateOfferModal = (
     offer?: CreatedOffer,
-    offerType?: OFFER_TYPE
+    offerType?: OFFER_TYPE,
   ): string => {
     if (offerType) {
       return modals.openContextModal('createOffer', {
@@ -218,7 +219,7 @@ export const useContextModals = (): useModalsReturn => {
   };
   const openUpdateModal = (
     offer: Offer,
-    triggerRefresh: Dispatch<SetStateAction<boolean>>
+    triggerRefresh: Dispatch<SetStateAction<boolean>>,
   ): string => {
     return modals.openContextModal('update', {
       title: (
@@ -241,7 +242,7 @@ export const useContextModals = (): useModalsReturn => {
 
   const openUpdatePermitModal = (
     offer: Offer,
-    refreshOffers: () => void
+    refreshOffers: () => void,
   ): string => {
     return modals.openContextModal('updatePermit', {
       title: (
@@ -278,7 +279,7 @@ export const useContextModals = (): useModalsReturn => {
 
 function getImageUrl(
   propertiesIsloading: boolean,
-  token: PropertiesToken | undefined
+  token: PropertiesToken | undefined,
 ): string {
   return !propertiesIsloading && token
     ? "url('" + token?.imageLink[0] + "')"

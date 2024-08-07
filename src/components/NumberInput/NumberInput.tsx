@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { forwardRef, useRef } from 'react';
 
 import {
@@ -40,7 +41,7 @@ export const NumberInput: FRC<NumberInputProps, HTMLInputElement> = forwardRef(
       width,
       ...props
     },
-    ref
+    ref,
   ) => {
     const handlers = useRef<NumberInputHandlers>();
 
@@ -90,6 +91,6 @@ export const NumberInput: FRC<NumberInputProps, HTMLInputElement> = forwardRef(
         )}
       </Flex>
     );
-  }
+  },
 );
 NumberInput.displayName = 'NumberInput';

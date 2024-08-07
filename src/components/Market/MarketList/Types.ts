@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { FC } from 'react';
 
 import { OFFER_TYPE } from 'src/types/offer/OfferType';

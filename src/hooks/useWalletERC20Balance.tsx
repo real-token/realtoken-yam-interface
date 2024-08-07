@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { FC, useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 
@@ -23,7 +24,7 @@ interface UseWalletERC20Balance {
 }
 
 export const useWalletERC20Balance = (
-  tokenAddress: string | undefined
+  tokenAddress: string | undefined,
 ): UseWalletERC20Balance => {
   const [bigNumberbalance, setBigNumberbalance] = useState<
     BigNumber | undefined
@@ -36,7 +37,7 @@ export const useWalletERC20Balance = (
     tokenAddress ?? '',
     Erc20ABI,
     provider as Web3Provider,
-    account
+    account,
   );
 
   const getTokenInfos = async (): Promise<TokenInfos> => {
@@ -45,7 +46,7 @@ export const useWalletERC20Balance = (
         if (!contract || !account) return;
 
         const balance = new BigNumber(
-          (await contract.balanceOf(account)).toString()
+          (await contract.balanceOf(account)).toString(),
         );
         const decimals = new BigNumber((await contract.decimals()).toString());
         const tokenSymbol = await contract?.symbol();

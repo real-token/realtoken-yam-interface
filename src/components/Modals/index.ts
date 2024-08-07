@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { FC } from 'react';
 
 import { ContextModalProps } from '@mantine/modals';

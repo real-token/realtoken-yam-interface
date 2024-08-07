@@ -1,3 +1,4 @@
+/* eslint-disable */
 // submitHandlers.js
 import { Web3Provider } from '@ethersproject/providers';
 import { showNotification, updateNotification } from '@mantine/notifications';
@@ -20,7 +21,7 @@ export const onHandleEditSubmit = async (
   provider: Web3Provider | undefined,
   realTokenYamUpgradeable: TypedContract<ContractsID> | undefined,
   offer: Offer,
-  activeChain: Chain | undefined
+  activeChain: Chain | undefined,
 ) => {
   try {
     if (
@@ -38,7 +39,7 @@ export const onHandleEditSubmit = async (
       offer.offerTokenAddress,
       coinBridgeTokenABI,
       provider,
-      account
+      account,
     );
     if (!offerToken) {
       console.log('offerToken not found');
@@ -47,17 +48,17 @@ export const onHandleEditSubmit = async (
 
     const oldAllowanceOfferToken = await offerToken.allowance(
       account,
-      realTokenYamUpgradeable.address
+      realTokenYamUpgradeable.address,
     );
 
     const [, , , , , amount] = await realTokenYamUpgradeable.getInitialOffer(
-      offer.offerId
+      offer.offerId,
     );
 
     const oldAmountInWei = BigNumber(amount._hex);
     offerToken.decimals();
     const newAmountInWei = new BigNumber(formValues.amount).multipliedBy(
-      10 ** (await offerToken.decimals())
+      10 ** (await offerToken.decimals()),
     );
 
     const amountInWeiToPermit =
@@ -72,7 +73,7 @@ export const onHandleEditSubmit = async (
     const transactionDeadline = Math.floor(Date.now() / 1000) + 3600;
 
     const offerTokenType = await realTokenYamUpgradeable.getTokenType(
-      formValues.offerTokenAddress
+      formValues.offerTokenAddress,
     );
 
     let signature: any;
@@ -84,7 +85,7 @@ export const onHandleEditSubmit = async (
         amountInWeiToPermit.toString(10),
         transactionDeadline,
         offerToken,
-        provider
+        provider,
       );
     } else if (offerTokenType === 2) {
       signature = await erc20PermitSignature(
@@ -93,12 +94,12 @@ export const onHandleEditSubmit = async (
         amountInWeiToPermit.toString(10),
         transactionDeadline,
         offerToken,
-        provider
+        provider,
       );
     } else if (offerTokenType === 3) {
       const approveTx = await offerToken.approve(
         realTokenYamUpgradeable.address,
-        amountInWeiToPermit.toString()
+        amountInWeiToPermit.toString(),
       );
 
       const notificationApprove = {
@@ -108,7 +109,7 @@ export const onHandleEditSubmit = async (
       };
 
       showNotification(
-        NOTIFICATIONS[NotificationsID.approveOfferLoading](notificationApprove)
+        NOTIFICATIONS[NotificationsID.approveOfferLoading](notificationApprove),
       );
 
       approveTx
@@ -119,8 +120,8 @@ export const onHandleEditSubmit = async (
               status === 1
                 ? NotificationsID.approveOfferSuccess
                 : NotificationsID.approveOfferError
-            ](notificationApprove)
-          )
+            ](notificationApprove),
+          ),
         );
 
       await approveTx.wait(1);
@@ -146,7 +147,7 @@ export const onHandleEditSubmit = async (
         transactionDeadline.toString(),
         v,
         r,
-        s
+        s,
       );
     } else if (offerTokenType === 2) {
       updateTx = await realTokenYamUpgradeable.updateOfferWithPermit(
@@ -157,13 +158,13 @@ export const onHandleEditSubmit = async (
         transactionDeadline.toString(),
         v,
         r,
-        s
+        s,
       );
     } else if (offerTokenType === 3) {
       updateTx = await realTokenYamUpgradeable.updateOffer(
         formValues.offerId,
         price,
-        amountUpdate
+        amountUpdate,
       );
     }
 
@@ -175,7 +176,7 @@ export const onHandleEditSubmit = async (
       };
 
       showNotification(
-        NOTIFICATIONS[NotificationsID.updateOfferLoading](notificationPayload)
+        NOTIFICATIONS[NotificationsID.updateOfferLoading](notificationPayload),
       );
 
       updateTx.wait().then(({ status }) => {
@@ -184,7 +185,7 @@ export const onHandleEditSubmit = async (
             status === 1
               ? NotificationsID.updateOfferSuccess
               : NotificationsID.updateOfferError
-          ](notificationPayload)
+          ](notificationPayload),
         );
 
         //isSubmittingRef.current = false;

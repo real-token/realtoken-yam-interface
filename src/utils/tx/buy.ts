@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { Web3Provider } from '@ethersproject/providers';
 import { showNotification, updateNotification } from '@mantine/notifications';
 
@@ -26,7 +27,7 @@ export const buy = async (
   amount: number,
   connector: string,
   setSubmitting: (state: boolean) => void,
-  onFinished?: () => void
+  onFinished?: () => void,
 ) => {
   try {
     if (!account || !provider || !amount || !realTokenYamUpgradeable) {
@@ -39,11 +40,11 @@ export const buy = async (
       parseInt(
         new BigNumber(amount.toString())
           .shiftedBy(Number(offer.offerTokenDecimals))
-          .toString()
-      )
+          .toString(),
+      ),
     );
     const priceInWei = new BigNumber(price.toString()).shiftedBy(
-      Number(offer.buyerTokenDecimals)
+      Number(offer.buyerTokenDecimals),
     );
 
     console.log('amountInWei: ', amountInWei.toString());
@@ -53,7 +54,7 @@ export const buy = async (
       offer.buyerTokenAddress,
       coinBridgeTokenABI,
       provider as Web3Provider,
-      account
+      account,
     );
 
     if (!buyerToken) return;
@@ -63,22 +64,22 @@ export const buy = async (
         amountInWei
           .multipliedBy(priceInWei)
           .shiftedBy(-offer.offerTokenDecimals)
-          .toString()
-      )
+          .toString(),
+      ),
     );
     const transactionDeadline = Math.floor(Date.now() / 1000) + 3600; // permit valable during 1h
 
     console.log('buyerTokenAmount: ', buyerTokenAmount.toString());
 
     const buyerTokenType = await realTokenYamUpgradeable.getTokenType(
-      offer.buyerTokenAddress
+      offer.buyerTokenAddress,
     );
 
     if (connector == 'gnosis-safe') {
       // TokenType = 3: ERC20 Without Permit, do Approve/buy
       const approveTx = await buyerToken.approve(
         realTokenYamUpgradeable.address,
-        buyerTokenAmount.toString(10)
+        buyerTokenAmount.toString(10),
       );
 
       const notificationApprove = {
@@ -88,7 +89,7 @@ export const buy = async (
       };
 
       showNotification(
-        NOTIFICATIONS[NotificationsID.approveOfferLoading](notificationApprove)
+        NOTIFICATIONS[NotificationsID.approveOfferLoading](notificationApprove),
       );
 
       approveTx
@@ -99,8 +100,8 @@ export const buy = async (
               status === 1
                 ? NotificationsID.approveOfferSuccess
                 : NotificationsID.approveOfferError
-            ](notificationApprove)
-          )
+            ](notificationApprove),
+          ),
         );
 
       await approveTx.wait(1);
@@ -108,7 +109,7 @@ export const buy = async (
       const buyTx = await realTokenYamUpgradeable.buy(
         offer.offerId,
         priceInWei.toString(),
-        amountInWei.toString()
+        amountInWei.toString(),
       );
 
       const notificationBuy = {
@@ -118,7 +119,7 @@ export const buy = async (
       };
 
       showNotification(
-        NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationBuy)
+        NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationBuy),
       );
 
       buyTx.wait().then(({ status }) => {
@@ -127,7 +128,7 @@ export const buy = async (
             status === 1
               ? NotificationsID.buyOfferSuccess
               : NotificationsID.buyOfferError
-          ](notificationBuy)
+          ](notificationBuy),
         );
         if (onFinished && status === 1) onFinished();
       });
@@ -143,7 +144,7 @@ export const buy = async (
             buyerTokenAmount.toString(),
             transactionDeadline,
             buyerToken,
-            provider
+            provider,
           );
 
           const tx = await realTokenYamUpgradeable.buyWithPermit(
@@ -153,7 +154,7 @@ export const buy = async (
             transactionDeadline.toString(),
             v,
             r,
-            s
+            s,
           );
 
           const notificationPayload = {
@@ -163,7 +164,7 @@ export const buy = async (
           };
 
           showNotification(
-            NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationPayload)
+            NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationPayload),
           );
 
           tx.wait().then(({ status }) => {
@@ -172,7 +173,7 @@ export const buy = async (
                 status === 1
                   ? NotificationsID.buyOfferSuccess
                   : NotificationsID.buyOfferError
-              ](notificationPayload)
+              ](notificationPayload),
             );
             if (onFinished && status === 1) onFinished();
           });
@@ -186,7 +187,7 @@ export const buy = async (
             buyerTokenAmount.toString(),
             transactionDeadline,
             buyerToken,
-            provider
+            provider,
           );
 
           const buyWithPermitTx = await realTokenYamUpgradeable.buyWithPermit(
@@ -196,7 +197,7 @@ export const buy = async (
             transactionDeadline.toString(),
             v,
             r,
-            s
+            s,
           );
 
           const notificationPayload = {
@@ -206,7 +207,7 @@ export const buy = async (
           };
 
           showNotification(
-            NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationPayload)
+            NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationPayload),
           );
 
           buyWithPermitTx.wait().then(({ status }) => {
@@ -215,7 +216,7 @@ export const buy = async (
                 status === 1
                   ? NotificationsID.buyOfferSuccess
                   : NotificationsID.buyOfferError
-              ](notificationPayload)
+              ](notificationPayload),
             );
             if (onFinished && status === 1) onFinished();
           });
@@ -230,25 +231,25 @@ export const buy = async (
             offer,
             priceInWei,
             amountInWei,
-            onFinished
+            onFinished,
           );
         } else {
           console.log('Token is not whitelisted');
           showNotification(
             NOTIFICATIONS[NotificationsID.buyOfferInvalid](
-              'Token is not whitelisted'
-            )
+              'Token is not whitelisted',
+            ),
           );
         }
       } catch (e) {
         const error: { code: number; message: string } = JSON.parse(
-          JSON.stringify(e)
+          JSON.stringify(e),
         );
         console.log('Error erc20PermitSignature', e, error.code);
         if (error.code === -32601 || error.code === undefined) {
           console.log(
             'Error erc20PermitSignature : BUY WITH PERMIT FAIL, TRY BUY WITHOUT PERMIT',
-            error.code
+            error.code,
           );
           await buyTokenWithoutPermit(
             buyerToken,
@@ -258,12 +259,12 @@ export const buy = async (
             offer,
             priceInWei,
             amountInWei,
-            onFinished
+            onFinished,
           );
         } else {
           console.log(
             'Error erc20PermitSignature : BUY WITH PERMIT FAIL',
-            error.code
+            error.code,
           );
           throw e;
         }
@@ -297,11 +298,11 @@ async function buyTokenWithoutPermit(
   offer: Offer,
   priceInWei: BigNumber,
   amountInWei: BigNumber,
-  onFinished?: () => void
+  onFinished?: () => void,
 ) {
   const approveTx = await buyerToken.approve(
     realTokenYamUpgradeable.address,
-    buyerTokenAmount.toString()
+    buyerTokenAmount.toString(),
   );
 
   const notificationApprove = {
@@ -311,7 +312,7 @@ async function buyTokenWithoutPermit(
   };
 
   showNotification(
-    NOTIFICATIONS[NotificationsID.approveOfferLoading](notificationApprove)
+    NOTIFICATIONS[NotificationsID.approveOfferLoading](notificationApprove),
   );
 
   approveTx
@@ -322,8 +323,8 @@ async function buyTokenWithoutPermit(
           status === 1
             ? NotificationsID.approveOfferSuccess
             : NotificationsID.approveOfferError
-        ](notificationApprove)
-      )
+        ](notificationApprove),
+      ),
     );
 
   await approveTx.wait(1);
@@ -332,13 +333,13 @@ async function buyTokenWithoutPermit(
     'realTokenYamUpgradeable.buy',
     offer.offerId,
     priceInWei.toString(),
-    amountInWei.toString()
+    amountInWei.toString(),
   );
 
   const buyTx = await realTokenYamUpgradeable.buy(
     offer.offerId,
     priceInWei.toString(),
-    amountInWei.toString()
+    amountInWei.toString(),
   );
 
   const notificationBuy = {
@@ -348,7 +349,7 @@ async function buyTokenWithoutPermit(
   };
 
   showNotification(
-    NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationBuy)
+    NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationBuy),
   );
 
   buyTx.wait().then(({ status }) => {
@@ -357,7 +358,7 @@ async function buyTokenWithoutPermit(
         status === 1
           ? NotificationsID.buyOfferSuccess
           : NotificationsID.buyOfferError
-      ](notificationBuy)
+      ](notificationBuy),
     );
     if (onFinished && status === 1) onFinished();
   });

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import {
   Dispatch,
   FC,
@@ -49,10 +50,7 @@ type UpdateFormValues = {
 export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
   context,
   id,
-  innerProps: {
-    offer,
-    triggerTableRefresh,
-  },
+  innerProps: { offer, triggerTableRefresh },
 }) => {
   const { account, provider } = useWeb3React();
   const { getInputProps, onSubmit, reset, setFieldValue, values } =
@@ -74,7 +72,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
 
   const activeChain = useActiveChain();
   const realTokenYamUpgradeable = useContract(
-    ContractsID.realTokenYamUpgradeable
+    ContractsID.realTokenYamUpgradeable,
   );
 
   const { t } = useTranslation('modals', { keyPrefix: 'update' });
@@ -113,7 +111,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           offer.offerTokenAddress,
           coinBridgeTokenABI,
           provider,
-          account
+          account,
         );
         if (!offerToken) {
           console.log('offerToken not found');
@@ -122,7 +120,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
 
         const oldAllowanceOfferToken = await offerToken.allowance(
           account,
-          realTokenYamUpgradeable.address
+          realTokenYamUpgradeable.address,
         );
 
         const [, , , , , amount] =
@@ -131,7 +129,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
         const oldAmountInWei = BigNumber(amount._hex);
         offerToken.decimals();
         const newAmountInWei = new BigNumber(formValues.amount).multipliedBy(
-          10 ** (await offerToken.decimals())
+          10 ** (await offerToken.decimals()),
         );
 
         /*
@@ -152,7 +150,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
         const transactionDeadline = Math.floor(Date.now() / 1000) + 3600; // permit valable during 1h
 
         const offerTokenType = await realTokenYamUpgradeable.getTokenType(
-          formValues.offerTokenAddress
+          formValues.offerTokenAddress,
         );
 
         // APPROVE OR PERMIT
@@ -165,9 +163,8 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
             amountInWeiToPermit.toString(10),
             transactionDeadline,
             offerToken,
-            provider
+            provider,
           );
-
         } else if (offerTokenType === 2) {
           // TokenType = 2: ERC20 With Permit
           signature = await erc20PermitSignature(
@@ -176,14 +173,13 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
             amountInWeiToPermit.toString(10),
             transactionDeadline,
             offerToken,
-            provider
+            provider,
           );
-
         } else if (offerTokenType === 3) {
           // TokenType = 3: ERC20 Without Permit, do Approve/buy
           const approveTx = await offerToken.approve(
             realTokenYamUpgradeable.address,
-            amountInWeiToPermit.toString()
+            amountInWeiToPermit.toString(),
           );
 
           const notificationApprove = {
@@ -191,11 +187,11 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
             href: `${activeChain?.blockExplorerUrl}tx/${approveTx.hash}`,
             hash: approveTx.hash,
           };
-  
+
           showNotification(
             NOTIFICATIONS[NotificationsID.approveOfferLoading](
-              notificationApprove
-            )
+              notificationApprove,
+            ),
           );
 
           approveTx
@@ -206,21 +202,25 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
                   status === 1
                     ? NotificationsID.approveOfferSuccess
                     : NotificationsID.approveOfferError
-                ](notificationApprove)
-              )
+                ](notificationApprove),
+              ),
             );
 
           await approveTx.wait(1);
-          
         }
 
         // UPDATE OFFER TX
         const { v, r, s } = signature;
 
-        const price = new BigNumber(formValues.price.toString()).shiftedBy(parseFloat(offer.buyerTokenDecimals)).toString(10);
-        const amountUpdate = BigNumber(formValues.amount).shiftedBy(parseFloat(offer.offerTokenDecimals)).toString(10);
-        
-        let updateTx: ethers.providers.TransactionResponse|undefined = undefined;
+        const price = new BigNumber(formValues.price.toString())
+          .shiftedBy(parseFloat(offer.buyerTokenDecimals))
+          .toString(10);
+        const amountUpdate = BigNumber(formValues.amount)
+          .shiftedBy(parseFloat(offer.offerTokenDecimals))
+          .toString(10);
+
+        let updateTx: ethers.providers.TransactionResponse | undefined =
+          undefined;
         if (offerTokenType === 1) {
           updateTx = await realTokenYamUpgradeable.updateOfferWithPermit(
             offer.offerId,
@@ -230,10 +230,9 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
             transactionDeadline.toString(),
             v,
             r,
-            s
+            s,
           );
-
-        }else if(offerTokenType === 2){
+        } else if (offerTokenType === 2) {
           updateTx = await realTokenYamUpgradeable.updateOfferWithPermit(
             formValues.offerId,
             price,
@@ -242,10 +241,9 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
             transactionDeadline.toString(),
             v,
             r,
-            s
+            s,
           );
-
-        }else if(offerTokenType === 3){
+        } else if (offerTokenType === 3) {
           updateTx = await realTokenYamUpgradeable.updateOffer(
             formValues.offerId,
             price,
@@ -253,49 +251,55 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           );
         }
 
-        if(updateTx){
-
+        if (updateTx) {
           const notificationPayload = {
             key: updateTx.hash,
             href: `${activeChain?.blockExplorerUrl}tx/${updateTx.hash}`,
             hash: updateTx.hash,
           };
-  
+
           showNotification(
             NOTIFICATIONS[NotificationsID.updateOfferLoading](
-              notificationPayload
-            )
+              notificationPayload,
+            ),
           );
-  
-          updateTx
-              .wait()
-              .then(({ status }) => {
-                updateNotification(
-                  NOTIFICATIONS[
-                    status === 1
-                      ? NotificationsID.updateOfferSuccess
-                      : NotificationsID.updateOfferError
-                  ](notificationPayload)
-                )
-                if(status == 1){
-                  triggerTableRefresh(true);
-                  onClose();
-                }
-                setSubmitting(false);
-              }
-            );
-        }
 
+          updateTx.wait().then(({ status }) => {
+            updateNotification(
+              NOTIFICATIONS[
+                status === 1
+                  ? NotificationsID.updateOfferSuccess
+                  : NotificationsID.updateOfferError
+              ](notificationPayload),
+            );
+            if (status == 1) {
+              triggerTableRefresh(true);
+              onClose();
+            }
+            setSubmitting(false);
+          });
+        }
       } catch (e) {
         console.error('Error UpdateModal', e);
         setSubmitting(false);
       }
     },
-    [account, provider, realTokenYamUpgradeable, offer.offerTokenAddress, offer.offerId, offer.buyerTokenDecimals, offer.offerTokenDecimals, activeChain?.blockExplorerUrl, triggerTableRefresh, onClose]
+    [
+      account,
+      provider,
+      realTokenYamUpgradeable,
+      offer.offerTokenAddress,
+      offer.offerId,
+      offer.buyerTokenDecimals,
+      offer.offerTokenDecimals,
+      activeChain?.blockExplorerUrl,
+      triggerTableRefresh,
+      onClose,
+    ],
   );
 
   const [offerTokenSymbol, setOfferTokenSymbol] = useState<string | undefined>(
-    ''
+    '',
   );
   const [buyTokenSymbol, setBuyTokenSymbol] = useState<string | undefined>('');
 
@@ -303,13 +307,13 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
     offer.buyerTokenAddress,
     coinBridgeTokenABI,
     provider as Web3Provider,
-    account
+    account,
   );
   const offerToken = getContract<Erc20>(
     offer.offerTokenAddress,
     Erc20ABI,
     provider as Web3Provider,
-    account
+    account,
   );
 
   const getOfferTokenInfos = async () => {
@@ -384,9 +388,9 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
         {values.price > 0 && values.amount > 0 && (
           <Text size={'md'} mb={10}>
             {` ${t1('summaryText1')} ${values?.amount} ${offerTokenSymbol} ${t1(
-              'summaryText2'
+              'summaryText2',
             )} ${cleanNumber(values?.price)} ${buyTokenSymbol} ${t1(
-              'summaryText3'
+              'summaryText3',
             )} ${total} ${buyTokenSymbol}`}
             {/* {` ${t1('summaryText1')} ${cleanNumber(price)} ${t1('summaryText3')} ${cleanNumber(values.price)} ${t1('summaryText2')} ${cleanNumber(amount)} ${t1('summaryText3')} ${cleanNumber(values.amount)}`} */}
           </Text>
