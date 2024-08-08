@@ -32,7 +32,7 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
 
   const onOpenBuyModal = useCallback(
     (offer: Offer) => {
-      dispatch({ type: buyOfferOpen, payload: offer });
+      dispatch({ type: buyOfferOpen.type, payload: offer });
       //modals.openBuyModal(offer, refreshOffers);
     },
     [dispatch],

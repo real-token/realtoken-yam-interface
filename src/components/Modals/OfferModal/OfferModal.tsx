@@ -142,7 +142,7 @@ export const OfferModal: FC<ContextModalProps<OfferModalProps>> = ({
 
   const onOpenBuyModal = useCallback(
     (offer: Offer) => {
-      dispatch({ type: buyOfferOpen, payload: offer });
+      dispatch({ type: buyOfferOpen.type, payload: offer });
       context.closeModal(id);
       //modals.openBuyModal(offer, refreshOffers);
     },

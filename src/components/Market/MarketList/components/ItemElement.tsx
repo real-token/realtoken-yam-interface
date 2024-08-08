@@ -75,7 +75,7 @@ export const ItemElement: FC<ItemElementProps> = ({ offer, isLastItem }) => {
   const onOpenOffer = useCallback(
     (offerAction: Offer) => {
       setOfferSelected(offerAction.offerId);
-      dispatch({ type: buyOfferOpen, payload: offerAction });
+      dispatch({ type: buyOfferOpen.type, payload: offerAction });
     },
     [dispatch, setOfferSelected],
   );

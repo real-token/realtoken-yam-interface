@@ -105,7 +105,7 @@ export const OfferContainer: FC<OfferContainerProps> = ({
       onClose();
     } else {
       setOfferSelected('');
-      dispatch({ type: buyOfferClose, payload: offer });
+      dispatch({ type: buyOfferClose.type, payload: offer });
     }
   }, [dispatch, offer, onClose]);
 
@@ -136,7 +136,7 @@ export const OfferContainer: FC<OfferContainerProps> = ({
               title={offerProperty?.location?.aera ?? ''}
               country={offerProperty ? offerProperty.location?.country : ''}
               energy={
-                offerProperty ? offerProperty.energy?.join(', ') ?? '' : ''
+                offerProperty ? (offerProperty.energy?.join(', ') ?? '') : ''
               }
               offerTokenAddress={offer.offerTokenAddress}
               offerTokenName={offer.offerTokenName}
