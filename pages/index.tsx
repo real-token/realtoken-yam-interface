@@ -13,7 +13,7 @@ import { buyOfferReset } from 'src/store/features/buyOffer/buyOfferSlice';
 
 const HomePage: NextPage = () => {
   const dispatch = useAppDispatch();
-  dispatch({ type: buyOfferReset });
+  dispatch({ type: buyOfferReset.type });
 
   return (
     <ConnectedProvider>

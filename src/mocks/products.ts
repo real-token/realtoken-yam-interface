@@ -1,0 +1,25 @@
+import { SimulationProductData } from 'cleansatmining-simulator'
+
+export const ALPHA: SimulationProductData = {
+  networkExaHashrate: 600,
+  bitcoinValueForSimulation: 66000,
+  minInvestmentAmount: 100,
+  maxInvestmentAmount: 500000,
+  networkTransactionFees: 0.015,
+  asicsHashrate: 100,
+  asicsPower: 3100,
+  electricityPriceKwh: 0.0353,
+  containerUnitNumber: 375,
+  simulatorSiteUptime: 0.9,
+  operatorFeesRate: 0.15,
+  csmFeesRate: 0.05,
+  csmOperationalFeesRate: 0.1,
+  poolFees: 0.015,
+  isRate: 0,
+  provisionRate: 0.2,
+  asics: 1000000,
+  vat: 0,
+  miscellaneousEquipment: 0,
+  totalInvestment: 1500000,
+  priceRate: 1,
+}
