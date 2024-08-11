@@ -20,7 +20,10 @@ export const getTheGraphUrlYAM = (chainId: number): string => {
 };
 // get the authentication token from local storage if it exists
 const token = process.env.NEXT_PUBLIC_API_KEY;
-const bearerToken = token ?? '';
+const authBearer =
+  {
+    Authorization: `Bearer ${token ?? ''}`,
+  } ?? {};
 
 export const getYamClient = (
   chainId: number
@@ -28,9 +31,7 @@ export const getYamClient = (
   return new ApolloClient({
     uri: getTheGraphUrlYAM(chainId),
     cache: new InMemoryCache(),
-    headers: {
-      Authorization: `Bearer ${bearerToken}`,
-    },
+    headers: authBearer,
   });
 };
 
@@ -48,7 +49,7 @@ const authLink = setContext((_, { headers }) => {
   return {
     headers: {
       ...headers,
-      Authorization: `Bearer ${bearerToken}`,
+      Authorization: authBearer.Authorization,
     },
   };
 });
@@ -56,7 +57,5 @@ const authLink = setContext((_, { headers }) => {
 export const apiClient = new ApolloClient({
   cache: new InMemoryCache(),
   link: authLink.concat(link),
-  headers: {
-    Authorization: `Bearer ${bearerToken}`,
-  },
+  headers: authBearer,
 });
