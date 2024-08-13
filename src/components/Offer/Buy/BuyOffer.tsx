@@ -369,7 +369,7 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
         opened={opened}
         withCloseButton
         onClose={close}
-        size='lg'
+        size='xl'
         radius='md'
         withBorder={true}
         p={2}
