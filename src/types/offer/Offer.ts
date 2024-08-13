@@ -1,6 +1,7 @@
 import { OFFER_TYPE } from "./OfferType";
 
 export type SiteDetails = {
+  id: string;
   miningSite: string;
   name: string;
   location: {
@@ -93,6 +94,7 @@ export const DEFAULT_OFFER: Offer = {
   sellDate: "",
   sites:{
     selling: {
+      id: "",
       miningSite: "",
       name: "",
       location:{
@@ -106,6 +108,7 @@ export const DEFAULT_OFFER: Offer = {
       tokenSellDate:'',
     },
     buying: {
+      id: "",
       miningSite: "",
       name: "",
       location:{

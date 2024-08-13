@@ -2,7 +2,17 @@ import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Web3Provider } from '@ethersproject/providers';
-import { Button, Flex, Stack } from '@mantine/core';
+import {
+  Button,
+  Flex,
+  Stack,
+  Text,
+  Avatar,
+  Group,
+  useMantineTheme,
+  Badge,
+  Dialog,
+} from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
 import { useWeb3React } from '@web3-react/core';
@@ -25,8 +35,31 @@ import { OfferContainer } from '../components/OfferContainer';
 import { ModalSuccess } from './ModalSuccess';
 import OfferSummary from './OfferSummary';
 import TokenExchange from './components/TokenExchange';
-
+import { IconCalculator, IconChevronRight } from '@tabler/icons-react';
 import { TransactionViewAccordion } from '../components/TransactionListView';
+import 'cleansatmining-simulator/dist/simulator.css';
+import { Simulator, SimulationProductData } from 'cleansatmining-simulator';
+import { ALPHA } from 'src/mocks/products';
+
+interface FarmOverview {
+  networkExaHashrate: number;
+  bitcoinValue: number;
+  networkTransactionFees: number;
+  asicsHashrate: number;
+  asicsPower: number;
+  electricityPriceKwh: number;
+  containerUnitNumber: number;
+  operatorFeesRate: number;
+  csmFeesRate: number;
+  csmOperationalFeesRate: number;
+  poolFees: number;
+  isRate: number;
+  asics: number;
+  vat: number;
+  miscellaneousEquipment: number;
+  totalInvestment: number;
+  provisionRate: number;
+}
 
 interface BuyOffertProps {
   offer: Offer;
@@ -65,7 +98,8 @@ export const BuyOffer: FC<BuyOffertProps> = ({ offer, backArrow }) => {
 
 export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
   const { t: tswap } = useTranslation('swap');
-
+  const theme = useMantineTheme();
+  const [opened, { toggle, close }] = useDisclosure(false);
   const [
     modalFinishOpened,
     { open: modalFinishOpen, close: modalFinishClose },
@@ -109,6 +143,13 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
     provider as Web3Provider,
     account,
   );
+  const controlBackgroundColor =
+    theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[0];
+  const contentBorderColor =
+    theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2];
+  const contentTextColor =
+    theme.colorScheme === 'dark' ? undefined : theme.colors.dark[6];
+  const [productData, setProductData] = useState<SimulationProductData>(ALPHA);
 
   useEffect(() => {
     const getOfferTokenInfos = async () => {
@@ -123,6 +164,49 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
 
     if (offerToken) getOfferTokenInfos();
   }, [offerToken]);
+
+  useEffect(() => {
+    const fetchApiData = async () => {
+      try {
+        const id = offer.sites.selling.id;
+        const priceRate = new BigNumber(offer.price)
+          .dividedBy(offer.officialPrice ?? 1)
+          .toNumber();
+        const response = await fetch(`/api/sites/${id}/overview`);
+        const data: FarmOverview = await response.json();
+        const product: SimulationProductData = {
+          asics: data.asics,
+          asicsHashrate: data.asicsHashrate,
+          asicsPower: data.asicsPower,
+          bitcoinValueForSimulation: Math.round(data.bitcoinValue),
+          containerUnitNumber: 1,
+          csmFeesRate: data.csmFeesRate,
+          csmOperationalFeesRate: data.csmOperationalFeesRate,
+          electricityPriceKwh: data.electricityPriceKwh,
+          isRate: 0,
+          miscellaneousEquipment: data.miscellaneousEquipment,
+          networkExaHashrate: Math.round(data.networkExaHashrate),
+          networkTransactionFees: data.networkTransactionFees,
+          operatorFeesRate: data.operatorFeesRate,
+          poolFees: data.poolFees,
+          priceRate: priceRate,
+          provisionRate: data.provisionRate,
+          simulatorSiteUptime: 0.9,
+          totalInvestment: data.totalInvestment,
+          vat: 0,
+          maxInvestmentAmount: new BigNumber(offer.amount)
+            .times(offer.price)
+            .toNumber(),
+          minInvestmentAmount: 0,
+        };
+        setProductData(product);
+      } catch (err) {
+        console.error('Failed to fetch API data:', err);
+      }
+    };
+
+    fetchApiData();
+  }, []);
 
   const { balance } = useWalletERC20Balance(buyerTokenAddress);
   const connector = useAtomValue(providerAtom);
@@ -197,6 +281,69 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
             ></OfferSummary>
           </Flex>
 
+          {offer.type === OFFER_TYPE.SELL && (
+            <Button
+              onClick={toggle}
+              color='gray'
+              mt={10}
+              h={48}
+              type={'button'}
+              radius={'md'}
+              aria-label={tswap('confirm')}
+              rightIcon={
+                <IconChevronRight
+                  size={16}
+                  color={contentTextColor}
+                ></IconChevronRight>
+              }
+              styles={(theme) => ({
+                root: {
+                  textAlign: 'left',
+                  backgroundColor: controlBackgroundColor,
+                  border: `1px solid ${contentBorderColor}`,
+                  '&:not([data-disabled])': theme.fn.hover({
+                    backgroundColor: controlBackgroundColor,
+                  }),
+                },
+                inner: {
+                  width: '100%',
+                  justifyContent: 'space-between',
+                  textAlign: 'left',
+                  backgroundColor: controlBackgroundColor,
+                },
+              })}
+            >
+              <Group spacing={10}>
+                <Avatar
+                  color={'gray'}
+                  size={'28px'}
+                  radius={'xl'}
+                  variant={'filled'}
+                  styles={{
+                    placeholder: {
+                      backgroundColor:
+                        theme.colorScheme === 'dark'
+                          ? theme.colors.gray[7]
+                          : theme.colors.gray[4],
+                    },
+                  }}
+                >
+                  <IconCalculator size={'1.2rem'} />
+                </Avatar>
+                <Text fw={500} fz={'15px'} color={contentTextColor} m={0} p={0}>
+                  {'Simulateur'}
+                </Text>
+                <Badge
+                  color='green'
+                  variant='filled'
+                  size={'xs'}
+                  style={{ marginLeft: '-9px', marginTop: '-5px' }}
+                >
+                  {'Nouveau'}
+                </Badge>
+              </Group>
+            </Button>
+          )}
           <TransactionViewAccordion
             offerId={offer.offerId}
             isSmall={true}
@@ -218,6 +365,25 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
           </Button>
         </Stack>
       </form>
+      <Dialog
+        opened={opened}
+        withCloseButton
+        onClose={close}
+        size='lg'
+        radius='md'
+        withBorder={true}
+        p={2}
+      >
+        <Group align='flex-end'>
+          <div>
+            <Simulator
+              amountInvested={getInputProps('amountCurrency').value}
+              productData={productData}
+              displayLogs={true}
+            />
+          </div>
+        </Group>
+      </Dialog>
     </>
   );
 };

@@ -2949,7 +2949,7 @@
     "@nextui-org/shared-utils" "2.0.7"
     "@nextui-org/use-image" "2.0.6"
 
-"@nextui-org/input@2.2.4", "@nextui-org/input@^2.1.9":
+"@nextui-org/input@2.2.4", "@nextui-org/input@^2.2.4":
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/@nextui-org/input/-/input-2.2.4.tgz#782de39f278ca78c3f8bf61f6088ac832ddd4d85"
   integrity sha512-CVeTwwUJn9pEJC+kq3Jg0nAFeYVGBbIU7U2YFSG8XJK2X75odj8RSQdVd3Dt2U/b5Mtwt5sBh9gMzCedtjffWg==
@@ -2977,7 +2977,7 @@
     "@nextui-org/system-rsc" "2.1.5"
     "@react-aria/utils" "3.24.1"
 
-"@nextui-org/link@2.0.34", "@nextui-org/link@^2.0.32":
+"@nextui-org/link@2.0.34", "@nextui-org/link@^2.0.34":
   version "2.0.34"
   resolved "https://registry.yarnpkg.com/@nextui-org/link/-/link-2.0.34.tgz#c3e5b61fca4a75274903a6c63eef72397196650a"
   integrity sha512-497AvjzckEB/TE1eJEziS2QkxwCY81RPsWoApNSeHGdYrMO1tfgUFKATgadfBQjoba6FdCcLc2QaUapOetqFaA==
@@ -3117,7 +3117,7 @@
     "@react-aria/utils" "3.24.1"
     "@react-types/progress" "3.5.4"
 
-"@nextui-org/radio@2.1.4", "@nextui-org/radio@^2.1.2":
+"@nextui-org/radio@2.1.4", "@nextui-org/radio@^2.1.4":
   version "2.1.4"
   resolved "https://registry.yarnpkg.com/@nextui-org/radio/-/radio-2.1.4.tgz#1e7827fe3219bdfd1535f733f9499979d0366fd3"
   integrity sha512-Y18TXvGVz/G1E3jjYmutSSx1EdQRs5iMCVZNS/Bz4avE9QMSrHl6fOhZIndrm8LwCTqn7lbKRQngZLN4tvPinQ==
@@ -3146,7 +3146,7 @@
     "@nextui-org/react-rsc-utils" "2.0.13"
     "@nextui-org/shared-utils" "2.0.7"
 
-"@nextui-org/react@^2.4.2":
+"@nextui-org/react@^2.4.6":
   version "2.4.6"
   resolved "https://registry.yarnpkg.com/@nextui-org/react/-/react-2.4.6.tgz#46a934f038cee089742a309ad8227dfc9359e931"
   integrity sha512-8o/k5A5g0xXj6hmV2AulkAswQnZGt2WI64Coq+toWBTumQLcW6iAqPJBDztCDiz+6yiU6Nvk/1ZuZJeRs3XMRw==
@@ -3254,7 +3254,7 @@
     "@nextui-org/react-utils" "2.0.16"
     "@nextui-org/shared-utils" "2.0.7"
 
-"@nextui-org/slider@2.2.15":
+"@nextui-org/slider@2.2.15", "@nextui-org/slider@^2.2.15":
   version "2.2.15"
   resolved "https://registry.yarnpkg.com/@nextui-org/slider/-/slider-2.2.15.tgz#ce3d1f5bb7355bf7549d8c2cc12498b083aba052"
   integrity sha512-ImsxvxAJ2wxRL45y4IbVWThZI/vw2Gq/6qUVZFAwyF54dlro08eJZJIOOG7bKfA5Ob63JLfroUijrlZ9kGP5cA==
@@ -3379,7 +3379,7 @@
     "@react-types/tabs" "3.3.7"
     scroll-into-view-if-needed "3.0.10"
 
-"@nextui-org/theme@2.2.9", "@nextui-org/theme@^2.2.6":
+"@nextui-org/theme@2.2.9", "@nextui-org/theme@^2.2.9":
   version "2.2.9"
   resolved "https://registry.yarnpkg.com/@nextui-org/theme/-/theme-2.2.9.tgz#adecdc069cf62c3337e92d65edc13b1a1210115e"
   integrity sha512-TN2I9sMriLaj00pXsIMlg19+UHeOdjzS2JV0u4gjL14mSbQl5BYNxgbvU3gbMqkZZQ6OpwT4RnT8RS+ks6TXCw==
@@ -7545,21 +7545,22 @@ clean-stack@^2.0.0:
   resolved "https://registry.yarnpkg.com/clean-stack/-/clean-stack-2.2.0.tgz#ee8472dbb129e727b31e8a10a427dee9dfe4008b"
   integrity sha512-4diC9HaTE+KRAMWhDhrGOECgWZxoevMc5TlkObMqNSsVU62PYzXZ/SMTjzyGAFF1YusgxGcSWTEXBhp0CPwQ1A==
 
-cleansatmining-simulator@^0.0.6:
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/cleansatmining-simulator/-/cleansatmining-simulator-0.0.6.tgz#2ccfb5af176882ccd783f8b168b7f23b357269d2"
-  integrity sha512-Mk9OwxtSaT+CJY3cxcNL/haSqMlPGi/wSHt8U7Zxfy2VLBysgOaLsiiKht0NNuvd/Vbp+H/pzomsdvM5tvZ0fA==
+cleansatmining-simulator@^0.0.11:
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/cleansatmining-simulator/-/cleansatmining-simulator-0.0.11.tgz#c05843ae27d2b503c0d05fb09cf35148cac2fd14"
+  integrity sha512-ht8U2YvYgxWwgBvk30hTXO6qeuHiQVEO3/vyN2sTIUglmZxsVo3SADzQrgQalcShBeRmI+dVn1julEFbMwPg3w==
   dependencies:
-    "@nextui-org/input" "^2.1.9"
-    "@nextui-org/link" "^2.0.32"
-    "@nextui-org/radio" "^2.1.2"
-    "@nextui-org/react" "^2.4.2"
-    "@nextui-org/theme" "^2.2.6"
+    "@nextui-org/input" "^2.2.4"
+    "@nextui-org/link" "^2.0.34"
+    "@nextui-org/radio" "^2.1.4"
+    "@nextui-org/react" "^2.4.6"
+    "@nextui-org/slider" "^2.2.15"
+    "@nextui-org/theme" "^2.2.9"
     "@phosphor-icons/react" "^2.1.7"
     formik "^2.4.6"
-    framer-motion "^11.3.5"
-    release-it "^17.1.1"
-    tailwindcss "^3.4.4"
+    framer-motion "^11.3.22"
+    release-it "^17.6.0"
+    tailwindcss "^3.4.8"
     yup "^1.4.0"
 
 cli-boxes@^3.0.0:
@@ -9283,7 +9284,7 @@ formik@^2.4.6:
     tiny-warning "^1.0.2"
     tslib "^2.0.0"
 
-framer-motion@^11.3.5:
+framer-motion@^11.3.22:
   version "11.3.24"
   resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-11.3.24.tgz#c4c62b18be7c09814e809b4c9dca5b23a748b1b4"
   integrity sha512-kl0YI7HwAtyV0VOAWuU/rXoOS8+z5qSkMN6rZS+a9oe6fIha6SC3vjJN6u/hBpvjrg5MQNdSnqnjYxm0WYTX9g==
@@ -12950,7 +12951,7 @@ relay-runtime@12.0.0:
     fbjs "^3.0.0"
     invariant "^2.2.4"
 
-release-it@^17.1.1, release-it@^17.6.0:
+release-it@^17.6.0:
   version "17.6.0"
   resolved "https://registry.yarnpkg.com/release-it/-/release-it-17.6.0.tgz#de91db313d76849f727a7434f7b8bdb52b6a4ac8"
   integrity sha512-EE34dtRPL7BHpYQC7E+zAU8kjkyxFHxLk5Iqnmn/5nGcjgOQu34Au29M2V9YvxiP3tZbIlEn4gItEzu7vAPRbw==
@@ -13828,10 +13829,10 @@ tailwind-variants@^0.1.20:
   dependencies:
     tailwind-merge "^1.14.0"
 
-tailwindcss@^3.4.4:
-  version "3.4.8"
-  resolved "https://registry.yarnpkg.com/tailwindcss/-/tailwindcss-3.4.8.tgz#74fdfc085732c244ad9ca4ee0d539bc5dddd58fd"
-  integrity sha512-GkP17r9GQkxgZ9FKHJQEnjJuKBcbFhMFzKu5slmN6NjlCuFnYJMQ8N4AZ6VrUyiRXlDtPKHkesuQ/MS913Nvdg==
+tailwindcss@^3.4.8:
+  version "3.4.9"
+  resolved "https://registry.yarnpkg.com/tailwindcss/-/tailwindcss-3.4.9.tgz#9e04cddce1924d530df62af37d3520f0e2a9d85e"
+  integrity sha512-1SEOvRr6sSdV5IDf9iC+NU4dhwdqzF4zKKq3sAbasUWHEM6lsMhX+eNN5gkPx1BvLFEnZQEUFbXnGj8Qlp83Pg==
   dependencies:
     "@alloc/quick-lru" "^5.2.0"
     arg "^5.0.2"

@@ -39,7 +39,7 @@
     "@types/redux": "^3.6.0",
     "axios": "^1.7.3",
     "bignumber.js": "^9.1.2",
-    "cleansatmining-simulator": "^0.0.6",
+    "cleansatmining-simulator": "^0.0.11",
     "clsx": "^2.1.1",
     "cookies-next": "^4.2.1",
     "dotenv": "^16.4.5",

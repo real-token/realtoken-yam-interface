@@ -20,9 +20,6 @@ import { MarketSortView } from '../Market/MarketSort/MarketSort';
 import { BuyOffer } from '../Offer/Buy/BuyOffer';
 import { useRouter } from 'next/router';
 import { PublicTransactionList } from 'src/components/Transactions/usecases/PublicTransactionList';
-import 'cleansatmining-simulator/dist/simulator.css';
-import { Simulator } from 'cleansatmining-simulator';
-import { ALPHA } from 'src/mocks/products';
 
 interface Display {
   display: Displays;
@@ -73,9 +70,6 @@ const Display: FC = () => {
 
   return (
     <>
-      <div>
-        <Simulator productData={ALPHA} />
-      </div>
       {shallBuyInterfaceDisplay && (
         <div
           style={{

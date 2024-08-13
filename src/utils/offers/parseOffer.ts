@@ -18,7 +18,7 @@ import { getPriceInDollar } from '../price';
 // 3 = ERC20 sans permit
 export const getOfferType = (
   offerTokenType: number,
-  buyerTokenType: number
+  buyerTokenType: number,
 ): OFFER_TYPE => {
   if (offerTokenType == 1 && (buyerTokenType == 2 || buyerTokenType == 3))
     return OFFER_TYPE.SELL;
@@ -36,7 +36,7 @@ export const parseOffer = (
   offer: OfferGraphQl,
   accountUserRealtoken: DataRealtokenType,
   propertiesToken: PropertiesToken[],
-  prices: Price
+  prices: Price,
 ): Promise<Offer> => {
   return new Promise<Offer>(async (resolve, reject) => {
     try {
@@ -92,12 +92,12 @@ export const parseOffer = (
       const offerSite = propertiesToken.find(
         (t) =>
           t.contractAddress.toLowerCase() ===
-          offer.offerToken.address.toLowerCase()
+          offer.offerToken.address.toLowerCase(),
       );
       const buyingSite = propertiesToken.find(
         (t) =>
           t.contractAddress.toLowerCase() ===
-          offer.buyerToken.address.toLowerCase()
+          offer.buyerToken.address.toLowerCase(),
       );
 
       const o: Offer = {
@@ -105,20 +105,20 @@ export const parseOffer = (
         offerTokenAddress: (offer.offerToken.address as string)?.toLowerCase(),
         offerTokenName: offerSite
           ? offerSite.shortName
-          : offer.offerToken.name ?? '',
+          : (offer.offerToken.name ?? ''),
         offerTokenDecimals: offer.offerToken.decimals?.toString() ?? '',
         offerTokenType: offer.offerToken.tokenType ?? 0,
         offerTokenSymbol: offer.offerToken.symbol,
         buyerTokenAddress: (offer.buyerToken.address as string)?.toLowerCase(),
         buyerTokenName: buyingSite
           ? buyingSite.shortName
-          : offer.buyerToken.name ?? '',
+          : (offer.buyerToken.name ?? ''),
         buyerTokenSymbol: offer.buyerToken.symbol,
         buyerTokenDecimals: offer.buyerToken.decimals?.toString() ?? '',
         buyerTokenType: offer.buyerToken.tokenType ?? 0,
         sellerAddress: (offer.seller.address as string)?.toLowerCase(),
         sellerName: CSM_ADDRESSES.includes(
-          (offer.seller.address as string)?.toLowerCase()
+          (offer.seller.address as string)?.toLowerCase(),
         )
           ? OFFER_SELLER.CSM
           : OFFER_SELLER.UNKNOWN, //TODO Cyrille
@@ -128,7 +128,7 @@ export const parseOffer = (
           BigNumber.minimum(
             offer.availableAmount,
             balanceWallet,
-            allowance
+            allowance,
           ).toString(10) ?? '0',
         availableAmount: offer.availableAmount.toString(),
         initialAmount: offer.price.amount,
@@ -149,6 +149,7 @@ export const parseOffer = (
         sellDate: '',
         sites: {
           selling: {
+            id: offerSite?.uuid ?? '',
             miningSite: offerSite?.miningSite ?? '',
             name: offerSite?.fullName ?? '',
             energy: offerSite?.energy ?? [],
@@ -159,6 +160,7 @@ export const parseOffer = (
             tokenSellDate: '',
           },
           buying: {
+            id: buyingSite?.uuid ?? '',
             miningSite: buyingSite?.miningSite ?? '',
             name: buyingSite?.fullName ?? '',
             energy: buyingSite?.energy ?? [],
@@ -177,19 +179,19 @@ export const parseOffer = (
         o.type == OFFER_TYPE.BUY
           ? o.buyerTokenAddress
           : o.type == OFFER_TYPE.SELL
-          ? o.offerTokenAddress
-          : '',
-        propertiesToken
+            ? o.offerTokenAddress
+            : '',
+        propertiesToken,
       );
 
       const propertyTokenBuy = getProperty(
         o.buyerTokenAddress,
-        propertiesToken
+        propertiesToken,
       );
 
       const propertyTokenSell = getProperty(
         o.offerTokenAddress,
-        propertiesToken
+        propertiesToken,
       );
 
       //add price and yield infos
@@ -225,17 +227,17 @@ export const parseOffer = (
 
 const getProperty = (
   propertyAddress: string,
-  propertiesToken: PropertiesToken[]
+  propertiesToken: PropertiesToken[],
 ) => {
   return propertiesToken.find(
     (propertyToken) =>
       propertyToken.contractAddress.toLowerCase() ==
-      propertyAddress.toLowerCase()
+      propertyAddress.toLowerCase(),
   );
 };
 
 const getOfficialPrice = (
-  propertyToken: PropertiesToken | undefined
+  propertyToken: PropertiesToken | undefined,
 ): number | undefined => {
   if (propertyToken) {
     const buyPrice = propertyToken.officialPrice;
@@ -246,7 +248,7 @@ const getOfficialPrice = (
 };
 
 const getOfficialYield = (
-  propertyToken: PropertiesToken | undefined
+  propertyToken: PropertiesToken | undefined,
 ): number | undefined => {
   // console.log("getOfficialYield: ", propertyToken)
   if (propertyToken) {
@@ -262,12 +264,12 @@ const getOfficialYield = (
 const getOfferYield = (
   prices: Price,
   offer: Offer,
-  propertyToken: PropertiesToken | undefined
+  propertyToken: PropertiesToken | undefined,
 ): number | undefined => {
   const tokenPriceInDollar = getPriceInDollar(prices, offer);
   if (propertyToken && tokenPriceInDollar) {
     const offerAdjusted = new BigNumber(
-      propertyToken.netRentYearPerToken
+      propertyToken.netRentYearPerToken,
     ).dividedBy(tokenPriceInDollar);
 
     return parseFloat(offerAdjusted.multipliedBy(100).toString());
@@ -286,7 +288,7 @@ const getYieldDelta = (offer: Offer): number | undefined => {
           .multipliedBy(new BigNumber(1))
           .dividedBy(new BigNumber(officialYield))
           .minus(1)
-          .toString()
+          .toString(),
       )
     : undefined;
 };
@@ -301,7 +303,7 @@ const getPriceDelta = (prices: Price, offer: Offer): number | undefined => {
           new BigNumber(tokenPriceInDollar)
             .dividedBy(new BigNumber(officialPrice))
             .minus(1)
-            .toString()
+            .toString(),
         )
       : undefined;
   }
