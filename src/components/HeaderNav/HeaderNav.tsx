@@ -1,11 +1,12 @@
 import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Flex, Text } from '@mantine/core';
-import { NextLink } from '@mantine/next';
+//import { NextLink } from '@mantine/next';
 import { styles } from './Header.styles';
 import { useRouter } from 'next/router';
 import { useRole } from 'src/hooks/useRole';
 import { isRole, USER_ROLE } from 'src/types/admin';
+import Link from 'next/link';
 
 export const HeaderNav: FC = () => {
   const { t } = useTranslation('header');
@@ -19,7 +20,7 @@ export const HeaderNav: FC = () => {
       <Text
         size={'xl'}
         weight={700}
-        component={NextLink}
+        component={Link}
         href={'/'}
         color={router.pathname === '/' ? colorSelected : ''}
       >
@@ -28,7 +29,7 @@ export const HeaderNav: FC = () => {
       <Text
         size={'xl'}
         weight={700}
-        component={NextLink}
+        component={Link}
         href={'/my-offers'}
         color={router.pathname === '/my-offers' ? colorSelected : ''}
       >
@@ -37,7 +38,7 @@ export const HeaderNav: FC = () => {
       <Text
         size={'xl'}
         weight={700}
-        component={NextLink}
+        component={Link}
         href={
           'https://cleansat-mining.gitbook.io/gitbook-cleansat-mining#le-marche-secondaire-yam'
         }
@@ -49,7 +50,7 @@ export const HeaderNav: FC = () => {
         <Text
           size={'xl'}
           weight={700}
-          component={NextLink}
+          component={Link}
           href={'/admin'}
           color={router.pathname === '/admin' ? colorSelected : ''}
         >

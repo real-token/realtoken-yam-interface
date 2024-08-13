@@ -1,9 +1,10 @@
 import { Translation } from 'react-i18next';
 
 import { Accordion, Anchor, Stack, Text } from '@mantine/core';
-import { NextLink } from '@mantine/next';
+//import { NextLink } from '@mantine/next';
 import { NotificationProps } from '@mantine/notifications';
 import { IconCheck, IconX } from '@tabler/icons-react';
+import NextLink from 'next/link';
 
 import { asConst, shortenString } from 'src/utils';
 
