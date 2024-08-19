@@ -2,17 +2,7 @@ import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Web3Provider } from '@ethersproject/providers';
-import {
-  Button,
-  Flex,
-  Stack,
-  Text,
-  Avatar,
-  Group,
-  useMantineTheme,
-  Badge,
-  Dialog,
-} from '@mantine/core';
+import { Button, Flex, Stack } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useDisclosure } from '@mantine/hooks';
 import { useWeb3React } from '@web3-react/core';
@@ -35,11 +25,12 @@ import { OfferContainer } from '../components/OfferContainer';
 import { ModalSuccess } from './ModalSuccess';
 import OfferSummary from './OfferSummary';
 import TokenExchange from './components/TokenExchange';
-import { IconCalculator, IconChevronRight } from '@tabler/icons-react';
+
 import { TransactionViewAccordion } from '../components/TransactionListView';
 import 'cleansatmining-simulator/dist/simulator.css';
 import { Simulator, SimulationProductData } from 'cleansatmining-simulator';
 import { ALPHA } from 'src/mocks/products';
+import { SimulatorButton } from '../components/SimulatorButton';
 
 interface FarmOverview {
   networkExaHashrate: number;
@@ -64,6 +55,8 @@ interface FarmOverview {
 interface BuyOffertProps {
   offer: Offer;
   backArrow?: boolean;
+  setSimulator?: React.Dispatch<React.SetStateAction<React.ReactNode>>;
+  toggleSimulator?: () => void;
 }
 
 type BuyOfferFormValues = {
@@ -79,6 +72,11 @@ type BuyOfferFormValues = {
 
 export const BuyOffer: FC<BuyOffertProps> = ({ offer, backArrow }) => {
   const { t } = useTranslation('list');
+  const [sideElement, setSideElement] = useState<React.ReactNode | undefined>(
+    undefined,
+  );
+  const [sideOpened, { toggle: toggleSide, close: closeSide }] =
+    useDisclosure(false);
   return (
     <OfferContainer
       offer={offer}
@@ -90,16 +88,26 @@ export const BuyOffer: FC<BuyOffertProps> = ({ offer, backArrow }) => {
             ? t('toSell')
             : t('toBuy')
       }
+      side={sideElement}
+      isSideOpen={sideOpened}
+      closeSide={closeSide}
     >
-      <BuyOfferForms offer={offer}></BuyOfferForms>
+      <BuyOfferForms
+        offer={offer}
+        setSimulator={setSideElement}
+        toggleSimulator={toggleSide}
+      ></BuyOfferForms>
     </OfferContainer>
   );
 };
 
-export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
+const BuyOfferForms: FC<BuyOffertProps> = ({
+  offer,
+  setSimulator: setSideElement,
+  toggleSimulator: toggleSide,
+}) => {
   const { t: tswap } = useTranslation('swap');
-  const theme = useMantineTheme();
-  const [opened, { toggle, close }] = useDisclosure(false);
+
   const [
     modalFinishOpened,
     { open: modalFinishOpen, close: modalFinishClose },
@@ -143,13 +151,22 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
     provider as Web3Provider,
     account,
   );
-  const controlBackgroundColor =
-    theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[0];
-  const contentBorderColor =
-    theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2];
-  const contentTextColor =
-    theme.colorScheme === 'dark' ? undefined : theme.colors.dark[6];
+
   const [productData, setProductData] = useState<SimulationProductData>(ALPHA);
+
+  useEffect(() => {
+    if (setSideElement) {
+      setSideElement(
+        <div>
+          <Simulator
+            amountInvested={getUsdAmount(offer, values)}
+            productData={productData}
+            displayLogs={true}
+          />
+        </div>,
+      );
+    }
+  }, [values]);
 
   useEffect(() => {
     const getOfferTokenInfos = async () => {
@@ -263,6 +280,7 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
         modalFinishClose={modalFinishClose}
         modalFinishOpened={modalFinishOpened}
       ></ModalSuccess>
+
       <form onSubmit={onSubmit(onHandleSubmit)}>
         <Stack justify={'center'} align={'stretch'} spacing={5}>
           <Flex direction={'column'} gap={'sm'} mb={10}>
@@ -281,69 +299,13 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
             ></OfferSummary>
           </Flex>
 
-          {offer.type === OFFER_TYPE.SELL && (
-            <Button
-              onClick={toggle}
-              color='gray'
-              mt={10}
-              h={48}
-              type={'button'}
-              radius={'md'}
-              aria-label={tswap('confirm')}
-              rightIcon={
-                <IconChevronRight
-                  size={16}
-                  color={contentTextColor}
-                ></IconChevronRight>
-              }
-              styles={(theme) => ({
-                root: {
-                  textAlign: 'left',
-                  backgroundColor: controlBackgroundColor,
-                  border: `1px solid ${contentBorderColor}`,
-                  '&:not([data-disabled])': theme.fn.hover({
-                    backgroundColor: controlBackgroundColor,
-                  }),
-                },
-                inner: {
-                  width: '100%',
-                  justifyContent: 'space-between',
-                  textAlign: 'left',
-                  backgroundColor: controlBackgroundColor,
-                },
-              })}
-            >
-              <Group spacing={10}>
-                <Avatar
-                  color={'gray'}
-                  size={'28px'}
-                  radius={'xl'}
-                  variant={'filled'}
-                  styles={{
-                    placeholder: {
-                      backgroundColor:
-                        theme.colorScheme === 'dark'
-                          ? theme.colors.gray[7]
-                          : theme.colors.gray[4],
-                    },
-                  }}
-                >
-                  <IconCalculator size={'1.2rem'} />
-                </Avatar>
-                <Text fw={500} fz={'15px'} color={contentTextColor} m={0} p={0}>
-                  {'Simulateur'}
-                </Text>
-                <Badge
-                  color='green'
-                  variant='filled'
-                  size={'xs'}
-                  style={{ marginLeft: '-9px', marginTop: '-5px' }}
-                >
-                  {'Nouveau'}
-                </Badge>
-              </Group>
-            </Button>
-          )}
+          {(offer.type === OFFER_TYPE.BUY || offer.type === OFFER_TYPE.SELL) &&
+            toggleSide && (
+              <SimulatorButton
+                label={tswap('confirm')}
+                toggle={toggleSide}
+              ></SimulatorButton>
+            )}
           <TransactionViewAccordion
             offerId={offer.offerId}
             isSmall={true}
@@ -365,25 +327,9 @@ export const BuyOfferForms: FC<BuyOffertProps> = ({ offer }) => {
           </Button>
         </Stack>
       </form>
-      <Dialog
-        opened={opened}
-        withCloseButton
-        onClose={close}
-        size='xl'
-        radius='md'
-        withBorder={true}
-        p={2}
-      >
-        <Group align='flex-end'>
-          <div>
-            <Simulator
-              amountInvested={getInputProps('amountCurrency').value}
-              productData={productData}
-              displayLogs={true}
-            />
-          </div>
-        </Group>
-      </Dialog>
     </>
   );
 };
+function getUsdAmount(offer: Offer, values: BuyOfferFormValues): number {
+  return offer.type === OFFER_TYPE.BUY ? values.amount : values.amountCurrency;
+}
