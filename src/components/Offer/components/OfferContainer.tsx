@@ -1,7 +1,7 @@
 import React, {
   FC,
   ReactNode,
-  use,
+  useRef,
   useCallback,
   useEffect,
   useState,
@@ -186,12 +186,19 @@ export const OfferView: FC<OfferViewProps> = ({
   closeSide,
   isMobile = false,
 }) => {
+  const cardRef = useRef(null);
   const [sideOpen, setSideOpen] = useState<boolean>(
     isSideOpen && sideChildren !== undefined,
   );
   useEffect(() => {
     setSideOpen(isSideOpen && sideChildren !== undefined);
   }, [isSideOpen, sideChildren]);
+
+  useEffect(() => {
+    if (sideOpen && cardRef.current) {
+      (cardRef.current as HTMLDivElement).focus();
+    }
+  }, [sideOpen]);
 
   return (
     <>
@@ -218,6 +225,8 @@ export const OfferView: FC<OfferViewProps> = ({
             }}
             withBorder={true}
             padding={0}
+            ref={cardRef}
+            tabIndex={-1}
           >
             <Stack spacing={0}>
               <Group position='right' spacing={0}>
@@ -229,7 +238,6 @@ export const OfferView: FC<OfferViewProps> = ({
                   style={{ marginTop: '10px', marginRight: '10px' }}
                 />
               </Group>
-
               {sideChildren}
             </Stack>
           </Card>
