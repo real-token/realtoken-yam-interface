@@ -211,15 +211,28 @@ export const OfferView: FC<OfferViewProps> = ({
           </OfferContent>
         </div>
         {sideOpen && (
-          <Stack>
-            <CloseButton
-              aria-label={'Close side'}
-              variant={'transparent'}
-              iconSize={'lg'}
-              onClick={closeSide}
-            />
-            {sideChildren}
-          </Stack>
+          <Card
+            radius={'lg'}
+            style={{
+              backgroundColor: '#1D1D1B',
+            }}
+            withBorder={true}
+            padding={0}
+          >
+            <Stack spacing={0}>
+              <Group position='right' spacing={0}>
+                <CloseButton
+                  aria-label={'Close side'}
+                  variant={'transparent'}
+                  iconSize={'lg'}
+                  onClick={closeSide}
+                  style={{ marginTop: '10px', marginRight: '10px' }}
+                />
+              </Group>
+
+              {sideChildren}
+            </Stack>
+          </Card>
         )}
       </SimpleGrid>
     </>

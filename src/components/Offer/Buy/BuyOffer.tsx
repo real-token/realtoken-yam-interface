@@ -157,7 +157,7 @@ const BuyOfferForms: FC<BuyOffertProps> = ({
   useEffect(() => {
     if (setSideElement) {
       setSideElement(
-        <div>
+        <div style={{ marginTop: '-30px' }}>
           <Simulator
             amountInvested={getUsdAmount(offer, values)}
             productData={productData}
