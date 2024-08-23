@@ -29,7 +29,6 @@ import TokenExchange from './components/TokenExchange';
 import { TransactionViewAccordion } from '../components/TransactionListView';
 import 'cleansatmining-simulator/dist/simulator.css';
 import { Simulator, SimulationProductData } from 'cleansatmining-simulator';
-import { ALPHA } from 'src/mocks/products';
 import { SimulatorButton } from '../components/SimulatorButton';
 
 interface FarmOverview {
@@ -305,10 +304,7 @@ const BuyOfferForms: FC<BuyOffertProps> = ({
           {(offer.type === OFFER_TYPE.BUY || offer.type === OFFER_TYPE.SELL) &&
             toggleSide &&
             productData !== undefined && (
-              <SimulatorButton
-                label={tswap('confirm')}
-                toggle={toggleSide}
-              ></SimulatorButton>
+              <SimulatorButton toggle={toggleSide}></SimulatorButton>
             )}
           <TransactionViewAccordion
             offerId={offer.offerId}

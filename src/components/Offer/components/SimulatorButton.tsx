@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { useTranslation } from 'react-i18next';
 import {
   Button,
   Badge,
@@ -11,14 +11,11 @@ import {
 import { IconCalculator, IconChevronRight } from '@tabler/icons-react';
 
 interface SimulatorButtonProps {
-  label: string;
   toggle: () => void;
 }
 
-export const SimulatorButton: React.FC<SimulatorButtonProps> = ({
-  label,
-  toggle,
-}) => {
+export const SimulatorButton: React.FC<SimulatorButtonProps> = ({ toggle }) => {
+  const { t } = useTranslation('simulator');
   const theme = useMantineTheme();
   const controlBackgroundColor =
     theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[0];
@@ -34,7 +31,7 @@ export const SimulatorButton: React.FC<SimulatorButtonProps> = ({
       h={48}
       type={'button'}
       radius={'md'}
-      aria-label={label}
+      aria-label={t('label')}
       rightIcon={
         <IconChevronRight size={16} color={contentTextColor}></IconChevronRight>
       }
@@ -73,15 +70,15 @@ export const SimulatorButton: React.FC<SimulatorButtonProps> = ({
           <IconCalculator size={'1.2rem'} />
         </Avatar>
         <Text fw={500} fz={'15px'} color={contentTextColor} m={0} p={0}>
-          {'Simulateur'}
+          {t('label')}
         </Text>
         <Badge
-          color='green'
+          color='blue'
           variant='filled'
           size={'xs'}
-          style={{ marginLeft: '-9px', marginTop: '-5px' }}
+          style={{ marginLeft: '-7px', marginTop: '-5px' }}
         >
-          {'Nouveau'}
+          {t('beta')}
         </Badge>
       </Group>
     </Button>

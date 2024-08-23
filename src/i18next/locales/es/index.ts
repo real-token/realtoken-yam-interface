@@ -14,8 +14,10 @@ import { default as swap } from './swap.json';
 import { default as table } from './table.json';
 import { default as transactions } from './transactions.json';
 import { default as wallet } from './wallet.json';
+import { default as simulator } from './simulator.json';
 
 const lng = {
+  simulator,
   swap,
   wallet,
   transactions,
