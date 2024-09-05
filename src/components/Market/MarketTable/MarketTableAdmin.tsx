@@ -1,6 +1,6 @@
 import { FC, HTMLProps, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Flex, MantineSize, TextInput, Title } from '@mantine/core';
+import { Checkbox, Flex, MantineSize, NumberInput, TextInput, Title } from '@mantine/core';
 import {
   ExpandedState,
   PaginationState,
@@ -12,6 +12,7 @@ import {
   useReactTable,
   ColumnDef,
   getFilteredRowModel,
+  ColumnFiltersState,
 } from '@tanstack/react-table';
 import { Table } from '../../Table';
 import { MarketSubRow } from '../MarketSubRow';
@@ -51,26 +52,10 @@ export const MarketTableAdmin: FC = () => {
   const { role } = useRole();
 
   const [allOffers, offersLoading] = useRootStore((state) => [state.offers, state.offersAreLoading]);
-  // const { publicOffers, allPublicOffers } = useMemo(() => {
-
-  //   const pOffers = allOffers.filter((offer: Offer) =>
-  //       !offer.buyerAddress &&
-  //       BigNumber(offer.amount).isPositive() &&
-  //       !BigNumber(offer.amount).isZero()
-  //   );
-
-  //   const pAllOffers = allOffers.filter((offer: Offer) =>
-  //       !offer.buyerAddress && BigNumber(offer.amount).isPositive()
-  //   );
-
-  //   return {
-  //       publicOffers: !allOffers || offersLoading ? OFFER_LOADING : pOffers,
-  //       allPublicOffers: !allOffers || offersLoading ? OFFER_LOADING : pAllOffers,
-  //   }
-  // },[allOffers])
+  console.log('allOffers', allOffers.length)
 
   const { offers } = useTypedOffers(allOffers);
-  console.log('admin offers', offers.length)
+  console.log('admin offers by offer type', offers.length)
 
   const modals = useModals();
   const { t: t3 } = useTranslation('modals');
@@ -113,7 +98,7 @@ export const MarketTableAdmin: FC = () => {
         </>
       ),
       cell: ({ row }) => (
-        <div className={"px-1"}>
+        <>
           {
             role == USER_ROLE.ADMIN ?
               <IndeterminateCheckbox
@@ -127,7 +112,7 @@ export const MarketTableAdmin: FC = () => {
               :
             undefined
           }
-        </div>
+        </>
       ),
       size: 20
     }
@@ -215,10 +200,28 @@ export const MarketTableAdmin: FC = () => {
     }
   },[sortingType, sellAdminColumns, buyAdminColumns, exchangeAdminColumns]);
 
+  const [offerLimit, setOfferLimit] = useState<number|undefined>(undefined);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  console.log('columnFilters', columnFilters)
+
+  const [filterZeroAmount, setFilterZeroAmount] = useState<boolean>(false);
+  const limitOffers = useMemo(() => {
+    let o = offers;
+    if(filterZeroAmount){
+      o = o.filter((offer) => BigNumber(offer.amount).isZero());
+    }
+    if(offerLimit && offerLimit > 0){
+      o = o.slice(0, offerLimit);
+    }
+    return o;
+  }, [offers, offerLimit, filterZeroAmount]);
+
   const table = useReactTable({
-    data: offers,
+    data: limitOffers,
     columns: rightColumn,
-    state: { sorting, pagination, expanded, rowSelection, globalFilter },
+    filterFns: {},
+    state: { sorting, pagination, expanded, rowSelection, globalFilter, columnFilters },
+    onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
     onSortingChange: setSorting,
     onPaginationChange: setPagination,
@@ -230,13 +233,31 @@ export const MarketTableAdmin: FC = () => {
     getExpandedRowModel: getExpandedRowModel(),
     onRowSelectionChange: setRowSelection,
     enableRowSelection: true,
-    meta: { colSpan: 15 },
+    meta: { 
+      colSpan: 15
+    },
   });
 
   return (
     <Flex direction={"column"} gap={"sm"} align={"flex-start"} mt={20}>
       <TextInput placeholder={t2("nameFilterPlaceholder")} value={globalFilter} onChange={(event) => setGlobalFilter(event.currentTarget.value)}/>
-      <MarketSort/>
+      <Flex direction={'column'} gap={'md'}>
+        <MarketSort/>
+        <Flex gap={'md'} align={'end'}>
+          <NumberInput
+            label={"Offer shown (nothing for all)"}
+            min={0}
+            max={offers.length}
+            value={offerLimit}
+            onChange={(value) => value ? setOfferLimit(Number(value)) : setOfferLimit(undefined)}
+          />
+          <Checkbox
+            label={"Offers with available amount = 0"}
+            checked={filterZeroAmount}
+            onChange={() => setFilterZeroAmount(!filterZeroAmount)}
+          />
+        </Flex>
+      </Flex>
       <Table
         tableProps={{
           highlightOnHover: true,
@@ -265,11 +286,14 @@ function IndeterminateCheckbox({
   }, [ref, indeterminate, rest.checked])
 
   return (
-    <input
-      type={"checkbox"}
-      ref={ref}
-      className={className + ' cursor-pointer'}
-      {...rest}
-    />
+    <div>
+      <input
+        type={"checkbox"}
+        ref={ref}
+        className={className + ' cursor-pointer'}
+        {...rest}
+      />
+    </div>
+    
   )
 }

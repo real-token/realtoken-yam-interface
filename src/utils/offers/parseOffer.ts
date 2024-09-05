@@ -79,13 +79,6 @@ export const parseOffer = (
 
         const isExtendedToken = extendedTokensAddress.includes(offer.seller.address) || extendedTokensAddress.includes(offer.offerToken.address);
 
-        if(offer.id == "41774"){
-          console.log("offer: ", offer)
-          console.log("balanceWallet: ", balanceWallet)
-          console.log("allowance: ", allowance)
-          console.log("offer.availableAmount", offer.availableAmount)
-        }
-
         const o: Offer = {
           offerId: BigNumber(offer.id).toString(),
           offerTokenAddress: (offer.offerToken.address as string)?.toLowerCase(),

@@ -573,20 +573,24 @@ export const adminAmount: ColumnFn<string> = (t,span) => {
     id: 'admin-amount',
     accessorKey: 'amount',
     header: t('amount'),
+    filterFn: (row, columnId, filterValue) => {
+      const amount = row.getValue(columnId);
+      return BigNumber(row.getValue(columnId)).isEqualTo(filterValue);
+    },
     cell: ({ getValue }) => (
       <Text
-            size={'sm'}
-            style={{
-              textAlign: 'right',
-              textOverflow: 'ellipsis',
-              overflow: 'hidden',
-            }}
-          >
-        { getValue() ?
-          <Text>{getValue()}</Text>
-        :
-        <Skeleton height={15} />
-        }
+          size={'sm'}
+          style={{
+            textAlign: 'right',
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+          }}
+        >
+          { getValue() ?
+              <Text>{getValue()}</Text>
+            :
+              <Skeleton height={15} />
+          }
       </Text>
     ),
     enableSorting: true,

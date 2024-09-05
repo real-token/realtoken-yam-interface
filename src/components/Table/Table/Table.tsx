@@ -52,8 +52,12 @@ export const Table = <T,>({
                 <Fragment key={row.id}>
                   <MantineTable.Tr>
                     {row.getVisibleCells().map(({ id, column, getContext, getValue }) => (
-                      <MantineTable.Td key={id} colSpan={column.columnDef.meta?.colSpan}>
-                        { String(getValue()) ? flexRender(column.columnDef.cell, getContext()) : <Skeleton height={15}/>}
+                      <MantineTable.Td
+                        key={id}
+                        colSpan={column.columnDef.meta?.colSpan}
+                        onClick={column.id === 'select' ? row.getToggleSelectedHandler() : undefined}
+                      >
+                        { String(getValue()) ? flexRender(column.columnDef.cell, getContext()) : <Skeleton height={15}/> }
                       </MantineTable.Td>
                     ))}
                   </MantineTable.Tr>
