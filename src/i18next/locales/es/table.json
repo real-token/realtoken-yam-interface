@@ -11,6 +11,7 @@
   "filters": {
     "title": "Filters",
     "nameFilterPlaceholder": "Search",
-    "showOnlyWhitelisted": "Show only whitelisted properties's offers"
+    "showOnlyWhitelisted": "Show only whitelisted properties's offers",
+    "hideDust": "Hide dust offers"
   }
 }

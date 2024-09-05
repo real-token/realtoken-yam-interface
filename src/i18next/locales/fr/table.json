@@ -11,6 +11,7 @@
   "filters": {
     "title": "Filtres",
     "nameFilterPlaceholder": "Recherche",
-    "showOnlyWhitelisted": "Afficher uniquement les offers de propriétés pour lequelle vous êtes sur liste blanche"
+    "showOnlyWhitelisted": "Afficher uniquement les offers de propriétés pour lequelle vous êtes sur liste blanche",
+    "hideDust": "Masquer les poussières d'offres"
   }
 }
