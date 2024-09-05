@@ -25,19 +25,17 @@ const authBearer =
     Authorization: `Bearer ${token ?? ''}`,
   } ?? {};
 
-export const getYamClient = (
-  chainId: number
-): ApolloClient<NormalizedCacheObject> => {
-  return new ApolloClient({
-    uri: getTheGraphUrlYAM(chainId),
-    cache: new InMemoryCache(),
-    headers: authBearer,
-  });
-};
+export const getYamClient = (chainId: number): ApolloClient<NormalizedCacheObject> => {
+    return new ApolloClient({
+      uri: getTheGraphUrlYAM(chainId),
+      cache: new InMemoryCache(),
+      headers: authBearer,
+    });
+}
 
 export const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? undefined;
-if (!apiUrl) {
-  throw new Error('Missing "NEXT_PUBLIC_API_URL" var env');
+if(!apiUrl){
+  throw new Error('Missing "NEXT_PUBLIC_API_URL" var env')
 }
 
 const link = createHttpLink({
