@@ -61,17 +61,13 @@ export const MarketTableAdmin: FC = () => {
   const { t: t3 } = useTranslation('modals');
 
   const deleteSelectedOffers = useCallback(() => {
-    const offerIds: string[] = [];
     const selectedId: string[] = Array.from(Object.keys(rowSelection));
-    selectedId.forEach( (id: string) => {
-      offerIds.push(offers[parseInt(id)].offerId)
-    });
 
     modals.openContextModal('delete', {
       title: <Title order={3}>{t3('delete.title')}</Title>,
       size: "lg",
       innerProps: {
-        offerIds: offerIds,
+        offerIds: selectedId,
         onSuccess: () => setRowSelection({}),
         isAdminDelete: true
       }
@@ -86,12 +82,12 @@ export const MarketTableAdmin: FC = () => {
         {
           role == USER_ROLE.ADMIN ?
             <IndeterminateCheckbox
-            {...{
-              checked: table.getIsAllRowsSelected(),
-              indeterminate: table.getIsSomeRowsSelected(),
-              onChange: table.getToggleAllRowsSelectedHandler(),
-            }}
-          />
+              {...{
+                checked: table.getIsAllPageRowsSelected(),
+                indeterminate: table.getIsSomePageRowsSelected(),
+                onChange: table.getToggleAllPageRowsSelectedHandler(),
+              }}
+            />
           :
           undefined
         }
@@ -202,7 +198,6 @@ export const MarketTableAdmin: FC = () => {
 
   const [offerLimit, setOfferLimit] = useState<number|undefined>(undefined);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  console.log('columnFilters', columnFilters)
 
   const [filterZeroAmount, setFilterZeroAmount] = useState<boolean>(false);
   const limitOffers = useMemo(() => {
@@ -233,6 +228,7 @@ export const MarketTableAdmin: FC = () => {
     getExpandedRowModel: getExpandedRowModel(),
     onRowSelectionChange: setRowSelection,
     enableRowSelection: true,
+    getRowId: row => row.offerId,
     meta: { 
       colSpan: 15
     },

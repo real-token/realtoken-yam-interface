@@ -1,8 +1,10 @@
 import {
   ApolloClient,
+  createHttpLink,
   InMemoryCache,
-  NormalizedCacheObject,
+  NormalizedCacheObject
 } from '@apollo/client';
+import { setContext } from '@apollo/client/link/context';
 
 export const getTheGraphUrlYAM = (chainId: number): string => {
   switch (chainId) {
@@ -17,6 +19,7 @@ export const getTheGraphUrlYAM = (chainId: number): string => {
   }
 };
 
+// TODO: remove this
 export const getYamClient = (chainId: number): ApolloClient<NormalizedCacheObject> => {
     return new ApolloClient({
         uri: getTheGraphUrlYAM(chainId),
@@ -24,12 +27,31 @@ export const getYamClient = (chainId: number): ApolloClient<NormalizedCacheObjec
     });
 }
 
+
 export const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? undefined;
 if(!apiUrl){
   throw new Error('Missing "NEXT_PUBLIC_API_URL" var env')
 }
 
+const link = createHttpLink({
+  uri: apiUrl
+});
+
+const authLink = setContext((_, { headers }) => {
+  // get the authentication token from local storage if it exists
+  const token = process.env.NEXT_PUBLIC_API_KEY;
+  console.log('token', token)
+  // return the headers to the context so httpLink can read them
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : "",
+    }
+  }
+});
+
 export const apiClient = new ApolloClient({
   uri: apiUrl,
   cache: new InMemoryCache(),
+  link: authLink.concat(link)
 });
