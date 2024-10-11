@@ -1,29 +1,29 @@
 {
   "wallet": {
-    "control": "Connect wallet",
-    "copy": "Copy address",
-    "viewOn": "View on explorer",
-    "disconnect": "Disconnect",
-    "network": "Network"
+    "control": "Conectar cartera",
+    "copy": "Copiar dirección",
+    "viewOn": "Ver en el explorador",
+    "disconnect": "Desconectar",
+    "network": "Red"
   },
   "settings": {
-    "title": "Language",
-    "french": "French",
-    "english": "English",
-    "spanish": "Spanish",
-    "light": "Light",
-    "dark": "Dark"
+    "title": "Idioma",
+    "french": "Francés",
+    "english": "Inglés",
+    "spanish": "Español",
+    "light": "Claro",
+    "dark": "Oscuro"
   },
   "subMenuMyOffer": {
-    "myOffers": "My offers",
-    "addOffer": "Add offers",
-    "privateOffers": "Private Offers"
+    "myOffers": "Mis ofertas",
+    "addOffer": "Añadir ofertas",
+    "privateOffers": "Ofertas privadas"
   },
   "subMenuAdmin": {
-    "adminMarketTable": "Manage offers",
-    "adminActions": "Managed actions"
+    "adminMarketTable": "Gestionar ofertas",
+    "adminActions": "Acciones gestionadas"
   },
   "messages": {
-    "DisabledGnosisSafe": "Direct connection to Safe is not possible, to connect to a GnosisSafe, please go to safe.global and connect to your Safe. In the \"App\" section, add a \"custom app\" using the url of the yam website (https://yam.realtoken.network). You will be able to have the YAM directly in the interface of your Safe"
+    "DisabledGnosisSafe": "La conexión directa a Safe no es posible. Para conectarte a GnosisSafe, ve a safe.global y conéctate a tu Safe. En la sección \"App\", añade una \"app personalizada\" usando la URL del sitio web de YAM (https://yam.realtoken.network). Podrás tener YAM directamente en la interfaz de tu Safe"
   }
 }

@@ -16,6 +16,7 @@
     "actionEdit": "Edit",
     "actionDelete": "Delete",
     "buy": "Buy",
+    "cannotBuyYourOffer": "You cannot buy your own offer",
     "privateTexte": "private",
     "onMarketSince": "On market since",
     "notWhitelisted": "You are not whitelisted on following tokens:"

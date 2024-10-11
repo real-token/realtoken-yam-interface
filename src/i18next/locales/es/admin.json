@@ -1,25 +1,25 @@
 {
     "addWL": {
-        "invalidTokenType": "Wrong token type.",
-        "invalidAddress": "Address is not valid.",
-        "tokenAlreadyWL": "Token already whitelisted.",
+        "invalidTokenType": "Tipo de token incorrecto.",
+        "invalidAddress": "La dirección no es válida.",
+        "tokenAlreadyWL": "El token ya está en la lista blanca.",
         "tokenType": {
-            "0": "Delete",
-            "1": "RealT token",
-            "2": "ERC20 with permit",
-            "3": "ERC20 witeout permit"
+            "0": "Eliminar",
+            "1": "Token RealT",
+            "2": "ERC20 con permiso",
+            "3": "ERC20 sin permiso"
         }
     },
     "addWlActions": {
-        "title": "Whitelist token",
-        "tokenAddress": "Token address",
-        "wlToken": "Whitelist token(s)"
+        "title": "Añadir token a la lista blanca",
+        "tokenAddress": "Dirección del token",
+        "wlToken": "Añadir token(s) a la lista blanca"
     },
     "checkAddress": {
-        "title": "Check address role",
-        "getAddressButton": "Get address Role"
+        "title": "Verificar rol de la dirección",
+        "getAddressButton": "Obtener rol de la dirección"
     },
     "grantRole":{
-        "title": "Grant role"
+        "title": "Otorgar rol"
     }
 }

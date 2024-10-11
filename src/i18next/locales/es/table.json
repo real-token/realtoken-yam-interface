@@ -1,17 +1,17 @@
 {
   "table": {
-    "noData": "No data"
+    "noData": "Sin datos"
   },
   "caption": {
-    "lineNumber": "Number of lines",
-    "goTo": "Go to page",
-    "noOption": "No options",
-    "autoRefresh": "Enable automatic refresh"
+    "lineNumber": "Número de líneas",
+    "goTo": "Ir a la página",
+    "noOption": "Sin opciones",
+    "autoRefresh": "Activar actualización automática"
   },
   "filters": {
-    "title": "Filters",
-    "nameFilterPlaceholder": "Search",
-    "showOnlyWhitelisted": "Show only whitelisted properties's offers",
-    "hideDust": "Hide dust offers"
+    "title": "Filtros",
+    "nameFilterPlaceholder": "Buscar",
+    "showOnlyWhitelisted": "Mostrar solo ofertas de propiedades en lista blanca",
+    "hideDust": "Ocultar ofertas de polvo"
   }
 }

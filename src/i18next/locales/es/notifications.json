@@ -1,92 +1,92 @@
 {
-  "graphIssue": "There are troubles with offer loadings with TheGraph. We are actively working on it, thanks for your understanding.",
+  "graphIssue": "Hay problemas con la carga de ofertas en TheGraph. Estamos trabajando activamente en ello, gracias por tu comprensión.",
   "grantRoleLoading": {
-    "title": "Waiting",
-    "message": "Your transaction is being validated."
+    "title": "Esperando",
+    "message": "Tu transacción está siendo validada."
   },
   "grantRoleSuccess": {
-    "title": "Success",
-    "message": "User grant role transaction succeed."
+    "title": "Éxito",
+    "message": "La transacción de otorgamiento de rol al usuario se ha completado con éxito."
   },
   "grantRoleInvalid": {
     "title": "Error",
-    "message": "User grant role transaction failed."
+    "message": "La transacción de otorgamiento de rol al usuario ha fallado."
   },
 
   "userCopied": {
-    "title": "Copied 🎉",
-    "message": "Your address have been copied to clipboard."
+    "title": "Copiado 🎉",
+    "message": "Tu dirección ha sido copiada al portapapeles."
   },
   "usersNotFound": {
     "title": "Error",
-    "message": "{{ usersNotFound }} users couldn't be retrieved. Check your RPC or refresh the table."
+    "message": "No se pudieron recuperar {{ usersNotFound }} usuarios. Verifica tu RPC o actualiza la tabla."
   },
   "createOfferLoading": {
-    "title": "Waiting",
-    "message": "Your transaction is being validated."
+    "title": "Esperando",
+    "message": "Tu transacción está siendo validada."
   },
   "createOfferSuccess": {
-    "title": "Success",
-    "message": "Your transaction has been validated."
+    "title": "Éxito",
+    "message": "Tu transacción ha sido validada."
   },
   "createOfferError": {
     "title": "Error",
-    "message": "Your transaction has been rejected."
+    "message": "Tu transacción ha sido rechazada."
   },
   "buyOfferLoading": {
-    "title": "Waiting",
-    "message": "Your transaction is being validated."
+    "title": "Esperando",
+    "message": "Tu transacción está siendo validada."
   },
   "buyOfferSuccess": {
-    "title": "Success",
-    "message": "Your transaction has been validated."
+    "title": "Éxito",
+    "message": "Tu transacción ha sido validada."
   },
   "buyOfferError": {
     "title": "Error",
-    "message": "Your transaction has been rejected."
+    "message": "Tu transacción ha sido rechazada."
   },
   "approveOfferLoading": {
-    "title": "Waiting",
-    "message": "Your transaction is being validated."
+    "title": "Esperando",
+    "message": "Tu transacción está siendo validada."
   },
   "approveOfferSuccess": {
-    "title": "Success",
-    "message": "Your transaction has been validated."
+    "title": "Éxito",
+    "message": "Tu transacción ha sido validada."
   },
   "approveOfferError": {
     "title": "Error",
-    "message": "Your transaction has been rejected."
+    "message": "Tu transacción ha sido rechazada."
   },
   "updateOfferLoading": {
-    "title": "Waiting",
-    "message": "Your transaction is being validated."
+    "title": "Esperando",
+    "message": "Tu transacción está siendo validada."
   },
   "updateOfferSuccess": {
-    "title": "Success",
-    "message": "Your transaction has been validated."
+    "title": "Éxito",
+    "message": "Tu transacción ha sido validada."
   },
   "updateOfferError": {
     "title": "Error",
-    "message": "Your transaction has been rejected."
+    "message": "Tu transacción ha sido rechazada."
   },
   "deleteOfferLoading": {
-    "title": "Waiting",
-    "message": "Your transaction is being validated."
+    "title": "Esperando",
+    "message": "Tu transacción está siendo validada."
   },
   "deleteOfferSuccess": {
-    "title": "Success",
-    "message": "Your transaction has been validated."
+    "title": "Éxito",
+    "message": "Tu transacción ha sido validada."
   },
   "deleteOfferError": {
     "title": "Error",
-    "message": "Your transaction has been rejected."
+    "message": "Tu transacción ha sido rechazada."
   },
   "createOfferInvalid": {
     "title": "Error",
-    "message": "You can not create this offer. Please make sure: You are whitelisted for the offer token, the offer token is whitelisted and not in locking periode, you have the offer token in your wallet."
+    "message": "No puedes crear esta oferta. Por favor, asegúrate de: Estar en la lista blanca para el token de oferta, que el token de oferta esté en la lista blanca y no esté en período de bloqueo, y que tengas el token de oferta en tu cartera."
   },
   "buyOfferInvalid": {
     "title": "Error",
-    "message": "You can not buy this offer. Please make sure: You are whitelisted for the offer token, the offer token is not in locking periode, you have enough buyer token balance in your wallet to pay the offer."
+    "message": "No puedes comprar esta oferta. Por favor, asegúrate de: Estar en la lista blanca para el token de oferta, que el token de oferta no esté en período de bloqueo, y que tengas suficiente saldo del token del comprador en tu cartera para pagar la oferta."
   }
 }

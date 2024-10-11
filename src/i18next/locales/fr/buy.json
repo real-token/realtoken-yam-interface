@@ -16,6 +16,7 @@
     "actionEdit": "Editer",
     "actionDelete": "Supprimer",
     "buy": "Acheter",
+    "cannotBuyYourOffer": "Vous ne pouvez pas acheter votre propre offre",
     "privateTexte": "privée",
     "onMarketSince": "Date de création",
     "notWhitelisted": "Vous n'êtes pas sur la liste blanche pour les propriétés suivantes:"

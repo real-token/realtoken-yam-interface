@@ -1,13 +1,13 @@
 {
-    "pageTitle": "Purchase/Sale history",
-    "errorLoading": "An error hapenned while loading historic",
-    "historicAreLoading": "Historic is loading",
-    "downloadButton": "Download",
+    "pageTitle": "Historial de compras/ventas",
+    "errorLoading": "Ocurrió un error al cargar el historial",
+    "historicAreLoading": "El historial se está cargando",
+    "downloadButton": "Descargar",
     "table": {
         "columnTitle": {
-            "txHash": "Tx hash",
-            "purchaseDate": "Puchase date",
-            "tokenSummary": "Transaction summary"
+            "txHash": "Hash de transacción",
+            "purchaseDate": "Fecha de compra",
+            "tokenSummary": "Resumen de la transacción"
         }
     }
 }

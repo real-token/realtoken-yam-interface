@@ -1,9 +1,9 @@
 {
   "walletMenu": {
-    "text": "Learn more about wallets",
+    "text": "Aprende más sobre carteras",
     "href": "https://metamask.zendesk.com/hc/en-us/articles/360015489531-Getting-started-with-MetaMask"
   },
   "footer": {
-    "faq": "HELP"
+    "faq": "AYUDA"
   }
 }
