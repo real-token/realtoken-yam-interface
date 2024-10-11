@@ -9,7 +9,7 @@ export const getCoingeckoApiPrice = (allowedToken: GetPriceTokenCoingecko, chain
         const chainConfig = CHAINS[chainId as ChainsID];
         const coingeckoNetworkId = chainConfig.coingeckoNetworkId;
 
-        const tokenAddress = allowedToken.contractAddress;
+        const tokenAddress = allowedToken.priceFnc.address ?? allowedToken.contractAddress;
 
         const res = await fetch(
             `https://api.geckoterminal.com/api/v2/simple/networks/${coingeckoNetworkId}/token_price/${tokenAddress}`
@@ -22,7 +22,7 @@ export const getCoingeckoApiPrice = (allowedToken: GetPriceTokenCoingecko, chain
         const price = data.data.attributes.token_prices[tokenAddress];
 
         resolve({ 
-            contractAddress: tokenAddress, 
+            contractAddress: allowedToken.contractAddress, 
             price: price ?? 0
         })
 

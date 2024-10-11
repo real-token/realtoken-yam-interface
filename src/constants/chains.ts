@@ -95,7 +95,7 @@ export const CHAINS: Record<ChainsID, Chain> = {
         metadata: { fromBlock: 5913460 },
       },
     },
-    coingeckoNetworkId: 'eth'
+    coingeckoNetworkId: 'xdai'
   }
 };
 

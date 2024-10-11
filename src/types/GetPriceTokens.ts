@@ -24,5 +24,6 @@ export interface GetPriceTokenChainLink extends GetPriceToken {
 export interface GetPriceTokenCoingecko extends GetPriceToken {
     priceFnc: {
         type: 'coingecko-api';
+        address?: string;
     }
 }
