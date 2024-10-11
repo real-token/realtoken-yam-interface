@@ -2,9 +2,7 @@ import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import { APIPropertiesToken, PropertiesToken, ShortProperty } from "src/types";
 import axios from "axios";
 import { tokenToGetPrice } from "../../../src/constants/GetPriceToken";
-import { CHAINS, ChainsID } from "../../../src/constants";
-import { apiClient } from "../../../src/utils/offers/getClientURL";
-import { gql } from "@apollo/client";
+import { ChainsID } from "../../../src/constants";
 
 const getTokenFromCommunityAPI = new Promise<APIPropertiesToken[]>( async (resolve, reject) => {
     try{
@@ -25,53 +23,60 @@ const getTokenFromCommunityAPI = new Promise<APIPropertiesToken[]>( async (resol
 }) 
 
 const getContractAddressFromChainId = (propertyToken: APIPropertiesToken, chainId: number): string|undefined => {
+
+    let addressKey;
     switch(chainId){
-        case 1:
-            propertyToken.ethereumContract;
-        case 100:
-            return propertyToken.gnosisContract ? propertyToken.gnosisContract : propertyToken.xDaiContract;
-        // case 5:
-        //     return propertyToken.goerliContract
-        default:
-            return undefined;
+        case ChainsID.Ethereum:
+            addressKey = "ethereum";
+        case ChainsID.Gnosis:
+            addressKey = "xDai";
+        case ChainsID.Sepolia:
+            addressKey = "sepolia";
     }
+
+    return propertyToken.blockchainAddresses[addressKey as keyof typeof propertyToken.blockchainAddresses]?.contract;
 }
 
 const getTokens = async (chainId: number, communityProperties: APIPropertiesToken[], wlProperties: ShortProperty[]): Promise<PropertiesToken[]> => {
-    const propertiesNonFiltered: PropertiesToken[] = []; 
-    if(chainId == ChainsID.Sepolia){
+    const propertiesNonFiltered: PropertiesToken[] = [];
 
-        const chainConfig = CHAINS[ChainsID.Sepolia];
-        const { graphPrefixes } = chainConfig;
+    // blockchainAddresses
 
-        // 
-        const res = await apiClient.query({
-            query: gql`
-                query getTokens{
-                    ${graphPrefixes.realtoken}{
-                        tokens{
-                            tokenId
-                            address
-                        }
-                    }
-                }
-            `
-        })
-        const properties: any[] = res.data[graphPrefixes.realtoken].tokens;
+
+    // if(chainId == ChainsID.Sepolia){
+
+    //     const chainConfig = CHAINS[ChainsID.Sepolia];
+    //     const { graphPrefixes } = chainConfig;
+
+    //     // 
+    //     const res = await apiClient.query({
+    //         query: gql`
+    //             query getTokens{
+    //                 ${graphPrefixes.realtoken}{
+    //                     tokens{
+    //                         tokenId
+    //                         address
+    //                     }
+    //                 }
+    //             }
+    //         `
+    //     })
+    //     const properties: any[] = res.data[graphPrefixes.realtoken].tokens;
         
-        properties.forEach((propertie) => {
-            const propertiesCommunity = communityProperties.find((token) => token.tokenIdRules == propertie.tokenId);
-            if(propertiesCommunity){
-                propertiesNonFiltered.push({
-                    ...propertiesCommunity,
-                    contractAddress: propertie.address,
-                    officialPrice: propertiesCommunity.tokenPrice,
-                    annualYield: propertiesCommunity.tokenPrice ? propertiesCommunity.netRentYearPerToken/propertiesCommunity.tokenPrice : 0
-                })
-            }
-        })
+    //     properties.forEach((propertie) => {
+    //         const propertiesCommunity = communityProperties.find((token) => token.tokenIdRules == propertie.tokenId);
+    //         if(propertiesCommunity){
+    //             propertiesNonFiltered.push({
+    //                 ...propertiesCommunity,
+    //                 contractAddress: propertie.address,
+    //                 officialPrice: propertiesCommunity.tokenPrice,
+    //                 annualYield: propertiesCommunity.tokenPrice ? propertiesCommunity.netRentYearPerToken/propertiesCommunity.tokenPrice : 0
+    //             })
+    //         }
+    //     })
         
-    }else{
+    // }else{
+
         communityProperties.forEach((propertyToken: APIPropertiesToken) => {
             const contractAddress = getContractAddressFromChainId(propertyToken,chainId);
             if(contractAddress){
@@ -91,7 +96,7 @@ const getTokens = async (chainId: number, communityProperties: APIPropertiesToke
             }
             
         });
-    }
+    // }
 
     return propertiesNonFiltered;
 
@@ -119,8 +124,8 @@ const handler: NextApiHandler = async (req: NextApiRequest, res: NextApiResponse
         const [communityApiToken] = await Promise.all([getTokenFromCommunityAPI]);
         const tokens = await getTokens(parseInt(chainId), communityApiToken, []);
 
-        const extendedTokens = tokenToGetPrice.get(parseInt(chainId))?.filter(token => !token.isBuyToken) ?? [] as PropertiesToken[];
-        console.log(extendedTokens);
+        // const extendedTokens = tokenToGetPrice.get(parseInt(chainId))?.filter(token => !token.isBuyToken) ?? [] as PropertiesToken[];
+        // console.log(extendedTokens);
 
         return res
             .setHeader('cache-control', 'public, s-maxage=1200, stale-while-revalidate=600')

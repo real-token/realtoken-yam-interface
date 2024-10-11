@@ -1,4 +1,13 @@
 // COMMING FROM COMMUNITY API
+
+type BlockchainAddress = {
+    chainName: string
+    chainId: number
+    contract: string
+    distributor: string
+    maintenance: string
+}
+
 export type APIPropertiesToken = {
     fullName: string
     shortName: string
@@ -13,6 +22,12 @@ export type APIPropertiesToken = {
     imageLink: string[]
     netRentYearPerToken: number
     tokenIdRules: number
+    blockchainAddresses: {
+        ethereum: BlockchainAddress
+        xDai: BlockchainAddress
+        gnosis: BlockchainAddress
+        sepolia: BlockchainAddress
+    }
 }
 
 export type ShortProperty = {
