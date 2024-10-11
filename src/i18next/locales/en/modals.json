@@ -17,8 +17,8 @@
       "price": "Sell price in ${{unit}}",
       "unit": "Unit for sell price",
       "shieldError": {
-        "line1": "Your are selling at a price of ${{price}, which represent a price difference of {{difference}}%",
-        "line2": "But you choose a maximum price difference of +/-${{difference}%"
+        "line1": "Your are selling at a price of ${{price}}, which represent a price difference of {{difference}}%",
+        "line2": "But you choose a maximum price difference of +/-${{difference}}%"
       },
       "priceInfo": "Your are selling with at a price of ${{price}}, which represent a price difference of {{difference}}%",
       "txSellSummary": "You wish to sell up to {{amount}} \"{{offerTokenSymbol}}\" with a unit price of {{price}} \"{{buyTokenSymbol}}\" and for a total of {{total}} \"{{buyTokenSymbol}}\"."
@@ -27,7 +27,7 @@
       "price": "Buy price in ${{unit}}",
       "unit": "Unit for buy price",
       "shieldError": {
-        "line1": "Your are buying at a price of ${{price}}, which represent a price difference of {{difference}}%",
+        "line1": "Your are buying at a price of $ {{price}}, which represent a price difference of {{difference}}%",
         "line2": "But you choose a maximum price difference of +/-${{difference}}%"
       },
       "priceInfo": "Your are buying with at a price of ${{price}}, which represent a price difference of {{difference}}%",

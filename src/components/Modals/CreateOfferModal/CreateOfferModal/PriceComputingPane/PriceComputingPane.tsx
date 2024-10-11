@@ -88,7 +88,7 @@ export const PriceComputingPane = ({ offer, form }: PriceComputingPaneProps) => 
             </Flex>
             {shieldError ? (
               <Flex className={classes.priceComputingPaneError}>
-                <Text>{t('shieldError.line2', { price: choosedPriceDollar?.toFixed(2), difference: ((priceDifference ?? 0)*100).toFixed(2) })}</Text>
+                <Text>{t('shieldError.line1', { price: '10', difference: ((priceDifference ?? 0)*100).toFixed(2) })}</Text>
                 <Text>{t('shieldError.line2', { difference: maxPriceDifference })}</Text>
               </Flex>
             ): choosedPriceDollar ? (
