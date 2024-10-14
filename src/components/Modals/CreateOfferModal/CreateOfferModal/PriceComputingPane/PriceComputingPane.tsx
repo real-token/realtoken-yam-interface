@@ -28,12 +28,10 @@ export const PriceComputingPane = ({ offer, form }: PriceComputingPaneProps) => 
     });
     const { t: commonT } = useTranslation('modals', { keyPrefix: 'createOffer.common' });
 
-    const { offerTokenPrice, buyerTokenPrice, buyTokenSymbol, setChoosedPrice } = useCreateOfferContext();
-    console.log(offerTokenPrice, buyerTokenPrice)
+    const { offerTokenPrice, buyerTokenPrice, buyTokenSymbol, setShieldError } = useCreateOfferContext();
 
     const [priceUnit, setPriceUnit] = useState<PriceUnit>('dollar');
     const [price, setPrice] = useState<number | undefined>(undefined);
-    console.log('price: ', price)
 
     // Price in $ depending if 1:1 ratio is set
     const choosedPriceDollar = useChoosenPrice(
@@ -43,20 +41,21 @@ export const PriceComputingPane = ({ offer, form }: PriceComputingPaneProps) => 
         offer.offerTokenDecimal ?? 6,
         values.useBuyTokenPrice
     );
-    console.log('choosedPriceDollar: ', choosedPriceDollar)
+
     useEffect(() => {
         if(priceUnit == 'dollar'){
-            console.log(choosedPriceDollar, buyerTokenPrice)
             const p = parseFloat(((choosedPriceDollar ?? 0)/(buyerTokenPrice ?? 1)).toFixed(offer.offerTokenDecimal ?? 6))
-            console.log('p: ', p)
             setFieldValue('price', p)
         }else{
-            console.log('price: ', price)
             setFieldValue('price', price)
         }
     },[choosedPriceDollar, priceUnit, price, buyerTokenPrice, offer.offerTokenDecimal])
 
     const { isError: shieldError, maxPriceDifference, priceDifference } = useShield(offer.offerType, choosedPriceDollar, offer.offerType == OFFER_TYPE.BUY ? buyerTokenPrice : offerTokenPrice );
+    useEffect(() => {
+        setShieldError(shieldError)
+    },[shieldError])
+    
 
     return(
         <>
@@ -88,8 +87,8 @@ export const PriceComputingPane = ({ offer, form }: PriceComputingPaneProps) => 
             </Flex>
             {shieldError ? (
               <Flex className={classes.priceComputingPaneError}>
-                <Text>{t('shieldError.line1', { price: '10', difference: ((priceDifference ?? 0)*100).toFixed(2) })}</Text>
-                <Text>{t('shieldError.line2', { difference: maxPriceDifference })}</Text>
+                <Text>{t('shieldError.line1', { price: choosedPriceDollar?.toFixed(2), difference: ((priceDifference ?? 0)*100).toFixed(2) })}</Text>
+                <Text>{t('shieldError.line2', { difference: (maxPriceDifference*100).toFixed(2) })}</Text>
               </Flex>
             ): choosedPriceDollar ? (
               <Flex className={classes.priceComputingPane}>

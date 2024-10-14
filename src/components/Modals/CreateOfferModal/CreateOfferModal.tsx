@@ -1,13 +1,6 @@
 /* eslint-disable react/display-name */
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { 
-  Button, Checkbox, Flex, 
-  Group, Select, Stack, TextInput, 
-  Text, NumberInput as MantineInput, 
-  Skeleton, Divider, ComboboxItem, Switch,
-  Popover, Portal, Card
-} from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { showNotification, updateNotification } from '@mantine/notifications';
 import BigNumber from 'bignumber.js';
@@ -15,27 +8,14 @@ import { CoinBridgeToken, coinBridgeTokenABI } from 'src/abis';
 import { Chain, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { ZERO_ADDRESS } from 'src/constants';
 import { getContract } from 'src/utils';
-import { NumberInput, truncDigits } from '../../NumberInput';
-import { cleanNumber } from 'src/utils/number';
 import { useWeb3React } from '@web3-react/core';
 import { ContextModalProps } from '@mantine/modals';
 import { CreatedOffer } from 'src/types/offer/CreatedOffer';
 import { useCreateOfferTokens } from 'src/hooks/useCreateOfferTokens';
-import { OfferTypeBadge } from 'src/components/Offer/OfferTypeBadge/OfferTypeBadge';
 import { OFFER_TYPE } from 'src/types/offer';
-import { useOraclePriceFeed } from 'src/hooks/useOraclePriceFeed';
-import { IconArrowRight, IconArrowsHorizontal, IconFocus, IconInfoCircle, IconSwitchHorizontal, IconSwitchVertical } from '@tabler/icons';
-import { Shield } from 'src/components/Shield/Shield';
-import { useWalletERC20Balance } from 'src/hooks/useWalletERC20Balance';
-import { useShield } from 'src/hooks/useShield';
-import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
-import { WalletERC20Balance } from 'src/components/WalletBalance/WalletERC20Balance';
 import { Contract } from 'ethers';
 import { Web3Provider } from '@ethersproject/providers';
-import { MatchedOffers } from './MatchedOffers/MatchedOffers';
 import { useRootStore } from '../../../zustandStore/store';
-import { ComboboxOfferToken } from './ComboboxOfferToken/ComboboxOfferToken';
-import { useDisclosure } from '@mantine/hooks';
 import { SellOfferModal } from './CreateOfferModal/types/SellOfferModal';
 import { CreateOfferProvider } from './CreateOfferModal/CreateOfferContext';
 import { useAssetPrice } from '../../../hooks/useAssetPrice';
@@ -140,7 +120,6 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   
   const isModification  = offer.price !== undefined;
 
-  const { t } = useTranslation('modals', { keyPrefix: 'sell' });
   const { account, provider } = useWeb3React();
 
   const form = useForm<SellFormValues>({
