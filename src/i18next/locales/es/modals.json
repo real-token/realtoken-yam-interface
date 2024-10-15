@@ -2,6 +2,44 @@
   "wallet": {
     "title": "Conectar cartera"
   },
+  "createOffer": {
+    "common": {
+      "currentPrice": "El precio actual es ${{price}}",
+      "offerTokenAddress": "Token de oferta",
+      "buyerTokenAddress": "Token del comprador",
+      "placeholderOfferTokenAddress": "Token que quieres vender",
+      "placeholderBuyerTokenAddress": "Token que quieres obtener",
+      "token": "Token",
+      "realtTokenType": "Token RealT",
+      "otherTokenType": "Otros (USDC, XDAI, etc...)"
+    },
+    "sell": {
+      "price": "Precio de venta en ${{unit}}",
+      "unit": "Unidad para el precio de venta",
+      "shieldError": {
+        "line1": "Estás vendiendo a un precio de ${{price}}, lo que representa una diferencia de precio de {{difference}}%",
+        "line2": "Pero elegiste una diferencia de precio máxima de +/-${{difference}}%"
+      },
+      "priceInfo": "Estás vendiendo a un precio de ${{price}}, lo que representa una diferencia de precio de {{difference}}%",
+      "txSellSummary": "Deseas vender hasta {{amount}} \"{{offerTokenSymbol}}\" con un precio unitario de {{price}} \"{{buyTokenSymbol}}\" y por un total de {{total}} \"{{buyTokenSymbol}}\"."
+    },
+    "buy": {
+      "price": "Precio de compra en ${{unit}}",
+      "unit": "Unidad para el precio de compra",
+      "shieldError": {
+        "line1": "Estás comprando a un precio de ${{price}}, lo que representa una diferencia de precio de {{difference}}%",
+        "line2": "Pero elegiste una diferencia de precio máxima de +/-${{difference}}%"
+      },
+      "priceInfo": "Estás comprando a un precio de ${{price}}, lo que representa una diferencia de precio de {{difference}}%",
+      "txBuySummary": "Deseas comprar hasta {{amount}} \"{{buyTokenSymbol}}\" con un precio unitario de {{price}} \"{{offerTokenSymbol}}\" y por un total de {{total}} \"{{offerTokenSymbol}}\"."
+    },
+    "exchange": {
+      "chooseExchangeTokenType": "Elige el tipo de token de intercambio",
+      "priceComputing": "Ingresa cuántos tokens \"{{exchangeBuyerTokenSymbol}}\" quieres recibir a cambio de 1 token \"{{exchangeOfferTokenSymbol}}\".",
+      "priceComputingTitle": "Cálculo de tasa de cambio",
+      "txExchangeSummary": "Deseas intercambiar hasta {{amount}} \"{{buyTokenSymbol}}\" con un precio unitario de {{price}} \"{{offerTokenSymbol}}\" y por un total de {{total}} \"{{offerTokenSymbol}}\"."
+    }
+  },
   "sell": {
     "sell": "Vender",
     "offerTokenAddress": "Token de oferta",

@@ -2,6 +2,44 @@
   "wallet": {
     "title": "Connecter mon portefeuille"
   },
+  "createOffer": {
+    "common": {
+      "currentPrice": "Le prix actuel est ${{price}}",
+      "offerTokenAddress": "Jeton d'offre",
+      "buyerTokenAddress": "Jeton d'achat",
+      "placeholderOfferTokenAddress": "Jeton que vous voulez vendre",
+      "placeholderBuyerTokenAddress": "Jeton que vous voulez obtenir",
+      "token": "Jeton",
+      "realtTokenType": "Jeton RealT",
+      "otherTokenType": "Autres (USDC, XDAI, etc...)"
+    },
+    "sell": {
+      "price": "Prix de vente en ${{unit}}",
+      "unit": "Unité pour le prix de vente",
+      "shieldError": {
+        "line1": "Vous vendez à un prix de ${{price}}, ce qui représente une différence de prix de {{difference}}%",
+        "line2": "Mais vous avez choisi une différence de prix maximale de +/-${{difference}}%"
+      },
+      "priceInfo": "Vous vendez à un prix de ${{price}}, ce qui représente une différence de prix de {{difference}}%",
+      "txSellSummary": "Vous souhaitez vendre jusqu'à {{amount}} \"{{offerTokenSymbol}}\" avec un prix unitaire de {{price}} \"{{buyTokenSymbol}}\" et pour un total de {{total}} \"{{buyTokenSymbol}}\"."
+    },
+    "buy": {
+      "price": "Prix d'achat en ${{unit}}",
+      "unit": "Unité pour le prix d'achat",
+      "shieldError": {
+        "line1": "Vous achetez à un prix de ${{price}}, ce qui représente une différence de prix de {{difference}}%",
+        "line2": "Mais vous avez choisi une différence de prix maximale de +/-${{difference}}%"
+      },
+      "priceInfo": "Vous achetez à un prix de ${{price}}, ce qui représente une différence de prix de {{difference}}%",
+      "txBuySummary": "Vous souhaitez acheter jusqu'à {{amount}} \"{{buyTokenSymbol}}\" avec un prix unitaire de {{price}} \"{{offerTokenSymbol}}\" et pour un total de {{total}} \"{{offerTokenSymbol}}\"."
+    },
+    "exchange": {
+      "chooseExchangeTokenType": "ChoChoisissez le type de jeton d'échange",
+      "priceComputing": "Entrez combien de jeton(s) \"{{exchangeBuyerTokenSymbol}}\" vous souhaitez recevoir en échange de 1 jeton \"{{exchangeOfferTokenSymbol}}\".",
+      "priceComputingTitle": "Calcul du taux de change",
+      "txExchangeSummary": "Vous souhaitez échanger jusqu'à {{amount}} \"{{buyTokenSymbol}}\" avec un prix unitaire de {{price}} \"{{offerTokenSymbol}}\" et pour un total de {{total}} \"{{offerTokenSymbol}}\"."
+    }
+  },
   "sell": {
     "sell": "Vente",
     "titleFormCreateOffer": "Créer votre offre",

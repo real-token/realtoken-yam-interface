@@ -36,7 +36,8 @@
     "exchange": {
       "chooseExchangeTokenType": "Choose exchange token type",
       "priceComputing": "Enter how many \"{{exchangeBuyerTokenSymbol}}\" token(s) you want to receive in exchange of 1 \"{{exchangeOfferTokenSymbol}}\" token.",
-      "priceComputingTitle": "Exchange rate computing"
+      "priceComputingTitle": "Exchange rate computing",
+      "txExchangeSummary": "You wish to exchange up to {{amount}} \"{{buyTokenSymbol}}\" with a unit price of {{price}} \"{{offerTokenSymbol}}\" and for a total of {{total}} \"{{offerTokenSymbol}}\"."
     }
   },
   "sell": {
