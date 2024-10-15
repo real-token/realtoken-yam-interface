@@ -28,7 +28,7 @@ export const PriceComputingPane = ({ offer, form }: PriceComputingPaneProps) => 
     });
     const { t: commonT } = useTranslation('modals', { keyPrefix: 'createOffer.common' });
 
-    const { offerTokenPrice, buyerTokenPrice, buyTokenSymbol, setShieldError } = useCreateOfferContext();
+    const { offerTokenPrice, buyerTokenPrice, buyTokenSymbol, setShieldError, setChoosedPrice } = useCreateOfferContext();
 
     const [priceUnit, setPriceUnit] = useState<PriceUnit>('dollar');
     const [price, setPrice] = useState<number | undefined>(undefined);
@@ -45,9 +45,13 @@ export const PriceComputingPane = ({ offer, form }: PriceComputingPaneProps) => 
     useEffect(() => {
         if(priceUnit == 'dollar'){
             const p = parseFloat(((choosedPriceDollar ?? 0)/(buyerTokenPrice ?? 1)).toFixed(offer.offerTokenDecimal ?? 6))
+            console.log('pDollar:', p)
             setFieldValue('price', p)
+            setChoosedPrice(p)
         }else{
+            console.log('price: ', price)
             setFieldValue('price', price)
+            setChoosedPrice(price)
         }
     },[choosedPriceDollar, priceUnit, price, buyerTokenPrice, offer.offerTokenDecimal])
 
@@ -55,7 +59,6 @@ export const PriceComputingPane = ({ offer, form }: PriceComputingPaneProps) => 
     useEffect(() => {
         setShieldError(shieldError)
     },[shieldError])
-    
 
     return(
         <>

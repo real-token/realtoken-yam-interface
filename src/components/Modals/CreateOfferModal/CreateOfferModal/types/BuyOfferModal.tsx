@@ -8,6 +8,7 @@ import { Flex, Text, Divider } from "@mantine/core";
 import { ComboboxOfferToken } from "../../ComboboxOfferToken/ComboboxOfferToken";
 import { Select } from "@mantine/core";
 import { PriceComputingPane } from "../PriceComputingPane/PriceComputingPane";
+import { useMemo } from "react";
 
 interface BuyOfferModalProps{
     form: UseFormReturnType<SellFormValues>;
@@ -19,6 +20,14 @@ export const BuyOfferModal = ({ offer, form }: BuyOfferModalProps) => {
     const { t } = useTranslation('modals', { keyPrefix: 'createOffer' });
 
     const { offerTokens, buyerTokens, offerTokenSymbol, offerTokenPrice, buyTokenSymbol, buyerTokenPrice, choosedPrice } = useCreateOfferContext();
+
+    console.log('choosedPrice: ', choosedPrice)
+    console.log('amount: ', values?.amount)
+
+    const total = useMemo(() => {
+        return ((values?.amount ?? 0)* (choosedPrice ?? 0)).toFixed(6)
+    }, [values?.amount, choosedPrice])
+    console.log('total: ', total)
 
     return (
         <OfferModalWrapper
@@ -69,7 +78,7 @@ export const BuyOfferModal = ({ offer, form }: BuyOfferModalProps) => {
                         buyTokenSymbol: buyTokenSymbol,
                         price: choosedPrice,
                         offerTokenSymbol: offerTokenSymbol,
-                        total: ((values?.amount ?? 0)* (choosedPrice ?? 0)).toFixed(6)
+                        total
                     })}
                 </Text>
             }

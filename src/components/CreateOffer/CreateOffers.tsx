@@ -232,6 +232,7 @@ export const CreateOffer = () => {
         } else if (offerTokenType == 2 && !isSafe) {
           // TokenType = 2: ERC20 With Permit
           console.log('erc20PermitSignature');
+          console.log(offer.amount)
           needPermit = true;
           permitAnswer = await erc20PermitSignature(
             account,

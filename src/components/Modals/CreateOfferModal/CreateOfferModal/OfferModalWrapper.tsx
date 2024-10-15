@@ -25,8 +25,6 @@ export const OfferModalWrapper: React.FC<ComponentProps> = ({ offer, form, token
     const { offerTokenSymbol, shieldError, onSubmit, isLoading } = useCreateOfferContext();
     const { bigNumberbalance, balance } = useWalletERC20Balance(values.offerTokenAddress);
 
-    console.log('shieldError: ', shieldError)
-
     return (
         <Flex direction={"column"} mx={'auto'} gap={"md"} style={{ padding: '1rem' }}>
             <Flex style={{ justifyContent: "space-between", alignItems: "center", height: "50px" }}>

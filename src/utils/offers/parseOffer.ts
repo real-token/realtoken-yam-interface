@@ -79,13 +79,6 @@ export const parseOffer = (
 
         const isExtendedToken = extendedTokensAddress.includes(offer.seller.address) || extendedTokensAddress.includes(offer.offerToken.address);
 
-        if(offer.id == "41774"){
-          console.log("offer: ", offer)
-          console.log("balanceWallet: ", balanceWallet)
-          console.log("allowance: ", allowance)
-          console.log("offer.availableAmount", offer.availableAmount)
-        }
-
         const o: Offer = {
           offerId: BigNumber(offer.id).toString(),
           offerTokenAddress: (offer.offerToken.address as string)?.toLowerCase(),
@@ -101,9 +94,9 @@ export const parseOffer = (
           price: offer.price.price.toString(),
           amount:
             BigNumber.minimum(
-              offer.availableAmount, //5.4
-              balanceWallet, // 0
-              allowance //0
+              offer.availableAmount,
+              balanceWallet,
+              allowance
             ).toString(10) ?? '0',
           availableAmount: offer.availableAmount.toString(),
           balanceWallet: balanceWallet ?? '0',
@@ -138,6 +131,10 @@ export const parseOffer = (
         o.yieldDelta = getYieldDelta(o);
         o.priceDelta = getPriceDelta(prices,o);
         o.accountWhitelisted = getNotWhitelistedTokens(wlPropertiesId, o, propertiesToken).length == 0;
+
+        if(o.offerId == "3"){
+          console.log("o: ", o)
+        }
 
         // console.log(offer.availableAmount, balanceWallet, allowance)
         resolve(o);
@@ -294,16 +291,7 @@ const getPriceDelta = (prices: Price, offer: Offer): number | undefined => {
       : undefined;
   }
   if (offer.type == OFFER_TYPE.BUY && officialPrice) {
-    const tokenInDollar = 1 / parseFloat(offer.price.toString());
-    const ratio = officialPrice / tokenInDollar;
-
-    // if(offer.offerId == "135"){
-    //   console.log("offer price: ", offer.price.toString())
-    //   console.log("officialPrice: ", officialPrice)
-    //   console.log("tokenInDollar: ", tokenInDollar)
-    //   console.log("ratio: ", ratio)
-    // }
-
+    const ratio = officialPrice / parseFloat(offer.price.toString());
     return 1 - ratio;
   }
 };
