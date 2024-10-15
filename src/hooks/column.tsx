@@ -100,6 +100,11 @@ export const idColumn: ColumnFn<OFFER_TYPE> = (t,span) => {
             )
         },
         enableSorting: true,
+        sortingFn: (rowA, rowB) => {
+          const valueA = parseInt(rowA.original.offerId);
+          const valueB = parseInt(rowB.original.offerId);
+          return valueA - valueB;
+        },
         meta: { colSpan: span },
     }
 }
