@@ -62,12 +62,9 @@ export const MarketTable: FC = () => {
     }
   },[nameFilterValue])
 
-
   const publicOffers = useRootStore(selectPublicOffers);
   const { offers: data } = useTypedOffers(publicOffers);
   const columns = useRightTableColumn(OFFERS_TYPE.PUBLIC);
-
-  console.log(data)
 
   const table = useReactTable({
     data: data,
