@@ -5,6 +5,7 @@ import { SellFormValues } from "../CreateOfferModal";
 import { useTranslation } from "react-i18next";
 import { NumberInput } from "../../../NumberInput";
 import { IconArrowRight } from "@tabler/icons";
+import { useCreateOfferContext } from "./CreateOfferContext";
 
 interface ExchangeRateComputingProps{
     form: UseFormReturnType<SellFormValues>;
@@ -18,11 +19,17 @@ export const ExchangeRateComputing = ({ form, exchangeOfferTokens, exchangeBuyer
     const { t } = useTranslation('modals', { keyPrefix: 'createOffer' });
     const [price,setPrice] = useState<number>(1);
 
+    const { setChoosedPrice } = useCreateOfferContext()
+
     const exchangeOfferTokenSymbol = exchangeOfferTokens.find(value => value.value == values.offerTokenAddress)?.label;
     const exchangeBuyerTokenSymbol = exchangeBuyerToken.find(value => value.value == values.buyerTokenAddress)?.label;
 
     useEffect(() => {
-      if(price) setFieldValue("price",parseFloat((1/price).toFixed(6)))
+      if(price){
+        const p = parseFloat((1/price).toFixed(6));
+        setFieldValue("price",p)
+        setChoosedPrice(p)
+      }
     },[price]);
 
     return (

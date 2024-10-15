@@ -25,6 +25,9 @@ export const ExchangeOfferModal = ({ offer, form }: BuyOfferModalProps) => {
 
     const { properties, allowedTokens, choosedPrice, offerTokenSymbol, buyTokenSymbol } = useCreateOfferContext();
 
+    console.log("offerTokenSymbol: ", offerTokenSymbol)
+    console.log("buyTokenSymbol: ", buyTokenSymbol)
+
     const exchangeOfferTokens = useMemo(() => {
         return exchangeType == 'realtoken' ? 
             properties.filter(property => property.value != values.buyerTokenAddress)
@@ -38,6 +41,10 @@ export const ExchangeOfferModal = ({ offer, form }: BuyOfferModalProps) => {
         : 
             allowedTokens.filter(allowedToken => allowedToken.value != values.offerTokenAddress)
     },[exchangeType, properties, allowedTokens, values.offerTokenAddress])
+
+    const total = useMemo(() => {
+        return ((values?.amount ?? 0)*(choosedPrice ?? 0)).toFixed(exchangeType == 'realtoken' ? 18 : 6)
+    },[values?.amount, choosedPrice, exchangeType])
 
     return(
         <OfferModalWrapper 
@@ -81,12 +88,12 @@ export const ExchangeOfferModal = ({ offer, form }: BuyOfferModalProps) => {
             }
             summary={
                 <Text size={"md"} mb={10}>
-                    {t("txExchangeSummary", {
+                    {t("exchange.txExchangeSummary", {
                         amount: values?.amount,
                         buyTokenSymbol: offerTokenSymbol,
                         price: choosedPrice,
                         offerTokenSymbol: buyTokenSymbol,
-                        total: ((values?.amount ?? 0)*(choosedPrice ?? 0)).toFixed(6)
+                        total
                     })}
                 </Text>
             }

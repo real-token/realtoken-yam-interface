@@ -2,6 +2,7 @@ import { createContext, useContext, ReactNode, useState, useMemo } from 'react';
 import { ComboboxItem } from '@mantine/core';
 import { SellFormValues } from '../CreateOfferModal';
 import { OFFER_TYPE } from '../../../../types/offer';
+import { useRootStore } from '../../../../zustandStore/store';
 
 type Values = SellFormValues & {
     offerTokens: ComboboxItem[];
@@ -38,13 +39,15 @@ export const CreateOfferProvider: React.FC<CreateOfferProviderProps> = ({ childr
     const [shieldError, setShieldError] = useState<boolean>(false);
     const [choosedPrice, setChoosedPrice] = useState<number | undefined>(undefined);
 
+    const properties = useRootStore(state => state.properties)
+
     const offerTokenSymbol = useMemo(() => {
-        return values.offerTokens.find((token) => token.value === values.offerTokenAddress)?.label;
-    },[values]);
+        return properties.find((token) => token.contractAddress.toLowerCase() === values.offerTokenAddress.toLowerCase())?.shortName;
+    },[properties, values.offerTokenAddress]);
 
     const buyTokenSymbol = useMemo(() => {
-        return values.buyerTokens.find(value => value.value == values.buyerTokenAddress)?.label;
-    },[values]); 
+        return properties.find((token) => token.contractAddress.toLowerCase() === values.buyerTokenAddress.toLowerCase())?.shortName;
+    },[properties, values.buyerTokenAddress]); 
 
     return (
         <CreateOfferContext.Provider 
