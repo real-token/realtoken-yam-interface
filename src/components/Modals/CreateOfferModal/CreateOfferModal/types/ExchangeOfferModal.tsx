@@ -23,10 +23,17 @@ export const ExchangeOfferModal = ({ offer, form }: BuyOfferModalProps) => {
 
     const data = [{ value: 'realtoken', label: t("common.realtTokenType") },{ value: 'others', label: t("common.otherTokenType") }];
 
-    const { properties, allowedTokens, choosedPrice, offerTokenSymbol, buyTokenSymbol } = useCreateOfferContext();
+    const { properties, allowedTokens, choosedPrice } = useCreateOfferContext();
 
-    console.log("offerTokenSymbol: ", offerTokenSymbol)
-    console.log("buyTokenSymbol: ", buyTokenSymbol)
+    const offerTokenSymbol = useMemo(() => {
+        const list = exchangeType == 'realtoken' ? properties : allowedTokens;
+        return list.find((token) => token.value === values.offerTokenAddress)?.label;
+    },[exchangeType, properties, allowedTokens, values.offerTokenAddress]);
+
+    const buyTokenSymbol = useMemo(() => {
+        const list = exchangeType == 'realtoken' ? properties : allowedTokens;
+        return list.find((token) => token.value === values.buyerTokenAddress)?.label;
+    },[exchangeType, properties, allowedTokens, values.buyerTokenAddress]);
 
     const exchangeOfferTokens = useMemo(() => {
         return exchangeType == 'realtoken' ? 

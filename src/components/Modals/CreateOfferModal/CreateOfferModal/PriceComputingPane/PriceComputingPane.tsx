@@ -45,11 +45,9 @@ export const PriceComputingPane = ({ offer, form }: PriceComputingPaneProps) => 
     useEffect(() => {
         if(priceUnit == 'dollar'){
             const p = parseFloat(((choosedPriceDollar ?? 0)/(buyerTokenPrice ?? 1)).toFixed(offer.offerTokenDecimal ?? 6))
-            console.log('pDollar:', p)
             setFieldValue('price', p)
             setChoosedPrice(p)
         }else{
-            console.log('price: ', price)
             setFieldValue('price', price)
             setChoosedPrice(price)
         }

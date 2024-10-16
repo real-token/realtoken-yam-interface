@@ -18,6 +18,8 @@ export function SellOfferModal({ offer, form }: SellOfferModalProps){
     const { t } = useTranslation('modals', { keyPrefix: 'createOffer' });
 
     const { offerTokens, buyerTokens, offerTokenSymbol, offerTokenPrice, buyTokenSymbol, buyerTokenPrice, choosedPrice } = useCreateOfferContext();
+    console.log('offerTokenSymbol: ', offerTokenSymbol)
+    console.log('buyTokenSymbol: ', buyTokenSymbol)
 
     return (
         <OfferModalWrapper 

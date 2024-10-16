@@ -39,15 +39,13 @@ export const CreateOfferProvider: React.FC<CreateOfferProviderProps> = ({ childr
     const [shieldError, setShieldError] = useState<boolean>(false);
     const [choosedPrice, setChoosedPrice] = useState<number | undefined>(undefined);
 
-    const properties = useRootStore(state => state.properties)
-
     const offerTokenSymbol = useMemo(() => {
-        return properties.find((token) => token.contractAddress.toLowerCase() === values.offerTokenAddress.toLowerCase())?.shortName;
-    },[properties, values.offerTokenAddress]);
+        return values.offerTokens.find((token) => token.value === values.offerTokenAddress)?.label;
+    },[values]);
 
     const buyTokenSymbol = useMemo(() => {
-        return properties.find((token) => token.contractAddress.toLowerCase() === values.buyerTokenAddress.toLowerCase())?.shortName;
-    },[properties, values.buyerTokenAddress]); 
+        return values.buyerTokens.find(value => value.value == values.buyerTokenAddress)?.label;
+    },[values]); 
 
     return (
         <CreateOfferContext.Provider 
