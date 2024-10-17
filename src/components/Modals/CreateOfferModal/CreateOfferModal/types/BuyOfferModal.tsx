@@ -21,13 +21,14 @@ export const BuyOfferModal = ({ offer, form }: BuyOfferModalProps) => {
 
     const { offerTokens, buyerTokens, offerTokenSymbol, offerTokenPrice, buyTokenSymbol, buyerTokenPrice, choosedPrice } = useCreateOfferContext();
 
-    console.log('choosedPrice: ', choosedPrice)
-    console.log('amount: ', values?.amount)
+    const price = useMemo(() => {
+        return (values?.amount ?? 0) * (choosedPrice ?? 0)
+    }, [values?.amount, choosedPrice])
 
     const total = useMemo(() => {
         return ((values?.amount ?? 0)* (choosedPrice ?? 0)).toFixed(6)
     }, [values?.amount, choosedPrice])
-    console.log('total: ', total)
+    // console.log('total: ', total)
 
     return (
         <OfferModalWrapper

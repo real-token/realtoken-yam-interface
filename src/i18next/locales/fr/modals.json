@@ -11,7 +11,8 @@
       "placeholderBuyerTokenAddress": "Jeton que vous voulez obtenir",
       "token": "Jeton",
       "realtTokenType": "Jeton RealT",
-      "otherTokenType": "Autres (USDC, XDAI, etc...)"
+      "otherTokenType": "Autres (USDC, XDAI, etc...)",
+      "useBuyTokenPrice": "Utiliser le ratio de conversion du jeton {{token}} 1:1"
     },
     "sell": {
       "price": "Prix de vente en ${{unit}}",

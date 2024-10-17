@@ -1,20 +1,17 @@
-import { Flex, NumberInput, Text, Input, SegmentedControl } from '@mantine/core';
+import { Flex, NumberInput, Input, SegmentedControl, Checkbox, Text } from '@mantine/core';
 import { CreatedOffer, OFFER_TYPE } from '../../../../../types/offer';
 import { UseFormReturnType } from "@mantine/form";
 import { SellFormValues } from '../../CreateOfferModal';
 import { useTranslation } from 'react-i18next';
-import { useShield } from '../../../../../hooks/useShield';
 import { useChoosenPrice } from '../../../../../hooks/useChoosenPrice';
 import { useEffect, useState } from 'react';
-import { useCreateOfferContext } from '../CreateOfferContext';
+import { PriceUnit, useCreateOfferContext } from '../CreateOfferContext';
+import BigNumber from 'bignumber.js';
 import classes from './PriceComputingPane.module.css';
 
 function capitalizeFirstLetter(string: string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
-
-
-type PriceUnit = 'dollar' | 'token';
 
 interface PriceComputingPaneProps{
     offer: CreatedOffer
@@ -28,35 +25,32 @@ export const PriceComputingPane = ({ offer, form }: PriceComputingPaneProps) => 
     });
     const { t: commonT } = useTranslation('modals', { keyPrefix: 'createOffer.common' });
 
-    const { offerTokenPrice, buyerTokenPrice, buyTokenSymbol, setShieldError, setChoosedPrice } = useCreateOfferContext();
+    const {
+        offerTokenPrice, buyerTokenPrice, buyTokenSymbol, offerTokenSymbol, 
+        priceUnit, setPriceUnit, price, setChoosedPrice,
+        shieldError, maxPriceDifference, priceDifference
+    } = useCreateOfferContext();
 
-    const [priceUnit, setPriceUnit] = useState<PriceUnit>('dollar');
-    const [price, setPrice] = useState<number | undefined>(undefined);
+    const [internalPrice, setInternalPrice] = useState<number|undefined>(price);
 
-    // Price in $ depending if 1:1 ratio is set
+    // Price in $ depending  on "1:1 ratio" and "unitPrice"
     const choosedPriceDollar = useChoosenPrice(
-        price, 
+        internalPrice, 
         offer.offerType == OFFER_TYPE.BUY ? offerTokenPrice : buyerTokenPrice, 
+        buyerTokenPrice,
         priceUnit, 
-        offer.offerTokenDecimal ?? 6,
         values.useBuyTokenPrice
     );
 
     useEffect(() => {
-        if(priceUnit == 'dollar'){
-            const p = parseFloat(((choosedPriceDollar ?? 0)/(buyerTokenPrice ?? 1)).toFixed(offer.offerTokenDecimal ?? 6))
-            setFieldValue('price', p)
-            setChoosedPrice(p)
-        }else{
-            setFieldValue('price', price)
-            setChoosedPrice(price)
+        setChoosedPrice(choosedPriceDollar);
+        if(offer.offerType == OFFER_TYPE.BUY){
+            const p = choosedPriceDollar ? 1/choosedPriceDollar : 0;
+            setFieldValue('price', parseFloat(new BigNumber(p).toPrecision(offer.offerTokenDecimal ?? 6)))
+            return;
         }
-    },[choosedPriceDollar, priceUnit, price, buyerTokenPrice, offer.offerTokenDecimal])
-
-    const { isError: shieldError, maxPriceDifference, priceDifference } = useShield(offer.offerType, choosedPriceDollar, offer.offerType == OFFER_TYPE.BUY ? buyerTokenPrice : offerTokenPrice );
-    useEffect(() => {
-        setShieldError(shieldError)
-    },[shieldError])
+        setFieldValue('price', parseFloat(new BigNumber(choosedPriceDollar ?? 0).toPrecision(offer.offerTokenDecimal ?? 6)))
+    },[choosedPriceDollar])
 
     return(
         <>
@@ -76,14 +70,23 @@ export const PriceComputingPane = ({ offer, form }: PriceComputingPaneProps) => 
                     />
                 </Flex>
                 <Flex direction={'column'} gap={'xs'}>
-                  <NumberInput 
+                  <NumberInput
                       label={t('price', { unit: priceUnit == 'token' ? buyTokenSymbol : '' })}
                       hideControls={true}
                       required={true}
                       decimalScale={offer.offerTokenDecimal ?? 6}
-                      value={price}
-                      onChange={(value) => setPrice(value as number)}
+                      value={internalPrice}
+                      onChange={(value) => setInternalPrice(value as number)}
                   />
+                  {priceUnit == 'dollar' ? (
+                    <Checkbox
+                        label={commonT('useBuyTokenPrice', { 
+                            token: offer.offerType == OFFER_TYPE.BUY ? offerTokenSymbol : buyTokenSymbol
+                        })}
+                        checked={values.useBuyTokenPrice}
+                        onChange={(event) => setFieldValue('useBuyTokenPrice', event.currentTarget.checked)}
+                    />
+                  ): undefined}
                 </Flex>
             </Flex>
             {shieldError ? (
@@ -93,7 +96,7 @@ export const PriceComputingPane = ({ offer, form }: PriceComputingPaneProps) => 
               </Flex>
             ): choosedPriceDollar ? (
               <Flex className={classes.priceComputingPane}>
-                  {t('priceInfo', { price: choosedPriceDollar?.toFixed(2), difference: ((priceDifference ?? 0)*100).toFixed(2) }) }
+                  {t('priceInfo', { price: choosedPriceDollar?.toFixed(4), difference: ((priceDifference ?? 0)*100).toFixed(2) }) }
               </Flex>
             ) : undefined}
         </>

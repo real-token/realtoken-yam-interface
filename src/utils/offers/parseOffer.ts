@@ -132,7 +132,7 @@ export const parseOffer = (
         o.priceDelta = getPriceDelta(prices,o);
         o.accountWhitelisted = getNotWhitelistedTokens(wlPropertiesId, o, propertiesToken).length == 0;
 
-        if(o.offerId == "3"){
+        if(o.offerId == "14"){
           console.log("o: ", o)
         }
 
@@ -291,7 +291,7 @@ const getPriceDelta = (prices: Price, offer: Offer): number | undefined => {
       : undefined;
   }
   if (offer.type == OFFER_TYPE.BUY && officialPrice) {
-    const ratio = officialPrice / parseFloat(offer.price.toString());
-    return 1 - ratio;
+    const tokenInDollar = 1 / parseFloat(offer.price.toString());
+    return (tokenInDollar - officialPrice) / officialPrice;
   }
 };

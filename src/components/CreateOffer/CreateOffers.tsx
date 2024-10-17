@@ -124,7 +124,6 @@ export const CreateOffer = () => {
     state.approvals, 
     state.resetApprovals
   ]);
-  console.log('approvals', approvals);
 
   const { t } = useTranslation('modals', { keyPrefix: 'sell' });
 

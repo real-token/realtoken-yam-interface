@@ -11,7 +11,8 @@
       "placeholderBuyerTokenAddress": "Token you want to get",
       "token": "Token",
       "realtTokenType": "RealT token",
-      "otherTokenType": "Others (USDC, XDAI, etc...)"
+      "otherTokenType": "Others (USDC, XDAI, etc...)",
+      "useBuyTokenPrice": "Use {{token}} 1:1 price rate"
     },
     "sell": {
       "price": "Sell price in ${{unit}}",

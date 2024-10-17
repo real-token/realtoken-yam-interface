@@ -137,7 +137,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
               .shiftedBy(-offer.offerTokenDecimal)
               .toNumber() / offer.price
           : undefined,
-      useBuyTokenPrice: true,
+      useBuyTokenPrice: false,
       buyerAddress: offer?.buyerAddress ?? ZERO_ADDRESS,
       isPrivateOffer: offer?.isPrivateOffer ?? false,
     },
@@ -215,7 +215,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
     }
   }
 
-  const offerTokenPrice = useAssetPrice({ 
+  const offerTokenPrice = useAssetPrice({
     tokenType: offer.offerType == OFFER_TYPE.SELL ? 'realtoken' : 'others', 
     tokenAddress: values.offerTokenAddress
   });
@@ -230,6 +230,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
     <CreateOfferProvider
       values={{
         ...form.values,
+        setFieldValue: form.setFieldValue,
         offerTokens,
         buyerTokens,
         offerTokenPrice,
