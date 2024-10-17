@@ -226,7 +226,8 @@ export const BuyModalWithPermit: FC<
               {` ${t("summaryText1")} ${values?.amount} ${offerTokenSymbol} ${t("summaryText2")} ${cleanNumber(values?.price)} ${buyTokenSymbol} ${t("summaryText3")} ${total} ${buyTokenSymbol}`}
             </Text>
             
-            <Flex direction={'column'} gap={'md'} style={(theme) => ({ marginBottom: theme.spacing.xl })}>
+            {values.amount > 0 ? (
+              <Flex direction={'column'} gap={'md'} style={(theme) => ({ marginBottom: theme.spacing.xl })}>
               {connector !== ConnectorsDatas.get(AvailableConnectors.gnosisSafe)?.connectorKey ? (
                 <Flex direction={'column'} gap={5}>
                   <Text size="sm" fw={500} mt="md">{'Buy method'}</Text>
@@ -266,11 +267,13 @@ export const BuyModalWithPermit: FC<
                 type={'submit'}
                 loading={isSubmitting}
                 aria-label={t('confirm')}
-                disabled={process.env.NEXT_PUBLIC_ENV == "development" ? false : (values?.amount == 0 || !values.amount || approveNeeded)}
+                disabled={values?.amount == 0 || !values.amount || values.buyMethod == BUY_METHODS.buyWithApprove && approveNeeded}
               >
                 {values.buyMethod == BUY_METHODS.buyWithPermit ? t('buyButtons.permit.text') : t('buyButtons.approve.text')}
               </Button>
             </Flex>
+            ) : undefined}
+
             <Flex>
               <Button color={'red'} onClick={onClose} aria-label={t('cancel')}>
                 {t('cancel')}
