@@ -12,11 +12,18 @@
       "token": "Token",
       "realtTokenType": "RealT token",
       "otherTokenType": "Others (USDC, XDAI, etc...)",
-      "useBuyTokenPrice": "Use {{token}} 1:1 price rate"
+      "useBuyTokenPrice": "Use {{token}} 1:1 price rate",
+      "buttonUpdateOffer": "Update offer",
+      "titleFormCreateOffer": "Create your offer",
+      "titleFormModifyOffer": "Modify your offer",
+      "placeholderAmount": "Quantity of tokens on sale",
+      "exchangeAmount": "Quantity of selled tokens to exchange",
+      "amount": "Quantity"
     },
     "sell": {
       "price": "Sell price in ${{unit}}",
       "unit": "Unit for sell price",
+
       "shieldError": {
         "line1": "Your are selling at a price of ${{price}}, which represent a price difference of {{difference}}%",
         "line2": "But you choose a maximum price difference of +/-${{difference}}%"

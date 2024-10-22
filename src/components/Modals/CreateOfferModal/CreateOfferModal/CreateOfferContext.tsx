@@ -32,6 +32,7 @@ export type CreateOfferContextType = Values & {
     shieldError: boolean;
     maxPriceDifference: number;
     priceDifference: number;
+    isModification: boolean;
 }
 
 const CreateOfferContext = createContext<CreateOfferContextType | undefined>(undefined);
@@ -39,9 +40,10 @@ const CreateOfferContext = createContext<CreateOfferContextType | undefined>(und
 interface CreateOfferProviderProps {
   children: ReactNode;
   values: Values;
+  isModification: boolean;
 }
 
-export const CreateOfferProvider: React.FC<CreateOfferProviderProps> = ({ children, values }) => {
+export const CreateOfferProvider: React.FC<CreateOfferProviderProps> = ({ children, values, isModification }) => {
 
     const [priceUnit, setPriceUnit] = useState<PriceUnit>('dollar');
 
@@ -50,11 +52,11 @@ export const CreateOfferProvider: React.FC<CreateOfferProviderProps> = ({ childr
     }
 
     const offerTokenSymbol = useMemo(() => {
-        return values.offerTokens.find((token) => token.value === values.offerTokenAddress)?.label;
+        return values.offerTokens.find((token) => token.value.toLowerCase() === values.offerTokenAddress?.toLowerCase())?.label;
     },[values]);
 
     const buyTokenSymbol = useMemo(() => {
-        return values.buyerTokens.find(value => value.value == values.buyerTokenAddress)?.label;
+        return values.buyerTokens.find(value => value.value.toLowerCase() == values.buyerTokenAddress?.toLowerCase())?.label;
     },[values]);
 
     const { isError: shieldError, maxPriceDifference, priceDifference } = useShield(values.offerType, values.choosedPrice, values.offerType == OFFER_TYPE.BUY ? values.buyerTokenPrice : values.offerTokenPrice);
@@ -70,6 +72,7 @@ export const CreateOfferProvider: React.FC<CreateOfferProviderProps> = ({ childr
                 setChoosedPrice,
                 maxPriceDifference,
                 priceDifference: priceDifference ?? 0,
+                isModification: isModification,
                 ...values
             }}
         >

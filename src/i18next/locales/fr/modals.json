@@ -12,7 +12,13 @@
       "token": "Jeton",
       "realtTokenType": "Jeton RealT",
       "otherTokenType": "Autres (USDC, XDAI, etc...)",
-      "useBuyTokenPrice": "Utiliser le ratio de conversion du jeton {{token}} 1:1"
+      "useBuyTokenPrice": "Utiliser le ratio de conversion du jeton {{token}} 1:1",
+      "buttonUpdateOffer": "Modifier votre offre",
+      "titleFormCreateOffer": "Créer votre offre",
+      "titleFormModifyOffer": "Modifier votre offre",
+      "placeholderAmount": "Quantité de jetons en vente",
+      "exchangeAmount": "Quantité de jetons vendus pour échanger",
+      "amount": "Quantité"
     },
     "sell": {
       "price": "Prix de vente en ${{unit}}",

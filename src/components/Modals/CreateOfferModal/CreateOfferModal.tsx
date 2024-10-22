@@ -121,27 +121,31 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   
   const isModification  = offer.price !== undefined;
 
+  console.log('isModification: ', isModification, offer)
+
   const { account, provider } = useWeb3React();
 
   const form = useForm<SellFormValues>({
-    // eslint-disable-next-line object-shorthand
-    // initialValues: {
-    //   offerTokenAddress: offer?.offerTokenAddress ?? '',
-    //   buyerTokenAddress: offer?.buyerTokenAddress ?? '',
-    //   price: offer?.price ?? undefined,
-    //   amount:
-    //     isModification &&
-    //     offer.amount &&
-    //     offer.price &&
-    //     offer.offerTokenDecimal
-    //       ? new BigNumber(offer.amount)
-    //           .shiftedBy(-offer.offerTokenDecimal)
-    //           .toString() / offer.price
-    //       : undefined,
-    //   useBuyTokenPrice: false,
-    //   buyerAddress: offer?.buyerAddress ?? ZERO_ADDRESS,
-    //   isPrivateOffer: offer?.isPrivateOffer ?? false,
-    // },
+    // eslint-disable-next-line object-shorthandx
+    initialValues: offer ? {
+      offerTokenAddress: offer.offerTokenAddress,
+      buyerTokenAddress: offer.buyerTokenAddress,
+      price: offer.choosedPrice?.toString(),
+      amount: offer.amount,
+      choosedPrice: offer.choosedPrice,
+      useBuyTokenPrice: false,
+      buyerAddress: offer.buyerAddress ? offer.buyerAddress : ZERO_ADDRESS,
+      isPrivateOffer: offer.isPrivateOffer ?? false,
+    } : {
+      offerTokenAddress: '',
+      buyerTokenAddress: '',
+      price: '',
+      amount: '',
+      useBuyTokenPrice: false,
+      buyerAddress: ZERO_ADDRESS,
+      isPrivateOffer: false,
+      choosedPrice: undefined,
+    },
     validateInputOnBlur: true,
     validate: {
       offerTokenAddress: (value) => !value || value == "" ? 'You need to choose an offerTokenAddress' : null,
@@ -156,7 +160,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   });
 
   const { values } = form;
-  const [offers, addOffer] = useRootStore(state => [state.offersToCreate, state.addOffer]);
+  const [offers, addOffer, modifyOffer] = useRootStore(state => [state.offersToCreate, state.addOffer, state.modifyOffer]);
 
   const [buttonLoading, setButtonLoading] = useState(false);
 
@@ -210,7 +214,11 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         JSON.stringify(createdOffer, null, 4)
       );
 
-      addOffer(createdOffer);
+      if(isModification){
+        modifyOffer(offer.offerId, createdOffer);
+      }else{
+        addOffer(createdOffer);
+      }
 
       context.closeModal(id);
       setButtonLoading(false);
@@ -247,6 +255,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         onSubmit: createdOffer,
         offerType: offer.offerType
       }}
+      isModification={isModification}
     >
       {offer.offerType == OFFER_TYPE.SELL ? <SellOfferModal offer={offer} form={form} /> : undefined}
       {offer.offerType == OFFER_TYPE.BUY ? <BuyOfferModal offer={offer} form={form} /> : undefined}

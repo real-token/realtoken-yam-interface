@@ -20,19 +20,17 @@ interface ComponentProps{
 export const OfferModalWrapper: React.FC<ComponentProps> = ({ offer, form, tokenPrice, summary }) => {
 
     const { values, isValid, getInputProps, setFieldValue, errors } = form;
-    const { t } = useTranslation('modals', { keyPrefix: 'sell' });
+    const { t } = useTranslation('modals', { keyPrefix: 'createOffer' });
 
-    const { offerTokenSymbol, shieldError, onSubmit, isLoading } = useCreateOfferContext();
+    const { offerTokenSymbol, shieldError, onSubmit, isLoading, isModification } = useCreateOfferContext();
     const { bigNumberbalance, balance } = useWalletERC20Balance(values.offerTokenAddress);
-
-    console.log(!isValid(), shieldError, isLoading, errors)
 
     return (
         <Flex direction={"column"} mx={'auto'} gap={"md"} style={{ padding: '1rem' }}>
             <Flex style={{ justifyContent: "space-between", alignItems: "center", height: "50px" }}>
                 <Flex gap={"sm"} align={"center"}>
                 <OfferTypeBadge offerType={offer.offerType} />
-                <h3 style={{ margin: 0 }}>{t('titleFormCreateOffer')}</h3>
+                <h3 style={{ margin: 0 }}>{ isModification ? t('titleFormModifyOffer') : t('titleFormCreateOffer')}</h3>
                 </Flex>
                 {offer.offerType !== OFFER_TYPE.EXCHANGE ? <Shield /> : undefined}        
             </Flex>
@@ -62,7 +60,7 @@ export const OfferModalWrapper: React.FC<ComponentProps> = ({ offer, form, token
                         loading={(bigNumberbalance && bigNumberbalance == undefined) || isLoading}
                         disabled={!isValid() || shieldError || isLoading}
                     >
-                        {t("buttonCreateOffer")}
+                        {isModification ? t("buttonUpdateOffer") : t("buttonCreateOffer")}
                     </Button>
                 </Stack>
             </form>

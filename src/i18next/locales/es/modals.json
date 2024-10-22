@@ -12,7 +12,13 @@
       "token": "Token",
       "realtTokenType": "Token RealT",
       "otherTokenType": "Otros (USDC, XDAI, etc...)",
-      "useBuyTokenPrice": "Usar tasa de precio de {{token}} 1:1"
+      "useBuyTokenPrice": "Usar tasa de precio de {{token}} 1:1",
+      "buttonUpdateOffer": "Actualizar oferta",
+      "titleFormCreateOffer": "Crea tu oferta",
+      "titleFormModifyOffer": "Modifica tu oferta",
+      "placeholderAmount": "Cantidad de tokens en venta",
+      "exchangeAmount": "Cantidad de tokens vendidos para intercambiar",
+      "amount": "Cantidad"
     },
     "sell": {
       "price": "Precio de venta en ${{unit}}",

@@ -137,9 +137,9 @@ export const ComboboxOfferToken = ({
     return {
       ...item,
       balance,
-      selected: item.value === value
+      selected: item.value.toLowerCase() === value?.toLowerCase()
     }
-  }), [userBalances, userBalancesAreLoading, data]);
+  }), [userBalances, userBalancesAreLoading, data, value]);
 
   const sortedDatas = useMemo(() => dataWithAmounts.sort((a, b) => {
     return b.balance.comparedTo(a.balance);

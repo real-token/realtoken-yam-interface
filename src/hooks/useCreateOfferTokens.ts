@@ -24,12 +24,12 @@ export const useCreateOfferTokens: UseCreateOfferTokens = (offerType) => {
 
     const formatedPropetiesTokenForSelect: ComboboxItem[] = useMemo((): ComboboxItem[] => {
         if(!propertiesToken) return [];
-        return propertiesToken.map((propertyTokenInfo: PropertiesToken) => ({value: propertyTokenInfo.contractAddress, label: propertyTokenInfo.shortName}))
+        return propertiesToken.map((propertyTokenInfo: PropertiesToken) => ({value: propertyTokenInfo.contractAddress.toLowerCase(), label: propertyTokenInfo.shortName}))
       },[propertiesToken])
     
     const formatedAllowTokensForSelect: ComboboxItem[] = useMemo((): ComboboxItem[] => {
         if(!allowedTokens) return [];
-        return allowedTokens.map((allowedBuyToken: AllowedToken) => ({value: allowedBuyToken.contractAddress, label: allowedBuyToken.symbol}))
+        return allowedTokens.map((allowedBuyToken: AllowedToken) => ({value: allowedBuyToken.contractAddress.toLowerCase(), label: allowedBuyToken.symbol}))
     },[allowedTokens])
     
     const allowedBuyerTokensForSelect: ComboboxItem[] = useMemo((): ComboboxItem[] => {

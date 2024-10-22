@@ -4,6 +4,7 @@ import { mountStoreDevtool } from 'simple-zustand-devtools';
 import { InterfaceSlice, createInterfaceSlice } from './interfaceSlice';
 import { subscribeWithSelector } from 'zustand/middleware'
 import { CreateOffersSlice, createCreateOfferSlice } from './createOffersSlice';
+import { immer } from 'zustand/middleware/immer'
 
 export type RootStore = InterfaceSlice & CreateOffersSlice;
 
