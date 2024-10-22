@@ -26,9 +26,9 @@ export const ExchangeRateComputing = ({ form, exchangeOfferTokens, exchangeBuyer
 
     useEffect(() => {
       if(price){
-        const p = parseFloat((1/price).toFixed(6));
+        const p = (1/price).toFixed(6);
         setFieldValue("price",p)
-        setChoosedPrice(p)
+        setChoosedPrice(Number(p))
       }
     },[price]);
 

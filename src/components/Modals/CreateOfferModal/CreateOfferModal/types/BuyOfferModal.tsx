@@ -9,6 +9,7 @@ import { ComboboxOfferToken } from "../../ComboboxOfferToken/ComboboxOfferToken"
 import { Select } from "@mantine/core";
 import { PriceComputingPane } from "../PriceComputingPane/PriceComputingPane";
 import { useMemo } from "react";
+import BigNumber from "bignumber.js";
 
 interface BuyOfferModalProps{
     form: UseFormReturnType<SellFormValues>;
@@ -21,14 +22,10 @@ export const BuyOfferModal = ({ offer, form }: BuyOfferModalProps) => {
 
     const { offerTokens, buyerTokens, offerTokenSymbol, offerTokenPrice, buyTokenSymbol, buyerTokenPrice, choosedPrice } = useCreateOfferContext();
 
-    const price = useMemo(() => {
-        return (values?.amount ?? 0) * (choosedPrice ?? 0)
-    }, [values?.amount, choosedPrice])
-
     const total = useMemo(() => {
-        return ((values?.amount ?? 0)* (choosedPrice ?? 0)).toFixed(6)
+        if(!values?.amount || !choosedPrice) return '0';
+        return new BigNumber(values.amount).multipliedBy(choosedPrice).toFixed(6)
     }, [values?.amount, choosedPrice])
-    // console.log('total: ', total)
 
     return (
         <OfferModalWrapper

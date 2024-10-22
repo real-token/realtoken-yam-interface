@@ -1,7 +1,8 @@
+import BigNumber from "bignumber.js";
 import { useMemo } from "react";
 
 type UseChoosenPrice = (
-    price: number|undefined,
+    price: string|undefined,
     tokenPriceInDollar: number|undefined,
     buyerTokenPrice: number|undefined,
     priceUnit: 'dollar'|'token',
@@ -11,9 +12,9 @@ export const useChoosenPrice: UseChoosenPrice = (price, tokenPriceInDollar, buye
     return useMemo(() => {
         if(!price || !tokenPriceInDollar || !buyerTokenPrice) return undefined;
         if(priceUnit == 'token') {
-            return price * buyerTokenPrice;
+            return new BigNumber(price).multipliedBy(buyerTokenPrice).toNumber();
         }else if(priceUnit == 'dollar') {
-            return isRatio ? tokenPriceInDollar * price : price
+            return isRatio ? new BigNumber(tokenPriceInDollar).multipliedBy(price).toNumber() : new BigNumber(price).toNumber()
         }
     },[price, tokenPriceInDollar, isRatio, priceUnit, buyerTokenPrice])
 }

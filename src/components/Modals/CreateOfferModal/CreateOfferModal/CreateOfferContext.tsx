@@ -44,7 +44,10 @@ interface CreateOfferProviderProps {
 export const CreateOfferProvider: React.FC<CreateOfferProviderProps> = ({ children, values }) => {
 
     const [priceUnit, setPriceUnit] = useState<PriceUnit>('dollar');
-    const [choosedPrice, setChoosedPrice] = useState<number|undefined>();
+
+    const setChoosedPrice = (value: number|undefined) => {
+        values.setFieldValue('choosedPrice', value);
+    }
 
     const offerTokenSymbol = useMemo(() => {
         return values.offerTokens.find((token) => token.value === values.offerTokenAddress)?.label;
@@ -54,7 +57,7 @@ export const CreateOfferProvider: React.FC<CreateOfferProviderProps> = ({ childr
         return values.buyerTokens.find(value => value.value == values.buyerTokenAddress)?.label;
     },[values]);
 
-    const { isError: shieldError, maxPriceDifference, priceDifference } = useShield(values.offerType, choosedPrice, values.offerType == OFFER_TYPE.BUY ? values.buyerTokenPrice : values.offerTokenPrice );
+    const { isError: shieldError, maxPriceDifference, priceDifference } = useShield(values.offerType, values.choosedPrice, values.offerType == OFFER_TYPE.BUY ? values.buyerTokenPrice : values.offerTokenPrice);
 
     return (
         <CreateOfferContext.Provider
@@ -64,7 +67,6 @@ export const CreateOfferProvider: React.FC<CreateOfferProviderProps> = ({ childr
                 shieldError, 
                 offerTokenSymbol, 
                 buyTokenSymbol,
-                choosedPrice,
                 setChoosedPrice,
                 maxPriceDifference,
                 priceDifference: priceDifference ?? 0,

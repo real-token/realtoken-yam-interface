@@ -1,4 +1,3 @@
-import BigNumber from "bignumber.js";
 import { OFFER_TYPE } from "./OfferType";
 
 export interface CreatedOffer{
@@ -7,8 +6,10 @@ export interface CreatedOffer{
     offerTokenAddress: string;
     offerTokenDecimal: number |undefined;
     buyerTokenAddress: string;
-    price: number|undefined;
+    buyerTokenDecimal: number |undefined;
+    price: string|undefined;
     amount: string|undefined;
+    choosedPrice: number|undefined;
     buyerAddress: string;
     isPrivateOffer: boolean;
 }

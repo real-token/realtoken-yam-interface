@@ -9,6 +9,7 @@ import { useCreateOfferContext } from "../CreateOfferContext";
 import { ComboboxOfferToken } from "../../ComboboxOfferToken/ComboboxOfferToken";
 import { IconSwitchVertical } from "@tabler/icons";
 import { ExchangeRateComputing } from "../ExchangeRateComputing";
+import BigNumber from "bignumber.js";
 
 interface BuyOfferModalProps{
     form: UseFormReturnType<SellFormValues>;
@@ -50,7 +51,7 @@ export const ExchangeOfferModal = ({ offer, form }: BuyOfferModalProps) => {
     },[exchangeType, properties, allowedTokens, values.offerTokenAddress])
 
     const total = useMemo(() => {
-        return ((values?.amount ?? 0)*(choosedPrice ?? 0)).toFixed(exchangeType == 'realtoken' ? 18 : 6)
+        return new BigNumber(values?.amount ?? '1').multipliedBy(choosedPrice ?? '1').toFixed(exchangeType == 'realtoken' ? 18 : offer.offerTokenDecimal ?? 6)
     },[values?.amount, choosedPrice, exchangeType])
 
     return(

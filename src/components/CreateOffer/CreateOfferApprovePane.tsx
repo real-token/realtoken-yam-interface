@@ -2,7 +2,7 @@ import { Flex, Skeleton, Text, Button } from "@mantine/core"
 import BigNumber from "bignumber.js";
 import classes from "./CreateOfferApprovePane.module.css"
 import { useRootStore } from "../../zustandStore/store";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { IconCheck } from "@tabler/icons";
 import { getContract } from "@realtoken/realt-commons";
 import { Erc20, Erc20ABI } from "../../abis";
@@ -10,25 +10,30 @@ import { Web3Provider } from "@ethersproject/providers";
 import { useWeb3React } from "@web3-react/core";
 import { ContractsID } from "../../constants";
 import { useContract } from "../../hooks";
+import { Approves } from "../../hooks/getBatchApprove";
+import { useMutation, useQuery } from "react-query";
+import { usePropertiesToken } from "../../hooks/usePropertiesToken";
+import { useAllowedTokens } from "../../hooks/useAllowedTokens";
 
-const checkNeedApprove = (amount: BigNumber, token: string, provider: Web3Provider, account: string, realTokenYamUpgradeable: string) => {
+const checkNeedApprove = (amount: BigNumber, tokenAddress: string, provider: Web3Provider, account: string, realTokenYamUpgradeable: string) => {
     return new Promise<boolean>(async (resolve, reject) => {
         try{
-            const contract = getContract<Erc20>(token, Erc20ABI, provider);
+            const contract = getContract<Erc20>(tokenAddress, Erc20ABI, provider);
             if(!contract) throw new Error('Contract not found');
-    
             const allowance = await contract.allowance(account, realTokenYamUpgradeable);
-            resolve(amount.gt(new BigNumber(allowance.toString())));
+            console.log(allowance.toString(), amount.toString(10));
+            console.log(new BigNumber(allowance.toString()).lt(amount).toString());
+            resolve(new BigNumber(allowance.toString()).lt(amount));
         }catch(e){
             reject(e);
         }
     });
 }
 
-const approveAmount = (amount: BigNumber, token: string, provider: Web3Provider, account: string, realTokenYamUpgradeable: string) => {
+const approveAmount = (amount: BigNumber, tokenAddress: string, provider: Web3Provider, account: string, realTokenYamUpgradeable: string) => {
     return new Promise<void>(async (resolve, reject) => {
         try{
-            const contract = getContract<Erc20>(token, Erc20ABI, provider, account);
+            const contract = getContract<Erc20>(tokenAddress, Erc20ABI, provider, account);
             if(!contract) throw new Error('Contract not found');
 
             console.log(amount.toString(10))
@@ -46,89 +51,82 @@ const approveAmount = (amount: BigNumber, token: string, provider: Web3Provider,
 }
 
 interface CreateOfferApprovePaneProps{
-    token: string;
-    amount: BigNumber;
+    tokenAddress: string;
+    approval: Approves;
 }
-export const CreateOfferApprovePane = ({ token, amount }: CreateOfferApprovePaneProps) => {
+export const CreateOfferApprovePane = ({ tokenAddress, approval }: CreateOfferApprovePaneProps) => {
 
     const { provider, account } = useWeb3React();
 
     const realTokenYamUpgradeable = useContract(ContractsID.realTokenYamUpgradeable);
 
+    const { propertiesToken } = usePropertiesToken();
+    const { allowedTokens } = useAllowedTokens();
+
+    const token = useMemo(() => {
+        if(!propertiesToken || !allowedTokens) return 'Unknown';
+        const token = propertiesToken?.find((token) => token.contractAddress.toLowerCase() === tokenAddress.toLowerCase());
+        const allowedToken = allowedTokens?.find((token) => token.contractAddress.toLowerCase() === tokenAddress.toLowerCase());
+        return token ? token.shortName : allowedToken ? allowedToken.name : 'Unknown';
+    },[propertiesToken, allowedTokens, tokenAddress]);
+
     const [addApproval] = useRootStore(state => [state.addApproval]);
 
-    const [checkIfApproveNeeded, setCheckIfApproveNeeded] = useState<boolean>(true);
-    const [needApprove, setNeedApprove] = useState<boolean>(false);
-    const getNeedApprove = async () => {
-        try{
-            if(!provider || !realTokenYamUpgradeable || !account) return;
-            setCheckIfApproveNeeded(true);
+    const { data: needApprove, isLoading: checkIfApproveNeeded, refetch } = useQuery({
+        queryKey: ['need-approve', tokenAddress],
+        enabled: !!approval && !!provider && !!realTokenYamUpgradeable && !!account,
+        queryFn: async () => {
+            if(!provider || !realTokenYamUpgradeable || !account || !approval) return false;
+
             const needApprove = await checkNeedApprove(
-                amount, 
-                token, 
+                new BigNumber(approval.amount), 
+                tokenAddress, 
                 provider,
                 account,
                 realTokenYamUpgradeable.address
             );
-            addApproval(token, !needApprove);
-            setNeedApprove(needApprove);
-            setCheckIfApproveNeeded(false);
-        }catch(err){
-            console.error(err);
+            console.log('needApprove: ',needApprove);
+            addApproval(tokenAddress, !needApprove);
+            return needApprove;
         }
-    }
-    useEffect(() => {
-        getNeedApprove();
-    },[amount]);
+    })
 
-    const [isAppproving, setIsApproving] = useState<boolean>(false);
-    const approve = async () => {
-        try{
-            setIsApproving(true);
-            if(!provider || !realTokenYamUpgradeable || !account) return;
+    const { mutate: approve, isLoading: isApproving } = useMutation({
+        mutationFn: async () => {
+            if(!provider || !realTokenYamUpgradeable || !account || !approval) return;
             await approveAmount(
-                amount, 
-                token, 
+                new BigNumber(approval.amount), 
+                tokenAddress, 
                 provider,
                 account,
                 realTokenYamUpgradeable.address
             );
-
-            addApproval(token, true)
-
-            setIsApproving(false);
-            setNeedApprove(false);
-
-        }catch(e){
-            // TODO: add notification when error
+            addApproval(tokenAddress, true);
+            refetch();
+        },
+        onError: (e) => {
             console.error(e);
-            setIsApproving(false);
         }
-    }
+    })
 
-    const [properties] = useRootStore(state => [state.properties]);
-
-    const propertie = useMemo(() => {
-        return properties.find((prop) => prop.contractAddress.toLowerCase() === token.toLowerCase())
-    },[properties]);
-
-    const amountInEther = amount.shiftedBy(-18).toString(10);
+    const amount = useMemo(() => {
+        return new BigNumber(approval.amount).shiftedBy(-approval.decimals).toFixed(0);
+    },[approval]);
 
     return(
         <Flex
             className={classes.container}
-           
             justify={"space-between"}
         >
             <Flex direction={'column'}>
-                <Text fw={700}>{propertie ? propertie.shortName : <Skeleton height={35} width={"100%"}/>}</Text>
-                <Text fs={"italic"} fw={500} c={"gray"}>{amount ? amountInEther : <Skeleton height={35} width={"100%"}/>}</Text>
+                <Text fw={700}>{token ? token : <Skeleton height={35} width={"100%"}/>}</Text>
+                <Text fs={"italic"} fw={500} c={"gray"}>{amount ? amount : <Skeleton height={35} width={"100%"}/>}</Text>
             </Flex>
             <Button 
                 color={'green'} 
                 h={'100%'}
-                loading={isAppproving || checkIfApproveNeeded}
-                disabled={isAppproving || !needApprove}
+                loading={isApproving || checkIfApproveNeeded}
+                disabled={isApproving || !needApprove}
                 leftSection={!needApprove ? <IconCheck size={18}/> : undefined}
                 onClick={() => approve()}
             >

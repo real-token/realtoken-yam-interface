@@ -7,6 +7,7 @@ import { ComboboxOfferToken } from "../../ComboboxOfferToken/ComboboxOfferToken"
 import { SellFormValues } from "../../CreateOfferModal";
 import { PriceComputingPane } from "../PriceComputingPane/PriceComputingPane";
 import { useCreateOfferContext } from "../CreateOfferContext";
+import BigNumber from "bignumber.js";
 
 interface SellOfferModalProps{
     form: UseFormReturnType<SellFormValues>;
@@ -70,7 +71,7 @@ export function SellOfferModal({ offer, form }: SellOfferModalProps){
                             buyTokenSymbol: buyTokenSymbol,
                             price: choosedPrice,
                             offerTokenSymbol: offerTokenSymbol,
-                            total: ((values?.amount ?? 0)* (values.price ?? 0)).toFixed(6)
+                            total: new BigNumber(values?.amount).multipliedBy(values.price).toFixed(offer.offerTokenDecimal ?? 6)
                         })}
                     </Text>
                 ) : undefined}

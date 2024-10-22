@@ -2,7 +2,7 @@ import { Button, Divider, Flex } from "@mantine/core"
 import { notifications, showNotification, updateNotification } from "@mantine/notifications";
 import { useWeb3React } from "@web3-react/core";
 import BigNumber from "bignumber.js";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CoinBridgeToken, coinBridgeTokenABI, Erc20, Erc20ABI } from "src/abis";
 import { Chain, ContractsID, NOTIFICATIONS, NotificationsID } from "src/constants";
@@ -23,6 +23,7 @@ import { AvailableConnectors, ConnectorsDatas } from "@realtoken/realt-commons";
 import { getBatchApprove } from "../../hooks/getBatchApprove";
 import { IconArrowBack } from "@tabler/icons";
 import { CreateOfferApprovePane } from "./CreateOfferApprovePane";
+import { OFFER_TYPE } from "../../types/offer";
 
 const approveOffer = (
   offerTokenAddress: string,
@@ -60,6 +61,8 @@ const approveOffer = (
         account,
         realTokenYamUpgradeable.address
       );
+      console.log('oldAllowance: ', oldAllowance.toString());
+
       const amountInWeiToPermit = amountToApprove
         .plus(new BigNumber(oldAllowance.toString()))
         .toString(10);
@@ -114,7 +117,7 @@ export const CreateOffer = () => {
   const { refreshOffers } = useRefreshOffers();
 
   const [
-    offers, 
+    rawOffers, 
     resetOffers, 
     approvals, 
     resetApprovals
@@ -124,6 +127,26 @@ export const CreateOffer = () => {
     state.approvals, 
     state.resetApprovals
   ]);
+
+  const offers: CreatedOffer[] = useMemo(() => {
+    return rawOffers.map((offer) => {
+
+      const amountDecimals = offer.offerType == OFFER_TYPE.SELL ? offer.offerTokenDecimal : offer.offerTokenDecimal;
+      const priceDecimals = offer.offerType == OFFER_TYPE.SELL ? offer.buyerTokenDecimal : offer.buyerTokenDecimal;
+
+      const amount = offer.offerType == OFFER_TYPE.BUY ?
+        new BigNumber(offer.amount ?? 1).multipliedBy(offer.choosedPrice ?? 1)
+      : 
+        new BigNumber(offer.amount ?? 1);
+
+      return {
+        ...offer,
+        amount: amount.shiftedBy(amountDecimals ?? 18).toFixed(0),
+        price: new BigNumber(offer.price ?? 1).shiftedBy(priceDecimals ?? 18).toFixed(0)
+      }
+    })
+  }, [rawOffers]);
+  console.log(offers);
 
   const { t } = useTranslation('modals', { keyPrefix: 'sell' });
 
@@ -135,7 +158,7 @@ export const CreateOffer = () => {
 
   const connector = useAtomValue(providerAtom);
 
-  const { approves } = getBatchApprove();
+  const { approves } = getBatchApprove(offers);
 
   // Group approves for same token in unique approve tx to reduce gas consumption
   const createApproves = async () => {
@@ -172,7 +195,7 @@ export const CreateOffer = () => {
     try {
       if (!account || !provider || !realTokenYamUpgradeable) return;
 
-      setLoading(true);
+      // setLoading(true);
 
       console.log(offers);
 
@@ -186,23 +209,12 @@ export const CreateOffer = () => {
           provider,
           account
         );
-        const buyerToken = getContract<Erc20>(
-          offer.buyerTokenAddress,
-          Erc20ABI,
-          provider,
-          account
-        );
 
         if (!offer.price || !offer.amount || !offerToken) return;
 
         const offerTokenType = await realTokenYamUpgradeable.getTokenType(
           offer.offerTokenAddress
         );
-        const buyerTokenDecimals = await buyerToken?.decimals();
-
-        const priceInWei = new BigNumber(offer.price.toString())
-          .shiftedBy(Number(buyerTokenDecimals))
-          .toString(10);
         const transactionDeadline = Math.floor(Date.now() / 1000) + 3600;
 
         const isSafe = connector == ConnectorsDatas.get(AvailableConnectors.gnosisSafe)?.connectorKey;
@@ -231,7 +243,7 @@ export const CreateOffer = () => {
         } else if (offerTokenType == 2 && !isSafe) {
           // TokenType = 2: ERC20 With Permit
           console.log('erc20PermitSignature');
-          console.log(offer.amount)
+          console.log(new BigNumber(offer.amount).toString(10))
           needPermit = true;
           permitAnswer = await erc20PermitSignature(
             account,
@@ -275,7 +287,7 @@ export const CreateOffer = () => {
             offer.offerTokenAddress,
             offer.buyerTokenAddress,
             offer.buyerAddress,
-            priceInWei,
+            offer.price,
             new BigNumber(offer.amount).toString(10),
             new BigNumber(offer.amount).toString(10),
             transactionDeadline,
@@ -288,7 +300,7 @@ export const CreateOffer = () => {
             offer.offerTokenAddress,
             offer.buyerTokenAddress,
             offer.buyerAddress,
-            priceInWei,
+            offer.price,
             new BigNumber(offer.amount).toString(10),
             new BigNumber(offer.amount).toString(10),
             transactionDeadline,
@@ -302,7 +314,7 @@ export const CreateOffer = () => {
             offer.offerTokenAddress,
             offer.buyerTokenAddress,
             offer.buyerAddress,
-            priceInWei,
+            offer.price,
             new BigNumber(offer.amount).toString(10)
           );
         }
@@ -461,14 +473,6 @@ export const CreateOffer = () => {
           provider,
           account
         );
-        const buyerToken = getContract<Erc20>(
-          createdOffer.buyerTokenAddress,
-          Erc20ABI,
-          provider,
-          account
-        );
-
-        const buyerTokenDecimals = await buyerToken?.decimals();
 
         if (!createdOffer.amount || !createdOffer.price) return;
 
@@ -479,15 +483,11 @@ export const CreateOffer = () => {
 
         BigNumber.set({ EXPONENTIAL_AT: 37 });
 
-        const priceInWei = new BigNumber(createdOffer.price.toString())
-          .shiftedBy(Number(buyerTokenDecimals))
-          .toString(10);
-
         _offerTokens.push(createdOffer.offerTokenAddress);
         _buyerTokens.push(createdOffer.buyerTokenAddress);
         _buyers.push(createdOffer.buyerAddress);
-        _prices.push(priceInWei);
-        _amounts.push(new BigNumber(createdOffer.amount).toString(10));
+        _prices.push(createdOffer.price);
+        _amounts.push(createdOffer.amount);
       }
 
       console.log(_offerTokens, _buyerTokens, _buyers, _prices, _amounts);
@@ -538,7 +538,7 @@ export const CreateOffer = () => {
   }
 
   const checkIfApproveNeeded = () => {
-    if(offers.length > 1){
+    if(rawOffers.length > 1){
 
       // Batch offers, CANNOT permit
       // Only approve available
@@ -568,36 +568,23 @@ export const CreateOffer = () => {
           >
             {showApprovePanel ? (
               Object.keys(approves).map((token, index) => {
-                const amount = approves[token];
+                const approval = approves[token];
                 return(
-                  <CreateOfferApprovePane key={`approve-${index}`} token={token} amount={amount}/>
+                  <CreateOfferApprovePane key={`approve-${index}`} tokenAddress={token} approval={approval}/>
                 )
               })
-            ):(
-              offers?.map((offer: CreatedOffer, index: number) => (
+            ) : rawOffers?.map((offer: CreatedOffer, index: number) => (
                 <CreateOfferPane
                   key={`created-offer-${index}`}
                   isCreating={false}
                   offer={offer}
                 />
               ))
-            )}
+            }
           </Flex>
-          {offers.length > 0 ? <Divider /> : undefined}
+          {rawOffers.length > 0 ? <Divider /> : undefined}
           <CreateOfferPane isCreating={true} />
         </Flex>
-        {/* {notification && (
-          <Notification
-            icon={<IconX size={'1.1rem'} />}
-            color={'red'}
-            sx={{ position: 'absolute', bottom: '50vh' }}
-            onClose={() => {
-              setNotification(() => false);
-            }}
-          >
-            {'Error ! Offer(s) not created. Please retry.'}
-          </Notification>
-        )} */}
         <Flex align={'center'} justify={showApprovePanel ? 'space-between' : 'center'} w={'100%'}>
           {showApprovePanel ? (
             <Button 
@@ -615,17 +602,17 @@ export const CreateOffer = () => {
               onClick={() => createBatchOffer()}
               loading={loading}
             >
-              {t('buttonCreateOfferWithNumber', { nbr: offers.length })}
+              {t('buttonCreateOfferWithNumber', { nbr: rawOffers.length })}
             </Button>
           ):(
             <Button
-              disabled={offers.length == 0 || loading}
+              disabled={rawOffers.length == 0 || loading}
               onClick={() => checkIfApproveNeeded()}
               loading={loading}
             >
-              {offers.length < 2
+              {rawOffers.length < 2
                 ? t('buttonCreateOffer')
-                : t('approveOfferWithNumber', { nbr: offers.length })}
+                : t('approveOfferWithNumber', { nbr: rawOffers.length })}
             </Button>
           )}
         </Flex>

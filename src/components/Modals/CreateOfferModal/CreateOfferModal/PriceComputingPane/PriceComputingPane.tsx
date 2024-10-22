@@ -31,7 +31,7 @@ export const PriceComputingPane = ({ offer, form }: PriceComputingPaneProps) => 
         shieldError, maxPriceDifference, priceDifference
     } = useCreateOfferContext();
 
-    const [internalPrice, setInternalPrice] = useState<number|undefined>(price);
+    const [internalPrice, setInternalPrice] = useState<string|undefined>(price);
 
     // Price in $ depending  on "1:1 ratio" and "unitPrice"
     const choosedPriceDollar = useChoosenPrice(
@@ -46,10 +46,10 @@ export const PriceComputingPane = ({ offer, form }: PriceComputingPaneProps) => 
         setChoosedPrice(choosedPriceDollar);
         if(offer.offerType == OFFER_TYPE.BUY){
             const p = choosedPriceDollar ? 1/choosedPriceDollar : 0;
-            setFieldValue('price', parseFloat(new BigNumber(p).toPrecision(offer.offerTokenDecimal ?? 6)))
+            setFieldValue('price', new BigNumber(p).toFixed(offer.offerTokenDecimal ?? 6))
             return;
         }
-        setFieldValue('price', parseFloat(new BigNumber(choosedPriceDollar ?? 0).toPrecision(offer.offerTokenDecimal ?? 6)))
+        setFieldValue('price', new BigNumber(choosedPriceDollar ?? 0).toPrecision(offer.offerTokenDecimal ?? 6))
     },[choosedPriceDollar])
 
     return(
@@ -76,7 +76,8 @@ export const PriceComputingPane = ({ offer, form }: PriceComputingPaneProps) => 
                       required={true}
                       decimalScale={offer.offerTokenDecimal ?? 6}
                       value={internalPrice}
-                      onChange={(value) => setInternalPrice(value as number)}
+                      onChange={(value) => setInternalPrice(value as string)}
+                      error={form.errors.price}
                   />
                   {priceUnit == 'dollar' ? (
                     <Checkbox

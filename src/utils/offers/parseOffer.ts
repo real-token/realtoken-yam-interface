@@ -132,10 +132,6 @@ export const parseOffer = (
         o.priceDelta = getPriceDelta(prices,o);
         o.accountWhitelisted = getNotWhitelistedTokens(wlPropertiesId, o, propertiesToken).length == 0;
 
-        if(o.offerId == "14"){
-          console.log("o: ", o)
-        }
-
         // console.log(offer.availableAmount, balanceWallet, allowance)
         resolve(o);
       } catch (err) {

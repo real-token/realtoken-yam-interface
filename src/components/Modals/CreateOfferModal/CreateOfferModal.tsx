@@ -103,11 +103,12 @@ type CreateOfferModalProps = {
 export type SellFormValues = {
   offerTokenAddress: string;
   buyerTokenAddress: string;
-  price: number|undefined;
+  price: string|undefined;
   useBuyTokenPrice: boolean;
-  amount: number|undefined;
+  amount: string|undefined;
   buyerAddress: string;
   isPrivateOffer: boolean;
+  choosedPrice: number|undefined;
 };
 
 export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
@@ -124,29 +125,33 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
 
   const form = useForm<SellFormValues>({
     // eslint-disable-next-line object-shorthand
-    initialValues: {
-      offerTokenAddress: offer?.offerTokenAddress ?? '',
-      buyerTokenAddress: offer?.buyerTokenAddress ?? '',
-      price: offer?.price ?? undefined,
-      amount:
-        isModification &&
-        offer.amount &&
-        offer.price &&
-        offer.offerTokenDecimal
-          ? new BigNumber(offer.amount)
-              .shiftedBy(-offer.offerTokenDecimal)
-              .toNumber() / offer.price
-          : undefined,
-      useBuyTokenPrice: false,
-      buyerAddress: offer?.buyerAddress ?? ZERO_ADDRESS,
-      isPrivateOffer: offer?.isPrivateOffer ?? false,
-    },
+    // initialValues: {
+    //   offerTokenAddress: offer?.offerTokenAddress ?? '',
+    //   buyerTokenAddress: offer?.buyerTokenAddress ?? '',
+    //   price: offer?.price ?? undefined,
+    //   amount:
+    //     isModification &&
+    //     offer.amount &&
+    //     offer.price &&
+    //     offer.offerTokenDecimal
+    //       ? new BigNumber(offer.amount)
+    //           .shiftedBy(-offer.offerTokenDecimal)
+    //           .toString() / offer.price
+    //       : undefined,
+    //   useBuyTokenPrice: false,
+    //   buyerAddress: offer?.buyerAddress ?? ZERO_ADDRESS,
+    //   isPrivateOffer: offer?.isPrivateOffer ?? false,
+    // },
+    validateInputOnBlur: true,
     validate: {
       offerTokenAddress: (value) => !value || value == "" ? 'You need to choose an offerTokenAddress' : null,
       buyerTokenAddress: (value) => !value || value == "" ? 'You need to choose an buyerTokenAddress' : null,
-      price: (value) => !value || value <= 0 ? 'Price cannot be undefined, or equal or less than 0' : null,
-      amount: (value) => !value || value <= 0 ? '' : null,
+      price: (value) => value == undefined || parseFloat(value) <= 0 ? 'Price cannot be undefined, or equal or less than 0' : null,
+      amount: (value) => value == undefined || parseFloat(value) <= 0 ? 'Amount cannot be undefined, or equal or less than 0' : null,
       isPrivateOffer: (value, values) => value ? !values.buyerAddress || values.buyerAddress == "" ? 'You need to choose a buyer address if offer is private' : null : null
+    },
+    onValuesChange: (values) => {
+      console.log(values);
     },
   });
 
@@ -178,14 +183,13 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
       );
       const offerTokenDecimals = await offerToken?.decimals();
 
-      const total = ((values?.amount ?? 0)* (values.price ?? 0)).toFixed(6);
-
-      let amountInWei;
-      if(offer.offerType != OFFER_TYPE.SELL){
-        amountInWei = new BigNumber(total).shiftedBy(Number(offerTokenDecimals));
-      }else{
-        amountInWei = new BigNumber(values?.amount).shiftedBy(Number(offerTokenDecimals));
-      }
+      const buyerToken = getContract<CoinBridgeToken>(
+        formValues.buyerTokenAddress,
+        coinBridgeTokenABI,
+        provider,
+        account
+      );
+      const buyerTokenDecimals = await buyerToken?.decimals();
 
       const createdOffer: CreatedOffer = {
         offerType: offer.offerType,
@@ -193,9 +197,11 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         offerTokenAddress: formValues.offerTokenAddress.toLowerCase(),
         offerTokenDecimal: offerTokenDecimals,
         buyerTokenAddress: formValues.buyerTokenAddress.toLowerCase(),
-        price: values.price ? parseFloat(values.price.toFixed(6)) : 0,
-        amount: amountInWei.toString(),
-        buyerAddress: formValues.buyerAddress.toLowerCase(),
+        buyerTokenDecimal: buyerTokenDecimals,
+        price: values.price.toString(),
+        amount: formValues.amount ? formValues.amount.toString() : '0',
+        choosedPrice: values.choosedPrice,
+        buyerAddress: formValues.buyerAddress ? formValues.buyerAddress.toLowerCase() : ZERO_ADDRESS,
         isPrivateOffer: formValues.isPrivateOffer,
       };
 

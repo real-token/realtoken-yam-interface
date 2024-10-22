@@ -19,11 +19,13 @@ interface ComponentProps{
 }
 export const OfferModalWrapper: React.FC<ComponentProps> = ({ offer, form, tokenPrice, summary }) => {
 
-    const { values, isValid, getInputProps, setFieldValue } = form;
+    const { values, isValid, getInputProps, setFieldValue, errors } = form;
     const { t } = useTranslation('modals', { keyPrefix: 'sell' });
 
     const { offerTokenSymbol, shieldError, onSubmit, isLoading } = useCreateOfferContext();
     const { bigNumberbalance, balance } = useWalletERC20Balance(values.offerTokenAddress);
+
+    console.log(!isValid(), shieldError, isLoading, errors)
 
     return (
         <Flex direction={"column"} mx={'auto'} gap={"md"} style={{ padding: '1rem' }}>
@@ -49,7 +51,9 @@ export const OfferModalWrapper: React.FC<ComponentProps> = ({ offer, form, token
                         setFieldValue={setFieldValue}
                         showMax={false}
                         style={{ flexGrow: 1 }}
-                        {...getInputProps('amount')}
+                        error={errors.amount}
+                        value={getInputProps('amount').value}
+                        onChange={(value) => setFieldValue('amount', value.toString())}
                     />
                     {summary}
                     <Button
