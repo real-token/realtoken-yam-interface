@@ -9,7 +9,7 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import { Web3Provider } from '@ethersproject/providers';
-import { Button, Divider, Flex, Group, Stack, Text } from '@mantine/core';
+import { Button, Divider, Flex, Group, LoadingOverlay, Stack, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { ContextModalProps } from '@mantine/modals';
 import { showNotification, updateNotification } from '@mantine/notifications';
@@ -31,6 +31,10 @@ import { ethers } from 'ethers';
 import { useAtomValue } from 'jotai';
 import { providerAtom } from '../../../states';
 import { AvailableConnectors, ConnectorsDatas } from '@realtoken/realt-commons';
+import { useQuery } from 'react-query';
+import { OFFER_TYPE } from '../../../types/offer';
+import { WalletERC20Balance } from '../../WalletBalance/WalletERC20Balance';
+import { useWalletERC20Balance } from '../../../hooks/useWalletERC20Balance';
 
 type UpdateModalProps = {
   offer: Offer;
@@ -55,20 +59,40 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
     triggerTableRefresh,
   },
 }) => {
+
   const { account, provider } = useWeb3React();
-  const { getInputProps, onSubmit, reset, setFieldValue, values } =
-    useForm<UpdateFormValues>({
-      // eslint-disable-next-line object-shorthand
-      initialValues: {
-        offerId: offer.offerId,
-        price: parseFloat(offer.price),
-        amount: parseFloat(offer.amount),
-        offerTokenAddress: offer.offerTokenAddress,
-        offerTokenDecimals: parseFloat(offer.offerTokenDecimals),
-        buyerTokenAddress: offer.buyerTokenAddress,
-        buyerTokenDecimals: parseFloat(offer.buyerTokenDecimals),
-      },
-    });
+  const { getInputProps, onSubmit, reset, setFieldValue, values, setInitialValues } = useForm<UpdateFormValues>({
+    initialValues: {
+      offerId: offer.offerId,
+      price: parseFloat(offer.price),
+      amount: parseFloat(offer.amount),
+      offerTokenAddress: offer.offerTokenAddress,
+      offerTokenDecimals: parseFloat(offer.offerTokenDecimals),
+      buyerTokenAddress: offer.buyerTokenAddress,
+      buyerTokenDecimals: parseFloat(offer.buyerTokenDecimals),
+    }
+  });
+
+  // useEffect(() => {
+  //   if(!offer) return;
+
+  //   const offerType = offer.type;
+
+  //   const amount = 
+
+  //   const initialValues: UpdateFormValues = {
+  //     offerId: offer.offerId,
+  //     price: parseFloat(offer.price),
+  //     amount: parseFloat(offer.amount),
+  //     offerTokenAddress: offer.offerTokenAddress,
+  //     offerTokenDecimals: parseFloat(offer.offerTokenDecimals),
+  //     buyerTokenAddress: offer.buyerTokenAddress,
+  //     buyerTokenDecimals: parseFloat(offer.buyerTokenDecimals),
+  //   }
+
+  //   setInitialValues(values);
+
+  // },[])
 
   const [isSubmitting, setSubmitting] = useState<boolean>(false);
   const [amountMax, setAmountMax] = useState<number>();
@@ -99,11 +123,34 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
   const connector = useAtomValue(providerAtom);
 
   const onHandleSubmit = useCallback(
-    async (formValues: UpdateFormValues) => {
+    async (rawValues: UpdateFormValues) => {
+
+      console.log('rawValues', rawValues);
+
       try {
 
-        console.log(formValues)
+        const getFormValues = () => {
 
+          const amountDecimals = parseInt(offer.type == OFFER_TYPE.SELL ? offer.offerTokenDecimals : offer.offerTokenDecimals);
+          const priceDecimals = parseInt(offer.type == OFFER_TYPE.SELL ? offer.buyerTokenDecimals : offer.buyerTokenDecimals);
+
+          const choosedPrice = offer.type == OFFER_TYPE.BUY ? 1 / rawValues.price : rawValues.price;
+
+          const amount = offer.type == OFFER_TYPE.BUY ?
+            new BigNumber(rawValues.amount ?? 1).multipliedBy(choosedPrice)
+          : 
+            new BigNumber(rawValues.amount ?? 1);
+
+          const formValues = {
+            ...rawValues,
+            amount: amount.shiftedBy(amountDecimals ?? 18).toFixed(0),
+            price: new BigNumber(rawValues.price ?? 1).shiftedBy(priceDecimals ?? 18).toFixed(0)
+          }
+          return formValues;
+        }
+
+        const formValues = getFormValues();
+        console.log('formValues', formValues);
 
         if (
           !account ||
@@ -136,9 +183,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           await realTokenYamUpgradeable.getInitialOffer(offer.offerId);
 
         const oldAmountInWei = BigNumber(amount._hex);
-        const newAmountInWei = new BigNumber(formValues.amount).multipliedBy(
-          10 ** (await offerToken.decimals())
-        );
+        console.log('oldAmountInWei', oldAmountInWei.toString(10));
 
         /*
          * Si old allowance est supperieur au amount old Yam : retirer du old alowance le old YAM amount et ajouter le new Amount YAM
@@ -148,9 +193,9 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
         const amountInWeiToPermit =
           BigNumber(oldAllowanceOfferToken._hex).comparedTo(oldAmountInWei) > 0
             ? BigNumber(oldAllowanceOfferToken._hex)
-                .plus(newAmountInWei)
+                .plus(formValues.amount)
                 .minus(oldAmountInWei)
-            : BigNumber(newAmountInWei);
+            : BigNumber(formValues.amount);
 
         setSubmitting(true);
 
@@ -222,8 +267,8 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           
         }
 
-        const price = new BigNumber(formValues.price.toString()).shiftedBy(parseFloat(offer.buyerTokenDecimals)).toString(10);
-        const amountUpdate = BigNumber(formValues.amount).shiftedBy(parseFloat(offer.offerTokenDecimals)).toString(10);
+        const price = formValues.price;
+        const amountUpdate = formValues.amount;
         
         let updateTx: ethers.providers.TransactionResponse|undefined = undefined;
         if (offerTokenType === 1 && !isSafe) {
@@ -351,6 +396,8 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
 
   const total = values?.amount * values?.price;
 
+  const { bigNumberbalance, balance } = useWalletERC20Balance(values.offerTokenAddress);
+
   return (
     <form onSubmit={onSubmit(onHandleSubmit)}>
       <Stack justify={'center'} align={'stretch'}>
@@ -375,21 +422,31 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
         <Divider />
 
         <NumberInput
-          label={t('price')}
+          label={`${t('price')} (${buyTokenSymbol})`}
           required={true}
           min={0}
+          decimalScale={parseInt(offer.buyerTokenDecimals)}
           placeholder={t('price')}
           style={{ flexGrow: 1 }}
           {...getInputProps('price')}
         />
-        <NumberInput
-          label={t('amount')}
-          required={true}
-          min={0}
-          placeholder={t('amount')}
-          style={{ flexGrow: 1 }}
-          {...getInputProps('amount')}
-        />
+
+        <Divider />
+
+        <Flex direction={'column'} gap={'md'}>
+          <WalletERC20Balance balance={balance} symbol={offerTokenSymbol}/>
+          <NumberInput
+            label={t('amount')}
+            required={true}
+            min={0}
+            placeholder={t('amount')}
+            style={{ flexGrow: 1 }}
+            decimalScale={parseInt(offer.offerTokenDecimals)}
+            max={parseFloat(balance ?? '0')}
+            // showMax={true}
+            {...getInputProps('amount')}
+          />
+        </Flex>
 
         <Text size={'xl'}>{t('summary')}</Text>
         {values.price > 0 && values.amount > 0 && (
