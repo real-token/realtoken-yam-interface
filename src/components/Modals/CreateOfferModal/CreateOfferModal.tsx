@@ -126,7 +126,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   const { account, provider } = useWeb3React();
 
   const form = useForm<SellFormValues>({
-    // eslint-disable-next-line object-shorthandx
+    // eslint-disable-next-line object-shorthand
     initialValues: offer ? {
       offerTokenAddress: offer.offerTokenAddress,
       buyerTokenAddress: offer.buyerTokenAddress,
