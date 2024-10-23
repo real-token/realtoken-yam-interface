@@ -14,6 +14,7 @@
       "otherTokenType": "Otros (USDC, XDAI, etc...)",
       "useBuyTokenPrice": "Usar tasa de precio de {{token}} 1:1",
       "buttonUpdateOffer": "Actualizar oferta",
+      "buttonCreateOffer": "Crear oferta",
       "titleFormCreateOffer": "Crea tu oferta",
       "titleFormModifyOffer": "Modifica tu oferta",
       "placeholderAmount": "Cantidad de tokens en venta",

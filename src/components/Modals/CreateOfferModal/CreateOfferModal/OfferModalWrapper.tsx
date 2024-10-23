@@ -30,7 +30,7 @@ export const OfferModalWrapper: React.FC<ComponentProps> = ({ offer, form, token
             <Flex style={{ justifyContent: "space-between", alignItems: "center", height: "50px" }}>
                 <Flex gap={"sm"} align={"center"}>
                 <OfferTypeBadge offerType={offer.offerType} />
-                <h3 style={{ margin: 0 }}>{ isModification ? t('titleFormModifyOffer') : t('titleFormCreateOffer')}</h3>
+                <h3 style={{ margin: 0 }}>{ isModification ? t('common.titleFormModifyOffer') : t('common.titleFormCreateOffer')}</h3>
                 </Flex>
                 {offer.offerType !== OFFER_TYPE.EXCHANGE ? <Shield /> : undefined}        
             </Flex>
@@ -41,8 +41,8 @@ export const OfferModalWrapper: React.FC<ComponentProps> = ({ offer, form, token
                     <WalletERC20Balance balance={balance} symbol={offerTokenSymbol}/>
                     <PrivateOffer form={form} />
                     <NumberInput
-                        label={offer.offerType == OFFER_TYPE.EXCHANGE ? t('exchangeAmount') : t('amount')}
-                        placeholder={t('placeholderAmount')}
+                        label={offer.offerType == OFFER_TYPE.EXCHANGE ? t('common.exchangeAmount') : t('common.amount')}
+                        placeholder={t('common.placeholderAmount')}
                         required={true}
                         decimalScale={6}
                         min={0.000001}
@@ -60,7 +60,7 @@ export const OfferModalWrapper: React.FC<ComponentProps> = ({ offer, form, token
                         loading={(bigNumberbalance && bigNumberbalance == undefined) || isLoading}
                         disabled={!isValid() || shieldError || isLoading}
                     >
-                        {isModification ? t("buttonUpdateOffer") : t("buttonCreateOffer")}
+                        {isModification ? t("common.buttonUpdateOffer") : t("common.buttonCreateOffer")}
                     </Button>
                 </Stack>
             </form>

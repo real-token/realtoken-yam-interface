@@ -14,6 +14,7 @@
       "otherTokenType": "Autres (USDC, XDAI, etc...)",
       "useBuyTokenPrice": "Utiliser le ratio de conversion du jeton {{token}} 1:1",
       "buttonUpdateOffer": "Modifier votre offre",
+      "buttonCreateOffer": "Créer votre offre",
       "titleFormCreateOffer": "Créer votre offre",
       "titleFormModifyOffer": "Modifier votre offre",
       "placeholderAmount": "Quantité de jetons en vente",
