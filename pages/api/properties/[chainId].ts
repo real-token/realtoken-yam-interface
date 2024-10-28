@@ -22,19 +22,20 @@ const getTokenFromCommunityAPI = new Promise<APIPropertiesToken[]>( async (resol
     }
 }) 
 
-const getContractAddressFromChainId = (propertyToken: APIPropertiesToken, chainId: number): string|undefined => {
-
+const getContractAddressFromChainId = (chainId: number): string|undefined => {
     let addressKey;
     switch(chainId){
         case ChainsID.Ethereum:
             addressKey = "ethereum";
+            break;
         case ChainsID.Gnosis:
             addressKey = "xDai";
+            break;
         case ChainsID.Sepolia:
             addressKey = "sepolia";
+            break;
     }
-
-    return propertyToken.blockchainAddresses[addressKey as keyof typeof propertyToken.blockchainAddresses]?.contract;
+    return addressKey;
 }
 
 const getTokens = async (chainId: number, communityProperties: APIPropertiesToken[], wlProperties: ShortProperty[]): Promise<PropertiesToken[]> => {
@@ -42,6 +43,10 @@ const getTokens = async (chainId: number, communityProperties: APIPropertiesToke
 
     // blockchainAddresses
 
+    console.log(chainId);
+
+    const contractKey = getContractAddressFromChainId(chainId);
+    console.log(contractKey);
 
     // if(chainId == ChainsID.Sepolia){
 
@@ -78,7 +83,9 @@ const getTokens = async (chainId: number, communityProperties: APIPropertiesToke
     // }else{
 
         communityProperties.forEach((propertyToken: APIPropertiesToken) => {
-            const contractAddress = getContractAddressFromChainId(propertyToken,chainId);
+            // console.log(propertyToken.blockchainAddresses);
+            const contractAddress = propertyToken.blockchainAddresses[contractKey as keyof typeof propertyToken.blockchainAddresses]?.contract;
+            // console.log(contractAddress);
             if(contractAddress){
                 propertiesNonFiltered.push({
                     uuid: propertyToken.uuid,
