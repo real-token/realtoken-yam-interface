@@ -2,7 +2,7 @@ import BigNumber from "bignumber.js";
 import { OFFER_LOADING, Offer } from "../types/offer";
 import { RootStore } from "./store";
 
-export const selectAddress = (state: RootStore): string => state.account.toLowerCase();
+export const selectAddress = (state: RootStore): string => state?.account?.toLowerCase() || '';
 export const selectOffers = (state: RootStore): Offer[] => state.offers;
 
 export const selectOffersIsLoading = (state: RootStore) => state.offersAreLoading;

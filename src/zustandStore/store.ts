@@ -1,47 +1,53 @@
-import { create } from 'zustand';
+import { create, createStore, useStore } from 'zustand';
 import { devtools } from 'zustand/middleware'
-import { mountStoreDevtool } from 'simple-zustand-devtools';
-import { InterfaceSlice, createInterfaceSlice } from './interfaceSlice';
+import { InterfaceSlice, InterfaceSliceSetable, createInterfaceSlice } from './interfaceSlice';
 import { subscribeWithSelector } from 'zustand/middleware'
 import { CreateOffersSlice, createCreateOfferSlice } from './createOffersSlice';
-import { immer } from 'zustand/middleware/immer'
+import { ChainsID } from '../constants';
+import { useContext } from 'react';
+import { YamContext } from './context';
+import { OFFER_LOADING } from '../types/offer';
 
+// This contains all the type of the slices
 export type RootStore = InterfaceSlice & CreateOffersSlice;
 
-export const useRootStore = create<RootStore>()(
-    subscribeWithSelector(
-        devtools((...args) => ({ 
-            ...createInterfaceSlice(...args),
-            ...createCreateOfferSlice(...args)
-        }))
-    )
-);
+// This contains only the setable values of the slices (settables in the provider component)
+export type SetableValues = InterfaceSliceSetable;
 
-mountStoreDevtool('bridge', useRootStore);
+export type YamStore = ReturnType<typeof createYamStore>;
 
-useRootStore.subscribe((state) => ({
-    chainId: state.chainId,
-    account: state.account
-}), async (values, oldValues) => {
-    if(
-        (values.chainId == oldValues.chainId && values.account == oldValues.account) ||
-        values.chainId == undefined ||
-        values.account == undefined ||
-        values.account == ''
-    ) return;
+export const createYamStore = (initProps: SetableValues) => {
+    const DEFAULT_PROPS: SetableValues = {
+        account: undefined,
+        chainId: ChainsID.Gnosis,
+        interfaceIsLoading: true,
+        offersAreLoading: true,
+        propertiesAreLoading: true,
+        userBalancesAreLoading: true,
+        pricesAreLoading: true,
+        offers: OFFER_LOADING,
+        properties: [],
+        userBalances: {},
+        prices: {},
+        wlProperties: [],
+        wlPropertiesAreLoading: true
+    }
+    return createStore<RootStore>()(
+        subscribeWithSelector(
+            devtools((...args) => ({ 
+                ...DEFAULT_PROPS,
+                ...initProps,
+                ...createInterfaceSlice(...args),
+                ...createCreateOfferSlice(...args)
+            }))
+        )
+    );
+}
 
-    console.log(oldValues, values)
-
-    const { refreshInterface, abortController } = useRootStore.getState();
-
-    // ABORT ALL BEFORE CONTINUING
-    // abortController.abort('ABORTED: ChainId or account changed');
-
-    await refreshInterface();
-})
-
-// useRootStore.subscribe((state) => state.account, async (newAccount, oldAccount) => {
-//     const { refreshInterface } = useRootStore.getState();
-//     if(newAccount === oldAccount) return;
-//     await refreshInterface();
-// })
+export function useRootStore<T>(selector: (state: RootStore) => T): T {
+    const store = useContext(YamContext)
+    if (!store) throw new Error('Missing YamContext.Provider in the tree')
+    return useStore(store, selector)
+}
+  
+// mountStoreDevtool('YAM', useRootStore);
