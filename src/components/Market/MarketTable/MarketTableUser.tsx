@@ -17,17 +17,11 @@ import { MarketSort } from '../MarketSort/MarketSort';
 import { OFFERS_TYPE, useRightTableColumn } from 'src/hooks/useRightTableColumns';
 import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
 import { useTranslation } from 'react-i18next';
-import { selectAddressOffers } from '../../../zustandStore/selectors';
-import { useRootStore } from '../../../zustandStore/store';
-import { useWeb3React } from "@web3-react/core";
-import { useOffers } from '../../../hooks/interface/useOffers';
+import { useUserOffers } from '../../../hooks/offers/useUserOffers';
 
 export const MarketTableUser: FC = () => {
 
-  const { account } = useWeb3React();
   const { t } = useTranslation('table', { keyPrefix: 'filters' });
-
-  const { refetch: refreshOffers, offersAreLoading } = useOffers();
 
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'offer-id', desc: false },
@@ -38,8 +32,11 @@ export const MarketTableUser: FC = () => {
   });
   const [expanded, setExpanded] = useState<ExpandedState>({});
 
-  const addressOffers = useRootStore(state => selectAddressOffers(state, account));
+  const { offers: addressOffers, offersAreLoading, refetch } = useUserOffers();
+  console.log(addressOffers);
+
   const { offers, sellCount, buyCount, exchangeCount } = useTypedOffers(addressOffers);
+
   const columns = useRightTableColumn(OFFERS_TYPE.ADDRESS);
 
   const [globalFilter, setGlobalFilter] = useState<string>('');
@@ -108,7 +105,7 @@ export const MarketTableUser: FC = () => {
           }),
         }}
         table={table}
-        tablecaptionOptions={{ refreshState: [offersAreLoading, refreshOffers], visible: true }}
+        tablecaptionOptions={{ refreshState: [offersAreLoading, () => refetch()], visible: true }}
         TableSubRow={MarketSubRow}
       />
     </Flex>

@@ -22,8 +22,6 @@ import { usePrivateOffers } from '../../../hooks/offers/usePrivateOffers';
 
 export const MarketTablePrivate: FC = () => {
   
-  const { refetch: refreshOffers, offersAreLoading } = useOffers();
-
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'offer-id', desc: false },
   ]);
@@ -33,7 +31,7 @@ export const MarketTablePrivate: FC = () => {
   });
   const [expanded, setExpanded] = useState<ExpandedState>({});
 
-  const { offers: privateOffers } = usePrivateOffers();
+  const { offers: privateOffers, offersAreLoading, refetch } = usePrivateOffers();
   const { offers, sellCount, buyCount, exchangeCount } = useTypedOffers(privateOffers)
   const columns = useRightTableColumn(OFFERS_TYPE.PRIVATE);
 
@@ -79,7 +77,7 @@ export const MarketTablePrivate: FC = () => {
           }),
         }}
         table={table}
-        tablecaptionOptions={{ refreshState: [offersAreLoading, refreshOffers], visible: true }}
+        tablecaptionOptions={{ refreshState: [offersAreLoading, () => refetch()], visible: true }}
         TableSubRow={MarketSubRow}
       />
     </Flex>
