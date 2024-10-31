@@ -15,7 +15,7 @@ export const useUserOffers: UseUserOffers = () => {
 
     const userOffers = useMemo(() => {
         if (!account || !offers) return OFFER_LOADING;
-        return offers.filter((offer: Offer) => offer.sellerAddress.toLowerCase() == account.toLowerCase());
+        return offers.filter((offer: Offer) => offer.sellerAddress && offer.sellerAddress.toLowerCase() == account.toLowerCase());
     }, [offers, account]);
     
     return { offers: userOffers, offersAreLoading, refetch };
