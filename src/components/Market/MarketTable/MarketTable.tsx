@@ -19,11 +19,8 @@ import React from 'react';
 import { OFFERS_TYPE, useRightTableColumn } from 'src/hooks/useRightTableColumns';
 import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
 import { usePublicOffers } from '../../../hooks/offers/usePublicOffers';
-import { useInterfaceLoading } from '../../../hooks/interface/useInterfaceLoading';
 
 export const MarketTable: FC = () => {
-
-  console.log('MarketTable')
 
   const { offers, offersAreLoading, refetch: refetchPublicOffers } = usePublicOffers();
 
@@ -114,7 +111,7 @@ export const MarketTable: FC = () => {
         }),
       }}
       table={table}
-      tablecaptionOptions={{ refreshState: [offersAreLoading, () => {}], visible: true }}
+      tablecaptionOptions={{ refreshState: [offersAreLoading, () => refetchPublicOffers()], visible: true }}
       TableSubRow={MarketSubRow}
       isLoading={offersAreLoading}
     />
