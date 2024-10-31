@@ -10,8 +10,7 @@ import { useWeb3React } from "@web3-react/core";
 import { useContract } from "./useContract";
 import { ContractsID } from "../constants";
 import { MultiPathOffer } from "../types/offer/MultiPathOffer";
-import { useRootStore } from "../zustandStore/store";
-import { selectPublicOffers } from "../zustandStore/selectors";
+import { usePublicOffers } from "./offers/usePublicOffers";
 
 const getReverseOfferType = (offerType: OFFER_TYPE) => {
     switch(offerType){
@@ -44,7 +43,7 @@ export const useMatchedOffers: UseMatchedOffers = (offerType, offerTokenAddress,
     const shieldValue = useAtomValue(shieldValueAtom);
     const useMultiCurrencies = useAtomValue(multiPathMultiCurrencyAtom);
 
-    const publicOffers = useRootStore(selectPublicOffers);
+    const { offers: publicOffers } = usePublicOffers();
     const revesedOfferType = getReverseOfferType(offerType);
 
     const { account, provider } = useWeb3React();

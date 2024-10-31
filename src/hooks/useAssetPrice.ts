@@ -1,6 +1,7 @@
 import { useMemo } from "react"
 import { usePropertiesToken } from "./usePropertiesToken";
 import { useRootStore } from "../zustandStore/store";
+import { usePrices } from "./interface/usePrices";
 
 type UseAssetPrice = ({
     tokenType,
@@ -12,12 +13,12 @@ type UseAssetPrice = ({
 
 export const useAssetPrice: UseAssetPrice = ({ tokenType, tokenAddress }) => {
 
-    const prices = useRootStore((state) => state.prices);
+    const { prices } = usePrices();
 
     const { getPropertyToken } = usePropertiesToken();
 
     return useMemo(() => {
-        if(!tokenAddress) return;
+        if(!tokenAddress || !prices) return;
         if(tokenType == 'realtoken') {
             return getPropertyToken(tokenAddress)?.officialPrice
         }else if(tokenType == 'others') {

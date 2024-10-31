@@ -13,19 +13,21 @@ import {
 } from '@tanstack/react-table';
 import { Table } from '../../Table';
 import { MarketSubRow } from '../MarketSubRow';
-import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 import { MarketSort } from '../MarketSort/MarketSort';
 import { OFFERS_TYPE, useRightTableColumn } from 'src/hooks/useRightTableColumns';
 import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
 import { useTranslation } from 'react-i18next';
 import { selectAddressOffers } from '../../../zustandStore/selectors';
 import { useRootStore } from '../../../zustandStore/store';
+import { useWeb3React } from "@web3-react/core";
+import { useOffers } from '../../../hooks/interface/useOffers';
 
 export const MarketTableUser: FC = () => {
 
+  const { account } = useWeb3React();
   const { t } = useTranslation('table', { keyPrefix: 'filters' });
 
-  const { refreshOffers, offersIsLoading } = useRefreshOffers();
+  const { refetch: refreshOffers, offersAreLoading } = useOffers();
 
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'offer-id', desc: false },
@@ -36,7 +38,7 @@ export const MarketTableUser: FC = () => {
   });
   const [expanded, setExpanded] = useState<ExpandedState>({});
 
-  const addressOffers = useRootStore(selectAddressOffers);
+  const addressOffers = useRootStore(state => selectAddressOffers(state, account));
   const { offers, sellCount, buyCount, exchangeCount } = useTypedOffers(addressOffers);
   const columns = useRightTableColumn(OFFERS_TYPE.ADDRESS);
 
@@ -106,7 +108,7 @@ export const MarketTableUser: FC = () => {
           }),
         }}
         table={table}
-        tablecaptionOptions={{ refreshState: [offersIsLoading, refreshOffers], visible: true }}
+        tablecaptionOptions={{ refreshState: [offersAreLoading, refreshOffers], visible: true }}
         TableSubRow={MarketSubRow}
       />
     </Flex>

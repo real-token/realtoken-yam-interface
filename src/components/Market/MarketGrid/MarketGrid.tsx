@@ -20,13 +20,13 @@ import { useFilter, useHideDustFilter } from 'src/hooks/useFilter';
 import { hideDustAtom, nameFilterValueAtom } from 'src/states';
 import { Offer } from 'src/types/offer';
 
-import { selectPublicOffers } from '../../../zustandStore/selectors';
-import { useRootStore } from '../../../zustandStore/store';
 import { SelectCreatable } from '../../CreatableSelect/CreatableSelect';
 import { GridPane } from './GridPane';
+import { usePublicOffers } from '../../../hooks/offers/usePublicOffers';
 
 export const MarketGrid: FC = () => {
-  const publicOffers = useRootStore((state) => selectPublicOffers(state));
+
+  const { offers: publicOffers } = usePublicOffers();
   const { offers } = useTypedOffers(publicOffers);
 
   const [data, setData] = useState<string[]>(['9', '18', '36', '72']);

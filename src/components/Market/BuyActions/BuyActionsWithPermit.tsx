@@ -1,16 +1,17 @@
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Group, Popover, Text, Flex, Button, ActionIcon, Tooltip } from '@mantine/core';
+import { Group, Popover, Text, ActionIcon } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { IconShoppingCart } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
 
 import { Offer } from 'src/types/offer/Offer';
-import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 import { PropertiesToken } from '../../../types';
 import { getNotWhitelistedTokens } from '../../../utils/whitelist';
-import { useRootStore } from '../../../zustandStore/store';
+import { useProperties } from '../../../hooks/interface/useProperties';
+import { useWlProperties } from '../../../hooks/interface/useWlProperties';
+import { useOffers } from '../../../hooks/interface/useOffers';
 
 type BuyActions = {
   buyOffer: Offer | undefined;
@@ -28,22 +29,17 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
   const { account } = useWeb3React();
   const modals = useModals();
 
-  const [
-    wlProperties,
-    properties,
-    offersAreLoading
-  ] = useRootStore((state) => [
-    state.wlProperties,
-    state.properties,
-    state.offersAreLoading
-  ]);
+  const { properties } = useProperties();
+
+  const { wlProperties } = useWlProperties();
+  const { offersAreLoading } = useOffers();
 
   const isLoading = loading || offersAreLoading;
 
   const { t } = useTranslation('modals');
   const { t: t1 } = useTranslation('buy', { keyPrefix: 'table' });
 
-  const { refreshOffers } = useRefreshOffers();
+  const { refetch: refreshOffers } = useOffers();
 
   const onOpenBuyModal = useCallback(
     (offer: Offer) => {
@@ -68,7 +64,7 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
 
   const [tokenNotWhitelisted, setTokenNotWhitelisted] = useState<PropertiesToken[]>([]);
   useEffect(() => {
-    if(!wlProperties || !buyOffer) return;
+    if(!wlProperties || !buyOffer || !properties) return;
     const notWlTokens = getNotWhitelistedTokens(wlProperties, buyOffer, properties);
     setTokenNotWhitelisted(notWlTokens);
   }, [wlProperties, buyOffer, properties]);

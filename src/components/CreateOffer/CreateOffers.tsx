@@ -7,7 +7,6 @@ import { useTranslation } from "react-i18next";
 import { CoinBridgeToken, coinBridgeTokenABI, Erc20, Erc20ABI } from "src/abis";
 import { Chain, ContractsID, NOTIFICATIONS, NotificationsID } from "src/constants";
 import { useActiveChain, useContract } from "src/hooks";
-import { useRefreshOffers } from "src/hooks/offers/useRefreshOffers";
 import { CreatedOffer } from "src/types/offer/CreatedOffer";
 import { getContract } from "src/utils";
 import { CreateOfferPane } from "./CreateOfferPane";
@@ -24,6 +23,7 @@ import { getBatchApprove } from "../../hooks/getBatchApprove";
 import { IconArrowBack } from "@tabler/icons";
 import { CreateOfferApprovePane } from "./CreateOfferApprovePane";
 import { OFFER_TYPE } from "../../types/offer";
+import { useOffers } from "../../hooks/interface/useOffers";
 
 const approveOffer = (
   offerTokenAddress: string,
@@ -114,7 +114,7 @@ export const CreateOffer = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [notification, setNotification] = useState<boolean>(false);
 
-  const { refreshOffers } = useRefreshOffers();
+  const { refetch } = useOffers();
 
   const [
     rawOffers, 
@@ -351,7 +351,7 @@ export const CreateOffer = () => {
             if (status == 1) {
               console.log('test1')
               resetOffers()
-              refreshOffers();
+              refetch();
             }
             setLoading(false);
           });
@@ -435,7 +435,7 @@ export const CreateOffer = () => {
           if (status == 1) {
             console.log('test2')
             resetOffers()
-            refreshOffers();
+            refetch();
           }
           setLoading(false);
         });
@@ -523,7 +523,7 @@ export const CreateOffer = () => {
         if (status == 1) {
           console.log('test2')
           resetOffers()
-          refreshOffers();
+          refetch();
           resetApprovals();
           setShowApprovePanel(false);
         }

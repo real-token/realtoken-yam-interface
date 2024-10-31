@@ -5,6 +5,8 @@ import { Offer, DEFAULT_OFFER } from '../../types/offer/Offer';
 import { usePropertiesToken } from '../usePropertiesToken';
 import { useQuery } from "react-query";
 import { useRootStore } from "../../zustandStore/store";
+import { usePrices } from "../interface/usePrices";
+import { useWlProperties } from "../interface/useWlProperties";
 
 type UseOfferProps  = (offerId: number) => {
     offer: Offer | undefined
@@ -21,14 +23,14 @@ export const useOffer: UseOfferProps = (offerId: number) => {
 
     const { propertiesToken, propertiesIsloading } = usePropertiesToken();
 
-    const [prices, wlProperties] = useRootStore((state) => [state.prices, state.wlProperties])
-    console.log('prices',prices)
+    const { prices } = usePrices();
+    const { wlProperties } = useWlProperties();
 
     const { } = useQuery({
         queryKey: [offerId],
         // @ts-ignore
         queryFn: () => fetchOffer(provider, account, chainId,offerId, propertiesToken, wlProperties, prices),
-        enabled: !!offerId && !!chainId && !!provider && !!account && !!propertiesToken && !propertiesIsloading && propertiesToken.length > 0 && wlProperties !== undefined && Object.keys(prices).length > 0,
+        enabled: !!offerId && !!chainId && !!provider && !!account && !!propertiesToken && !!prices && !!wlProperties,
         onSuccess: (offer: Offer|undefined) => {
             if(offer){
                 setOffer(offer);

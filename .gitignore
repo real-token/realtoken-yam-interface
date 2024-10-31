@@ -5,6 +5,8 @@ yalc.lock
 .npmrc
 .yarnrc
 
+.vscode
+
 .env
 
 # dependencies

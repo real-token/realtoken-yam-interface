@@ -108,7 +108,7 @@ const App = ({ Component, pageProps }: AppProps) => {
         <JotaiProvider>
           <RealtProvider value={{ env, showAllNetworks }}>
             <Web3Providers libraryConnectors={libraryConnectors}>
-              <InitStoreProvider>
+              {/* <InitStoreProvider> */}
                 <LanguageInit i={i18n} />
                 <Layout
                   currentWebsite={Websites.YAM}
@@ -121,7 +121,7 @@ const App = ({ Component, pageProps }: AppProps) => {
                   <ReactQueryDevtools/>
                   <Component {...pageProps} />
                 </Layout>
-              </InitStoreProvider>
+              {/* </InitStoreProvider> */}
             </Web3Providers>
           </RealtProvider>
         </JotaiProvider>

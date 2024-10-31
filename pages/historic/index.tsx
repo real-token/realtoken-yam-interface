@@ -16,23 +16,15 @@ import { Historic } from "../../src/types/historic";
 import { useTranslation } from "react-i18next";
 import { ConnectedProvider } from "../../src/providers/ConnectProvider";
 import { OfferTypeBadge } from "../../src/components/Offer/OfferTypeBadge/OfferTypeBadge";
+import { useHistoric } from "../../src/hooks/interface/useHistoric";
+
 
 export default function HistoricPage(){
 
-    const [
-        historics,
-        historicHasLoadingError,
-        historicsAreLoading,
-        chainId
-    ] = useRootStore((state) => [
-        state.historics,
-        state.historicHasLoadingError,
-        state.historicsAreLoading,
-        state.chainId
-    ]);
+    const { account, chainId } = useWeb3React();
+    const { historics, historicsAreLoading, isError } = useHistoric();
 
     const { t } = useTranslation('historic');
-    const { account } = useWeb3React();
     const blockExplorerUrl = CHAINS[chainId as ChainsID].blockExplorerUrl;
 
     const [parseLocalDate, setParseLocalDate] = useState(false);
@@ -175,7 +167,7 @@ export default function HistoricPage(){
         meta: { colSpan: 16 }
     });
 
-    if(historicHasLoadingError){
+    if(isError){
         return(
             <Flex
                 h={'100%'}

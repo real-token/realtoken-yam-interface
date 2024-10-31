@@ -41,12 +41,7 @@ const getContractAddressFromChainId = (chainId: number): string|undefined => {
 const getTokens = async (chainId: number, communityProperties: APIPropertiesToken[], wlProperties: ShortProperty[]): Promise<PropertiesToken[]> => {
     const propertiesNonFiltered: PropertiesToken[] = [];
 
-    // blockchainAddresses
-
-    console.log(chainId);
-
     const contractKey = getContractAddressFromChainId(chainId);
-    console.log(contractKey);
 
     // if(chainId == ChainsID.Sepolia){
 

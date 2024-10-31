@@ -1,11 +1,8 @@
 import { useAtomValue } from "jotai"
-import { useCallback, useMemo } from "react"
+import { useMemo } from "react"
 import { tableOfferTypeAtom } from "src/states"
 import { Offer, OFFER_LOADING, OFFER_TYPE } from "src/types/offer"
-import { useRootStore } from "../../zustandStore/store"
-import { selectAllPublicOffers, selectOffersIsLoading, selectPublicOffers } from "../../zustandStore/selectors"
-import { USER_ROLE } from "../../types/admin"
-import BigNumber from "bignumber.js"
+import { useOffers } from "../interface/useOffers"
 
 const getTypedOffers = (type: OFFER_TYPE, offers: Offer[], offersLoading: boolean): Offer[] => {
     if (!offers || offersLoading) return OFFER_LOADING;
@@ -24,12 +21,12 @@ export const useTypedOffers: UseTypedOffers = (
 )  => {
 
     const tableOfferType = useAtomValue(tableOfferTypeAtom);
-    const [ offersLoading] = useRootStore((state) => [state.offersAreLoading]);
+    const { offersAreLoading } = useOffers();
     
     return useMemo(() => ({
-        offers: [...getTypedOffers(tableOfferType, offers, offersLoading)],
-        sellCount: !offersLoading ? getTypedOffers(OFFER_TYPE.SELL, offers, offersLoading).length : undefined,
-        buyCount: !offersLoading ? getTypedOffers(OFFER_TYPE.BUY, offers, offersLoading).length : undefined,
-        exchangeCount: !offersLoading ? getTypedOffers(OFFER_TYPE.EXCHANGE, offers, offersLoading).length : undefined,
-    }),[offersLoading, tableOfferType, offers])
+        offers: [...getTypedOffers(tableOfferType, offers, offersAreLoading)],
+        sellCount: !offersAreLoading ? getTypedOffers(OFFER_TYPE.SELL, offers, offersAreLoading).length : undefined,
+        buyCount: !offersAreLoading ? getTypedOffers(OFFER_TYPE.BUY, offers, offersAreLoading).length : undefined,
+        exchangeCount: !offersAreLoading ? getTypedOffers(OFFER_TYPE.EXCHANGE, offers, offersAreLoading).length : undefined,
+    }),[offersAreLoading, tableOfferType, offers])
 }

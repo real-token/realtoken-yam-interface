@@ -1,9 +1,7 @@
-import { FC, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { FC, useState } from 'react';
 
-import { Flex, Group, MantineSize, Text, Title } from '@mantine/core';
+import { Flex, MantineSize } from '@mantine/core';
 import {
-  ColumnDef,
   ExpandedState,
   PaginationState,
   SortingState,
@@ -16,16 +14,15 @@ import {
 
 import { Table } from '../../Table';
 import { MarketSubRow } from '../MarketSubRow';
-import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
 import { OFFERS_TYPE, useRightTableColumn } from 'src/hooks/useRightTableColumns';
 import { MarketSort } from '../MarketSort/MarketSort';
-import { useRootStore } from '../../../zustandStore/store';
-import { selectPrivateOffers } from '../../../zustandStore/selectors';
+import { useOffers } from '../../../hooks/interface/useOffers';
+import { usePrivateOffers } from '../../../hooks/offers/usePrivateOffers';
 
 export const MarketTablePrivate: FC = () => {
   
-  const { refreshOffers, offersIsLoading } = useRefreshOffers();
+  const { refetch: refreshOffers, offersAreLoading } = useOffers();
 
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'offer-id', desc: false },
@@ -36,7 +33,7 @@ export const MarketTablePrivate: FC = () => {
   });
   const [expanded, setExpanded] = useState<ExpandedState>({});
 
-  const privateOffers = useRootStore(selectPrivateOffers);
+  const { offers: privateOffers } = usePrivateOffers();
   const { offers, sellCount, buyCount, exchangeCount } = useTypedOffers(privateOffers)
   const columns = useRightTableColumn(OFFERS_TYPE.PRIVATE);
 
@@ -82,7 +79,7 @@ export const MarketTablePrivate: FC = () => {
           }),
         }}
         table={table}
-        tablecaptionOptions={{ refreshState: [offersIsLoading, refreshOffers], visible: true }}
+        tablecaptionOptions={{ refreshState: [offersAreLoading, refreshOffers], visible: true }}
         TableSubRow={MarketSubRow}
       />
     </Flex>

@@ -1,6 +1,6 @@
 import { FC, HTMLProps, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Flex, MantineSize, TextInput, Title } from '@mantine/core';
+import { Flex, TextInput, Title } from '@mantine/core';
 import {
   ExpandedState,
   PaginationState,
@@ -15,7 +15,6 @@ import {
 } from '@tanstack/react-table';
 import { Table } from '../../Table';
 import { MarketSubRow } from '../MarketSubRow';
-import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
 import { adminActionsColumn, adminAmount,adminAllowance,adminWalletBlanace, adminHeader, buyerTokenNameColumn, buyShortTokenNameColumn, exchangeBuyShortTokenNameColumn, exchangeOfferShortTokenNameColumn, idColumn, offerDateColumn, offerShortTokenNameColumn, offerTokenNameColumn, priceColumn, priceDeltaColumn, sellerAddressColumn, yieldDeltaColumn, offerYieldColumn } from 'src/hooks/column';
 import React from 'react';
 import { Offer, OFFER_LOADING, OFFER_TYPE } from 'src/types/offer';
@@ -26,12 +25,12 @@ import { tableOfferTypeAtom } from 'src/states';
 import { useRole } from 'src/hooks/useRole';
 import { USER_ROLE } from 'src/types/admin';
 import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
-import { useRootStore } from '../../../zustandStore/store';
+import { useOffers } from '../../../hooks/interface/useOffers';
 import BigNumber from 'bignumber.js';
 
 export const MarketTableAdmin: FC = () => {
 
-  const [offersIsLoading, refreshOffers] = useRootStore((state) => [state.interfaceIsLoading, state.refreshOffers]);
+  const { offersAreLoading, refetch, offers: allOffers } = useOffers();
 
   const [globalFilter,setGlobalFilter] = useState<string>("");
   const [sorting, setSorting] = useState<SortingState>([
@@ -50,24 +49,23 @@ export const MarketTableAdmin: FC = () => {
   
   const { role } = useRole();
 
-  const [allOffers, offersLoading] = useRootStore((state) => [state.offers, state.offersAreLoading]);
-  // const { publicOffers, allPublicOffers } = useMemo(() => {
+  const { publicOffers, allPublicOffers } = useMemo(() => {
 
-  //   const pOffers = allOffers.filter((offer: Offer) =>
-  //       !offer.buyerAddress &&
-  //       BigNumber(offer.amount).isPositive() &&
-  //       !BigNumber(offer.amount).isZero()
-  //   );
+    const pOffers = allOffers.filter((offer: Offer) =>
+        !offer.buyerAddress &&
+        BigNumber(offer.amount).isPositive() &&
+        !BigNumber(offer.amount).isZero()
+    );
 
-  //   const pAllOffers = allOffers.filter((offer: Offer) =>
-  //       !offer.buyerAddress && BigNumber(offer.amount).isPositive()
-  //   );
+    const pAllOffers = allOffers.filter((offer: Offer) =>
+        !offer.buyerAddress && BigNumber(offer.amount).isPositive()
+    );
 
-  //   return {
-  //       publicOffers: !allOffers || offersLoading ? OFFER_LOADING : pOffers,
-  //       allPublicOffers: !allOffers || offersLoading ? OFFER_LOADING : pAllOffers,
-  //   }
-  // },[allOffers])
+    return {
+        publicOffers: !allOffers || offersAreLoading ? OFFER_LOADING : pOffers,
+        allPublicOffers: !allOffers || offersAreLoading ? OFFER_LOADING : pAllOffers,
+    }
+  },[allOffers, offersAreLoading])
 
   const { offers } = useTypedOffers(allOffers);
   console.log('admin offers', offers.length)
@@ -244,7 +242,7 @@ export const MarketTableAdmin: FC = () => {
           horizontalSpacing: 'xs',
         }}
         table={table}
-        tablecaptionOptions={{ refreshState: [offersIsLoading, refreshOffers], visible: true }}
+        tablecaptionOptions={{ refreshState: [offersAreLoading, refetch], visible: true }}
         TableSubRow={MarketSubRow}
       />
     </Flex>

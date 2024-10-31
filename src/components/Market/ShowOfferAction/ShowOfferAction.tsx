@@ -3,14 +3,14 @@ import { IconEye } from "@tabler/icons";
 import { FC } from "react";
 import { Offer } from "src/types/offer/Offer";
 import { openInNewTab } from "src/utils/window";
-import { useRootStore } from "../../../zustandStore/store";
+import { useOffers } from "../../../hooks/interface/useOffers";
 interface ShowOfferActionProps{
     offer: Offer
     className?: string;
 }
 export const ShowOfferAction: FC<ShowOfferActionProps> = ({ offer, className }) => {
 
-    const offersAreLoading = useRootStore((state) => state.offersAreLoading);
+    const { offersAreLoading } = useOffers();
 
     return(
         <>

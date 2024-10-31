@@ -11,7 +11,7 @@ import { showNotification, updateNotification } from '@mantine/notifications';
 import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { useActiveChain, useContract } from 'src/hooks';
 import { useWeb3React } from '@web3-react/core';
-import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
+import { useOffers } from '../../../hooks/interface/useOffers';
 
 type DeleteModalProps = {
   offerIds: string[];
@@ -37,7 +37,7 @@ export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
 
   const [isSubmitting, setSubmitting] = useState<boolean>(false);
   
-  const { refreshOffers } = useRefreshOffers();
+  const { refetch: refreshOffers } = useOffers();
 
   const activeChain = useActiveChain();
   const realTokenYamUpgradeable = useContract(

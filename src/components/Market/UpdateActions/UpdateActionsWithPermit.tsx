@@ -7,7 +7,7 @@ import { IconEdit } from '@tabler/icons';
 import { useWeb3React } from '@web3-react/core';
 
 import { Offer } from 'src/types/offer/Offer';
-import { useRefreshOffers } from 'src/hooks/offers/useRefreshOffers';
+import { useOffers } from '../../../hooks/interface/useOffers';
 
 type UpdateActions = {
   updateOffer: Offer;
@@ -19,7 +19,7 @@ export const UpdateActionsWithPermit: FC<UpdateActions> = ({
   const { account } = useWeb3React();
   const modals = useModals();
 
-  const { refreshOffers } = useRefreshOffers(); 
+  const { refetch: refreshOffers } = useOffers();
 
   const { t } = useTranslation('modals');
 

@@ -21,7 +21,7 @@ export const useTokenInfo: UseTokenInfo = (sellerTokenAddress,buyerTokenAddress)
     tokenPrice: 0,
   });
 
-  const contract: PropertiesToken = propertiesToken?.filter(
+  const contract: PropertiesToken|undefined = propertiesToken?.filter(
     propertyToken => (propertyToken.contractAddress == sellerTokenAddress || propertyToken.contractAddress == buyerTokenAddress)
   )[0];
 

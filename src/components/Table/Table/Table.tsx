@@ -17,6 +17,7 @@ type TableProps<T> = {
   table: ReactTable<T>;
   tablecaptionOptions?: TableCaptionOptions;
   TableSubRow?: FC<TableSubRowProps<T>>;
+  isLoading?: boolean;
 };
 
 export const Table = <T,>({
@@ -24,6 +25,7 @@ export const Table = <T,>({
   table,
   tablecaptionOptions,
   TableSubRow,
+  isLoading = false,
 }: TableProps<T>) => {
   const { t } = useTranslation('table', { keyPrefix: 'table' });
 
@@ -47,7 +49,15 @@ export const Table = <T,>({
             ))}
           </MantineTable.Thead>
           <MantineTable.Tbody>
-            {table.getRowModel().rows.length ? (
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, index) => (
+                <MantineTable.Tr key={index}>
+                  <MantineTable.Td colSpan={table.options.meta?.colSpan} style={{ textAlign: 'center' }}>
+                  <Skeleton height={15}/>
+                  </MantineTable.Td>
+                </MantineTable.Tr>
+              ))
+            ) : table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
                 <Fragment key={row.id}>
                   <MantineTable.Tr>

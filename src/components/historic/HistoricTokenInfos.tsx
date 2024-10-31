@@ -1,6 +1,7 @@
 import { useRootStore } from "../../zustandStore/store";
 import { Historic, HistoricToken } from "../../types/historic";
 import React from "react";
+import { useProperties } from "../../hooks/interface/useProperties";
 
 export const tokenSymbolToImage = new Map<string, string>([
     ['WXDAIRealT', 'wxdai.svg'],
@@ -35,9 +36,10 @@ export const HistoricTokenInfos = ({ token, children }: HistoricTokenInfosProps)
     const { address, tokenType, name, symbol } = token;
     const isPropertyToken = tokenType == 1;
 
-    const [properties] = useRootStore((state) => [state.properties]);
+    const { properties } = useProperties();
 
     const findProperty = (address: string) => {
+        if(!properties) return undefined
         return properties.find((p) => p.contractAddress.toLowerCase() === address.toLowerCase());
     }
     const property = findProperty(address);

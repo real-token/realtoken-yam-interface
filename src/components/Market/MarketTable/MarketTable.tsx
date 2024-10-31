@@ -18,20 +18,22 @@ import { nameFilterValueAtom, showOnlyWhitelistedAtom } from 'src/states';
 import React from 'react';
 import { OFFERS_TYPE, useRightTableColumn } from 'src/hooks/useRightTableColumns';
 import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
-import { useRootStore } from '../../../zustandStore/store';
-import { selectPublicOffers } from '../../../zustandStore/selectors';
-import { useRefreshOffers } from '../../../hooks/offers/useRefreshOffers';
+import { usePublicOffers } from '../../../hooks/offers/usePublicOffers';
+import { useInterfaceLoading } from '../../../hooks/interface/useInterfaceLoading';
 
 export const MarketTable: FC = () => {
 
-  const { refreshOffers, offersIsLoading } = useRefreshOffers();
+  console.log('MarketTable')
+
+  const { offers, offersAreLoading, refetch: refetchPublicOffers } = usePublicOffers();
+
   const [nameFilterValue,setNamefilterValue] = useAtom(nameFilterValueAtom);
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const showOnlyWhitelisted = useAtomValue(showOnlyWhitelistedAtom);
   useEffect(() => {
-    if(showOnlyWhitelisted && !offersIsLoading){
+    if(showOnlyWhitelisted && !offersAreLoading){
       setColumnFilters([{
         id: 'whitelisted',
         value: 'true'
@@ -39,7 +41,7 @@ export const MarketTable: FC = () => {
     }else{
       setColumnFilters([])
     }
-  }, [showOnlyWhitelisted, offersIsLoading])
+  }, [showOnlyWhitelisted, offersAreLoading])
   
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'offer-id', desc: false },
@@ -61,9 +63,8 @@ export const MarketTable: FC = () => {
       setSorting([{ id: 'offer-id', desc: false }])
     }
   },[nameFilterValue])
-
-  const publicOffers = useRootStore(selectPublicOffers);
-  const { offers: data } = useTypedOffers(publicOffers);
+  
+  const { offers: data } = useTypedOffers(offers);
   const columns = useRightTableColumn(OFFERS_TYPE.PUBLIC);
 
   const table = useReactTable({
@@ -102,22 +103,20 @@ export const MarketTable: FC = () => {
   });
 
   return (
+    // <></>
     <Table
       tableProps={{
         highlightOnHover: true,
         verticalSpacing: 'sm',
         horizontalSpacing: 'xs',
         style: () => ({
-          // border: theme.other.border(theme),
-          // borderRadius: theme.radius[theme.defaultRadius as MantineSize],
-          // borderCollapse: 'separate',
           overflow: 'hidden',
-          // borderSpacing: 0,
         }),
       }}
       table={table}
-      tablecaptionOptions={{ refreshState: [offersIsLoading,refreshOffers], visible: true }}
+      tablecaptionOptions={{ refreshState: [offersAreLoading, () => {}], visible: true }}
       TableSubRow={MarketSubRow}
+      isLoading={offersAreLoading}
     />
   );
 };
