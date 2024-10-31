@@ -15,8 +15,8 @@ export const usePrivateOffers: UsePrivateOffers = () => {
 
     const privateOffers = useMemo(() => {
         if(!account || !offers) return [];
-        return offers.filter((offer: Offer) => offer.buyerAddress.toLowerCase() == account.toLowerCase());
-    }, [offers]);
+        return offers.filter((offer: Offer) => offer.buyerAddress && offer.buyerAddress.toLowerCase() == account.toLowerCase());
+    }, [offers, account]);
 
     return { offers: privateOffers, offersAreLoading, refetch };
 }

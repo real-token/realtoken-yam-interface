@@ -14,8 +14,6 @@ interface Display{
 }
 const Display: FC = () => {
 
-  console.log('Display')
-
   const [choosenDisplay,setChoosenDisplay] = useAtom(displayChoosedAtom);
 
   const availableDisplays = useMemo(() => {

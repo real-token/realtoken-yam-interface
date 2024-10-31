@@ -100,7 +100,6 @@ export const MarketTable: FC = () => {
   });
 
   return (
-    // <></>
     <Table
       tableProps={{
         highlightOnHover: true,

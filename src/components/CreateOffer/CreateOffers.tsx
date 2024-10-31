@@ -146,7 +146,6 @@ export const CreateOffer = () => {
       }
     })
   }, [rawOffers]);
-  console.log(offers);
 
   const { t } = useTranslation('modals', { keyPrefix: 'sell' });
 

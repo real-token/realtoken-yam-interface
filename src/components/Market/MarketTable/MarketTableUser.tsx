@@ -33,7 +33,6 @@ export const MarketTableUser: FC = () => {
   const [expanded, setExpanded] = useState<ExpandedState>({});
 
   const { offers: addressOffers, offersAreLoading, refetch } = useUserOffers();
-  console.log(addressOffers);
 
   const { offers, sellCount, buyCount, exchangeCount } = useTypedOffers(addressOffers);
 
