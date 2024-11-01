@@ -75,6 +75,7 @@ export const CreateOfferApprovePane = ({ tokenAddress, approval }: CreateOfferAp
     const { data: needApprove, isLoading: checkIfApproveNeeded, refetch } = useQuery({
         queryKey: ['need-approve', tokenAddress],
         enabled: !!approval && !!provider && !!realTokenYamUpgradeable && !!account,
+        refetchInterval: 5000,
         queryFn: async () => {
             if(!provider || !realTokenYamUpgradeable || !account || !approval) return false;
 
