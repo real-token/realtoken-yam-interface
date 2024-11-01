@@ -126,7 +126,7 @@ export const CreateOfferApprovePane = ({ tokenAddress, approval }: CreateOfferAp
             <Button 
                 color={'green'} 
                 h={'100%'}
-                loading={isApproving || checkIfApproveNeeded}
+                loading={isApproving || (checkIfApproveNeeded && !needApprove)}
                 disabled={isApproving || !needApprove}
                 leftSection={!needApprove ? <IconCheck size={18}/> : undefined}
                 onClick={() => approve()}
