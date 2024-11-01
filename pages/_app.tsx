@@ -96,19 +96,18 @@ const queryClient = new QueryClient({
 
 const App = ({ Component, pageProps }: AppProps) => {
   return (
-    <MantineProviders 
-      modals={modals} 
-      modalStyles={modalStyles} 
-      theme={theme}
-      notificationsProps={{
-        position: "bottom-right"
-      }}
-    >
       <QueryClientProvider client={queryClient}>
         <JotaiProvider>
           <RealtProvider value={{ env, showAllNetworks }}>
             <Web3Providers libraryConnectors={libraryConnectors}>
-              {/* <InitStoreProvider> */}
+              <MantineProviders 
+                modals={modals} 
+                modalStyles={modalStyles} 
+                theme={theme}
+                notificationsProps={{
+                  position: "bottom-right"
+                }}
+              >
                 <LanguageInit i={i18n} />
                 <Layout
                   currentWebsite={Websites.YAM}
@@ -121,12 +120,11 @@ const App = ({ Component, pageProps }: AppProps) => {
                   <ReactQueryDevtools/>
                   <Component {...pageProps} />
                 </Layout>
-              {/* </InitStoreProvider> */}
+              </MantineProviders>
             </Web3Providers>
           </RealtProvider>
         </JotaiProvider>
       </QueryClientProvider>
-    </MantineProviders>
   );
 };
 
