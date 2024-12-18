@@ -1,6 +1,6 @@
 import useSWR from 'swr';
 
-// export const API = 'https://api.realt.community/v1/token/'; // use this for mainnet
+// export const API = 'https://api.realtoken.community/v1/token/'; // use this for mainnet
 export const API =
   'https://yam-marketplace-test-default-rtdb.europe-west1.firebasedatabase.app/'; // for testing
 export type API = {
