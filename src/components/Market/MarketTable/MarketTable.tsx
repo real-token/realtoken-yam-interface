@@ -49,7 +49,9 @@ export const MarketTable: FC = () => {
     if (hideDust) {
       setColumnFilters([{ id: 'amount', value: [hideDustValue, null] }]);
     } else {
-      setColumnFilters([]);
+      setColumnFilters((prev) =>
+        [...prev].filter((filter) => filter.id !== 'amount')
+      );
     }
   }, [hideDust, hideDustValue]);
 
@@ -63,7 +65,9 @@ export const MarketTable: FC = () => {
         },
       ]);
     } else {
-      setColumnFilters([]);
+      setColumnFilters((prev) =>
+        [...prev].filter((filter) => filter.id !== 'whitelisted')
+      );
     }
   }, [showOnlyWhitelisted, offersAreLoading]);
 
