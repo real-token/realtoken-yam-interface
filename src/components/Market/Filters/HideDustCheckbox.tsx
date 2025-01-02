@@ -37,7 +37,7 @@ export const HideDustCheckbox: FC = () => {
         </Popover.Target>
         <Popover.Dropdown>
           <NumberInput
-            label={'Amount under which the offer is hidden'}
+            label={t('hideDustValue')}
             decimalScale={18}
             min={0}
             step={0.01}
