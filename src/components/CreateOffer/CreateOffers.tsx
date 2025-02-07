@@ -1,29 +1,42 @@
-import { Button, Divider, Flex } from "@mantine/core"
-import { notifications, showNotification, updateNotification } from "@mantine/notifications";
-import { useWeb3React } from "@web3-react/core";
-import BigNumber from "bignumber.js";
-import { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { CoinBridgeToken, coinBridgeTokenABI, Erc20, Erc20ABI } from "src/abis";
-import { Chain, ContractsID, NOTIFICATIONS, NotificationsID } from "src/constants";
-import { useActiveChain, useContract } from "src/hooks";
-import { CreatedOffer } from "src/types/offer/CreatedOffer";
-import { getContract } from "src/utils";
-import { CreateOfferPane } from "./CreateOfferPane";
-import erc20PermitSignature from "../../hooks/erc20PermitSignature";
-import coinBridgeTokenPermitSignature from "../../hooks/coinBridgeTokenPermitSignature";
-import { Web3Provider } from "@ethersproject/providers";
-import { Contract } from "ethers";
-import { useAtomValue } from "jotai";
-import { providerAtom } from "../../states";
+import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { Web3Provider } from '@ethersproject/providers';
+import { Button, Divider, Flex } from '@mantine/core';
+import {
+  notifications,
+  showNotification,
+  updateNotification,
+} from '@mantine/notifications';
+import { AvailableConnectors, ConnectorsDatas } from '@realtoken/realt-commons';
+import { IconArrowBack } from '@tabler/icons';
+import { useWeb3React } from '@web3-react/core';
+
+import BigNumber from 'bignumber.js';
+import { Contract } from 'ethers';
+import { useAtomValue } from 'jotai';
+
+import { CoinBridgeToken, Erc20, Erc20ABI, coinBridgeTokenABI } from 'src/abis';
+import {
+  Chain,
+  ContractsID,
+  NOTIFICATIONS,
+  NotificationsID,
+} from 'src/constants';
+import { useActiveChain, useContract } from 'src/hooks';
+import { CreatedOffer } from 'src/types/offer/CreatedOffer';
+import { getContract } from 'src/utils';
+
+import coinBridgeTokenPermitSignature from '../../hooks/coinBridgeTokenPermitSignature';
+import erc20PermitSignature from '../../hooks/erc20PermitSignature';
+import { getBatchApprove } from '../../hooks/getBatchApprove';
+import { useOffers } from '../../hooks/interface/useOffers';
+import { providerAtom } from '../../states';
+import { OFFER_TYPE } from '../../types/offer';
+import { useRootStore } from '../../zustandStore/store';
 import classes from './CreateOffer.module.css';
-import { useRootStore } from "../../zustandStore/store";
-import { AvailableConnectors, ConnectorsDatas } from "@realtoken/realt-commons";
-import { getBatchApprove } from "../../hooks/getBatchApprove";
-import { IconArrowBack } from "@tabler/icons";
-import { CreateOfferApprovePane } from "./CreateOfferApprovePane";
-import { OFFER_TYPE } from "../../types/offer";
-import { useOffers } from "../../hooks/interface/useOffers";
+import { CreateOfferApprovePane } from './CreateOfferApprovePane';
+import { CreateOfferPane } from './CreateOfferPane';
 
 const approveOffer = (
   offerTokenAddress: string,
@@ -88,17 +101,15 @@ const approveOffer = (
         NOTIFICATIONS[NotificationsID.approveOfferLoading](notificationApprove)
       );
 
-      approveTx
-        .wait()
-        .then(({ status }) => 
-          notifications.update({
-            ...NOTIFICATIONS[
-              status === 1
-                ? NotificationsID.approveOfferSuccess
-                : NotificationsID.approveOfferError
-            ](notificationApprove)
-          })
-        );
+      approveTx.wait().then(({ status }) =>
+        notifications.update({
+          ...NOTIFICATIONS[
+            status === 1
+              ? NotificationsID.approveOfferSuccess
+              : NotificationsID.approveOfferError
+          ](notificationApprove),
+        })
+      );
 
       await approveTx.wait(1);
 
@@ -116,35 +127,41 @@ export const CreateOffer = () => {
 
   const { refetch } = useOffers();
 
-  const [
-    rawOffers, 
-    resetOffers, 
-    approvals, 
-    resetApprovals
-  ] = useRootStore(state => [
-    state.offersToCreate, 
-    state.resetOffers, 
-    state.approvals, 
-    state.resetApprovals
-  ]);
+  const [rawOffers, resetOffers, approvals, resetApprovals] = useRootStore(
+    (state) => [
+      state.offersToCreate,
+      state.resetOffers,
+      state.approvals,
+      state.resetApprovals,
+    ]
+  );
 
   const offers: CreatedOffer[] = useMemo(() => {
     return rawOffers.map((offer) => {
+      const amountDecimals =
+        offer.offerType == OFFER_TYPE.SELL
+          ? offer.offerTokenDecimal
+          : offer.offerTokenDecimal;
+      const priceDecimals =
+        offer.offerType == OFFER_TYPE.SELL
+          ? offer.buyerTokenDecimal
+          : offer.buyerTokenDecimal;
 
-      const amountDecimals = offer.offerType == OFFER_TYPE.SELL ? offer.offerTokenDecimal : offer.offerTokenDecimal;
-      const priceDecimals = offer.offerType == OFFER_TYPE.SELL ? offer.buyerTokenDecimal : offer.buyerTokenDecimal;
-
-      const amount = offer.offerType == OFFER_TYPE.BUY ?
-        new BigNumber(offer.amount ?? 1).multipliedBy(offer.choosedPrice ?? 1)
-      : 
-        new BigNumber(offer.amount ?? 1);
+      const amount =
+        offer.offerType == OFFER_TYPE.BUY
+          ? new BigNumber(offer.amount ?? 1).multipliedBy(
+              offer.choosedPrice ?? 1
+            )
+          : new BigNumber(offer.amount ?? 1);
 
       return {
         ...offer,
         amount: amount.shiftedBy(amountDecimals ?? 18).toFixed(0),
-        price: new BigNumber(offer.price ?? 1).shiftedBy(priceDecimals ?? 18).toFixed(0)
-      }
-    })
+        price: new BigNumber(offer.price ?? 1)
+          .shiftedBy(priceDecimals ?? 18)
+          .toFixed(0),
+      };
+    });
   }, [rawOffers]);
 
   const { t } = useTranslation('modals', { keyPrefix: 'sell' });
@@ -187,7 +204,7 @@ export const CreateOffer = () => {
       );
     }
   };
-  
+
   const createOffers = async () => {
     console.log('createOffers');
 
@@ -216,11 +233,19 @@ export const CreateOffer = () => {
         );
         const transactionDeadline = Math.floor(Date.now() / 1000) + 3600;
 
-        const isSafe = connector == ConnectorsDatas.get(AvailableConnectors.gnosisSafe)?.connectorKey;
+        const isSafe =
+          connector ==
+          ConnectorsDatas.get(AvailableConnectors.gnosisSafe)?.connectorKey;
+        const isWallectConnect =
+          connector ==
+          ConnectorsDatas.get(AvailableConnectors.walletConnectV2)
+            ?.connectorKey;
+        console.log('isSafe', isSafe);
+        console.log('isWallectConnect', isWallectConnect);
 
         let permitAnswer: any | undefined = undefined;
         let needPermit = false;
-        if (offerTokenType == 1 && !isSafe) {
+        if (offerTokenType == 1 && !isSafe && !isWallectConnect) {
           console.log(
             'coinBridgeTokenPermitSignature',
             account,
@@ -239,10 +264,10 @@ export const CreateOffer = () => {
             offerToken,
             provider
           );
-        } else if (offerTokenType == 2 && !isSafe) {
+        } else if (offerTokenType == 2 && !isSafe && !isWallectConnect) {
           // TokenType = 2: ERC20 With Permit
           console.log('erc20PermitSignature');
-          console.log(new BigNumber(offer.amount).toString(10))
+          console.log(new BigNumber(offer.amount).toString(10));
           needPermit = true;
           permitAnswer = await erc20PermitSignature(
             account,
@@ -252,7 +277,7 @@ export const CreateOffer = () => {
             offerToken,
             provider
           );
-        } else if (offerTokenType == 3 || isSafe) {
+        } else if (offerTokenType == 3 || isSafe || isWallectConnect) {
           console.log('approveOffer');
           await approveOffer(
             offer.offerTokenAddress,
@@ -275,7 +300,11 @@ export const CreateOffer = () => {
         console.log('pass permitAnswer');
 
         let createOfferTx;
-        if ((offerTokenType == 1 || offerTokenType == 2) && !isSafe) {
+        if (
+          (offerTokenType == 1 || offerTokenType == 2) &&
+          !isSafe &&
+          !isWallectConnect
+        ) {
           console.log(
             'Type 1 or 2 and is not safe',
             JSON.stringify(permitAnswer, null, 4)
@@ -293,7 +322,7 @@ export const CreateOffer = () => {
             v,
             r,
             s
-          )
+          );
 
           createOfferTx = await realTokenYamUpgradeable.createOfferWithPermit(
             offer.offerTokenAddress,
@@ -337,23 +366,22 @@ export const CreateOffer = () => {
 
         console.log('pass4');
 
-        createOfferTx.wait()
-          .then(({ status }) => {
-            updateNotification(
-              NOTIFICATIONS[
-                status === 1
-                  ? NotificationsID.createOfferSuccess
-                  : NotificationsID.createOfferError
-              ](notificationPayload)
-            );
+        createOfferTx.wait().then(({ status }) => {
+          updateNotification(
+            NOTIFICATIONS[
+              status === 1
+                ? NotificationsID.createOfferSuccess
+                : NotificationsID.createOfferError
+            ](notificationPayload)
+          );
 
-            if (status == 1) {
-              console.log('test1')
-              resetOffers()
-              refetch();
-            }
-            setLoading(false);
-          });
+          if (status == 1) {
+            console.log('test1');
+            resetOffers();
+            refetch();
+          }
+          setLoading(false);
+        });
       } else {
         // WANT TO CREATE MULTI OFFERS
         const _offerTokens = [];
@@ -432,8 +460,8 @@ export const CreateOffer = () => {
           );
 
           if (status == 1) {
-            console.log('test2')
-            resetOffers()
+            console.log('test2');
+            resetOffers();
             refetch();
           }
           setLoading(false);
@@ -447,14 +475,13 @@ export const CreateOffer = () => {
   };
 
   const createBatchOffer = async () => {
-
     console.log('createBatchOffer');
 
-    try{
-      if (!account || !provider || !realTokenYamUpgradeable){
+    try {
+      if (!account || !provider || !realTokenYamUpgradeable) {
         console.error('account, provider or realTokenYamUpgradeable not found');
         return;
-      };
+      }
 
       setLoading(true);
 
@@ -520,33 +547,30 @@ export const CreateOffer = () => {
         );
 
         if (status == 1) {
-          console.log('test2')
-          resetOffers()
+          console.log('test2');
+          resetOffers();
           refetch();
           resetApprovals();
           setShowApprovePanel(false);
         }
         setLoading(false);
       });
-      
-    }catch(err){
+    } catch (err) {
       // TODO: Add error notification
       console.error(err);
       setLoading(false);
     }
-  }
+  };
 
   const checkIfApproveNeeded = () => {
-    if(rawOffers.length > 1){
-
+    if (rawOffers.length > 1) {
       // Batch offers, CANNOT permit
       // Only approve available
       setShowApprovePanel(true);
-
-    }else{
+    } else {
       createOffers();
     }
-  }
+  };
 
   const [showApprovePanel, setShowApprovePanel] = useState<boolean>(false);
 
@@ -565,45 +589,55 @@ export const CreateOffer = () => {
             className={classes.offersContainer}
             gap={'sm'}
           >
-            {showApprovePanel ? (
-              Object.keys(approves).map((token, index) => {
-                const approval = approves[token];
-                return(
-                  <CreateOfferApprovePane key={`approve-${index}`} tokenAddress={token} approval={approval}/>
-                )
-              })
-            ) : rawOffers?.map((offer: CreatedOffer, index: number) => (
-                <CreateOfferPane
-                  key={`created-offer-${index}`}
-                  isCreating={false}
-                  offer={offer}
-                />
-              ))
-            }
+            {showApprovePanel
+              ? Object.keys(approves).map((token, index) => {
+                  const approval = approves[token];
+                  return (
+                    <CreateOfferApprovePane
+                      key={`approve-${index}`}
+                      tokenAddress={token}
+                      approval={approval}
+                    />
+                  );
+                })
+              : rawOffers?.map((offer: CreatedOffer, index: number) => (
+                  <CreateOfferPane
+                    key={`created-offer-${index}`}
+                    isCreating={false}
+                    offer={offer}
+                  />
+                ))}
           </Flex>
           {rawOffers.length > 0 ? <Divider /> : undefined}
           <CreateOfferPane isCreating={true} />
         </Flex>
-        <Flex align={'center'} justify={showApprovePanel ? 'space-between' : 'center'} w={'100%'}>
+        <Flex
+          align={'center'}
+          justify={showApprovePanel ? 'space-between' : 'center'}
+          w={'100%'}
+        >
           {showApprovePanel ? (
-            <Button 
-              leftSection={<IconArrowBack/>}
+            <Button
+              leftSection={<IconArrowBack />}
               color={'red'}
               onClick={() => setShowApprovePanel(false)}
               disabled={loading}
             >
               {'Back to offers'}
             </Button>
-          ): undefined}
+          ) : undefined}
           {showApprovePanel ? (
             <Button
-              disabled={Object.values(approvals).some((approval) => !approval) || loading}
+              disabled={
+                Object.values(approvals).some((approval) => !approval) ||
+                loading
+              }
               onClick={() => createBatchOffer()}
               loading={loading}
             >
               {t('buttonCreateOfferWithNumber', { nbr: rawOffers.length })}
             </Button>
-          ):(
+          ) : (
             <Button
               disabled={rawOffers.length == 0 || loading}
               onClick={() => checkIfApproveNeeded()}
