@@ -26,7 +26,7 @@
     "@ethersproject/contracts": "^5.6.2",
     "@ethersproject/providers": "^5.6.8",
     "@gnosis.pm/safe-apps-sdk": "^7.8.0",
-    "@realtoken/realt-commons": "^1.4.18",
+    "@realtoken/realt-commons": "^1.4.19",
     "@tabler/icons": "^1.74.0",
     "@tanstack/react-table": "^8.20.5",
     "bignumber.js": "^9.0.2",
