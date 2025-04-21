@@ -12,7 +12,7 @@ export const Banners = () => {
 
   return (
     <>
-      {true ? (
+      {theGraphHasIssue ? (
         <Flex className={classes.message}>
           <IconAlertCircle
             size={20}
