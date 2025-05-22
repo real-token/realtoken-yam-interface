@@ -14,7 +14,7 @@ import { Currency, DAI, ETH } from './currencies';
 export enum ChainsID {
   Ethereum = 0x01,
   Gnosis = 0x64,
-  Sepolia = 0xaa36a7
+  Sepolia = 0xaa36a7,
 }
 
 export type Chain = Omit<RealtChains, 'blockExplorerUrl'> & {
@@ -38,7 +38,7 @@ export const CHAINS: Record<ChainsID, Chain> = {
     chainName: 'Gnosis Chain',
     logo: GnosisLogo,
     nativeCurrency: DAI,
-    rpcUrl: 'https://endpoints.omniatech.io/v1/gnosis/mainnet/public',
+    rpcUrl: 'https://gnosis-rpc.publicnode.com',
     blockExplorerUrl: 'https://gnosisscan.io/',
     isTestnet: false,
     graphPrefixes: {
@@ -52,14 +52,14 @@ export const CHAINS: Record<ChainsID, Chain> = {
         metadata: { fromBlock: 25530390 },
       },
     },
-    coingeckoNetworkId: 'xdai'
+    coingeckoNetworkId: 'xdai',
   },
   [ChainsID.Ethereum]: {
     chainId: ChainsID.Ethereum,
     chainName: 'Ethereum',
     logo: EthereumLogo,
     nativeCurrency: ETH,
-    rpcUrl: 'https://rpc.ankr.com/eth',
+    rpcUrl: 'https://eth.llamarpc.com',
     blockExplorerUrl: 'https://etherscan.io/',
     isTestnet: false,
     graphPrefixes: {
@@ -73,7 +73,7 @@ export const CHAINS: Record<ChainsID, Chain> = {
         metadata: { fromBlock: 16220000 },
       },
     },
-    coingeckoNetworkId: 'eth'
+    coingeckoNetworkId: 'eth',
   },
 
   [ChainsID.Sepolia]: {
@@ -95,8 +95,8 @@ export const CHAINS: Record<ChainsID, Chain> = {
         metadata: { fromBlock: 5913460 },
       },
     },
-    coingeckoNetworkId: 'xdai'
-  }
+    coingeckoNetworkId: 'xdai',
+  },
 };
 
 export const URLS = Object.keys(CHAINS).reduce<Record<number, string>>(
