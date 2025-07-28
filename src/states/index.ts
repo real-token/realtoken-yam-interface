@@ -11,7 +11,11 @@ export const isRefreshedAutoAtom = atomWithStorage<boolean>(
   false
 );
 export const showOnlyWhitelistedAtom = atom<boolean>(false);
-export const hideDustAtom = atom<boolean>(true);
+export const hideDustAtom = atomWithStorage<boolean>('hideDust', true);
+export const hideDustValueAtom = atomWithStorage<string>(
+  'hideDustValue',
+  '0.01'
+);
 export const nameFilterValueAtom = atom<string>('');
 export const tableOfferTypeAtom = atom<OFFER_TYPE>(OFFER_TYPE.SELL);
 

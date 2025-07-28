@@ -11,6 +11,9 @@ export type GetPriceToken = {
     } | {
         type: 'chainlink';
         contractAddress: string;
+    } | {
+        type: 'custom-fnc';
+        fnc: () => Promise<number>;
     }
 }
 
@@ -25,5 +28,12 @@ export interface GetPriceTokenCoingecko extends GetPriceToken {
     priceFnc: {
         type: 'coingecko-api';
         address?: string;
+    }
+}
+
+export interface GetPriceCustomFnc extends GetPriceToken {
+    priceFnc: {
+        type: 'custom-fnc';
+        fnc: () => Promise<number>;
     }
 }

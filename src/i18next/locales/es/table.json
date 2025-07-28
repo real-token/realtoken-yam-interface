@@ -12,6 +12,7 @@
     "title": "Filtros",
     "nameFilterPlaceholder": "Buscar",
     "showOnlyWhitelisted": "Mostrar solo ofertas de propiedades en lista blanca",
-    "hideDust": "Ocultar ofertas de polvo"
+    "hideDust": "Ocultar ofertas de polvo",
+    "hideDustValue": "Cantidad por debajo de la cual la oferta se oculta"
   }
 }

@@ -12,6 +12,7 @@
     "title": "Filters",
     "nameFilterPlaceholder": "Search",
     "showOnlyWhitelisted": "Show only whitelisted properties's offers",
-    "hideDust": "Hide dust offers"
+    "hideDust": "Hide dust offers",
+    "hideDustValue": "Amount under which the offer is hidden"
   }
 }

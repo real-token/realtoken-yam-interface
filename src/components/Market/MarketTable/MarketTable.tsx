@@ -1,45 +1,76 @@
 import { FC, useEffect, useState } from 'react';
+import React from 'react';
+
 import {
+  ColumnFiltersState,
   ExpandedState,
   PaginationState,
   SortingState,
   getCoreRowModel,
   getExpandedRowModel,
-  getPaginationRowModel,
   getFilteredRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-  ColumnFiltersState,
 } from '@tanstack/react-table';
+
+import { useAtom, useAtomValue } from 'jotai';
+
+import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
+import {
+  OFFERS_TYPE,
+  useRightTableColumn,
+} from 'src/hooks/useRightTableColumns';
+import {
+  hideDustAtom,
+  hideDustValueAtom,
+  nameFilterValueAtom,
+  showOnlyWhitelistedAtom,
+} from 'src/states';
+
+import { usePublicOffers } from '../../../hooks/offers/usePublicOffers';
 import { Table } from '../../Table';
 import { MarketSubRow } from '../MarketSubRow';
-import { useAtom, useAtomValue } from 'jotai';
-import { nameFilterValueAtom, showOnlyWhitelistedAtom } from 'src/states';
-import React from 'react';
-import { OFFERS_TYPE, useRightTableColumn } from 'src/hooks/useRightTableColumns';
-import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
-import { usePublicOffers } from '../../../hooks/offers/usePublicOffers';
 
 export const MarketTable: FC = () => {
+  const {
+    offers,
+    offersAreLoading,
+    refetch: refetchPublicOffers,
+  } = usePublicOffers();
 
-  const { offers, offersAreLoading, refetch: refetchPublicOffers } = usePublicOffers();
-
-  const [nameFilterValue,setNamefilterValue] = useAtom(nameFilterValueAtom);
-
+  const [nameFilterValue, setNamefilterValue] = useAtom(nameFilterValueAtom);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
+  // FILTERS
+  const hideDustValue = useAtomValue(hideDustValueAtom);
+  const hideDust = useAtomValue(hideDustAtom);
+  useEffect(() => {
+    if (hideDust) {
+      setColumnFilters([{ id: 'amount', value: [hideDustValue, null] }]);
+    } else {
+      setColumnFilters((prev) =>
+        [...prev].filter((filter) => filter.id !== 'amount')
+      );
+    }
+  }, [hideDust, hideDustValue]);
 
   const showOnlyWhitelisted = useAtomValue(showOnlyWhitelistedAtom);
   useEffect(() => {
-    if(showOnlyWhitelisted && !offersAreLoading){
-      setColumnFilters([{
-        id: 'whitelisted',
-        value: 'true'
-      }]);
-    }else{
-      setColumnFilters([])
+    if (showOnlyWhitelisted && !offersAreLoading) {
+      setColumnFilters([
+        {
+          id: 'whitelisted',
+          value: 'true',
+        },
+      ]);
+    } else {
+      setColumnFilters((prev) =>
+        [...prev].filter((filter) => filter.id !== 'whitelisted')
+      );
     }
-  }, [showOnlyWhitelisted, offersAreLoading])
-  
+  }, [showOnlyWhitelisted, offersAreLoading]);
+
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'offer-id', desc: false },
   ]);
@@ -51,41 +82,41 @@ export const MarketTable: FC = () => {
 
   // Sort offer by best price
   useEffect(() => {
-    if(nameFilterValue !== ""){
+    if (nameFilterValue !== '') {
       setSorting([
-        { id: "buyerTokenName", desc: true },
-        { id: "price", desc: false }
-      ])
-    }else{
-      setSorting([{ id: 'offer-id', desc: false }])
+        { id: 'buyerTokenName', desc: true },
+        { id: 'price', desc: false },
+      ]);
+    } else {
+      setSorting([{ id: 'offer-id', desc: false }]);
     }
-  },[nameFilterValue])
-  
+  }, [nameFilterValue]);
+
   const { offers: data } = useTypedOffers(offers);
   const columns = useRightTableColumn(OFFERS_TYPE.PUBLIC);
 
   const table = useReactTable({
     data: data,
     columns: columns,
-    state: { 
-      sorting: sorting, 
-      pagination: pagination, 
-      expanded: expanded, 
+    state: {
+      sorting: sorting,
+      pagination: pagination,
+      expanded: expanded,
       globalFilter: nameFilterValue,
       columnFilters: columnFilters,
       columnVisibility: {
-        whitelisted: false
-      }
+        whitelisted: false,
+      },
     },
     //Trick to convert every value to string. Needed for comparison
-    globalFilterFn: (row, columnId, filterValue) => {
-      const value = row.getValue(columnId);
-      if(value == undefined) return false;
-      const safeValue: string = (() => {
-        return typeof value === 'number' ? String(value) : value as string;
-      })();
-      return safeValue.toLowerCase().includes(filterValue.toLowerCase());
-    },
+    // globalFilterFn: (row, columnId, filterValue) => {
+    //   const value = row.getValue(columnId);
+    //   if (value == undefined) return false;
+    //   const safeValue: string = (() => {
+    //     return typeof value === 'number' ? String(value) : (value as string);
+    //   })();
+    //   return safeValue.toLowerCase().includes(filterValue.toLowerCase());
+    // },
     onColumnFiltersChange: setColumnFilters,
     onSortingChange: setSorting,
     onGlobalFilterChange: setNamefilterValue,
@@ -110,7 +141,10 @@ export const MarketTable: FC = () => {
         }),
       }}
       table={table}
-      tablecaptionOptions={{ refreshState: [offersAreLoading, () => refetchPublicOffers()], visible: true }}
+      tablecaptionOptions={{
+        refreshState: [offersAreLoading, () => refetchPublicOffers()],
+        visible: true,
+      }}
       TableSubRow={MarketSubRow}
       isLoading={offersAreLoading}
     />
