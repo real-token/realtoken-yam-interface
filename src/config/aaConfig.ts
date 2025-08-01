@@ -14,9 +14,8 @@ import {
 import { REALTOKEN_AA_GROUP_NAME } from '@real-token/aa-modal';
 import { RealTokenUiNetworkConfig } from '@real-token/core';
 import { LogoProps } from '@real-token/types';
-import { BaseLogo, EthereumLogo, GnosisLogo } from '@real-token/ui-components';
+import { EthereumLogo, GnosisLogo } from '@real-token/ui-components';
 import {
-  ZERO_ADDRESS,
   discordLogo,
   facebookLogo,
   googleLogo,
