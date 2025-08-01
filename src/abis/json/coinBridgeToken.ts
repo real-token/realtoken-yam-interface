@@ -1,4 +1,4 @@
-[
+export const coinBridgeTokenABI = [
 	{
 		"anonymous": false,
 		"inputs": [
@@ -1711,4 +1711,4 @@
 		"stateMutability": "nonpayable",
 		"type": "function"
 	}
-]
+] as const;

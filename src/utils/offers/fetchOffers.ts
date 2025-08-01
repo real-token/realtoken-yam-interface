@@ -1,22 +1,18 @@
-import {
-  ApolloClient,
-  NormalizedCacheObject,
-  gql,
-} from '@apollo/client';
+import { ApolloClient, NormalizedCacheObject, gql } from '@apollo/client';
+import { readCurrentNetworkConfig } from '@real-token/core';
 
 import BigNumber from 'bignumber.js';
-import { Offer as OfferGraphQl } from '../../../gql/graphql';
 
-import { CHAINS, ChainsID } from 'src/constants';
 import { PropertiesToken } from 'src/types';
 import { DataRealtokenType } from 'src/types/offer/DataRealTokenType';
 import { Offer } from 'src/types/offer/Offer';
 import { Price } from 'src/types/price';
 
+import { Offer as OfferGraphQl } from '../../../gql/graphql';
+import { networks } from '../../config/aaConfig';
+import { getExtendedTokens } from '../../constants/GetPriceToken';
 import { apiClient } from './getClientURL';
 import { parseOffer } from './parseOffer';
-import { useRootStore } from '../../zustandStore/store';
-import { getExtendedTokens } from '../../constants/GetPriceToken';
 
 const nbrFirst = 1000;
 
@@ -25,14 +21,18 @@ export const getBigDataGraphRealtoken = async (
   client: ApolloClient<NormalizedCacheObject>,
   realtokenAccount: string[]
 ) => {
-  const chainConfig = CHAINS[chainId as ChainsID];
+  const chainConfig = readCurrentNetworkConfig(networks, chainId);
 
-  const { address: realTokenYamUpgradeable } =
-    chainConfig.contracts.realTokenYamUpgradeable;
+  const graphNetworkPrefix = chainConfig?.graphPrefix?.realToken;
+  if (!graphNetworkPrefix) {
+    console.warn(
+      'Cannot load offers, no graph network prefix found for network'
+    );
+    return [];
+  }
 
-  const graphNetworkPrefix = chainConfig.graphPrefixes.realtoken;
-
-  // console.log('getBigDataGraphRealtoken', realtokenAccount.length);
+  const realTokenYamUpgradeable =
+    chainConfig?.contracts.realTokenYamUpgradeableAddress;
 
   const accountRealtoken: string =
     '"' + realtokenAccount.map((account: string) => account).join('","') + '"';
@@ -95,8 +95,14 @@ export const fetchOffersTheGraph = (
   // const { abortController } = useRootStore.getState();
   return new Promise<Offer[]>(async (resolve, reject) => {
     try {
-
-      const graphNetworkPrefix = CHAINS[chainId as ChainsID].graphPrefixes.yam;
+      const chainConfig = readCurrentNetworkConfig(networks, chainId);
+      const graphNetworkPrefix = chainConfig?.graphPrefix?.yam;
+      if (!graphNetworkPrefix) {
+        console.warn(
+          'Cannot load offers, no graph network prefix found for network'
+        );
+        return reject();
+      }
 
       const offersData: Offer[] = [];
 
@@ -117,7 +123,8 @@ export const fetchOffersTheGraph = (
         // }
       });
 
-      const offersToFetch = activeOfferResult.data[graphNetworkPrefix].global.activeOffersCount;
+      const offersToFetch =
+        activeOfferResult.data[graphNetworkPrefix].global.activeOffersCount;
       console.log('Amount of offersToFetch: ', offersToFetch);
 
       const offersRes = await apiClient.query({
@@ -169,10 +176,10 @@ export const fetchOffersTheGraph = (
         //     signal: abortController.signal
         //   }
         // }
-      })
+      });
 
       const offers: OfferGraphQl[] = offersRes.data[graphNetworkPrefix].offers;
-      console.log('offers: ', offers.length)
+      console.log('offers: ', offers.length);
 
       const accountRealtokenDuplicates: string[] = offers.map(
         (val) => val.seller.address + '-' + val.offerToken.address
@@ -200,7 +207,9 @@ export const fetchOffersTheGraph = (
 
       // //console.log('Debug Query dataRealtoken', dataRealtoken);
 
-      const extendedTokensAddress = getExtendedTokens(chainId).map((token) => token.contractAddress);
+      const extendedTokensAddress = getExtendedTokens(chainId).map(
+        (token) => token.contractAddress
+      );
 
       const promises = offers.map(
         (offer: OfferGraphQl) =>
@@ -242,7 +251,7 @@ export const fetchOffersTheGraph = (
       // ERROR_RANGE is used to check if the number of offers fetched is correctly
       // This is the -/+ range difference accepted
       const ERROR_RANGE = 0.1;
-      if(parsedOffers.length < offersToFetch*(1-ERROR_RANGE)) {
+      if (parsedOffers.length < offersToFetch * (1 - ERROR_RANGE)) {
         setTheGraphIssue(true);
       }
 

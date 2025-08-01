@@ -7,16 +7,23 @@ import {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { Box, Button, Container, Group, Input, Stack } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { ContextModalProps } from '@mantine/modals';
 import { showNotification, updateNotification } from '@mantine/notifications';
+import { useCurrentNetwork } from '@real-token/core';
+import { useSendTransaction } from '@real-token/web3';
+
 import BigNumber from 'bignumber.js';
+import { useAccount } from 'wagmi';
+
 import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
-import { useActiveChain, useContract } from 'src/hooks';
-import { NumberInput } from '../../NumberInput';
-import { useWeb3React } from '@web3-react/core';
+
+import { realTokenYamUpgradeableABI } from '../../../abis';
+import { ExtendedChainConfig } from '../../../config/aaConfig';
 import { usePublicOffers } from '../../../hooks/offers/usePublicOffers';
+import { NumberInput } from '../../NumberInput';
 
 type UpdateModalProps = {
   offerId: string;
@@ -53,10 +60,11 @@ export const UpdateModal: FC<ContextModalProps<UpdateModalProps>> = ({
     triggerTableRefresh,
   },
 }) => {
-  const { account, provider } = useWeb3React();
+  const { address: account } = useAccount();
+  const currentNetwork = useCurrentNetwork<ExtendedChainConfig>();
+
   const { getInputProps, onSubmit, reset, setFieldValue, values } =
     useForm<UpdateFormValues>({
-      // eslint-disable-next-line object-shorthand
       initialValues: {
         offerId: offerId,
         price: price,
@@ -68,13 +76,7 @@ export const UpdateModal: FC<ContextModalProps<UpdateModalProps>> = ({
       },
     });
 
-  const [isSubmitting, setSubmitting] = useState<boolean>(false);
   const [amountMax, setAmountMax] = useState<number>();
-
-  const activeChain = useActiveChain();
-  const realTokenYamUpgradeable = useContract(
-    ContractsID.realTokenYamUpgradeable
-  );
 
   const { offers } = usePublicOffers();
 
@@ -100,69 +102,73 @@ export const UpdateModal: FC<ContextModalProps<UpdateModalProps>> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amountMax]);
 
+  const { sendTransaction, isPending: isSubmitting } = useSendTransaction({
+    onSent: () => {
+      showNotification(
+        NOTIFICATIONS[NotificationsID.updateOfferLoading]({
+          key: 'update-offer',
+          hash: '',
+          href: '',
+        })
+      );
+    },
+    onSuccess: (tx) => {
+      updateNotification(
+        NOTIFICATIONS[NotificationsID.updateOfferSuccess]({
+          key: 'update-offer',
+          hash: tx.transactionHash,
+          href: `${currentNetwork?.blockExplorerUrl}tx/${tx.transactionHash}`,
+        })
+      );
+      triggerTableRefresh(true);
+      onClose();
+    },
+    onError: (error) => {
+      console.error('Error UpdateModal', error);
+      updateNotification(
+        NOTIFICATIONS[NotificationsID.updateOfferError]({
+          key: 'update-offer',
+          hash: '',
+          href: '',
+        })
+      );
+    },
+  });
+
   const onHandleSubmit = useCallback(
     async (formValues: UpdateFormValues) => {
       try {
         if (
           !account ||
-          !provider ||
           !formValues.offerId ||
           !formValues.price ||
           !formValues.amount ||
-          !realTokenYamUpgradeable
+          !currentNetwork
         ) {
           return;
         }
 
-        setSubmitting(true);
+        const price = new BigNumber(formValues.price.toString())
+          .shiftedBy(Number(buyerTokenDecimals))
+          .toString();
 
-        const transaction = await realTokenYamUpgradeable.updateOffer(
-          formValues.offerId,
-          new BigNumber(formValues.price.toString())
-            .shiftedBy(Number(buyerTokenDecimals))
-            .toString(),
-          new BigNumber(formValues.amount.toString())
-            .shiftedBy(Number(offerTokenDecimals))
-            .toString()
-        );
+        const amount = new BigNumber(formValues.amount.toString())
+          .shiftedBy(Number(offerTokenDecimals))
+          .toString();
 
-        const notificationPayload = {
-          key: transaction.hash,
-          href: `${activeChain?.blockExplorerUrl}tx/${transaction.hash}`,
-          hash: transaction.hash,
-        };
-
-        showNotification(
-          NOTIFICATIONS[NotificationsID.updateOfferLoading](notificationPayload)
-        );
-
-        transaction
-          .wait()
-          .then(({ status }) =>
-            updateNotification(
-              NOTIFICATIONS[
-                status === 1
-                  ? NotificationsID.updateOfferSuccess
-                  : NotificationsID.updateOfferError
-              ](notificationPayload)
-            )
-          );
+        sendTransaction({
+          abi: realTokenYamUpgradeableABI,
+          to: currentNetwork?.contracts
+            .realTokenYamUpgradeableAddress as `0x${string}`,
+          functionName: 'updateOffer',
+          args: [BigInt(formValues.offerId), BigInt(price), BigInt(amount)],
+        });
       } catch (e) {
         console.error('Error UpdateModal', e);
       } finally {
-        setSubmitting(false);
-        triggerTableRefresh(true);
-        onClose();
       }
     },
-    [
-      account,
-      activeChain,
-      realTokenYamUpgradeable,
-      onClose,
-      provider,
-      triggerTableRefresh,
-    ]
+    [account, onClose, triggerTableRefresh, currentNetwork, sendTransaction]
   );
 
   return (

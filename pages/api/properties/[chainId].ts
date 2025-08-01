@@ -1,10 +1,10 @@
 import { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
 
+import { NetworkId } from '@real-token/core';
+
 import axios from 'axios';
 
 import { APIPropertiesToken, PropertiesToken, ShortProperty } from 'src/types';
-
-import { ChainsID } from '../../../src/constants';
 
 const getTokenFromCommunityAPI = new Promise<APIPropertiesToken[]>(
   async (resolve, reject) => {
@@ -30,13 +30,13 @@ const getTokenFromCommunityAPI = new Promise<APIPropertiesToken[]>(
 const getContractAddressFromChainId = (chainId: number): string | undefined => {
   let addressKey;
   switch (chainId) {
-    case ChainsID.Ethereum:
+    case Number(NetworkId.ethereum):
       addressKey = 'ethereum';
       break;
-    case ChainsID.Gnosis:
+    case Number(NetworkId.gnosis):
       addressKey = 'xDai';
       break;
-    case ChainsID.Sepolia:
+    case Number(NetworkId.sepolia):
       addressKey = 'sepolia';
       break;
   }

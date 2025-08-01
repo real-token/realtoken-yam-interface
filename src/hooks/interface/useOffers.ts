@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
-import { useQuery } from 'react-query';
 
-import { useWeb3React } from '@web3-react/core';
+import { useQuery } from '@tanstack/react-query';
 
-import { ALLOWED_CHAINS_ID } from '../../constants';
+import { useAccount, useChainId } from 'wagmi';
+
 import { REACT_QUERY_ERRORS } from '../../types/ReactQueryErrors';
 import { OFFER_LOADING, Offer } from '../../types/offer';
 import { fetchOffersTheGraph } from '../../utils/offers/fetchOffers';
@@ -18,7 +18,8 @@ type UseOffers = () => {
   refetch: () => void;
 };
 export const useOffers: UseOffers = () => {
-  const { chainId, account } = useWeb3React();
+  const { address: account } = useAccount();
+  const chainId = useChainId();
 
   const { properties, propertiesAreLoading } = useProperties();
   const { prices, pricesAreLoading } = usePrices();
@@ -40,11 +41,7 @@ export const useOffers: UseOffers = () => {
         return OFFER_LOADING;
 
       let offersData = OFFER_LOADING;
-      if (
-        ALLOWED_CHAINS_ID.includes(chainId.toString()) &&
-        wlProperties &&
-        prices
-      ) {
+      if (wlProperties && prices) {
         offersData = await fetchOffersTheGraph(
           account,
           chainId,

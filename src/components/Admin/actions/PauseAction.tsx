@@ -1,86 +1,91 @@
-import { Checkbox, Flex, Skeleton, Text } from "@mantine/core";
-import { showNotification, updateNotification } from "@mantine/notifications";
-import { useEffect, useState } from "react";
-import { useQuery } from "react-query";
-import { ContractsID, NOTIFICATIONS, NotificationsID } from "src/constants";
-import { useActiveChain, useContract } from "src/hooks";
-import { Action } from "../Action"
+import { Checkbox, Flex, Skeleton } from '@mantine/core';
+import { showNotification, updateNotification } from '@mantine/notifications';
+import { useCurrentNetwork } from '@real-token/core';
+import { useSendTransaction } from '@real-token/web3';
+
+import { useReadContract } from 'wagmi';
+
+import { NOTIFICATIONS, NotificationsID } from 'src/constants';
+
+import { realTokenYamUpgradeableABI } from '../../../abis';
+import { ExtendedChainConfig } from '../../../config/aaConfig';
+import { Action } from '../Action';
 
 export const PauseAction = () => {
+  const currentNetwork = useCurrentNetwork<ExtendedChainConfig>();
 
-    const [isPaused,setIsPaused] = useState<boolean>(false);
-    const realTokenYamUpgradeable = useContract(ContractsID.realTokenYamUpgradeable);
+  const { data: isPaused, isLoading: isLoadingPaused } = useReadContract({
+    abi: realTokenYamUpgradeableABI,
+    address: currentNetwork?.contracts
+      .realTokenYamUpgradeableAddress as `0x${string}`,
+    functionName: 'paused',
+  });
 
-    const getContratPauseStatus = () => realTokenYamUpgradeable ? realTokenYamUpgradeable?.paused() : false;
+  const { sendTransaction, isPending: isLoading } = useSendTransaction({
+    onSent: () => {
+      showNotification(
+        NOTIFICATIONS[
+          isPaused
+            ? NotificationsID.unpauseLoading
+            : NotificationsID.pauseLoading
+        ]({
+          key: isPaused ? 'unpause' : 'pause',
+          hash: '',
+          href: '',
+        })
+      );
+    },
+    onSuccess: (tx) => {
+      updateNotification(
+        NOTIFICATIONS[
+          isPaused
+            ? NotificationsID.unpauseSuccess
+            : NotificationsID.pauseSuccess
+        ]({
+          key: isPaused ? 'unpause' : 'pause',
+          href: `${currentNetwork?.blockExplorerUrl}tx/${tx.transactionHash}`,
+          hash: tx.transactionHash,
+        })
+      );
+    },
+    onError: (error) => {
+      console.error(error);
+      updateNotification(
+        NOTIFICATIONS[
+          isPaused ? NotificationsID.unpauseError : NotificationsID.pauseError
+        ]({
+          key: isPaused ? 'unpause' : 'pause',
+          hash: '',
+          href: '',
+        })
+      );
+    },
+  });
 
-    const { data, isLoading } = useQuery(["contractPaused"],getContratPauseStatus,{ enabled: !!realTokenYamUpgradeable });
-    useEffect(() => { if(data) setIsPaused(data) },[data]);
+  const changeStatus = async () => {
+    sendTransaction({
+      abi: realTokenYamUpgradeableABI,
+      to: currentNetwork?.contracts
+        .realTokenYamUpgradeableAddress as `0x${string}`,
+      functionName: isPaused ? 'unpause' : 'pause',
+      args: [],
+    });
+  };
 
-    const activeChain = useActiveChain();
-
-    const changeStatus = async () => {
-
-        try{
-
-            if(!realTokenYamUpgradeable) return;
-
-            let tx;
-            if(isPaused){
-                tx = await realTokenYamUpgradeable.unpause();
-            }else{
-                tx = await realTokenYamUpgradeable.pause();
-            }
-
-            const notificationPayload = {
-                key: tx.hash,
-                href: `${activeChain?.blockExplorerUrl}tx/${tx.hash}`,
-                hash: tx.hash,
-            };
-
-            //TODO: add translation
-            showNotification(
-                NOTIFICATIONS[NotificationsID.createOfferLoading](
-                notificationPayload
-                )
-            );
-
-            tx
-            .wait()
-            .then(({ status }) => {
-                updateNotification(
-                    //TODO: add translation
-                    NOTIFICATIONS[
-                        status === 1
-                            ? NotificationsID.createOfferSuccess
-                            : NotificationsID.createOfferError
-                    ](notificationPayload)
-                );
-
-                if(status == 1){
-                    setIsPaused(!isPaused);
-                } 
-            }
-                
-            );
-
-        }catch(err){
-            console.log(err);
-        }
-
-    }
-
-    return(
-        <Action title={"Pause contract"}>
-            <Flex align={"center"} gap={6}>
-                { isLoading ? <Skeleton width={75} height={15}/> : 
-                <Checkbox
-                    label={"Paused"}
-                    color={"brand"}
-                    checked={isPaused}
-                    onChange={() => changeStatus()}
-                />
-                }
-            </Flex>
-        </Action>
-    )
-}
+  return (
+    <Action title={'Pause contract'}>
+      <Flex align={'center'} gap={6}>
+        {isLoading || isLoadingPaused ? (
+          <Skeleton width={75} height={15} />
+        ) : (
+          <Checkbox
+            label={'Paused'}
+            color={'brand'}
+            checked={isPaused}
+            onChange={() => changeStatus()}
+          />
+        )}
+      </Flex>
+    </Action>
+  );
+};

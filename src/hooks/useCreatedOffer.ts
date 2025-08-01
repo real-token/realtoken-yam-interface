@@ -1,68 +1,85 @@
-import { useWeb3React } from "@web3-react/core";
-import { Contract } from "ethers";
-import { Dispatch, useEffect, useState } from "react"
-import { Erc20ABI } from "src/abis";
-import { PropertiesToken } from "src/types";
-import { CreatedOffer } from "src/types/offer/CreatedOffer";
-import { getContract } from "src/utils";
-import { usePropertiesToken } from "./usePropertiesToken";
+import { useQuery } from '@tanstack/react-query';
+import { readContract } from '@wagmi/core';
 
-type UseCreatedOffer = (
-    createdOffer: CreatedOffer|undefined
-) => {
-    offerTokenSymbol: string|undefined;
-    buyTokenSymbol: string|undefined
-}
+import { Address } from 'viem';
+import { useAccount, useConfig } from 'wagmi';
+
+import { Erc20ABI } from 'src/abis';
+import { PropertiesToken } from 'src/types';
+import { CreatedOffer } from 'src/types/offer/CreatedOffer';
+
+import { usePropertiesToken } from './usePropertiesToken';
+
+type UseCreatedOffer = (createdOffer: CreatedOffer | undefined) => {
+  offerTokenSymbol: string | undefined;
+  buyTokenSymbol: string | undefined;
+};
 
 export const useCreatedOffer: UseCreatedOffer = (createdOffer) => {
+  const { propertiesToken } = usePropertiesToken();
+  const { address: account } = useAccount();
 
-    const { propertiesToken } = usePropertiesToken();
-    const { account, provider } = useWeb3React();
+  const config = useConfig();
 
-    const [offerTokenSymbol,setOfferTokenSymbol] = useState<string|undefined>(undefined);
-    const [buyTokenSymbol,setBuyTokenSymbol] = useState<string|undefined>(undefined);
+  const { data } = useQuery({
+    queryKey: [
+      'tokenSymbols',
+      createdOffer?.offerTokenAddress,
+      createdOffer?.buyerTokenAddress,
+    ],
+    enabled:
+      !!createdOffer?.offerTokenAddress &&
+      !!createdOffer?.buyerTokenAddress &&
+      !!propertiesToken,
+    queryFn: async () => {
+      if (!createdOffer || !account || !config || !propertiesToken) return;
 
-    const getTokenSymbol = async (contract: Contract, setSymbol: Dispatch<string>) => {
-        const symbol = await contract.symbol();
-        setSymbol(symbol);
-    }
+      let offerTokenSymbol: string | undefined;
+      let buyTokenSymbol: string | undefined;
 
-    useEffect(() => {
-        try{
-            if(!createdOffer || !account || !provider || !propertiesToken) return;
+      const offerTokenIsRealToken: PropertiesToken | undefined =
+        propertiesToken.find(
+          (propertiesToken) =>
+            propertiesToken.contractAddress.toLowerCase() ==
+            createdOffer.offerTokenAddress.toLowerCase()
+        );
+      if (offerTokenIsRealToken) {
+        offerTokenSymbol = offerTokenIsRealToken.shortName;
+      } else {
+        const symbol = await readContract(config, {
+          abi: Erc20ABI,
+          address: createdOffer.offerTokenAddress as Address,
+          functionName: 'symbol',
+        });
+        offerTokenSymbol = symbol;
+      }
 
-            const realtToken: PropertiesToken|undefined = propertiesToken.find((propertiesToken) => propertiesToken.contractAddress.toLowerCase() == createdOffer.offerTokenAddress.toLowerCase());
+      const buyTokenIsRealToken: PropertiesToken | undefined =
+        propertiesToken.find(
+          (propertiesToken) =>
+            propertiesToken.contractAddress.toLowerCase() ==
+            createdOffer.buyerTokenAddress.toLowerCase()
+        );
+      if (buyTokenIsRealToken) {
+        buyTokenSymbol = buyTokenIsRealToken.shortName;
+      } else {
+        const symbol = await readContract(config, {
+          abi: Erc20ABI,
+          address: createdOffer.buyerTokenAddress as Address,
+          functionName: 'symbol',
+        });
+        buyTokenSymbol = symbol;
+      }
 
-            if(realtToken){
-                setOfferTokenSymbol(realtToken.shortName);
-            }else{
-                const contract = getContract(createdOffer.offerTokenAddress,Erc20ABI,provider);
-                if(contract) getTokenSymbol(contract,setOfferTokenSymbol);
-            }
-        }catch(err){
-            console.log("Error while getting offerToken symbol", err);
-        }
-    },[propertiesToken, createdOffer, account, provider])
-
-    useEffect(() => {
-        try{
-            if(!createdOffer || !account || !provider || !propertiesToken) return;
-
-            const realtToken: PropertiesToken|undefined = propertiesToken.find((propertiesToken) => propertiesToken.contractAddress.toLowerCase() == createdOffer.buyerTokenAddress.toLowerCase());
-
-            if(realtToken){
-                setBuyTokenSymbol(realtToken.shortName);
-            }else{
-                const contract = getContract(createdOffer.buyerTokenAddress,Erc20ABI,provider);
-                if(contract) getTokenSymbol(contract,setBuyTokenSymbol);
-            }
-        }catch(err){
-            console.log("Error while getting offerToken symbol", err);
-        }
-    },[propertiesToken, createdOffer, account, provider])
-
-    return{
+      return {
         offerTokenSymbol,
-        buyTokenSymbol
-    }
-}
+        buyTokenSymbol,
+      };
+    },
+  });
+
+  return {
+    offerTokenSymbol: data?.offerTokenSymbol,
+    buyTokenSymbol: data?.buyTokenSymbol,
+  };
+};

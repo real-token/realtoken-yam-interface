@@ -8,33 +8,43 @@ import {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Web3Provider } from '@ethersproject/providers';
-import { Button, Divider, Flex, Group, LoadingOverlay, Stack, Text } from '@mantine/core';
+import { Button, Divider, Flex, Group, Stack, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { ContextModalProps } from '@mantine/modals';
 import { showNotification, updateNotification } from '@mantine/notifications';
-import { useWeb3React } from '@web3-react/core';
+import { useAA } from '@real-token/aa-core';
+import { useCurrentNetwork } from '@real-token/core';
+import { encodeTransaction } from '@real-token/web3';
+import { useMutation } from '@tanstack/react-query';
+import { multicall, readContract } from '@wagmi/core';
 
 import BigNumber from 'bignumber.js';
+import { ethers } from 'ethers';
+import {
+  useAccount,
+  useConfig,
+  usePublicClient,
+  useReadContracts,
+} from 'wagmi';
 
-import { CoinBridgeToken, Erc20, Erc20ABI, coinBridgeTokenABI } from 'src/abis';
-import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
-import { useActiveChain, useContract } from 'src/hooks';
-import coinBridgeTokenPermitSignature from 'src/hooks/coinBridgeTokenPermitSignature';
+import {
+  CoinBridgeToken,
+  coinBridgeTokenABI,
+  realTokenYamUpgradeableABI,
+} from 'src/abis';
+import { NOTIFICATIONS, NotificationsID } from 'src/constants';
+import coinBridgeTokenPermitSignature, {
+  PermitSignature,
+} from 'src/hooks/coinBridgeTokenPermitSignature';
 import erc20PermitSignature from 'src/hooks/erc20PermitSignature';
 import { Offer } from 'src/types/offer/Offer';
-import { getContract } from 'src/utils';
 import { cleanNumber } from 'src/utils/number';
 
-import { NumberInput } from '../../NumberInput';
-import { ethers } from 'ethers';
-import { useAtomValue } from 'jotai';
-import { providerAtom } from '../../../states';
-import { AvailableConnectors, ConnectorsDatas } from '@realtoken/realt-commons';
-import { useQuery } from 'react-query';
-import { OFFER_TYPE } from '../../../types/offer';
-import { WalletERC20Balance } from '../../WalletBalance/WalletERC20Balance';
+import { ExtendedChainConfig } from '../../../config/aaConfig';
 import { useWalletERC20Balance } from '../../../hooks/useWalletERC20Balance';
+import { OFFER_TYPE } from '../../../types/offer';
+import { NumberInput } from '../../NumberInput';
+import { WalletERC20Balance } from '../../WalletBalance/WalletERC20Balance';
 
 type UpdateModalProps = {
   offer: Offer;
@@ -54,53 +64,29 @@ type UpdateFormValues = {
 export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
   context,
   id,
-  innerProps: {
-    offer,
-    triggerTableRefresh,
-  },
+  innerProps: { offer, triggerTableRefresh },
 }) => {
+  const { address: account } = useAccount();
+  const config = useConfig();
+  const publicClient = usePublicClient();
+  const aa = useAA();
 
-  const { account, provider } = useWeb3React();
-  const { getInputProps, onSubmit, reset, setFieldValue, values, setInitialValues } = useForm<UpdateFormValues>({
-    initialValues: {
-      offerId: offer.offerId,
-      price: parseFloat(offer.price),
-      amount: parseFloat(offer.amount),
-      offerTokenAddress: offer.offerTokenAddress,
-      offerTokenDecimals: parseFloat(offer.offerTokenDecimals),
-      buyerTokenAddress: offer.buyerTokenAddress,
-      buyerTokenDecimals: parseFloat(offer.buyerTokenDecimals),
-    }
-  });
+  const { getInputProps, onSubmit, reset, setFieldValue, values } =
+    useForm<UpdateFormValues>({
+      initialValues: {
+        offerId: offer.offerId,
+        price: parseFloat(offer.price),
+        amount: parseFloat(offer.amount),
+        offerTokenAddress: offer.offerTokenAddress,
+        offerTokenDecimals: parseFloat(offer.offerTokenDecimals),
+        buyerTokenAddress: offer.buyerTokenAddress,
+        buyerTokenDecimals: parseFloat(offer.buyerTokenDecimals),
+      },
+    });
 
-  // useEffect(() => {
-  //   if(!offer) return;
-
-  //   const offerType = offer.type;
-
-  //   const amount = 
-
-  //   const initialValues: UpdateFormValues = {
-  //     offerId: offer.offerId,
-  //     price: parseFloat(offer.price),
-  //     amount: parseFloat(offer.amount),
-  //     offerTokenAddress: offer.offerTokenAddress,
-  //     offerTokenDecimals: parseFloat(offer.offerTokenDecimals),
-  //     buyerTokenAddress: offer.buyerTokenAddress,
-  //     buyerTokenDecimals: parseFloat(offer.buyerTokenDecimals),
-  //   }
-
-  //   setInitialValues(values);
-
-  // },[])
-
-  const [isSubmitting, setSubmitting] = useState<boolean>(false);
   const [amountMax, setAmountMax] = useState<number>();
 
-  const activeChain = useActiveChain();
-  const realTokenYamUpgradeable = useContract(
-    ContractsID.realTokenYamUpgradeable
-  );
+  const activeChain = useCurrentNetwork<ExtendedChainConfig>();
 
   const { t } = useTranslation('modals', { keyPrefix: 'update' });
   const { t: t1 } = useTranslation('modals', { keyPrefix: 'sell' });
@@ -120,286 +106,314 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amountMax]);
 
-  const connector = useAtomValue(providerAtom);
-
-  const onHandleSubmit = useCallback(
-    async (rawValues: UpdateFormValues) => {
-
-      console.log('rawValues', rawValues);
-
-      try {
-
-        const getFormValues = () => {
-
-          const amountDecimals = parseInt(offer.type == OFFER_TYPE.SELL ? offer.offerTokenDecimals : offer.offerTokenDecimals);
-          const priceDecimals = parseInt(offer.type == OFFER_TYPE.SELL ? offer.buyerTokenDecimals : offer.buyerTokenDecimals);
-
-          const choosedPrice = offer.type == OFFER_TYPE.BUY ? 1 / rawValues.price : rawValues.price;
-
-          const amount = offer.type == OFFER_TYPE.BUY ?
-            new BigNumber(rawValues.amount ?? 1).multipliedBy(choosedPrice)
-          : 
-            new BigNumber(rawValues.amount ?? 1);
-
-          const formValues = {
-            ...rawValues,
-            amount: amount.shiftedBy(amountDecimals ?? 18).toFixed(0),
-            price: new BigNumber(rawValues.price ?? 1).shiftedBy(priceDecimals ?? 18).toFixed(0)
-          }
-          return formValues;
-        }
-
-        const formValues = getFormValues();
-        console.log('formValues', formValues);
-
-        if (
-          !account ||
-          !provider ||
-          !formValues.offerId ||
-          !formValues.price ||
-          !formValues.amount ||
-          !realTokenYamUpgradeable
-        ) {
-          return;
-        }
-
-        const offerToken = getContract<CoinBridgeToken>(
-          offer.offerTokenAddress,
-          coinBridgeTokenABI,
-          provider,
-          account
-        );
-        if (!offerToken) {
-          console.log('offerToken not found');
-          return;
-        }
-
-        const oldAllowanceOfferToken = await offerToken.allowance(
-          account,
-          realTokenYamUpgradeable.address
-        );
-
-        const [, , , , , amount] =
-          await realTokenYamUpgradeable.getInitialOffer(offer.offerId);
-
-        const oldAmountInWei = BigNumber(amount._hex);
-        console.log('oldAmountInWei', oldAmountInWei.toString(10));
-
-        /*
-         * Si old allowance est supperieur au amount old Yam : retirer du old alowance le old YAM amount et ajouter le new Amount YAM
-         * Si old allowance est inférieur au amount old Yam : set le nouvelle allowance
-         */
-        //TODO: a voir la gestion plus complexe de l'allowance avec multiple création d'offres
-        const amountInWeiToPermit =
-          BigNumber(oldAllowanceOfferToken._hex).comparedTo(oldAmountInWei) > 0
-            ? BigNumber(oldAllowanceOfferToken._hex)
-                .plus(formValues.amount)
-                .minus(oldAmountInWei)
-            : BigNumber(formValues.amount);
-
-        setSubmitting(true);
-
-        //TODO: rendre configurable par le user
-        const transactionDeadline = Math.floor(Date.now() / 1000) + 3600; // permit valable during 1h
-
-        const offerTokenType = await realTokenYamUpgradeable.getTokenType(
-          formValues.offerTokenAddress
-        );
-
-        const isSafe = connector == ConnectorsDatas.get(AvailableConnectors.gnosisSafe)?.connectorKey;;
-
-        // APPROVE OR PERMIT
-        let signature: any;
-        if (offerTokenType === 1 && !isSafe) {
-          // TokenType = 1: RealToken
-          signature = await coinBridgeTokenPermitSignature(
-            account,
-            realTokenYamUpgradeable.address,
-            amountInWeiToPermit.toString(10),
-            transactionDeadline,
-            offerToken,
-            provider
-          );
-
-        } else if (offerTokenType === 2 && !isSafe) {
-          // TokenType = 2: ERC20 With Permit
-          signature = await erc20PermitSignature(
-            account,
-            realTokenYamUpgradeable.address,
-            amountInWeiToPermit.toString(10),
-            transactionDeadline,
-            offerToken,
-            provider
-          );
-
-        } else if (offerTokenType === 3 || isSafe) {
-          // TokenType = 3: ERC20 Without Permit, do Approve/buy
-          const approveTx = await offerToken.approve(
-            realTokenYamUpgradeable.address,
-            amountInWeiToPermit.toString()
-          );
-
-          const notificationApprove = {
-            key: approveTx.hash,
-            href: `${activeChain?.blockExplorerUrl}tx/${approveTx.hash}`,
-            hash: approveTx.hash,
-          };
-  
-          showNotification(
-            NOTIFICATIONS[NotificationsID.approveOfferLoading](
-              notificationApprove
-            )
-          );
-
-          approveTx
-            .wait()
-            .then(({ status }) =>
-              updateNotification(
-                NOTIFICATIONS[
-                  status === 1
-                    ? NotificationsID.approveOfferSuccess
-                    : NotificationsID.approveOfferError
-                ](notificationApprove)
-              )
-            );
-
-          await approveTx.wait(1);
-          
-        }
-
-        const price = formValues.price;
-        const amountUpdate = formValues.amount;
-        
-        let updateTx: ethers.providers.TransactionResponse|undefined = undefined;
-        if (offerTokenType === 1 && !isSafe) {
-
-          const { v, r, s } = signature;
-
-          updateTx = await realTokenYamUpgradeable.updateOfferWithPermit(
-            offer.offerId,
-            price,
-            amountUpdate,
-            amountInWeiToPermit.toString(10),
-            transactionDeadline.toString(),
-            v,
-            r,
-            s
-          );
-
-        }else if(offerTokenType === 2&& !isSafe){
-
-          const { v, r, s } = signature;
-
-          updateTx = await realTokenYamUpgradeable.updateOfferWithPermit(
-            formValues.offerId,
-            price,
-            amountUpdate,
-            amountInWeiToPermit.toString(10),
-            transactionDeadline.toString(),
-            v,
-            r,
-            s
-          );
-
-        }else if(offerTokenType === 3 || isSafe){
-          updateTx = await realTokenYamUpgradeable.updateOffer(
-            formValues.offerId,
-            price,
-            amountUpdate,
-          );
-        }
-
-        if(updateTx){
-
-          const notificationPayload = {
-            key: updateTx.hash,
-            href: `${activeChain?.blockExplorerUrl}tx/${updateTx.hash}`,
-            hash: updateTx.hash,
-          };
-  
-          showNotification(
-            NOTIFICATIONS[NotificationsID.updateOfferLoading](
-              notificationPayload
-            )
-          );
-  
-          updateTx
-              .wait()
-              .then(({ status }) => {
-                updateNotification(
-                  NOTIFICATIONS[
-                    status === 1
-                      ? NotificationsID.updateOfferSuccess
-                      : NotificationsID.updateOfferError
-                  ](notificationPayload)
-                )
-                if(status == 1){
-                  triggerTableRefresh(true);
-                  onClose();
-                }
-                setSubmitting(false);
-              }
-            );
-        }
-
-      } catch (e) {
-        console.error('Error UpdateModal', e);
-        setSubmitting(false);
-      }
+  const { data: initialOffer } = useReadContracts({
+    query: {
+      enabled: !!account && !!offer.buyerTokenAddress,
     },
-    [account, provider,connector, realTokenYamUpgradeable, offer.offerTokenAddress, offer.offerId, offer.buyerTokenDecimals, offer.offerTokenDecimals, activeChain?.blockExplorerUrl, triggerTableRefresh, onClose]
-  );
-
-  const [offerTokenSymbol, setOfferTokenSymbol] = useState<string | undefined>(
-    ''
-  );
-  const [buyTokenSymbol, setBuyTokenSymbol] = useState<string | undefined>('');
-
-  const buyerToken = getContract<CoinBridgeToken>(
-    offer.buyerTokenAddress,
-    coinBridgeTokenABI,
-    provider as Web3Provider,
-    account
-  );
-  const offerToken = getContract<Erc20>(
-    offer.offerTokenAddress,
-    Erc20ABI,
-    provider as Web3Provider,
-    account
-  );
-
-  const getOfferTokenInfos = async () => {
-    try {
-      const tokenSymbol = await offerToken?.symbol();
-      setOfferTokenSymbol(tokenSymbol);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-  useEffect(() => {
-    if (offerToken) getOfferTokenInfos();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [offerToken]);
-
-  const getBuyTokenInfos = async () => {
-    try {
-      const tokenSymbol = await buyerToken?.symbol();
-      setBuyTokenSymbol(tokenSymbol);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-  useEffect(() => {
-    if (buyerToken) getBuyTokenInfos();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [buyerToken]);
+    contracts: [
+      {
+        abi: coinBridgeTokenABI,
+        address: offer.buyerTokenAddress as `0x${string}`,
+        functionName: 'symbol',
+        args: [],
+      },
+      {
+        abi: coinBridgeTokenABI,
+        address: offer.offerTokenAddress as `0x${string}`,
+        functionName: 'symbol',
+        args: [],
+      },
+    ],
+  });
+  const buyTokenSymbol = initialOffer?.[0]?.result;
+  const offerTokenSymbol = initialOffer?.[1]?.result;
 
   const total = values?.amount * values?.price;
 
-  const { bigNumberbalance, balance } = useWalletERC20Balance(values.offerTokenAddress);
+  const { bigNumberbalance, balance } = useWalletERC20Balance(
+    values.offerTokenAddress
+  );
+
+  const { mutate, isPending: isSubmitting } = useMutation({
+    mutationFn: async (rawValues: UpdateFormValues) => {
+      console.log('rawValues', rawValues);
+
+      const getFormValues = () => {
+        const amountDecimals = parseInt(
+          offer.type == OFFER_TYPE.SELL
+            ? offer.offerTokenDecimals
+            : offer.offerTokenDecimals
+        );
+        const priceDecimals = parseInt(
+          offer.type == OFFER_TYPE.SELL
+            ? offer.buyerTokenDecimals
+            : offer.buyerTokenDecimals
+        );
+
+        const choosedPrice =
+          offer.type == OFFER_TYPE.BUY ? 1 / rawValues.price : rawValues.price;
+
+        const amount =
+          offer.type == OFFER_TYPE.BUY
+            ? new BigNumber(rawValues.amount ?? 1).multipliedBy(choosedPrice)
+            : new BigNumber(rawValues.amount ?? 1);
+
+        const formValues = {
+          ...rawValues,
+          amount: amount.shiftedBy(amountDecimals ?? 18).toFixed(0),
+          price: new BigNumber(rawValues.price ?? 1)
+            .shiftedBy(priceDecimals ?? 18)
+            .toFixed(0),
+        };
+        return formValues;
+      };
+
+      const formValues = getFormValues();
+
+      if (
+        !account ||
+        !formValues.offerId ||
+        !formValues.price ||
+        !formValues.amount ||
+        !config ||
+        !activeChain ||
+        !publicClient ||
+        !aa
+      ) {
+        throw new Error('Missing required values');
+      }
+
+      const realTokenYamUpgradeableAddress =
+        activeChain?.contracts.realTokenYamUpgradeableAddress;
+
+      const multicallResult = await multicall(config, {
+        contracts: [
+          {
+            abi: coinBridgeTokenABI,
+            address: offer.offerTokenAddress as `0x${string}`,
+            functionName: 'allowance',
+            args: [account, offer.offerTokenAddress as `0x${string}`],
+          },
+          {
+            abi: realTokenYamUpgradeableABI,
+            address: realTokenYamUpgradeableAddress as `0x${string}`,
+            functionName: 'getInitialOffer',
+            args: [BigInt(offer.offerId)],
+          },
+        ],
+      });
+
+      const oldAllowanceOfferToken = multicallResult[0].result;
+      const amount = multicallResult[1].result?.[5] ?? 0n;
+
+      if (!oldAllowanceOfferToken || !amount) {
+        throw new Error('Error getting allowance');
+      }
+
+      const oldAmountInWei = BigNumber(amount.toString());
+      const oldAllowanceOfferTokenInWei = BigNumber(
+        oldAllowanceOfferToken.toString()
+      );
+
+      /*
+       * Si old allowance est supperieur au amount old Yam : retirer du old alowance le old YAM amount et ajouter le new Amount YAM
+       * Si old allowance est inférieur au amount old Yam : set le nouvelle allowance
+       */
+      //TODO: a voir la gestion plus complexe de l'allowance avec multiple création d'offres
+      const amountInWeiToPermit =
+        oldAllowanceOfferTokenInWei.comparedTo(oldAmountInWei) > 0
+          ? oldAllowanceOfferTokenInWei
+              .plus(formValues.amount)
+              .minus(oldAmountInWei)
+          : BigNumber(formValues.amount);
+
+      const accountCode = await publicClient.getCode({
+        address: account as `0x${string}`,
+      });
+      const isAA = accountCode !== '0x';
+
+      const offerTokenType = await readContract(config, {
+        address: realTokenYamUpgradeableAddress,
+        abi: realTokenYamUpgradeableABI,
+        functionName: 'getTokenType',
+        args: [formValues.offerTokenAddress as `0x${string}`],
+      });
+
+      const unsupportedTokenPermit = offerTokenType === 3;
+
+      if (isAA || unsupportedTokenPermit) {
+        const approveTxData = encodeTransaction({
+          abi: coinBridgeTokenABI,
+          functionName: 'approve',
+          args: [
+            realTokenYamUpgradeableAddress,
+            BigInt(amountInWeiToPermit.toString(10)),
+          ],
+        });
+
+        await aa.addTransaction({
+          to: formValues.offerTokenAddress as `0x${string}`,
+          data: approveTxData,
+        });
+
+        const { txHash: txsHashs } = await aa.confirmAllTxs();
+        if (!txsHashs) {
+          throw new Error('Error approving transaction');
+        }
+        const txHash = txsHashs[0];
+
+        const notificationApprove = {
+          key: txHash,
+          href: `${activeChain?.blockExplorerUrl}tx/${txHash}`,
+          hash: txHash,
+        };
+
+        showNotification(
+          NOTIFICATIONS[NotificationsID.approveOfferLoading](
+            notificationApprove
+          )
+        );
+
+        const receipt = await publicClient.waitForTransactionReceipt({
+          hash: txHash as `0x${string}`,
+        });
+        const approveTxStatus = receipt.status;
+
+        updateNotification(
+          NOTIFICATIONS[
+            approveTxStatus === 'success'
+              ? NotificationsID.approveOfferSuccess
+              : NotificationsID.approveOfferError
+          ](notificationApprove)
+        );
+
+        // UPDATE OFFER
+        const updateTxData = encodeTransaction({
+          abi: realTokenYamUpgradeableABI,
+          functionName: 'updateOffer',
+          args: [
+            BigInt(formValues.offerId),
+            BigInt(formValues.price),
+            BigInt(formValues.amount),
+          ],
+        });
+
+        await aa.addTransaction({
+          to: realTokenYamUpgradeableAddress as `0x${string}`,
+          data: updateTxData,
+        });
+
+        const { txHash: txsHashsUpdate } = await aa.confirmAllTxs();
+        if (!txsHashsUpdate) {
+          throw new Error('Error updating offer');
+        }
+        const txHashUpdate = txsHashsUpdate[0];
+
+        const notificationUpdate = {
+          key: txHashUpdate,
+          href: `${activeChain?.blockExplorerUrl}tx/${txHashUpdate}`,
+          hash: txHashUpdate,
+        };
+
+        const receiptUpdate = await publicClient.waitForTransactionReceipt({
+          hash: txHashUpdate as `0x${string}`,
+        });
+        const updateTxStatus = receiptUpdate.status;
+
+        updateNotification(
+          NOTIFICATIONS[
+            updateTxStatus === 'success'
+              ? NotificationsID.updateOfferSuccess
+              : NotificationsID.updateOfferError
+          ](notificationUpdate)
+        );
+      } else {
+        const transactionDeadline = Math.floor(Date.now() / 1000) + 3600; // permit valable during 1h
+
+        let signature: PermitSignature | undefined;
+        if (offerTokenType === 1) {
+          // TokenType = 1: RealToken
+          signature = await coinBridgeTokenPermitSignature(
+            account,
+            realTokenYamUpgradeableAddress,
+            amountInWeiToPermit.toString(10),
+            transactionDeadline,
+            offer.offerTokenAddress as `0x${string}`,
+            publicClient,
+            aa
+          );
+        } else if (offerTokenType === 2) {
+          // TokenType = 2: ERC20 With Permit
+          signature = await erc20PermitSignature(
+            account,
+            realTokenYamUpgradeableAddress,
+            amountInWeiToPermit.toString(10),
+            transactionDeadline,
+            offer.offerTokenAddress as `0x${string}`,
+            publicClient,
+            aa
+          );
+        }
+
+        if (!signature || !signature.v) {
+          throw new Error('Error getting signature');
+        }
+
+        const { v, r, s } = signature;
+
+        const updateWithPermitTxData = encodeTransaction({
+          abi: realTokenYamUpgradeableABI,
+          functionName: 'updateOfferWithPermit',
+          args: [
+            BigInt(formValues.offerId),
+            BigInt(formValues.price),
+            BigInt(formValues.amount),
+            BigInt(amountInWeiToPermit.toString(10)),
+            BigInt(transactionDeadline.toString()),
+            Number(signature.v),
+            signature.r,
+            signature.s,
+          ],
+        });
+
+        await aa.addTransaction({
+          to: realTokenYamUpgradeableAddress as `0x${string}`,
+          data: updateWithPermitTxData,
+        });
+
+        const { txHash: txsHashsUpdate } = await aa.confirmAllTxs();
+        if (!txsHashsUpdate) {
+          throw new Error('Error updating offer');
+        }
+        const txHashUpdate = txsHashsUpdate[0];
+
+        const notificationUpdate = {
+          key: txHashUpdate,
+          href: `${activeChain?.blockExplorerUrl}tx/${txHashUpdate}`,
+          hash: txHashUpdate,
+        };
+
+        const receiptUpdate = await publicClient.waitForTransactionReceipt({
+          hash: txHashUpdate as `0x${string}`,
+        });
+        const updateTxStatus = receiptUpdate.status;
+
+        updateNotification(
+          NOTIFICATIONS[
+            updateTxStatus === 'success'
+              ? NotificationsID.updateOfferSuccess
+              : NotificationsID.updateOfferError
+          ](notificationUpdate)
+        );
+      }
+    },
+    onSuccess: () => {
+      triggerTableRefresh(true);
+    },
+  });
 
   return (
-    <form onSubmit={onSubmit(onHandleSubmit)}>
+    <form onSubmit={onSubmit(() => mutate(values))}>
       <Stack justify={'center'} align={'stretch'}>
         <Flex direction={'column'} gap={'sm'}>
           <Text size={'xl'}>{t('selectedOffer')}</Text>
@@ -434,7 +448,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
         <Divider />
 
         <Flex direction={'column'} gap={'md'}>
-          <WalletERC20Balance balance={balance} symbol={offerTokenSymbol}/>
+          <WalletERC20Balance balance={balance} symbol={offerTokenSymbol} />
           <NumberInput
             label={t('amount')}
             required={true}

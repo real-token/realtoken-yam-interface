@@ -12,12 +12,18 @@ import { Box, Button, Container, Group, Input, Stack } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { ContextModalProps } from '@mantine/modals';
 import { showNotification, updateNotification } from '@mantine/notifications';
+import { useCurrentNetwork } from '@real-token/core';
+import { useSendTransaction } from '@real-token/web3';
+
 import BigNumber from 'bignumber.js';
+import { useAccount, usePublicClient } from 'wagmi';
+
 import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
-import { useActiveChain, useContract } from 'src/hooks';
-import { NumberInput } from '../../NumberInput';
-import { useWeb3React } from '@web3-react/core';
+
+import { realTokenYamUpgradeableABI } from '../../../abis';
+import { ExtendedChainConfig } from '../../../config/aaConfig';
 import { usePublicOffers } from '../../../hooks/offers/usePublicOffers';
+import { NumberInput } from '../../NumberInput';
 
 type BuyModalProps = {
   offerId: string;
@@ -48,7 +54,11 @@ export const BuyModal: FC<ContextModalProps<BuyModalProps>> = ({
     triggerTableRefresh,
   },
 }) => {
-  const { account, provider } = useWeb3React();
+  const { address: account } = useAccount();
+  const publicClient = usePublicClient();
+
+  const currentNetwork = useCurrentNetwork<ExtendedChainConfig>();
+
   const { getInputProps, onSubmit, reset, setFieldValue, values } =
     useForm<BuyFormValues>({
       // eslint-disable-next-line object-shorthand
@@ -61,13 +71,7 @@ export const BuyModal: FC<ContextModalProps<BuyModalProps>> = ({
       },
     });
 
-  const [isSubmitting, setSubmitting] = useState<boolean>(false);
   const [amountMax, setAmountMax] = useState<number>();
-
-  const activeChain = useActiveChain();
-  const realTokenYamUpgradeable = useContract(
-    ContractsID.realTokenYamUpgradeable
-  );
 
   const { offers } = usePublicOffers();
 
@@ -93,68 +97,78 @@ export const BuyModal: FC<ContextModalProps<BuyModalProps>> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amountMax]);
 
+  const { sendTransaction, isPending: isSubmitting } = useSendTransaction({
+    onSent: () => {
+      showNotification(
+        NOTIFICATIONS[NotificationsID.buyOfferLoading]({
+          key: 'buy',
+          hash: '',
+          href: '',
+        })
+      );
+    },
+    onSuccess: (tx) => {
+      const notificationPayload = {
+        key: 'buy',
+        href: `${currentNetwork?.blockExplorerUrl}tx/${tx.transactionHash}`,
+        hash: tx.transactionHash,
+      };
+      updateNotification(
+        NOTIFICATIONS[NotificationsID.buyOfferSuccess](notificationPayload)
+      );
+      triggerTableRefresh(true);
+      onClose();
+    },
+    onError: (error) => {
+      console.error('Transaction error:', error);
+      updateNotification(
+        NOTIFICATIONS[NotificationsID.buyOfferError]({
+          key: 'buy',
+          hash: 'error',
+          href: 'error',
+        })
+      );
+    },
+  });
+
   const onHandleSubmit = useCallback(
     async (formValues: BuyFormValues) => {
       try {
         if (
           !account ||
-          !provider ||
           !formValues.offerId ||
           !formValues.price ||
-          !formValues.amount ||
-          !realTokenYamUpgradeable
+          !formValues.amount
         ) {
           return;
         }
 
-        setSubmitting(true);
+        const contractAddress =
+          currentNetwork?.contracts.realTokenYamUpgradeableAddress;
+        if (!contractAddress) return;
 
-        const transaction = await realTokenYamUpgradeable.buy(
-          formValues.offerId,
-          new BigNumber(formValues.price.toString())
-            .shiftedBy(Number(buyerTokenDecimals))
-            .toString(),
-          new BigNumber(formValues.amount.toString())
-            .shiftedBy(Number(offerTokenDecimals))
-            .toString()
-        );
+        const price = new BigNumber(formValues.price.toString())
+          .shiftedBy(Number(buyerTokenDecimals))
+          .toString();
 
-        const notificationPayload = {
-          key: transaction.hash,
-          href: `${activeChain?.blockExplorerUrl}tx/${transaction.hash}`,
-          hash: transaction.hash,
-        };
+        const amount = new BigNumber(formValues.amount.toString())
+          .shiftedBy(Number(offerTokenDecimals))
+          .toString();
 
-        showNotification(
-          NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationPayload)
-        );
-
-        transaction
-          .wait()
-          .then(({ status }) =>
-            updateNotification(
-              NOTIFICATIONS[
-                status === 1
-                  ? NotificationsID.buyOfferSuccess
-                  : NotificationsID.buyOfferError
-              ](notificationPayload)
-            )
-          );
-      } catch (e) {
-        console.error('Error in BuyModal', e);
+        sendTransaction({
+          abi: realTokenYamUpgradeableABI,
+          to: contractAddress as `0x${string}`,
+          functionName: 'buy',
+          args: [BigInt(formValues.offerId), BigInt(price), BigInt(amount)],
+        });
       } finally {
-        setSubmitting(false);
-        triggerTableRefresh(true);
-        onClose();
       }
     },
     [
       account,
-      provider,
-      realTokenYamUpgradeable,
       buyerTokenDecimals,
       offerTokenDecimals,
-      activeChain?.blockExplorerUrl,
+      currentNetwork?.blockExplorerUrl,
       triggerTableRefresh,
       onClose,
     ]

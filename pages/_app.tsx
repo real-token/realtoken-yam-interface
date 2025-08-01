@@ -1,80 +1,54 @@
-import {
-  Query,
-  QueryCache,
-  QueryClient,
-  QueryClientProvider,
-} from 'react-query';
-import { ReactQueryDevtools } from 'react-query/devtools';
+import { I18nextProvider } from 'react-i18next';
 
 import type { AppProps as NextAppProps } from 'next/app';
 
 import '@mantine/core/styles.css';
 import { notifications } from '@mantine/notifications';
 import '@mantine/notifications/styles.css';
+import '@rainbow-me/rainbowkit/styles.css';
+import { CONNECTION_MODE } from '@real-token/aa-modal';
 import {
-  ChainSelectConfig,
+  NetworkId,
+  RealTokenUiProvider,
+  SHOW_NETWORKS,
+} from '@real-token/core';
+import { LanguageInit, initLanguage } from '@real-token/i18n-locales';
+import {
   Head,
-  LanguageInit,
   Layout,
   MantineProviders,
-  RealtProvider,
-  Web3Providers,
   Websites,
-  getConnectors,
-  getReadOnlyConnector,
-  getWalletConnectV2,
-  gnosisHooks,
-  gnosisSafe,
-  initLanguage,
-  metaMask,
-  metaMaskHooks,
-  parseAllowedChain,
-} from '@realtoken/realt-commons';
+} from '@real-token/ui-components';
+import { RealTokenWeb3Provider } from '@real-token/web3';
+import {
+  Query,
+  QueryCache,
+  QueryClient,
+  QueryKey,
+} from '@tanstack/react-query';
+
+import i18next from 'i18next';
 
 import { Provider as JotaiProvider } from 'jotai';
 
-import 'src/i18next';
 import { resources } from 'src/i18next';
 
 import { modals } from '../src/components';
 import { HeaderNav } from '../src/components/HeaderNav';
 import { FooterLinks } from '../src/components/footer/FooterLinks';
 import { Banners } from '../src/components/header/Banners';
-import { CHAINS, ChainsID, Chain as CustomChain } from '../src/constants';
+import { ExtendedChainConfig, aaClient } from '../src/config/aaConfig';
 import { modalStyles, theme } from '../src/theme';
 import {
   REACT_QUERY_ERRORS,
   REACT_QUERY_ERRORS_DATA,
 } from '../src/types/ReactQueryErrors';
 
-export const i18n = initLanguage(resources);
-
-const customChains: ChainSelectConfig<CustomChain> = {
-  allowedChains: parseAllowedChain(ChainsID),
-  chainsConfig: CHAINS,
-  defaultChainId: ChainsID.Gnosis,
-};
-
-const showAllNetworks = process.env.NEXT_PUBLIC_SHOW_ALL_NETWORKS === 'true';
-
-const env = process.env.NEXT_PUBLIC_ENV ?? 'development';
-const walletConnectKey = process.env.NEXT_PUBLIC_WALLET_CONNECT_KEY ?? '';
-// console.log("key: ", walletConnectKey)
-
-const [walletConnectV2, walletConnectV2Hooks] = getWalletConnectV2<CustomChain>(
-  customChains,
-  env,
-  walletConnectKey,
-  showAllNetworks
-);
-const [readOnly, readOnlyHooks] = getReadOnlyConnector(customChains);
-
-const libraryConnectors = getConnectors({
-  metamask: [metaMask, metaMaskHooks],
-  gnosisSafe: [gnosisSafe, gnosisHooks],
-  walletConnectV2: [walletConnectV2, walletConnectV2Hooks],
-  readOnly: [readOnly, readOnlyHooks],
-});
+const showAllNetworks =
+  process.env.NEXT_PUBLIC_SHOW_ALL_NETWORKS === 'true'
+    ? SHOW_NETWORKS.ALL
+    : SHOW_NETWORKS.MAINNETS;
+// const env = process.env.NEXT_PUBLIC_ENV ?? Env.DEV;
 
 type AppProps = NextAppProps;
 
@@ -86,7 +60,10 @@ const queryClient = new QueryClient({
     },
   },
   queryCache: new QueryCache({
-    onError: (err: unknown, query: Query) => {
+    onError: (
+      err: Error,
+      query: Query<unknown, unknown, unknown, QueryKey>
+    ) => {
       const errCode = query.meta?.errCode as REACT_QUERY_ERRORS;
       if (errCode) {
         console.error(`${errCode}: ${err}`);
@@ -111,11 +88,42 @@ const queryClient = new QueryClient({
 });
 
 const App = ({ Component, pageProps }: AppProps) => {
+  initLanguage({ resources, debug: false });
   return (
-    <QueryClientProvider client={queryClient}>
-      <JotaiProvider>
-        <RealtProvider value={{ env, showAllNetworks }}>
-          <Web3Providers libraryConnectors={libraryConnectors}>
+    <RealTokenWeb3Provider
+      queryClient={queryClient}
+      aaClientConfig={aaClient}
+      providerConfig={{
+        listenNewAaTx: true,
+        listenNewWcTx: true,
+      }}
+    >
+      <I18nextProvider i18n={i18next}>
+        <JotaiProvider>
+          <RealTokenUiProvider<ExtendedChainConfig>
+            values={{
+              // env,
+              showNetworks: showAllNetworks,
+              defaultNetworkId: NetworkId.gnosis,
+              aaModalConfig: {
+                connectionModeVisibility: {
+                  [CONNECTION_MODE.aa]: true,
+                  [CONNECTION_MODE.external]: true,
+                  [CONNECTION_MODE.tba]: false,
+                },
+                connectionModeConfig: {
+                  [CONNECTION_MODE.aa]: {
+                    showAdvancedWalletConnection: true,
+                    showSocialLogins: true,
+                    showEmailPasswordless: true,
+                  },
+                  [CONNECTION_MODE.external]: {
+                    showReadOnly: true,
+                  },
+                },
+              },
+            }}
+          >
             <MantineProviders
               modals={modals}
               modalStyles={modalStyles}
@@ -124,10 +132,8 @@ const App = ({ Component, pageProps }: AppProps) => {
                 position: 'bottom-right',
               }}
             >
-              <LanguageInit i={i18n} />
               <Layout
                 currentWebsite={Websites.YAM}
-                chains={customChains}
                 head={
                   <Head
                     title='YAM (You And Me)'
@@ -138,14 +144,14 @@ const App = ({ Component, pageProps }: AppProps) => {
                 footerCustomLinks={<FooterLinks />}
                 headerBanner={<Banners />}
               >
-                <ReactQueryDevtools />
+                <LanguageInit i={i18next} />
                 <Component {...pageProps} />
               </Layout>
             </MantineProviders>
-          </Web3Providers>
-        </RealtProvider>
-      </JotaiProvider>
-    </QueryClientProvider>
+          </RealTokenUiProvider>
+        </JotaiProvider>
+      </I18nextProvider>
+    </RealTokenWeb3Provider>
   );
 };
 

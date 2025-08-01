@@ -1,138 +1,162 @@
-import { Flex, Skeleton, Text, Button } from "@mantine/core"
-import BigNumber from "bignumber.js";
-import classes from "./CreateOfferApprovePane.module.css"
-import { useRootStore } from "../../zustandStore/store";
-import { useMemo } from "react";
-import { IconCheck } from "@tabler/icons";
-import { getContract } from "@realtoken/realt-commons";
-import { Erc20, Erc20ABI } from "../../abis";
-import { Web3Provider } from "@ethersproject/providers";
-import { useWeb3React } from "@web3-react/core";
-import { ContractsID } from "../../constants";
-import { useContract } from "../../hooks";
-import { Approves } from "../../hooks/getBatchApprove";
-import { useMutation, useQuery } from "react-query";
-import { usePropertiesToken } from "../../hooks/usePropertiesToken";
-import { useAllowedTokens } from "../../hooks/useAllowedTokens";
+import { useMemo } from 'react';
 
-const checkNeedApprove = (amount: BigNumber, tokenAddress: string, provider: Web3Provider, account: string, realTokenYamUpgradeable: string) => {
-    return new Promise<boolean>(async (resolve, reject) => {
-        try{
-            const contract = getContract<Erc20>(tokenAddress, Erc20ABI, provider);
-            if(!contract) throw new Error('Contract not found');
-            const allowance = await contract.allowance(account, realTokenYamUpgradeable);
-            console.log(allowance.toString(), amount.toString(10));
-            console.log(new BigNumber(allowance.toString()).lt(amount).toString());
-            resolve(new BigNumber(allowance.toString()).lt(amount));
-        }catch(e){
-            reject(e);
-        }
-    });
+import { Web3Provider } from '@ethersproject/providers';
+import { Button, Flex, Skeleton, Text } from '@mantine/core';
+import { useCurrentNetwork } from '@real-token/core';
+import { useSendTransaction } from '@real-token/web3';
+import { IconCheck } from '@tabler/icons';
+import { useMutation, useQuery } from '@tanstack/react-query';
+
+import BigNumber from 'bignumber.js';
+import { PublicClient } from 'viem';
+import { readContract } from 'viem/actions';
+import { useAccount, usePublicClient } from 'wagmi';
+
+import { Erc20ABI } from '../../abis';
+import { ExtendedChainConfig } from '../../config/aaConfig';
+import { ContractsID } from '../../constants';
+import { Approves } from '../../hooks/getBatchApprove';
+import { useAllowedTokens } from '../../hooks/useAllowedTokens';
+import { usePropertiesToken } from '../../hooks/usePropertiesToken';
+import { useRootStore } from '../../zustandStore/store';
+import classes from './CreateOfferApprovePane.module.css';
+
+const checkNeedApprove = (
+  amount: BigNumber,
+  tokenAddress: string,
+  publicClient: PublicClient,
+  account: string,
+  realTokenYamUpgradeable: string
+) => {
+  return new Promise<boolean>(async (resolve, reject) => {
+    try {
+      const allowance = await readContract(publicClient, {
+        address: tokenAddress as `0x${string}`,
+        abi: Erc20ABI,
+        functionName: 'allowance',
+        args: [
+          account as `0x${string}`,
+          realTokenYamUpgradeable as `0x${string}`,
+        ],
+      });
+      resolve(new BigNumber(allowance.toString()).lt(amount));
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+interface CreateOfferApprovePaneProps {
+  tokenAddress: string;
+  approval: Approves;
 }
+export const CreateOfferApprovePane = ({
+  tokenAddress,
+  approval,
+}: CreateOfferApprovePaneProps) => {
+  const { address: account } = useAccount();
+  const publicClient = usePublicClient();
 
-const approveAmount = (amount: BigNumber, tokenAddress: string, provider: Web3Provider, account: string, realTokenYamUpgradeable: string) => {
-    return new Promise<void>(async (resolve, reject) => {
-        try{
-            const contract = getContract<Erc20>(tokenAddress, Erc20ABI, provider, account);
-            if(!contract) throw new Error('Contract not found');
+  const { propertiesToken } = usePropertiesToken();
+  const { allowedTokens } = useAllowedTokens();
 
-            console.log(amount.toString(10))
+  const currentNetwork = useCurrentNetwork<ExtendedChainConfig>();
+  const realTokenYamUpgradeable =
+    currentNetwork?.contracts.realTokenYamUpgradeableAddress;
 
-            const tx = await contract.approve(realTokenYamUpgradeable, amount.toString(10));
+  const token = useMemo(() => {
+    if (!propertiesToken || !allowedTokens) return 'Unknown';
+    const token = propertiesToken?.find(
+      (token) =>
+        token.contractAddress.toLowerCase() === tokenAddress.toLowerCase()
+    );
+    const allowedToken = allowedTokens?.find(
+      (token) =>
+        token.contractAddress.toLowerCase() === tokenAddress.toLowerCase()
+    );
+    return token
+      ? token.shortName
+      : allowedToken
+      ? allowedToken.name
+      : 'Unknown';
+  }, [propertiesToken, allowedTokens, tokenAddress]);
 
-            tx.wait(1)
-                .then(() => resolve())
-                .catch((e) => reject(e));
-                
-        }catch(e){
-            reject(e);
-        }
-    });
-}
+  const [addApproval] = useRootStore((state) => [state.addApproval]);
 
-interface CreateOfferApprovePaneProps{
-    tokenAddress: string;
-    approval: Approves;
-}
-export const CreateOfferApprovePane = ({ tokenAddress, approval }: CreateOfferApprovePaneProps) => {
+  const {
+    data: needApprove,
+    isLoading: checkIfApproveNeeded,
+    refetch,
+  } = useQuery({
+    queryKey: ['need-approve', tokenAddress],
+    enabled:
+      !!approval && !!publicClient && !!realTokenYamUpgradeable && !!account,
+    refetchInterval: 5000,
+    queryFn: async () => {
+      if (!publicClient || !realTokenYamUpgradeable || !account || !approval)
+        return false;
 
-    const { provider, account } = useWeb3React();
+      const needApprove = await checkNeedApprove(
+        new BigNumber(approval.amount),
+        tokenAddress,
+        publicClient,
+        account,
+        realTokenYamUpgradeable
+      );
+      console.log('needApprove: ', needApprove);
+      addApproval(tokenAddress, !needApprove);
+      return needApprove;
+    },
+  });
 
-    const realTokenYamUpgradeable = useContract(ContractsID.realTokenYamUpgradeable);
+  const { sendTransaction, isPending: isApproving } = useSendTransaction({
+    onSuccess: (hash) => {
+      // TODO: add notification
+      console.log('Transaction sent:', hash);
+    },
+    onError: (error) => {
+      // TODO: add notification
+      console.error('Transaction error:', error);
+    },
+  });
 
-    const { propertiesToken } = usePropertiesToken();
-    const { allowedTokens } = useAllowedTokens();
+  const amount = useMemo(() => {
+    return new BigNumber(approval.amount)
+      .shiftedBy(-approval.decimals)
+      .toFixed(0);
+  }, [approval]);
 
-    const token = useMemo(() => {
-        if(!propertiesToken || !allowedTokens) return 'Unknown';
-        const token = propertiesToken?.find((token) => token.contractAddress.toLowerCase() === tokenAddress.toLowerCase());
-        const allowedToken = allowedTokens?.find((token) => token.contractAddress.toLowerCase() === tokenAddress.toLowerCase());
-        return token ? token.shortName : allowedToken ? allowedToken.name : 'Unknown';
-    },[propertiesToken, allowedTokens, tokenAddress]);
-
-    const [addApproval] = useRootStore(state => [state.addApproval]);
-
-    const { data: needApprove, isLoading: checkIfApproveNeeded, refetch } = useQuery({
-        queryKey: ['need-approve', tokenAddress],
-        enabled: !!approval && !!provider && !!realTokenYamUpgradeable && !!account,
-        refetchInterval: 5000,
-        queryFn: async () => {
-            if(!provider || !realTokenYamUpgradeable || !account || !approval) return false;
-
-            const needApprove = await checkNeedApprove(
-                new BigNumber(approval.amount), 
-                tokenAddress, 
-                provider,
-                account,
-                realTokenYamUpgradeable.address
-            );
-            console.log('needApprove: ',needApprove);
-            addApproval(tokenAddress, !needApprove);
-            return needApprove;
-        }
-    })
-
-    const { mutate: approve, isLoading: isApproving } = useMutation({
-        mutationFn: async () => {
-            if(!provider || !realTokenYamUpgradeable || !account || !approval) return;
-            await approveAmount(
-                new BigNumber(approval.amount), 
-                tokenAddress, 
-                provider,
-                account,
-                realTokenYamUpgradeable.address
-            );
-            addApproval(tokenAddress, true);
-            refetch();
-        },
-        onError: (e) => {
-            console.error(e);
-        }
-    })
-
-    const amount = useMemo(() => {
-        return new BigNumber(approval.amount).shiftedBy(-approval.decimals).toFixed(0);
-    },[approval]);
-
-    return(
-        <Flex
-            className={classes.container}
-            justify={"space-between"}
-        >
-            <Flex direction={'column'}>
-                <Text fw={700}>{token ? token : <Skeleton height={35} width={"100%"}/>}</Text>
-                <Text fs={"italic"} fw={500} c={"gray"}>{amount ? amount : <Skeleton height={35} width={"100%"}/>}</Text>
-            </Flex>
-            <Button 
-                color={'green'} 
-                h={'100%'}
-                loading={isApproving || (checkIfApproveNeeded && !needApprove)}
-                disabled={isApproving || !needApprove}
-                leftSection={!needApprove ? <IconCheck size={18}/> : undefined}
-                onClick={() => approve()}
-            >
-                {needApprove ? 'Approve' : 'Approved'}
-            </Button>
-        </Flex>
-    )
-}
+  return (
+    <Flex className={classes.container} justify={'space-between'}>
+      <Flex direction={'column'}>
+        <Text fw={700}>
+          {token ? token : <Skeleton height={35} width={'100%'} />}
+        </Text>
+        <Text fs={'italic'} fw={500} c={'gray'}>
+          {amount ? amount : <Skeleton height={35} width={'100%'} />}
+        </Text>
+      </Flex>
+      <Button
+        color={'green'}
+        h={'100%'}
+        loading={isApproving || (checkIfApproveNeeded && !needApprove)}
+        disabled={isApproving || !needApprove}
+        leftSection={!needApprove ? <IconCheck size={18} /> : undefined}
+        onClick={() => {
+          if (!realTokenYamUpgradeable) return;
+          sendTransaction({
+            abi: Erc20ABI,
+            to: tokenAddress as `0x${string}`,
+            functionName: 'approve',
+            args: [
+              realTokenYamUpgradeable as `0x${string}`,
+              BigInt(new BigNumber(approval.amount).toString(10)),
+            ],
+          });
+        }}
+      >
+        {needApprove ? 'Approve' : 'Approved'}
+      </Button>
+    </Flex>
+  );
+};

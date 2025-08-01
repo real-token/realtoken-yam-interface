@@ -4,7 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { ActionIcon, Group, Title } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { IconEdit } from '@tabler/icons';
-import { useWeb3React } from '@web3-react/core';
+
+import { useAccount } from 'wagmi';
 
 import { Offer } from 'src/types/offer/Offer';
 
@@ -17,7 +18,7 @@ export const UpdateActions: FC<UpdateActions> = ({
   updateOffer,
   triggerRefresh,
 }) => {
-  const { account } = useWeb3React();
+  const { address: account } = useAccount();
   const modals = useModals();
 
   const { t } = useTranslation('modals');

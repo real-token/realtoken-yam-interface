@@ -1,7 +1,7 @@
-export { default as Erc20ABI } from 'src/abis/json/erc20.json';
-export { default as coinBridgeTokenABI } from 'src/abis/json/coinBridgeToken.json';
-export { default as realTokenYamUpgradeableABI } from 'src/abis/json/realTokenYamUpgradeable.json';
-export { default as oraclePriceFeedABI } from 'src/abis/json/oraclePriceFeed.json';
+export { oraclePriceFeedABI } from 'src/abis/json/oraclePriceFeed';
+export { Erc20ABI } from 'src/abis/json/erc20';
+export { realTokenYamUpgradeableABI } from 'src/abis/json/realTokenYamUpgradeable';
+export { coinBridgeTokenABI } from 'src/abis/json/coinBridgeToken';
 
 export * from 'src/abis/types';
 export * from 'src/abis/types/RealTokenYamUpgradeable';
