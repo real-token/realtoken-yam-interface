@@ -75,12 +75,12 @@ export const useApproveOffer: UseApproveOffer = (offer, amount) => {
         })
       );
     },
-    onSuccess: (tx) => {
+    onSuccess: (receipt) => {
       updateNotification(
         NOTIFICATIONS[NotificationsID.approveOfferSuccess]({
-          key: tx.transactionHash,
-          href: `${currentNetwork?.blockExplorerUrl}tx/${tx.transactionHash}`,
-          hash: tx.transactionHash,
+          key: receipt.txHash,
+          href: `${currentNetwork?.blockExplorerUrl}tx/${receipt.txHash}`,
+          hash: receipt.txHash,
         })
       );
       refetchAllowance();

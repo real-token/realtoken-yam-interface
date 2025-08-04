@@ -37,7 +37,11 @@ import { modals } from '../src/components';
 import { HeaderNav } from '../src/components/HeaderNav';
 import { FooterLinks } from '../src/components/footer/FooterLinks';
 import { Banners } from '../src/components/header/Banners';
-import { ExtendedChainConfig, aaClient } from '../src/config/aaConfig';
+import {
+  ExtendedChainConfig,
+  aaClient,
+  networks,
+} from '../src/config/aaConfig';
 import { modalStyles, theme } from '../src/theme';
 import {
   REACT_QUERY_ERRORS,
@@ -105,6 +109,7 @@ const App = ({ Component, pageProps }: AppProps) => {
               // env,
               showNetworks: showAllNetworks,
               defaultNetworkId: NetworkId.gnosis,
+              networksConfig: networks,
               aaModalConfig: {
                 connectionModeVisibility: {
                   [CONNECTION_MODE.aa]: true,

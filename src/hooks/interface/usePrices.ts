@@ -12,11 +12,7 @@ type UsePrices = () => {
 export const usePrices: UsePrices = () => {
   const chainId = useChainId();
 
-  const {
-    isLoading: pricesAreLoading,
-    data: prices,
-    isSuccess,
-  } = useQuery({
+  const { isLoading: pricesAreLoading, data: prices } = useQuery({
     queryKey: ['prices', chainId],
     meta: { errCode: REACT_QUERY_ERRORS.FETCH_PRICES },
     enabled: !!chainId,

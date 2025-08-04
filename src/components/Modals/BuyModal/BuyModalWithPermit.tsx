@@ -58,7 +58,7 @@ type BuyWithPermitFormValues = {
 export const BuyModalWithPermit: FC<
   ContextModalProps<BuyModalWithPermitProps>
 > = ({ context, id, innerProps: { offer, triggerTableRefresh } }) => {
-  const { address: account } = useAccount();
+  const { walletAddress: account } = useAA();
 
   const { getInputProps, onSubmit, reset, setFieldValue, values } =
     useForm<BuyWithPermitFormValues>({
@@ -91,6 +91,9 @@ export const BuyModalWithPermit: FC<
 
   const { t } = useTranslation('modals', { keyPrefix: 'buy' });
   const { t: t1 } = useTranslation('modals', { keyPrefix: 'sell' });
+
+  const test = useAccount();
+  console.log('test', test);
 
   const onClose = useCallback(() => {
     reset();
@@ -254,6 +257,7 @@ export const BuyModalWithPermit: FC<
                         },
                         {
                           value: BUY_METHODS.buyWithPermit,
+                          disabled: isAA,
                           label: (
                             <Tooltip
                               label={t('buyButtons.permit.details')}

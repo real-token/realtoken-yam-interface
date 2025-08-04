@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
 
+import { useAA } from '@real-token/aa-core';
 import { useQuery } from '@tanstack/react-query';
 
-import { useAccount, useChainId } from 'wagmi';
+import { useChainId } from 'wagmi';
 
 import { REACT_QUERY_ERRORS } from '../../types/ReactQueryErrors';
 import { OFFER_LOADING, Offer } from '../../types/offer';
@@ -18,7 +19,7 @@ type UseOffers = () => {
   refetch: () => void;
 };
 export const useOffers: UseOffers = () => {
-  const { address: account } = useAccount();
+  const { walletAddress: account } = useAA();
   const chainId = useChainId();
 
   const { properties, propertiesAreLoading } = useProperties();
@@ -40,17 +41,14 @@ export const useOffers: UseOffers = () => {
       if (!chainId || !account || !properties || !prices || !wlProperties)
         return OFFER_LOADING;
 
-      let offersData = OFFER_LOADING;
-      if (wlProperties && prices) {
-        offersData = await fetchOffersTheGraph(
-          account,
-          chainId,
-          properties,
-          wlProperties,
-          prices,
-          () => {}
-        );
-      }
+      const offersData = await fetchOffersTheGraph(
+        account,
+        chainId,
+        properties,
+        wlProperties,
+        prices,
+        () => {}
+      );
 
       return offersData;
     },

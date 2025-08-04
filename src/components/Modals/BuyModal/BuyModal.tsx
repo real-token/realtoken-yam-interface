@@ -18,7 +18,7 @@ import { useSendTransaction } from '@real-token/web3';
 import BigNumber from 'bignumber.js';
 import { useAccount, usePublicClient } from 'wagmi';
 
-import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
+import { NOTIFICATIONS, NotificationsID } from 'src/constants';
 
 import { realTokenYamUpgradeableABI } from '../../../abis';
 import { ExtendedChainConfig } from '../../../config/aaConfig';
@@ -107,11 +107,11 @@ export const BuyModal: FC<ContextModalProps<BuyModalProps>> = ({
         })
       );
     },
-    onSuccess: (tx) => {
+    onSuccess: (receipt) => {
       const notificationPayload = {
         key: 'buy',
-        href: `${currentNetwork?.blockExplorerUrl}tx/${tx.transactionHash}`,
-        hash: tx.transactionHash,
+        href: `${currentNetwork?.blockExplorerUrl}tx/${receipt.txHash}`,
+        hash: receipt.txHash,
       };
       updateNotification(
         NOTIFICATIONS[NotificationsID.buyOfferSuccess](notificationPayload)

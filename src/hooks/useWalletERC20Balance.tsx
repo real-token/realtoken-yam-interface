@@ -1,11 +1,12 @@
 import { FC, useEffect, useState } from 'react';
 
+import { useAA } from '@real-token/aa-core';
 import { useQuery } from '@tanstack/react-query';
 import { multicall } from '@wagmi/core';
 
 import BigNumber from 'bignumber.js';
 import { Address } from 'viem';
-import { useAccount, useConfig, usePublicClient } from 'wagmi';
+import { useConfig } from 'wagmi';
 
 import { WalletERC20Balance } from 'src/components/WalletBalance/WalletERC20Balance';
 
@@ -33,8 +34,8 @@ export const useWalletERC20Balance = (
   const [tokenSymbol, setTokenSymbol] = useState<string | undefined>(undefined);
 
   const config = useConfig();
-  const { address: account } = useAccount();
-  const publicClient = usePublicClient();
+  const { walletAddress: account } = useAA();
+  console.log('account', account);
 
   const getTokenInfos = async (): Promise<TokenInfos> => {
     return new Promise<TokenInfos>(async (resolove, reject) => {

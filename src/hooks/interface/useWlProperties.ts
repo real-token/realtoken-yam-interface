@@ -1,8 +1,9 @@
 import { gql } from '@apollo/client';
+import { useAA } from '@real-token/aa-core';
 import { useCurrentNetwork } from '@real-token/core';
 import { useQuery } from '@tanstack/react-query';
 
-import { useAccount, useChainId } from 'wagmi';
+import { useChainId } from 'wagmi';
 
 import { ExtendedChainConfig } from '../../config/aaConfig';
 import { REACT_QUERY_ERRORS } from '../../types/ReactQueryErrors';
@@ -14,7 +15,7 @@ type UseWlProperties = () => {
 };
 export const useWlProperties: UseWlProperties = () => {
   const chainId = useChainId();
-  const { address: account } = useAccount();
+  const { walletAddress: account } = useAA();
 
   const networkConfig = useCurrentNetwork<ExtendedChainConfig>();
 
@@ -23,7 +24,7 @@ export const useWlProperties: UseWlProperties = () => {
     data: wlProperties,
     isSuccess,
   } = useQuery({
-    queryKey: ['wlProperties', chainId],
+    queryKey: ['wlProperties', chainId, account],
     meta: { errCode: REACT_QUERY_ERRORS.FETCH_WL_PROPERTIES },
     enabled: !!chainId && !!account && !!networkConfig,
     queryFn: async (): Promise<number[]> => {
