@@ -310,7 +310,7 @@ const UpdateModalContent: FC<UpdateModalContentProps> = ({
         {values.price > 0 && values.amount > 0 && (
           <Flex direction={'column'} gap={'xs'}>
             {oldPriceInDollar !== undefined && (
-              <Text size={'sm'} c='dimmed'>
+              <Text size={'sm'} c={"dimmed"}>
                 {`Ancien prix: ${oldPriceInDollar.toFixed(2)} $ (${
                   oldPriceInToken?.toFixed(6) || 'N/A'
                 } ${buyTokenSymbol || ''})`}

@@ -3,9 +3,9 @@ import { ColorSchemeScript } from '@mantine/core';
 
 export default function Document() {
   return (
-    <Html lang="en">
+    <Html lang={'en'}>
       <Head>
-        <ColorSchemeScript defaultColorScheme="auto" />
+        <ColorSchemeScript defaultColorScheme={'auto'} />
       </Head>
       <body>
         <Main />

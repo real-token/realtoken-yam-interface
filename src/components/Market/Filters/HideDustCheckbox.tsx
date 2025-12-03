@@ -31,7 +31,7 @@ export const HideDustCheckbox: FC = () => {
       />
       <Popover>
         <Popover.Target>
-          <ActionIcon variant='subtle' size={'xs'}>
+          <ActionIcon variant={"subtle"} size={'xs'}>
             <IconSettings size={18} />
           </ActionIcon>
         </Popover.Target>

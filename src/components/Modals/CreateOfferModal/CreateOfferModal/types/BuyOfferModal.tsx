@@ -36,7 +36,7 @@ export const BuyOfferModal = ({ offer, form }: BuyOfferModalProps) => {
                 <Flex direction={'column'}>
                     <ComboboxOfferToken
                         type={'others'}
-                        key="sell-select-0"
+                        key={"sell-select-0"}
                         label={t('common.offerTokenAddress')}
                         data={offerTokens}
                         placeholder={t('common.placeholderOfferTokenAddress')}
@@ -48,7 +48,7 @@ export const BuyOfferModal = ({ offer, form }: BuyOfferModalProps) => {
                 </Flex>
                 <Flex direction={'column'}>
                     <Select
-                        key="sell-select-1"
+                        key={"sell-select-1"}
                         label={t('common.buyerTokenAddress')}
                         placeholder={t('common.placeholderBuyerTokenAddress')}
                         data={buyerTokens}

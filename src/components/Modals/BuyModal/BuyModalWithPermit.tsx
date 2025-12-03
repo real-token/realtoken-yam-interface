@@ -272,7 +272,7 @@ export const BuyModalWithPermit: FC<
               >
                 {!isAA ? (
                   <Flex direction={'column'} gap={5}>
-                    <Text size='sm' fw={500} mt='md'>
+                    <Text size={"sm"} fw={500} mt={"md"}>
                       {'Buy method'}
                     </Text>
                     <SegmentedControl
@@ -282,7 +282,7 @@ export const BuyModalWithPermit: FC<
                           label: (
                             <Tooltip
                               label={t('buyButtons.approve.details')}
-                              multiline
+                              multiline={true}
                               w={200}
                             >
                               <span>{t('buyButtons.approve.options')}</span>
@@ -295,7 +295,7 @@ export const BuyModalWithPermit: FC<
                           label: (
                             <Tooltip
                               label={t('buyButtons.permit.details')}
-                              multiline
+                              multiline={true}
                               w={200}
                             >
                               <span>{t('buyButtons.permit.options')}</span>

@@ -100,9 +100,9 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
           opened={opened}
           onChange={setOpened}
           width={300}
-          position='top'
-          withArrow
-          shadow='md'
+          position={"top"}
+          withArrow={true}
+          shadow={"md"}
         >
           <Popover.Target>
             <Group

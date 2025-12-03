@@ -63,8 +63,8 @@ export function SelectCreatable({
             combobox.closeDropdown();
             setSearch(value || '');
           }}
-          placeholder='Search value'
-          rightSectionPointerEvents='none'
+          placeholder={"Search value"}
+          rightSectionPointerEvents={"none"}
         />
       </Combobox.Target>
 
@@ -72,7 +72,7 @@ export function SelectCreatable({
         <Combobox.Options>
           {options}
           {!exactOptionMatch && search.trim().length > 0 && (
-            <Combobox.Option value='$create'>+ Create {search}</Combobox.Option>
+            <Combobox.Option value={"$create"}>{"+ Create "}{search}</Combobox.Option>
           )}
         </Combobox.Options>
       </Combobox.Dropdown>

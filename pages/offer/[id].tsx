@@ -80,23 +80,23 @@ const ShowOfferPage: FC = () => {
             <Flex className={classes.container} direction={'column'} gap={'md'}>
               <Affix position={{ bottom: 80, right: 20 }}>
                 <Transition
-                  transition='slide-up'
+                  transition={'slide-up'}
                   mounted={isAccountOffer && offer !== undefined}
                 >
                   {(transitionStyles) => (
                     <Card
-                      withBorder
-                      shadow='sm'
-                      radius='md'
+                      withBorder={true}
+                      shadow={'sm'}
+                      radius={'md'}
                       style={transitionStyles}
                     >
-                      <Card.Section withBorder inheritPadding p='xs'>
+                      <Card.Section withBorder={true} inheritPadding={true} p={'xs'}>
                         <Flex align={'center'} gap={'xs'}>
                           <IconSettings size={18} />
-                          <Text>Actions</Text>
+                          <Text>{'Actions'}</Text>
                         </Flex>
                       </Card.Section>
-                      <Card.Section inheritPadding mt='sm' pb='md'>
+                      <Card.Section inheritPadding={true} mt={'sm'} pb={'md'}>
                         <Flex gap={'md'}>
                           {offer ? (
                             <>
@@ -174,14 +174,14 @@ const ShowOfferPage: FC = () => {
           >
             {hasError ? (
               <>
-                <IconExclamationCircle size={'200px'} color='#AE740A' />
+                <IconExclamationCircle size={'200px'} color={'#AE740A'} />
                 <Text size={'xl'}>
                   {'An error hapenned while loading offer'}
                 </Text>
               </>
             ) : (
               <>
-                <IconError404 size={'200px'} color='#AE740A' />
+                <IconError404 size={'200px'} color={'#AE740A'} />
                 <Text size={'xl'}>{"Offer don't exists"}</Text>
               </>
             )}

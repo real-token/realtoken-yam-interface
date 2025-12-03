@@ -91,7 +91,7 @@ const queryClient = new QueryClient({
 });
 
 const App = ({ Component, pageProps }: AppProps) => {
-  initLanguage({ resources, debug: false });
+  initLanguage({ resources: resources, debug: false });
   return (
     <RealTokenWeb3Provider
       queryClient={queryClient}
@@ -123,8 +123,8 @@ const App = ({ Component, pageProps }: AppProps) => {
                 currentWebsite={Websites.YAM}
                 head={
                   <Head
-                    title='YAM (You And Me)'
-                    description='YAM (You And Me)'
+                    title={'YAM (You And Me)'}
+                    description={'YAM (You And Me)'}
                   />
                 }
                 headerNav={<HeaderNav />}

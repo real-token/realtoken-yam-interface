@@ -13,7 +13,7 @@ import { usePublicClient } from 'wagmi';
 import { CreatedOffer } from 'src/types/offer/CreatedOffer';
 
 import { ExtendedChainConfig } from '../../config/aaConfig';
-import { getBatchApprove } from '../../hooks/getBatchApprove';
+import { useGetBatchApprove } from '../../hooks/getBatchApprove';
 import { useOffers } from '../../hooks/interface/useOffers';
 import { OFFER_TYPE } from '../../types/offer';
 import {
@@ -71,7 +71,7 @@ export const CreateOffer = () => {
   const { address: account } = useAccount();
   const activeChain = useCurrentNetwork<ExtendedChainConfig>();
 
-  const { approves } = getBatchApprove(offers);
+  const { approves } = useGetBatchApprove(offers);
 
   const publicClient = usePublicClient();
   const isAA = useIsAA();

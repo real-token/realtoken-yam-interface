@@ -15,7 +15,7 @@ export const deleteOfferTransactions = async (
   publicClient: PublicClient | undefined,
   activeChain: ExtendedChainConfig | undefined,
   offerIds: string[],
-  isAdminDelete: boolean = false
+  isAdminDelete = false
 ): Promise<Transaction<DeleteOfferTransactionContext>[]> => {
   if (!publicClient || !offerIds || offerIds.length === 0 || !activeChain) {
     return [];

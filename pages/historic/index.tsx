@@ -27,7 +27,6 @@ import {
 import { stringify } from 'csv-stringify/sync';
 import { saveAs } from 'file-saver';
 import moment from 'moment';
-import { useChainId } from 'wagmi';
 
 import { OfferTypeBadge } from '../../src/components/Offer/OfferTypeBadge/OfferTypeBadge';
 import { Table } from '../../src/components/Table';
@@ -40,7 +39,6 @@ import { getReduceAddress } from '../../src/utils/address';
 
 export default function HistoricPage() {
   const { walletAddress: account } = useAA();
-  const chainId = useChainId();
 
   const { historics, historicsAreLoading, isError } = useHistoric();
 
@@ -76,7 +74,7 @@ export default function HistoricPage() {
       return {
         type: historic.type,
         purchase_tx: `${blockExplorerUrl}tx/${txhash}`,
-        date,
+        date: date,
         token_bought_name: buyerToken.name,
         token_bought_symbol: buyerToken.symbol,
         token_bought_quantity: parseFloat(historic.quantity),
@@ -111,6 +109,7 @@ export default function HistoricPage() {
     setDownloadLoading(false);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const columns: ColumnDef<Historic, any>[] = useMemo(
     () => [
       {
@@ -133,7 +132,7 @@ export default function HistoricPage() {
           const txhash = getValue() ? getValue().split('-')[0] : '';
           return (
             <Flex justify={'center'}>
-              <Anchor href={`${blockExplorerUrl}tx/${txhash}`} target='_blank'>
+              <Anchor href={`${blockExplorerUrl}tx/${txhash}`} target={'_blank'}>
                 <Text>{getReduceAddress(txhash)}</Text>
               </Anchor>
             </Flex>
@@ -189,7 +188,7 @@ export default function HistoricPage() {
     columns,
     data,
     state: {
-      pagination: pagination,
+      pagination,
       columnFilters,
     },
     getCoreRowModel: getCoreRowModel(),
@@ -210,7 +209,7 @@ export default function HistoricPage() {
         align={'center'}
         direction={'column'}
       >
-        <IconExclamationCircle size={'200px'} color='#AE740A' />
+        <IconExclamationCircle size={'200px'} color={'#AE740A'} />
         <Text size={'xl'}>{t('errorLoading')}</Text>
       </Flex>
     );
@@ -270,7 +269,7 @@ export default function HistoricPage() {
                 : 'all'
             }
             onChange={(value) =>
-              setColumnFilters(value == 'all' ? [] : [{ id: 'type', value }])
+              setColumnFilters(value == 'all' ? [] : [{ id: 'type', value: value }])
             }
           />
           <Checkbox

@@ -16,13 +16,13 @@ export const OfferDeltaTable = ({ offer, officialPrice, officialYield, offerPric
             <thead className={classes.tableHead}>
                 <tr>
                     <th className={classes.tableCell}></th>
-                    <th className={classes.tableCell}>Original</th>
-                    { offer.type !== OFFER_TYPE.EXCHANGE ? <th className={classes.tableCell}>Offer</th> : undefined }
+                    <th className={classes.tableCell}>{"Original"}</th>
+                    { offer.type !== OFFER_TYPE.EXCHANGE ? <th className={classes.tableCell}>{"Offer"}</th> : undefined }
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td className={classes.tableCell}>Yield</td>
+                    <td className={classes.tableCell}>{"Yield"}</td>
                     <td className={classes.tableCell}>
                         { officialYield ? `${officialYield.toFixed(2)}%` : <Skeleton height={15}/> }
                     </td>
@@ -35,7 +35,7 @@ export const OfferDeltaTable = ({ offer, officialPrice, officialYield, offerPric
                     }
                 </tr>
                 <tr>
-                    <td className={classes.tableCell}>Price</td>
+                    <td className={classes.tableCell}>{"Price"}</td>
                     <td className={classes.tableCell}>
                         { officialPrice ? officialPrice : <Skeleton height={15}/> }
                     </td>

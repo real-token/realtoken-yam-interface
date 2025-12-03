@@ -1,5 +1,4 @@
 import BigNumber from "bignumber.js";
-import { useRootStore } from "../zustandStore/store";
 import { useMemo } from "react";
 import { CreatedOffer } from "../types/offer";
 
@@ -8,33 +7,33 @@ export type Approves = {
     decimals: number
 }
 
-type GetBatchApprove = (
+type UseGetBatchApprove = (
     offers: CreatedOffer[]
 ) => {
     approves: { [key: string]: Approves }
 }
-export const getBatchApprove: GetBatchApprove = (
+export const useGetBatchApprove: UseGetBatchApprove = (
     offers: CreatedOffer[]
 ) => {
 
     const approves: { [key: string]: Approves } = useMemo(() => {
-        const approves: { [key: string]: Approves } = {};
+        const approvesMap: { [key: string]: Approves } = {};
         offers.forEach((offer) => {
         if (!offer.amount) return;
-        const approveForOfferToken = approves[offer.offerTokenAddress]?.amount;
-        if (approves[offer.offerTokenAddress]) {
-            approves[offer.offerTokenAddress] = {
+        const approveForOfferToken = approvesMap[offer.offerTokenAddress]?.amount;
+        if (approvesMap[offer.offerTokenAddress]) {
+            approvesMap[offer.offerTokenAddress] = {
                 amount: approveForOfferToken.plus(offer.amount),
-                decimals: approves[offer.offerTokenAddress].decimals
+                decimals: approvesMap[offer.offerTokenAddress].decimals
             };
         } else {
-            approves[offer.offerTokenAddress] = {
+            approvesMap[offer.offerTokenAddress] = {
                 amount: new BigNumber(offer.amount),
                 decimals: offer.offerTokenDecimal ?? 18,
             }
         }
         });
-        return approves;
+        return approvesMap;
     },[offers])
 
     return{

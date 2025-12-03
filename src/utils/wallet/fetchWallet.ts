@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client';

@@ -7,6 +7,29 @@ import { apiClient } from 'src/utils/offers/getClientURL';
 
 import { APIPropertiesToken, PropertiesToken } from 'src/types';
 
+interface BlockchainAddress {
+  networkId: number;
+  addressToken: string;
+}
+
+interface GraphQLToken {
+  fullName: string;
+  shortName: string;
+  symbol: string;
+  tokenIdRules: number;
+  price: number;
+  decimal: number;
+  product?: {
+    currency: string;
+    marketplaceLink: string;
+    imageLink: string[];
+    rentsValue?: {
+      netRentYearlyPerToken: number;
+    };
+  };
+  blockchainAddresses?: BlockchainAddress[];
+}
+
 const GET_PROPERTIES_QUERY = gql`
   query getProperties {
     privateApi {
@@ -41,7 +64,7 @@ const getTokenFromCommunityAPI = new Promise<APIPropertiesToken[]>(
         query: GET_PROPERTIES_QUERY,
       });
 
-      const tokens: any[] = response.data.privateApi.tokens;
+      const tokens: GraphQLToken[] = response.data.privateApi.tokens;
 
       // Transform GraphQL response to APIPropertiesToken format
       const transformedTokens: APIPropertiesToken[] = tokens.map((token) => ({
@@ -51,9 +74,9 @@ const getTokenFromCommunityAPI = new Promise<APIPropertiesToken[]>(
         tokenPrice: token.price,
         currency: token.product?.currency ?? '',
         uuid: token.tokenIdRules?.toString() ?? '',
-        ethereumContract: token.blockchainAddresses?.find((addr: any) => addr.networkId === 1)?.addressToken ?? '',
-        xDaiContract: token.blockchainAddresses?.find((addr: any) => addr.networkId === 100)?.addressToken ?? '',
-        gnosisContract: token.blockchainAddresses?.find((addr: any) => addr.networkId === 100)?.addressToken ?? '',
+        ethereumContract: token.blockchainAddresses?.find((addr: BlockchainAddress) => addr.networkId === 1)?.addressToken ?? '',
+        xDaiContract: token.blockchainAddresses?.find((addr: BlockchainAddress) => addr.networkId === 100)?.addressToken ?? '',
+        gnosisContract: token.blockchainAddresses?.find((addr: BlockchainAddress) => addr.networkId === 100)?.addressToken ?? '',
         marketplaceLink: token.product?.marketplaceLink ?? '',
         imageLink: token.product?.imageLink ?? [],
         netRentYearPerToken: token.product?.rentsValue?.netRentYearlyPerToken ?? 0,
@@ -62,28 +85,28 @@ const getTokenFromCommunityAPI = new Promise<APIPropertiesToken[]>(
           ethereum: {
             chainName: 'ethereum',
             chainId: 1,
-            contract: token.blockchainAddresses?.find((addr: any) => addr.networkId === 1)?.addressToken ?? '',
+            contract: token.blockchainAddresses?.find((addr: BlockchainAddress) => addr.networkId === 1)?.addressToken ?? '',
             distributor: '',
             maintenance: '',
           },
           xDai: {
             chainName: 'xDai',
             chainId: 100,
-            contract: token.blockchainAddresses?.find((addr: any) => addr.networkId === 100)?.addressToken ?? '',
+            contract: token.blockchainAddresses?.find((addr: BlockchainAddress) => addr.networkId === 100)?.addressToken ?? '',
             distributor: '',
             maintenance: '',
           },
           gnosis: {
             chainName: 'gnosis',
             chainId: 100,
-            contract: token.blockchainAddresses?.find((addr: any) => addr.networkId === 100)?.addressToken ?? '',
+            contract: token.blockchainAddresses?.find((addr: BlockchainAddress) => addr.networkId === 100)?.addressToken ?? '',
             distributor: '',
             maintenance: '',
           },
           sepolia: {
             chainName: 'sepolia',
             chainId: 11155111,
-            contract: token.blockchainAddresses?.find((addr: any) => addr.networkId === 11155111)?.addressToken ?? '',
+            contract: token.blockchainAddresses?.find((addr: BlockchainAddress) => addr.networkId === 11155111)?.addressToken ?? '',
             distributor: '',
             maintenance: '',
           },

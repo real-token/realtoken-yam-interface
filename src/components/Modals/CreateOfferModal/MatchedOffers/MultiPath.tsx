@@ -239,7 +239,7 @@ export const MultiPath = ({
 
     const approveNeeded: {
       toContractAddress: `0x${string}`;
-      amount: BigInt;
+      amount: bigint;
     }[] = [];
     for await (const contractAddress of Object.keys(allowances)) {
       const amountToApprove = allowances[contractAddress];

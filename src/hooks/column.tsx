@@ -98,7 +98,7 @@ export const idColumn: ColumnFn<OFFER_TYPE> = (t, span) => {
     header: t('offerId'),
     cell: ({ row, getValue }) => {
       return (
-        <Group wrap='nowrap' gap={'xs'} justify='center'>
+        <Group wrap={"nowrap"} gap={'xs'} justify={"center"}>
           {row.original.buyerAddress ? (
             <Badge>{t('privateTexte')}</Badge>
           ) : undefined}
@@ -160,7 +160,7 @@ export const idPrivateColumn: ColumnFn<OFFER_TYPE> = (t, span) => {
     header: t('offerId'),
     cell: ({ row, getValue }) => {
       return (
-        <Group wrap='nowrap' gap={'xs'}>
+        <Group wrap={"nowrap"} gap={'xs'}>
           {row.original.hasPropertyToken && isEnvs([ENV.DEV]) ? (
             <ActionIcon
               variant={'transparent'}

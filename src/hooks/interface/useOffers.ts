@@ -47,6 +47,7 @@ export const useOffers: UseOffers = () => {
         properties,
         wlProperties,
         prices,
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         () => {}
       );
 

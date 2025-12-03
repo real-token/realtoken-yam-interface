@@ -38,12 +38,12 @@ const ComboboxOfferTokenOption = ({ item }: { item: DataWithBalance }) => {
         <Flex justify={'space-between'} w={'100%'} pl={4}>
           <Flex gap={4} align={'center'}>
             {selected ? <IconCheck size={16} /> : undefined}
-            <Text size='sm' c={'brand'} fw={500}>
+            <Text size={"sm"} c={'brand'} fw={500}>
               {label}
             </Text>
           </Flex>
           {!userBalancesAreLoading ? (
-            <Text size='sm' c={'gray'}>
+            <Text size={"sm"} c={'gray'}>
               {balance.toString(10)}
             </Text>
           ) : (
@@ -220,13 +220,13 @@ export const ComboboxOfferToken = ({
       <Combobox.Target>
         <InputBase
           label={label}
-          component='button'
-          type='button'
+          component={"button"}
+          type={"button"}
           pointer={false}
           rightSection={
             userBalancesAreLoading ? <Loader size={18} /> : <Combobox.Chevron />
           }
-          rightSectionPointerEvents='none'
+          rightSectionPointerEvents={"none"}
           classNames={{ root: classes.root, input: classes.input }}
           onClick={() => combobox.openDropdown()}
           onFocus={() => combobox.openDropdown()}
@@ -247,7 +247,7 @@ export const ComboboxOfferToken = ({
         />
         <Combobox.Options mah={200} style={{ overflowY: 'auto' }}>
           {userBalancesAreLoading ? (
-            <Combobox.Empty>Loading....</Combobox.Empty>
+            <Combobox.Empty>{"Loading...."}</Combobox.Empty>
           ) : (
             options
           )}
