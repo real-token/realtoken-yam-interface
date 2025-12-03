@@ -1,4 +1,4 @@
-[
+export const realTokenYamUpgradeableABI = [
   {
     "inputs": [],
     "stateMutability": "nonpayable",
@@ -1169,4 +1169,4 @@
     "stateMutability": "payable",
     "type": "function"
   }
-]
+] as const

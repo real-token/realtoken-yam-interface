@@ -12,11 +12,11 @@ import {
   Text,
   useCombobox,
 } from '@mantine/core';
-import { getContract } from '@realtoken/realt-commons';
 import { IconCheck } from '@tabler/icons';
-import { useWeb3React } from '@web3-react/core';
+import { multicall } from '@wagmi/core';
 
 import BigNumber from 'bignumber.js';
+import { useAccount, useConfig, usePublicClient } from 'wagmi';
 
 import { Erc20, Erc20ABI } from '../../../../abis';
 import { useUserBalance } from '../../../../hooks/interface/useUserBalance';
@@ -75,7 +75,9 @@ export const ComboboxOfferToken = ({
   type: 'realtoken' | 'others';
   required?: boolean;
 }) => {
-  const { provider, account } = useWeb3React();
+  const { address: account } = useAccount();
+  const publicClient = usePublicClient();
+  const config = useConfig();
 
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -99,19 +101,34 @@ export const ComboboxOfferToken = ({
 
       const assetsBalance = await Promise.all(
         data.map(async (item) => {
-          if (!provider) return {};
-          const contract = getContract<Erc20>(
-            item.value ?? '',
-            Erc20ABI,
-            provider,
-            account
-          );
-          if (!contract || !account) return {};
+          if (
+            !publicClient ||
+            !publicClient.batch ||
+            !publicClient.batch.multicall ||
+            !item.value
+          )
+            return {};
+          const multicallResult = await multicall(config, {
+            contracts: [
+              {
+                abi: Erc20ABI,
+                address: item.value as `0x${string}`,
+                functionName: 'decimals',
+                args: [],
+              },
+              {
+                abi: Erc20ABI,
+                address: item.value as `0x${string}`,
+                functionName: 'balanceOf',
+                args: [account as `0x${string}`],
+              },
+            ],
+          });
           const decimals = new BigNumber(
-            (await contract.decimals()).toString()
+            multicallResult[0]?.result?.toString() ?? '0'
           );
           const balance = new BigNumber(
-            (await contract.balanceOf(account)).toString()
+            multicallResult[1]?.result?.toString() ?? '0'
           ).shiftedBy(-decimals.toNumber());
           return { [item.value.toLowerCase()]: balance };
         })
@@ -168,7 +185,7 @@ export const ComboboxOfferToken = ({
   const sortedDatas = useMemo(
     () =>
       dataWithAmounts.sort((a, b) => {
-        return b.balance.comparedTo(a.balance);
+        return b.balance.comparedTo(a.balance) ?? 0;
       }),
     [dataWithAmounts]
   );

@@ -4,7 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { ActionIcon, Group, Popover, Text } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { IconShoppingCart } from '@tabler/icons';
-import { useWeb3React } from '@web3-react/core';
+
+import { useAccount } from 'wagmi';
 
 import { Offer } from 'src/types/offer/Offer';
 
@@ -27,7 +28,7 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
   buttonClassName,
   groupClassName,
 }) => {
-  const { account } = useWeb3React();
+  const { address: account } = useAccount();
   const modals = useModals();
 
   const { properties } = useProperties();

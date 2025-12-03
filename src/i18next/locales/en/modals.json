@@ -158,7 +158,13 @@
     "summary": "Summary",
     "summaryText1": "You will modify the price from",
     "summaryText2": "and the amount from",
-    "summaryText3": "to"
+    "summaryText3": "to",
+    "unit": "Unit for price",
+    "shieldError": {
+      "line1": "Your are updating at a price of ${{price}}, which represent a price difference of {{difference}}%",
+      "line2": "But you choose a maximum price difference of +/-${{difference}}%"
+    },
+    "priceInfo": "Your are updating with at a price of ${{price}}, which represent a price difference of {{difference}}%"
   },
   "offerMatching": {
     "title": "Offers matching",

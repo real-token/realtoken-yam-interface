@@ -1,6 +1,7 @@
 import { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
 
-import { ChainsID } from '../../../src/constants';
+import { NetworkId } from '@real-token/core';
+
 import { tokenToGetPrice } from '../../../src/constants/GetPriceToken';
 import { getChainlinkPrice } from '../../../src/controllers/ChainLinkCall';
 import { getCoingeckoApiPrice } from '../../../src/controllers/CoingeckoApiCall';
@@ -15,9 +16,9 @@ const ethereumRpcUrl = process.env.ETHEREUM_RPC_URL as string;
 const sepoliaRpcUrl = process.env.SEPOLIA_RPC_URL as string;
 
 const rpcUrls = new Map<number, string>([
-  [ChainsID.Gnosis, gnosisRpcUrl],
-  [ChainsID.Ethereum, ethereumRpcUrl],
-  [ChainsID.Sepolia, sepoliaRpcUrl],
+  [Number(NetworkId.gnosis), gnosisRpcUrl],
+  [Number(NetworkId.ethereum), ethereumRpcUrl],
+  [Number(NetworkId.sepolia), sepoliaRpcUrl],
 ]);
 
 const handler: NextApiHandler = async (
@@ -41,6 +42,7 @@ const handler: NextApiHandler = async (
           const getPriceType = token.priceFnc.type;
           if (getPriceType === 'chainlink') {
             const price = await getChainlinkPrice(
+              chainId,
               token as GetPriceTokenChainLink,
               rpcUrl
             );

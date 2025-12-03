@@ -1,3 +1,5 @@
+import { NetworkId } from '@real-token/core';
+
 import {
   GetPriceCustomFnc,
   GetPriceTokenChainLink,
@@ -11,7 +13,6 @@ import { ReusdSvg } from '../assets/currency/Reusd';
 import { UsdcSvg } from '../assets/currency/Usdc';
 import { UsdtSvg } from '../assets/currency/usdt';
 import { AllowedToken } from '../types/allowedTokens';
-import { ChainsID } from './chains';
 
 // This is token which we want to get price because not given by TheGraph
 export const tokenToGetPrice = new Map<
@@ -19,7 +20,7 @@ export const tokenToGetPrice = new Map<
   (GetPriceTokenChainLink | GetPriceTokenCoingecko | GetPriceCustomFnc)[]
 >([
   [
-    ChainsID.Sepolia,
+    Number(NetworkId.sepolia),
     [
       {
         name: 'USDCRealT',
@@ -68,7 +69,7 @@ export const tokenToGetPrice = new Map<
     ],
   ],
   [
-    ChainsID.Ethereum,
+    Number(NetworkId.ethereum),
     [
       {
         name: 'RealToken Ecosystem USD',
@@ -127,7 +128,7 @@ export const tokenToGetPrice = new Map<
     ],
   ],
   [
-    ChainsID.Gnosis,
+    Number(NetworkId.gnosis),
     [
       {
         name: 'RealToken Ecosystem USD',

@@ -1,22 +1,18 @@
-import {
-  ApolloClient,
-  NormalizedCacheObject,
-  gql,
-} from '@apollo/client';
+import { ApolloClient, NormalizedCacheObject, gql } from '@apollo/client';
+import { readCurrentNetworkConfig } from '@real-token/core';
 
 import BigNumber from 'bignumber.js';
-import { Offer as OfferGraphQl } from '../../../gql/graphql';
 
-import { CHAINS, ChainsID } from 'src/constants';
 import { PropertiesToken } from 'src/types';
 import { DataRealtokenType } from 'src/types/offer/DataRealTokenType';
 import { Offer } from 'src/types/offer/Offer';
 import { Price } from 'src/types/price';
 
+import { Offer as OfferGraphQl } from '../../../gql/graphql';
+import { networks } from '../../config/aaConfig';
+import { getExtendedTokens } from '../../constants/GetPriceToken';
 import { apiClient } from './getClientURL';
 import { parseOffer } from './parseOffer';
-import { useRootStore } from '../../zustandStore/store';
-import { getExtendedTokens } from '../../constants/GetPriceToken';
 
 const nbrFirst = 1000;
 
@@ -25,14 +21,18 @@ export const getBigDataGraphRealtoken = async (
   client: ApolloClient<NormalizedCacheObject>,
   realtokenAccount: string[]
 ) => {
-  const chainConfig = CHAINS[chainId as ChainsID];
+  const chainConfig = readCurrentNetworkConfig(networks, chainId);
 
-  const { address: realTokenYamUpgradeable } =
-    chainConfig.contracts.realTokenYamUpgradeable;
+  const graphNetworkPrefix = chainConfig?.graphPrefix?.realToken;
+  if (!graphNetworkPrefix) {
+    console.warn(
+      'Cannot load offers, no graph network prefix found for network'
+    );
+    return [];
+  }
 
-  const graphNetworkPrefix = chainConfig.graphPrefixes.realtoken;
-
-  // console.log('getBigDataGraphRealtoken', realtokenAccount.length);
+  const realTokenYamUpgradeable =
+    chainConfig?.contracts.realTokenYamUpgradeableAddress;
 
   const accountRealtoken: string =
     '"' + realtokenAccount.map((account: string) => account).join('","') + '"';
@@ -84,7 +84,7 @@ export const getBigDataGraphRealtoken = async (
   });
 };
 
-export const fetchOffersTheGraph = (
+export const fetchOffersTheGraph = async (
   account: string,
   chainId: number,
   propertiesToken: PropertiesToken[],
@@ -92,16 +92,16 @@ export const fetchOffersTheGraph = (
   prices: Price,
   setTheGraphIssue: (value: boolean) => void
 ): Promise<Offer[]> => {
-  // const { abortController } = useRootStore.getState();
-  return new Promise<Offer[]>(async (resolve, reject) => {
-    try {
+  const chainConfig = readCurrentNetworkConfig(networks, chainId);
+  const graphNetworkPrefix = chainConfig?.graphPrefix?.yam;
+  if (!graphNetworkPrefix) {
+    throw new Error('No graph network prefix found for network');
+  }
 
-      const graphNetworkPrefix = CHAINS[chainId as ChainsID].graphPrefixes.yam;
+  const offersData: Offer[] = [];
 
-      const offersData: Offer[] = [];
-
-      const activeOfferResult = await apiClient.query({
-        query: gql`
+  const activeOfferResult = await apiClient.query({
+    query: gql`
           query {
             ${graphNetworkPrefix}{
               global(id: "1"){
@@ -110,18 +110,19 @@ export const fetchOffersTheGraph = (
             }
           }
         `,
-        // context: {
-        //   fetchOptions: {
-        //     signal: abortController.signal
-        //   }
-        // }
-      });
+    // context: {
+    //   fetchOptions: {
+    //     signal: abortController.signal
+    //   }
+    // }
+  });
 
-      const offersToFetch = activeOfferResult.data[graphNetworkPrefix].global.activeOffersCount;
-      console.log('Amount of offersToFetch: ', offersToFetch);
+  const offersToFetch =
+    activeOfferResult.data[graphNetworkPrefix].global.activeOffersCount;
+  console.log('Amount of offersToFetch: ', offersToFetch);
 
-      const offersRes = await apiClient.query({
-        query: gql`
+  const offersRes = await apiClient.query({
+    query: gql`
           query {
             ${graphNetworkPrefix} {
               offers (first: ${offersToFetch}, where: { removedAtBlock: null }) {
@@ -164,94 +165,91 @@ export const fetchOffersTheGraph = (
             }
           }
         `,
-        //  context: {
-        //   fetchOptions: {
-        //     signal: abortController.signal
-        //   }
-        // }
-      })
+    //  context: {
+    //   fetchOptions: {
+    //     signal: abortController.signal
+    //   }
+    // }
+  });
 
-      const offers: OfferGraphQl[] = offersRes.data[graphNetworkPrefix].offers;
-      console.log('offers: ', offers.length)
+  const offers: OfferGraphQl[] = offersRes.data[graphNetworkPrefix].offers;
+  console.log('offers: ', offers.length);
 
-      const accountRealtokenDuplicates: string[] = offers.map(
-        (val) => val.seller.address + '-' + val.offerToken.address
-      );
-      const accountBalanceId = [...new Set(accountRealtokenDuplicates)]; // remove duplicates
-      // //console.log('Debug liste accountBalanceId', accountBalanceId);
+  const accountRealtokenDuplicates: string[] = offers.map(
+    (val) => val.seller.address + '-' + val.offerToken.address
+  );
+  const accountBalanceId = [...new Set(accountRealtokenDuplicates)]; // remove duplicates
+  // //console.log('Debug liste accountBalanceId', accountBalanceId);
 
-      const bigDataRealTokenPromises = [];
-      for (let i = 0; i < accountBalanceId.length; i += nbrFirst) {
-        const batch: string[] = accountBalanceId.slice(i, i + nbrFirst);
-        /* dataRealtoken.push(
+  const bigDataRealTokenPromises = [];
+  for (let i = 0; i < accountBalanceId.length; i += nbrFirst) {
+    const batch: string[] = accountBalanceId.slice(i, i + nbrFirst);
+    /* dataRealtoken.push(
           await getBigDataGraphRealtoken(chainId, clientRealtoken, batch)
         ); */
-        if (batch.length <= 0) break;
+    if (batch.length <= 0) break;
 
-        bigDataRealTokenPromises.push(
-          getBigDataGraphRealtoken(chainId, apiClient, batch)
-        );
-        //console.log('DEBUG for realtokenData', i, batchSize, realtokenData);
-      }
+    bigDataRealTokenPromises.push(
+      getBigDataGraphRealtoken(chainId, apiClient, batch)
+    );
+    //console.log('DEBUG for realtokenData', i, batchSize, realtokenData);
+  }
 
-      const dataRealtoken = (
-        await Promise.all(bigDataRealTokenPromises)
-      ).flat() as DataRealtokenType[];
+  const dataRealtoken = (
+    await Promise.all(bigDataRealTokenPromises)
+  ).flat() as DataRealtokenType[];
 
-      // //console.log('Debug Query dataRealtoken', dataRealtoken);
+  // //console.log('Debug Query dataRealtoken', dataRealtoken);
 
-      const extendedTokensAddress = getExtendedTokens(chainId).map((token) => token.contractAddress);
+  const extendedTokensAddress = getExtendedTokens(chainId).map(
+    (token) => token.contractAddress
+  );
 
-      const promises = offers.map(
-        (offer: OfferGraphQl) =>
-          new Promise<Offer>(async (resolve, reject) => {
-            try {
-              const accountUserRealtoken: DataRealtokenType =
-                dataRealtoken.find(
-                  (accountBalance: DataRealtokenType): boolean =>
-                    accountBalance.id ===
-                    offer.seller.address + '-' + offer.offerToken.address
-                )!;
+  const promises = offers.map(
+    (offer: OfferGraphQl) =>
+      new Promise<Offer>(async (resolve, reject) => {
+        try {
+          const accountUserRealtoken: DataRealtokenType = dataRealtoken.find(
+            (accountBalance: DataRealtokenType): boolean =>
+              accountBalance.id ===
+              offer.seller.address + '-' + offer.offerToken.address
+          )!;
 
-              // console.log('wlProperties: ', wlProperties)
-              const offerData: Offer = await parseOffer(
-                account,
-                offer,
-                accountUserRealtoken,
-                propertiesToken,
-                wlProperties,
-                prices,
-                extendedTokensAddress
-              );
+          // console.log('wlProperties: ', wlProperties)
+          const offerData: Offer = await parseOffer(
+            account,
+            offer,
+            accountUserRealtoken,
+            propertiesToken,
+            wlProperties,
+            prices,
+            extendedTokensAddress
+          );
 
-              offerData.hasPropertyToken =
-                BigNumber(offerData.buyerTokenType).eq(1) ||
-                BigNumber(offerData.offerTokenType).eq(1);
+          offerData.hasPropertyToken =
+            BigNumber(offerData.buyerTokenType).eq(1) ||
+            BigNumber(offerData.offerTokenType).eq(1);
 
-              resolve(offerData);
-            } catch (err) {
-              console.log('Error when parsingOffer: ', err);
-              reject(err);
-            }
-          })
-      );
+          resolve(offerData);
+        } catch (err) {
+          console.log('Error when parsingOffer: ', err);
+          reject(err);
+        }
+      })
+  );
 
-      const parsedOffers = await Promise.all(promises);
-      console.log('Offers formated', parsedOffers.length);
+  const parsedOffers = await Promise.all(promises);
+  console.log('Offers formated', parsedOffers.length);
 
-      // ERROR_RANGE is used to check if the number of offers fetched is correctly
-      // This is the -/+ range difference accepted
-      const ERROR_RANGE = 0.1;
-      if(parsedOffers.length < offersToFetch*(1-ERROR_RANGE)) {
-        setTheGraphIssue(true);
-      }
+  // ERROR_RANGE is used to check if the number of offers fetched is correctly
+  // This is the -/+ range difference accepted
+  const ERROR_RANGE = 0.1;
+  if (parsedOffers.length < offersToFetch * (1 - ERROR_RANGE)) {
+    setTheGraphIssue(true);
+  }
 
-      offersData.push(...parsedOffers);
-      // // console.log('Offers formated', offersData.length);
+  offersData.push(...parsedOffers);
+  // // console.log('Offers formated', offersData.length);
 
-      resolve(offersData);
-    } catch (err) {
-      console.log('Error while fetching offers from TheGraph', err);
-    }
-  });
+  return offersData;
 };

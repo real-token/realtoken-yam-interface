@@ -1,61 +1,107 @@
-import { JsonRpcProvider } from "@ethersproject/providers";
-import BigNumber from "bignumber.js";
-import { oraclePriceFeedABI } from "src/abis";
-import { OraclePriceFeed } from "src/abis/types/oraclePriceFeed";
-import { Offer, OFFER_TYPE } from "src/types/offer";
-import { Price as P, Price } from "src/types/price";
-import { getContract } from "../utils";
-import { GetPriceTokenChainLink } from "../types/GetPriceTokens";
+import BigNumber from 'bignumber.js';
+import { createPublicClient, http } from 'viem';
+import { readContract } from 'viem/actions';
+import { gnosis, mainnet, sepolia } from 'viem/chains';
 
-export const getChainlinkPrice = (allowedToken: GetPriceTokenChainLink, rpcUrl: string) => {
-    return new Promise<Price>(async (resolve,reject) => {
-      try{
+import { oraclePriceFeedABI } from 'src/abis';
+import { OFFER_TYPE, Offer } from 'src/types/offer';
+import { Price as P, Price } from 'src/types/price';
 
-        const provider = new JsonRpcProvider(rpcUrl);
+import { GetPriceTokenChainLink } from '../types/GetPriceTokens';
 
-        const tokenAddress = allowedToken.contractAddress;
-        const oracleContractAddress = allowedToken.priceFnc.contractAddress;
-  
-        if(!oracleContractAddress){
-          resolve({ contractAddress: tokenAddress, price: BigNumber(1).toString() });
-          return;
-        }
-  
-        const oracleContract = getContract<OraclePriceFeed>(
-          oracleContractAddress,
-          oraclePriceFeedABI,
-          provider
+// Map chainId to viem chain objects
+const getChainFromId = (chainId: number) => {
+  switch (chainId) {
+    case 1:
+      return mainnet;
+    case 100:
+      return gnosis;
+    case 11155111: // Sepolia
+      return sepolia;
+    default:
+      return mainnet; // fallback
+  }
+};
+
+export const getChainlinkPrice = (
+  chainId: number,
+  allowedToken: GetPriceTokenChainLink,
+  rpcUrl: string
+) => {
+  return new Promise<Price>(async (resolve, reject) => {
+    try {
+      const chain = getChainFromId(chainId);
+      const client = createPublicClient({
+        chain,
+        transport: http(rpcUrl),
+      });
+
+      const tokenAddress = allowedToken.contractAddress;
+      const oracleContractAddress = allowedToken.priceFnc.contractAddress;
+
+      if (!oracleContractAddress) {
+        resolve({
+          contractAddress: tokenAddress,
+          price: BigNumber(1).toString(),
+        });
+        return;
+      }
+
+      try {
+        const assetPrice = (await readContract(client, {
+          address: oracleContractAddress as `0x${string}`,
+          abi: oraclePriceFeedABI,
+          functionName: 'latestAnswer',
+        })) as bigint;
+
+        const assetDecimals = (await readContract(client, {
+          address: oracleContractAddress as `0x${string}`,
+          abi: oraclePriceFeedABI,
+          functionName: 'decimals',
+        })) as number;
+
+        const tokenPrice = new BigNumber(assetPrice.toString()).shiftedBy(
+          -assetDecimals
         );
 
-        if(!oracleContract){
-          resolve({ contractAddress: tokenAddress, price: BigNumber(1).toString() });
-          return;
-        }
-  
-        const assetPrice = await oracleContract.latestAnswer();
-        const assetDecimals = await oracleContract.decimals();
-        const tokenPrice = new BigNumber(assetPrice.toString()).shiftedBy(-assetDecimals);
-    
-        resolve({ contractAddress: tokenAddress, price: tokenPrice.toString() });
-  
-      }catch(err){
-        console.log("Error while getting oracle price: ", err);
-        reject(err)
+        resolve({
+          contractAddress: tokenAddress,
+          price: tokenPrice.toString(),
+        });
+      } catch (contractError) {
+        console.log('Error reading oracle contract: ', contractError);
+        // Fallback to price 1 if contract read fails
+        resolve({
+          contractAddress: tokenAddress,
+          price: BigNumber(1).toString(),
+        });
       }
-    });
-}
+    } catch (err) {
+      console.log('Error while getting oracle price: ', err);
+      reject(err);
+    }
+  });
+};
 
-export const getPriceInDollar = (prices: P, offer: Offer): number|undefined => {
-  if(offer.type == OFFER_TYPE.SELL){
-    const buyTokenPriceInDollar = parseFloat(prices[offer.buyerTokenAddress.toLowerCase()]);
-    return buyTokenPriceInDollar*parseFloat(offer.price);
+export const getPriceInDollar = (
+  prices: P,
+  offer: Offer
+): number | undefined => {
+  if (offer.type == OFFER_TYPE.SELL) {
+    const buyTokenPriceInDollar = parseFloat(
+      prices[offer.buyerTokenAddress.toLowerCase()]
+    );
+    return buyTokenPriceInDollar * parseFloat(offer.price);
   }
-  if(offer.type == OFFER_TYPE.BUY && offer.officialPrice){
-    const buyTokenPriceInDollar = 1/parseFloat(offer.price);
+  if (offer.type == OFFER_TYPE.BUY && offer.officialPrice) {
+    const buyTokenPriceInDollar = 1 / parseFloat(offer.price);
     return buyTokenPriceInDollar;
   }
-}
+};
 
-export const getBuyPriceInDollar = (prices: P, offer: Offer): number|undefined => {
+export const getBuyPriceInDollar = (
+  prices: P,
+  offer: Offer
+): number | undefined => {
   return parseFloat(prices[offer.offerTokenAddress.toLowerCase()]);
-}
+};

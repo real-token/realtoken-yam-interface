@@ -1,27 +1,98 @@
 import { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
 
-import axios from 'axios';
+import { NetworkId } from '@real-token/core';
 
-import { APIPropertiesToken, PropertiesToken, ShortProperty } from 'src/types';
+import { gql } from '@apollo/client';
+import { apiClient } from 'src/utils/offers/getClientURL';
 
-import { ChainsID } from '../../../src/constants';
+import { APIPropertiesToken, PropertiesToken } from 'src/types';
+
+const GET_PROPERTIES_QUERY = gql`
+  query getProperties {
+    privateApi {
+      tokens {
+        fullName
+        shortName
+        symbol
+        tokenIdRules
+        price
+        decimal
+        product {
+          currency
+          marketplaceLink
+          imageLink
+          rentsValue {
+            netRentYearlyPerToken
+          }
+        }
+        blockchainAddresses {
+          networkId
+          addressToken
+        }
+      }
+    }
+  }
+`;
 
 const getTokenFromCommunityAPI = new Promise<APIPropertiesToken[]>(
   async (resolve, reject) => {
     try {
-      const response = await axios.get<APIPropertiesToken[]>(
-        'https://api.realtoken.community/v1/token',
-        {
-          headers: {
-            'X-AUTH-REALT-TOKEN': process.env.COMMUNITY_API_KEY ?? '',
-          },
-        }
-      );
+      const response = await apiClient.query({
+        query: GET_PROPERTIES_QUERY,
+      });
 
-      const tokens: APIPropertiesToken[] = response.data;
-      resolve(tokens);
+      const tokens: any[] = response.data.privateApi.tokens;
+
+      // Transform GraphQL response to APIPropertiesToken format
+      const transformedTokens: APIPropertiesToken[] = tokens.map((token) => ({
+        fullName: token.fullName,
+        shortName: token.shortName,
+        symbol: token.symbol,
+        tokenPrice: token.price,
+        currency: token.product?.currency ?? '',
+        uuid: token.tokenIdRules?.toString() ?? '',
+        ethereumContract: token.blockchainAddresses?.find((addr: any) => addr.networkId === 1)?.addressToken ?? '',
+        xDaiContract: token.blockchainAddresses?.find((addr: any) => addr.networkId === 100)?.addressToken ?? '',
+        gnosisContract: token.blockchainAddresses?.find((addr: any) => addr.networkId === 100)?.addressToken ?? '',
+        marketplaceLink: token.product?.marketplaceLink ?? '',
+        imageLink: token.product?.imageLink ?? [],
+        netRentYearPerToken: token.product?.rentsValue?.netRentYearlyPerToken ?? 0,
+        tokenIdRules: token.tokenIdRules ?? 0,
+        blockchainAddresses: {
+          ethereum: {
+            chainName: 'ethereum',
+            chainId: 1,
+            contract: token.blockchainAddresses?.find((addr: any) => addr.networkId === 1)?.addressToken ?? '',
+            distributor: '',
+            maintenance: '',
+          },
+          xDai: {
+            chainName: 'xDai',
+            chainId: 100,
+            contract: token.blockchainAddresses?.find((addr: any) => addr.networkId === 100)?.addressToken ?? '',
+            distributor: '',
+            maintenance: '',
+          },
+          gnosis: {
+            chainName: 'gnosis',
+            chainId: 100,
+            contract: token.blockchainAddresses?.find((addr: any) => addr.networkId === 100)?.addressToken ?? '',
+            distributor: '',
+            maintenance: '',
+          },
+          sepolia: {
+            chainName: 'sepolia',
+            chainId: 11155111,
+            contract: token.blockchainAddresses?.find((addr: any) => addr.networkId === 11155111)?.addressToken ?? '',
+            distributor: '',
+            maintenance: '',
+          },
+        },
+      }));
+
+      resolve(transformedTokens);
     } catch (err) {
-      console.error('Failed to fetch properties from community');
+      console.error('Failed to fetch properties from GraphQL API');
       reject(err);
     }
   }
@@ -30,13 +101,13 @@ const getTokenFromCommunityAPI = new Promise<APIPropertiesToken[]>(
 const getContractAddressFromChainId = (chainId: number): string | undefined => {
   let addressKey;
   switch (chainId) {
-    case ChainsID.Ethereum:
+    case Number(NetworkId.ethereum):
       addressKey = 'ethereum';
       break;
-    case ChainsID.Gnosis:
+    case Number(NetworkId.gnosis):
       addressKey = 'xDai';
       break;
-    case ChainsID.Sepolia:
+    case Number(NetworkId.sepolia):
       addressKey = 'sepolia';
       break;
   }
@@ -45,8 +116,7 @@ const getContractAddressFromChainId = (chainId: number): string | undefined => {
 
 const getTokens = async (
   chainId: number,
-  communityProperties: APIPropertiesToken[],
-  wlProperties: ShortProperty[]
+  communityProperties: APIPropertiesToken[]
 ): Promise<PropertiesToken[]> => {
   const propertiesNonFiltered: PropertiesToken[] = [];
 
@@ -115,19 +185,6 @@ const getTokens = async (
   // }
 
   return propertiesNonFiltered;
-
-  console.log(propertiesNonFiltered);
-
-  const onlyWLProperties = propertiesNonFiltered.filter(
-    (property) =>
-      !!wlProperties.find(
-        (wlProperty) =>
-          wlProperty.contractAddress.toLowerCase() ==
-          property.contractAddress.toLowerCase()
-      )
-  );
-
-  return onlyWLProperties;
 };
 
 const handler: NextApiHandler = async (
@@ -144,7 +201,7 @@ const handler: NextApiHandler = async (
 
     // const [communityApiToken,wlTokens] = await Promise.all([getTokenFromCommunityAPI,getWhitelistedProperties(parseInt(chainId))]);
     const [communityApiToken] = await Promise.all([getTokenFromCommunityAPI]);
-    const tokens = await getTokens(parseInt(chainId), communityApiToken, []);
+    const tokens = await getTokens(parseInt(chainId), communityApiToken);
 
     // const extendedTokens = tokenToGetPrice.get(parseInt(chainId))?.filter(token => !token.isBuyToken) ?? [] as PropertiesToken[];
     // console.log(extendedTokens);
