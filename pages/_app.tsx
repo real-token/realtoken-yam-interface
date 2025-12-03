@@ -5,7 +5,6 @@ import type { AppProps as NextAppProps } from 'next/app';
 import '@mantine/core/styles.css';
 import { notifications } from '@mantine/notifications';
 import '@mantine/notifications/styles.css';
-import '@rainbow-me/rainbowkit/styles.css';
 import {
   NetworkId,
   RealTokenUiProvider,
