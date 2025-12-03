@@ -152,7 +152,13 @@
     "summary": "Résumé de la transaction",
     "summaryText1": "Vous allez modifier le prix de vente de",
     "summaryText2": "et le montant de",
-    "summaryText3": "à"
+    "summaryText3": "à",
+    "unit": "Unité pour le prix",
+    "shieldError": {
+      "line1": "Vous mettez à jour à un prix de ${{price}}, ce qui représente une différence de prix de {{difference}}%",
+      "line2": "Mais vous avez choisi une différence de prix maximale de +/-${{difference}}%"
+    },
+    "priceInfo": "Vous mettez à jour avec un prix de ${{price}}, ce qui représente une différence de prix de {{difference}}%"
   },
   "offerMatching": {
     "title": "Offres correspondantes",

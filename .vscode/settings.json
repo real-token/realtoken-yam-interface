@@ -2,5 +2,6 @@
     "i18n-ally.localesPaths": [
         "src/i18next/locales"
     ],
-    "i18n-ally.keystyle": "nested"
+    "i18n-ally.keystyle": "nested",
+    "gitConfigUser.selectedProfileId": "b6caa09e-644a-465a-9560-e782a6537eb4"
 }

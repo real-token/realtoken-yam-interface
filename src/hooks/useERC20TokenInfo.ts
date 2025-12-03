@@ -19,6 +19,7 @@ export type UseERC20TokenInfo = (tokenAddress: string) => {
   decimals: string | undefined;
   symbol: string | undefined;
   name: string | undefined;
+  isLoading: boolean;
 };
 
 export const useERC20TokenInfo: UseERC20TokenInfo = (tokenAddress) => {
@@ -50,6 +51,7 @@ export const useERC20TokenInfo: UseERC20TokenInfo = (tokenAddress) => {
               functionName: 'symbol',
             },
           ],
+          multicallAddress: '0xcA11bde05977b3631167028862bE2a173976CA11',
         });
 
         const name = multicallResult[0]?.result?.toString();
@@ -75,7 +77,7 @@ export const useERC20TokenInfo: UseERC20TokenInfo = (tokenAddress) => {
     });
   };
 
-  const { data: tokenInfos, refetch } = useQuery({
+  const { data: tokenInfos, isLoading } = useQuery({
     queryKey: [`erc20TokenInfos-${uuid}`],
     queryFn: getTokenInfos,
     enabled: !!publicClient && !!tokenAddress && !!account && !!config,
@@ -86,5 +88,6 @@ export const useERC20TokenInfo: UseERC20TokenInfo = (tokenAddress) => {
     decimals: tokenInfos ? tokenInfos.decimals : undefined,
     symbol: tokenInfos ? tokenInfos.symbol : undefined,
     name: tokenInfos ? tokenInfos.name : undefined,
+    isLoading,
   };
 };

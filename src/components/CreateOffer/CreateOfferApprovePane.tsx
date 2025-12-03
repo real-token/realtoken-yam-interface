@@ -1,11 +1,10 @@
 import { useMemo } from 'react';
 
-import { Web3Provider } from '@ethersproject/providers';
 import { Button, Flex, Skeleton, Text } from '@mantine/core';
 import { useCurrentNetwork } from '@real-token/core';
-import { useSendTransaction } from '@real-token/web3';
+import { encodeTransaction, useSendTransactions } from '@real-token/web3';
 import { IconCheck } from '@tabler/icons';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import BigNumber from 'bignumber.js';
 import { PublicClient } from 'viem';
@@ -109,13 +108,11 @@ export const CreateOfferApprovePane = ({
     },
   });
 
-  const { sendTransaction, isPending: isApproving } = useSendTransaction({
-    onSuccess: (hash) => {
-      // TODO: add notification
-      console.log('Transaction sent:', hash);
+  const { sendTransactions, isPending: isApproving } = useSendTransactions({
+    onAllComplete: () => {
+      console.log('Approval transaction completed');
     },
     onError: (error) => {
-      // TODO: add notification
       console.error('Transaction error:', error);
     },
   });
@@ -144,15 +141,22 @@ export const CreateOfferApprovePane = ({
         leftSection={!needApprove ? <IconCheck size={18} /> : undefined}
         onClick={() => {
           if (!realTokenYamUpgradeable) return;
-          sendTransaction({
-            abi: Erc20ABI,
-            to: tokenAddress as `0x${string}`,
-            functionName: 'approve',
-            args: [
-              realTokenYamUpgradeable as `0x${string}`,
-              BigInt(new BigNumber(approval.amount).toString(10)),
-            ],
-          });
+          sendTransactions([
+            {
+              prepareTransaction: async () => ({
+                type: 'onchain',
+                to: tokenAddress as `0x${string}`,
+                data: encodeTransaction({
+                  abi: Erc20ABI,
+                  functionName: 'approve',
+                  args: [
+                    realTokenYamUpgradeable as `0x${string}`,
+                    BigInt(new BigNumber(approval.amount).toString(10)),
+                  ],
+                }),
+              }),
+            },
+          ]);
         }}
       >
         {needApprove ? 'Approve' : 'Approved'}

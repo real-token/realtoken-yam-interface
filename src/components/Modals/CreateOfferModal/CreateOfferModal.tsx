@@ -112,6 +112,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
     );
 
   const config = useConfig();
+  console.log(config);
 
   const { mutate: createOffer, isPending: isSubmitting } = useMutation({
     mutationFn: async (formValues: SellFormValues) => {
@@ -132,6 +133,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
             functionName: 'decimals',
           },
         ],
+        multicallAddress: '0xcA11bde05977b3631167028862bE2a173976CA11',
       });
 
       const offerTokenDecimals = multiCallResult[0].result;

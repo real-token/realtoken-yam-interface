@@ -22,6 +22,7 @@ interface UseWalletERC20Balance {
   bigNumberbalance: BigNumber | undefined;
   balance: string | undefined;
   WalletERC20Balance: any;
+  isLoading: boolean;
 }
 
 export const useWalletERC20Balance = (
@@ -35,7 +36,6 @@ export const useWalletERC20Balance = (
 
   const config = useConfig();
   const { walletAddress: account } = useAA();
-  console.log('account', account);
 
   const getTokenInfos = async (): Promise<TokenInfos> => {
     return new Promise<TokenInfos>(async (resolove, reject) => {
@@ -61,6 +61,7 @@ export const useWalletERC20Balance = (
               functionName: 'symbol',
             },
           ],
+          multicallAddress: '0xcA11bde05977b3631167028862bE2a173976CA11',
         });
 
         const balanceResult = multicallResult[0]?.result;
@@ -87,7 +88,7 @@ export const useWalletERC20Balance = (
     });
   };
 
-  const { data, refetch } = useQuery({
+  const { data, refetch, isLoading } = useQuery({
     queryKey: [tokenAddress],
     queryFn: getTokenInfos,
     enabled: !!config && !!tokenAddress && !!account,
@@ -118,5 +119,6 @@ export const useWalletERC20Balance = (
     WalletERC20Balance: Component,
     bigNumberbalance: bigNumberbalance,
     balance: balance,
+    isLoading,
   };
 };

@@ -1,17 +1,14 @@
-import { showNotification, updateNotification } from '@mantine/notifications';
-import { ProviderProps } from '@real-token/aa-core';
 import { encodeTransaction } from '@real-token/web3';
+import type { Transaction } from '@real-token/web3';
 
 import BigNumber from 'bignumber.js';
 import { Address, PublicClient } from 'viem';
 import { readContract } from 'viem/actions';
 
-import { NOTIFICATIONS, NotificationsID } from 'src/constants';
-
+// notifications are handled by callers of useSendTransactions
 import { coinBridgeTokenABI, realTokenYamUpgradeableABI } from '../../abis';
 import { ExtendedChainConfig } from '../../config/aaConfig';
-import coinBridgeTokenPermitSignature from '../../hooks/coinBridgeTokenPermitSignature';
-import erc20PermitSignature from '../../hooks/erc20PermitSignature';
+// signature is produced by useSendTransactions signature step, no direct hook here
 import { Offer } from '../../types/offer';
 
 export enum BUY_METHODS {
@@ -19,20 +16,27 @@ export enum BUY_METHODS {
   buyWithPermit = 'buyWithPermit',
 }
 
-export const buy = async (
-  aa: ProviderProps,
-  account: Address | undefined,
+export type BuyTransactionContext = {
+  account: Address;
+  transactionDeadline?: number;
+  signature?: {
+    v: number;
+    r: `0x${string}`;
+    s: `0x${string}`;
+    signature: string;
+  };
+};
+
+export const buyTransactions = async (
   publicClient: PublicClient | undefined,
   activeChain: ExtendedChainConfig | undefined,
   offer: Offer,
   amount: number,
   method?: string
-) => {
-  if (!aa || !publicClient || !amount || !activeChain || !account) {
-    return;
+): Promise<Transaction<BuyTransactionContext>[]> => {
+  if (!publicClient || !amount || !activeChain) {
+    return [];
   }
-
-  const { addTransaction, sendBundles } = aa;
 
   const realTokenYamUpgradeableAddress = activeChain?.contracts
     .realTokenYamUpgradeableAddress as `0x${string}`;
@@ -52,10 +56,7 @@ export const buy = async (
     Number(offer.buyerTokenDecimals)
   );
 
-  const accountCode = await publicClient.getCode({
-    address: account as `0x${string}`,
-  });
-  const isAA = accountCode !== '0x';
+  // account type (EOA/AA) will be checked at execution time if needed
 
   const buyerTokenAmount = new BigNumber(
     parseInt(
@@ -65,23 +66,8 @@ export const buy = async (
         .toString()
     )
   );
-  const transactionDeadline = Math.floor(Date.now() / 1000) + 3600; // permit valable during 1h
-
-  let approveNeeded = false;
-  if (buyMethod == BUY_METHODS.buyWithApprove) {
-    const allowance = await readContract(publicClient, {
-      address: offer.buyerTokenAddress as `0x${string}`,
-      abi: coinBridgeTokenABI,
-      functionName: 'allowance',
-      args: [account as `0x${string}`, realTokenYamUpgradeableAddress],
-    });
-
-    const allowanceBN = new BigNumber(allowance.toString());
-    if (allowanceBN.lt(buyerTokenAmount.toString(10))) {
-      approveNeeded = true;
-    }
-  }
-  console.log('approveNeeded: ', approveNeeded);
+  const transactions: Transaction<BuyTransactionContext>[] = [];
+  const transactionDeadline = Math.floor(Date.now() / 1000) + 3600; // 1h
 
   const buyerTokenType = await readContract(publicClient, {
     address: realTokenYamUpgradeableAddress,
@@ -94,158 +80,93 @@ export const buy = async (
 
   if (
     buyMethod == BUY_METHODS.buyWithApprove ||
-    (buyMethod == BUY_METHODS.buyWithPermit && unsupportedTokenPermit) ||
-    isAA // aa cannot permit because YAM contract are not EIP 1271 compliant
+    (buyMethod == BUY_METHODS.buyWithPermit && unsupportedTokenPermit)
   ) {
-    if (approveNeeded) {
-      const approveTxData = encodeTransaction({
-        abi: coinBridgeTokenABI,
-        functionName: 'approve',
-        args: [
-          realTokenYamUpgradeableAddress,
-          BigInt(buyerTokenAmount.toString(10)),
-        ],
-      });
-
-      await addTransaction({
-        to: offer.buyerTokenAddress as `0x${string}`,
-        data: approveTxData,
-      });
-
-      const approveTx = await sendBundles();
-
-      const notificationApprove = {
-        key: approveTx.transactionHash,
-        href: `${activeChain?.blockExplorerUrl}tx/${approveTx.transactionHash}`,
-        hash: approveTx.transactionHash,
-      };
-
-      showNotification(
-        NOTIFICATIONS[NotificationsID.approveOfferLoading](notificationApprove)
-      );
-
-      const approveTxReceipt = await publicClient.waitForTransactionReceipt({
-        hash: approveTx.transactionHash,
-      });
-
-      const status = approveTxReceipt.status;
-      updateNotification(
-        NOTIFICATIONS[
-          status === 'success'
-            ? NotificationsID.approveOfferSuccess
-            : NotificationsID.approveOfferError
-        ](notificationApprove)
-      );
-    }
-
-    const buyTxData = encodeTransaction({
-      abi: realTokenYamUpgradeableABI,
-      functionName: 'buy',
-      args: [
-        BigInt(offer.offerId),
-        BigInt(priceInWei.toString()),
-        BigInt(amountInWei.toString()),
-      ],
-    });
-
-    await addTransaction({
-      to: realTokenYamUpgradeableAddress,
-      data: buyTxData,
-    });
-
-    const buyTx = await sendBundles();
-
-    const notificationBuy = {
-      key: buyTx.transactionHash,
-      href: `${activeChain?.blockExplorerUrl}tx/${buyTx.transactionHash}`,
-      hash: buyTx.transactionHash,
-    };
-
-    showNotification(
-      NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationBuy)
-    );
-
-    const buyTxReceipt = await publicClient.waitForTransactionReceipt({
-      hash: buyTx.transactionHash,
-    });
-
-    updateNotification(
-      NOTIFICATIONS[
-        buyTxReceipt.status === 'success'
-          ? NotificationsID.buyOfferSuccess
-          : NotificationsID.buyOfferError
-      ](notificationBuy)
+    // Approve if needed (checked at execution time)
+    transactions.push(
+      {
+        skipCondition: async ({ context }) => {
+          const { account } = context;
+          if (!account) throw new Error('Account is undefined');
+          const allowance = await readContract(publicClient, {
+            address: offer.buyerTokenAddress as `0x${string}`,
+            abi: coinBridgeTokenABI,
+            functionName: 'allowance',
+            args: [account as `0x${string}`, realTokenYamUpgradeableAddress],
+          });
+          const allowanceBN = new BigNumber(allowance.toString());
+          return allowanceBN.gte(buyerTokenAmount.toString(10));
+        },
+        prepareTransaction: async () => ({
+          type: 'erc20-approve',
+          tokenAddress: offer.buyerTokenAddress as `0x${string}`,
+          spenderAddress: realTokenYamUpgradeableAddress,
+          amount: buyerTokenAmount.toString(10),
+        }),
+      },
+      {
+        prepareTransaction: async () => ({
+          type: 'onchain',
+          to: realTokenYamUpgradeableAddress,
+          data: encodeTransaction({
+            abi: realTokenYamUpgradeableABI,
+            functionName: 'buy',
+            args: [
+              BigInt(offer.offerId),
+              BigInt(priceInWei.toString()),
+              BigInt(amountInWei.toString()),
+            ],
+          }),
+        }),
+      }
     );
   } else {
-    let { r, s, v }: any = {};
-    if (buyerTokenType === 1) {
-      // TokenType = 1: RealToken
-      const { r, s, v }: any = await coinBridgeTokenPermitSignature(
-        account,
-        realTokenYamUpgradeableAddress,
-        buyerTokenAmount.toString(),
-        transactionDeadline,
-        offer.buyerTokenAddress as `0x${string}`,
-        publicClient,
-        aa
-      );
-    } else if (buyerTokenType === 2) {
-      // TokenType = 2: ERC20 With Permit
-      const { r, s, v }: any = await erc20PermitSignature(
-        account,
-        realTokenYamUpgradeableAddress,
-        buyerTokenAmount.toString(),
-        transactionDeadline,
-        offer.buyerTokenAddress as `0x${string}`,
-        publicClient,
-        aa
-      );
-    } else {
-      showNotification(NOTIFICATIONS[NotificationsID.buyOfferInvalid]());
-      throw new Error('Buy token is not whitelisted');
-    }
+    // Permit sign step
+    const signatureType =
+      buyerTokenType === 1 ? 'signMessage-coinBridge' : 'signMessage-erc20';
 
-    const buyTxData = encodeTransaction({
-      abi: realTokenYamUpgradeableABI,
-      functionName: 'buyWithPermit',
-      args: [
-        BigInt(offer.offerId),
-        BigInt(priceInWei.toString()),
-        BigInt(amountInWei.toString()),
-        BigInt(transactionDeadline),
-        v,
-        r,
-        s,
-      ],
-    });
-
-    await addTransaction({
-      to: realTokenYamUpgradeableAddress,
-      data: buyTxData,
-    });
-
-    const buyTx = await sendBundles();
-
-    const notificationBuy = {
-      key: buyTx.transactionHash,
-      href: `${activeChain?.blockExplorerUrl}tx/${buyTx.transactionHash}`,
-      hash: buyTx.transactionHash,
-    };
-
-    showNotification(
-      NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationBuy)
-    );
-
-    const buyTxReceipt = await publicClient.waitForTransactionReceipt({
-      hash: buyTx.transactionHash,
-    });
-
-    updateNotification(
-      NOTIFICATIONS[
-        buyTxReceipt.status === 'success'
-          ? NotificationsID.buyOfferSuccess
-          : NotificationsID.buyOfferError
-      ](notificationBuy)
+    transactions.push(
+      {
+        prepareTransaction: async (context) => {
+          const { account } = context;
+          if (!account) throw new Error('Account is undefined');
+          return {
+            type: signatureType,
+            owner: account as `0x${string}`,
+            spender: realTokenYamUpgradeableAddress,
+            amount: buyerTokenAmount.toString(10),
+            deadline: transactionDeadline,
+            contractAddress: offer.buyerTokenAddress as `0x${string}`,
+            signatureKey: 'signature',
+          };
+        },
+      },
+      {
+        prepareTransaction: async (context) => {
+          const { signature } = context;
+          if (!signature) throw new Error('Permit signature is undefined');
+          const { v, r, s } = signature;
+          return {
+            type: 'onchain',
+            to: realTokenYamUpgradeableAddress,
+            data: encodeTransaction({
+              abi: realTokenYamUpgradeableABI,
+              functionName: 'buyWithPermit',
+              args: [
+                BigInt(offer.offerId),
+                BigInt(priceInWei.toString()),
+                BigInt(amountInWei.toString()),
+                BigInt(transactionDeadline),
+                v,
+                r,
+                s,
+              ],
+            }),
+          };
+        },
+      }
     );
   }
+
+  return transactions;
 };

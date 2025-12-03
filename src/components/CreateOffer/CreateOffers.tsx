@@ -2,10 +2,9 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Button, Divider, Flex } from '@mantine/core';
-import { useAA } from '@real-token/aa-core';
 import { useCurrentNetwork } from '@real-token/core';
+import { useIsAA, useSendTransactions } from '@real-token/web3';
 import { IconArrowBack } from '@tabler/icons';
-import { useMutation } from '@tanstack/react-query';
 
 import BigNumber from 'bignumber.js';
 import { useAccount } from 'wagmi';
@@ -17,7 +16,11 @@ import { ExtendedChainConfig } from '../../config/aaConfig';
 import { getBatchApprove } from '../../hooks/getBatchApprove';
 import { useOffers } from '../../hooks/interface/useOffers';
 import { OFFER_TYPE } from '../../types/offer';
-import { createBatchOffers, createOffer } from '../../utils/tx/createOffer';
+import {
+  CreateOfferTransactionContext,
+  createBatchOffersTransactions,
+  createOfferTransactions,
+} from '../../utils/tx/createOffer';
 import { useRootStore } from '../../zustandStore/store';
 import classes from './CreateOffer.module.css';
 import { CreateOfferApprovePane } from './CreateOfferApprovePane';
@@ -70,46 +73,42 @@ export const CreateOffer = () => {
 
   const { approves } = getBatchApprove(offers);
 
-  const aa = useAA();
   const publicClient = usePublicClient();
+  const isAA = useIsAA();
 
-  const { isPending: isLoading, mutate } = useMutation({
-    mutationFn: (data) => {
-      if (!aa || !publicClient || !activeChain || !account) {
-        throw new Error('Missing required parameters');
-      }
+  const { sendTransactions, isPending: isLoading } =
+    useSendTransactions<CreateOfferTransactionContext>({
+      initialContext: {
+        account: account,
+      },
+      onAllComplete() {
+        resetOffers();
+        refetch();
+      },
+    });
 
-      if (offers.length == 1) {
-        const offer = offers[0];
-        if (!offer.amount) {
-          throw new Error('Offer amount is undefined');
-        }
-        return createOffer(
-          aa,
-          account,
+  const handleSendTransactions = () => {
+    if (offers.length == 1) {
+      sendTransactions(
+        createOfferTransactions(
+          isAA,
           publicClient,
           activeChain,
-          offer,
-          offer.amount
-        );
-      } else {
-        return createBatchOffers(
-          aa,
-          account,
+          offers[0],
+          offers[0].amount ?? '0'
+        )
+      );
+    } else {
+      sendTransactions(
+        createBatchOffersTransactions(
           publicClient,
           activeChain,
+          account,
           offers
-        );
-      }
-    },
-    onSuccess: () => {
-      resetOffers();
-      refetch();
-    },
-    onError: (error) => {
-      console.error(error);
-    },
-  });
+        )
+      );
+    }
+  };
 
   const [showApprovePanel, setShowApprovePanel] = useState<boolean>(false);
 
@@ -167,7 +166,7 @@ export const CreateOffer = () => {
           ) : undefined}
           <Button
             disabled={rawOffers.length == 0 || isLoading}
-            onClick={() => mutate()}
+            onClick={() => handleSendTransactions()}
             loading={isLoading}
           >
             {rawOffers.length < 2

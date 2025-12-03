@@ -1,26 +1,7 @@
-import {
-  frameWallet,
-  ledgerWallet,
-  metaMaskWallet,
-  rabbyWallet,
-  trustWallet,
-  walletConnectWallet,
-} from '@rainbow-me/rainbowkit/wallets';
-import {
-  AAClientConfig,
-  LoginMethodConfigWithRainbowLogo,
-  TorusConfig,
-} from '@real-token/aa-core';
-import { REALTOKEN_AA_GROUP_NAME } from '@real-token/aa-modal';
+import { AAClientConfig, TorusConfig } from '@real-token/aa-core';
 import { RealTokenUiNetworkConfig } from '@real-token/core';
 import { LogoProps } from '@real-token/types';
 import { EthereumLogo, GnosisLogo } from '@real-token/ui-components';
-import {
-  discordLogo,
-  facebookLogo,
-  googleLogo,
-  twitchLogo,
-} from '@real-token/web3';
 
 import { Address } from 'viem';
 
@@ -79,6 +60,8 @@ export const networks: ExtendedChainConfig[] = [
   {
     wsTarget: sepoliaWssUrl,
     rpcTarget: sepoliaRpcUrl,
+    fallbackRpcTargets: [],
+    fallbackWsTargets: [],
     blockExplorerUrl: 'https://sepolia.etherscan.io/',
     isTestnet: true,
     decimals: 18,
@@ -162,6 +145,8 @@ export const networks: ExtendedChainConfig[] = [
   {
     wsTarget: gnosisWssUrl,
     rpcTarget: gnosisRpcUrl,
+    fallbackRpcTargets: [],
+    fallbackWsTargets: [],
     blockExplorerUrl: 'https://gnosisscan.io/',
     isTestnet: false,
     decimals: 18,
@@ -269,6 +254,8 @@ export const networks: ExtendedChainConfig[] = [
   {
     wsTarget: ethWssUrl,
     rpcTarget: ethRpcUrl,
+    fallbackRpcTargets: [],
+    fallbackWsTargets: [],
     blockExplorerUrl: 'https://etherscan.io/',
     isTestnet: false,
     decimals: 18,
@@ -374,75 +361,6 @@ export const networks: ExtendedChainConfig[] = [
   },
 ];
 
-const loginModal: LoginMethodConfigWithRainbowLogo = {
-  facebook: {
-    name: 'facebook',
-    authConnectionId: 'realt-facebook',
-    authConnection: 'facebook',
-    showOnModal: true,
-    rainbowLogo: async () => facebookLogo,
-  },
-  twitch: {
-    name: 'twitch',
-    authConnectionId: 'realt-twitchtv',
-    authConnection: 'twitch',
-    showOnModal: true,
-    rainbowLogo: async () => twitchLogo,
-  },
-  discord: {
-    name: 'discord',
-    authConnectionId: 'realt-discord',
-    authConnection: 'discord',
-    showOnModal: true,
-    rainbowLogo: async () => discordLogo,
-  },
-  google: {
-    name: 'google',
-    authConnectionId: 'realt-google',
-    authConnection: 'google',
-    rainbowLogo: async () => googleLogo,
-  },
-  email_passwordless: {
-    name: 'email_passwordless',
-    authConnectionId: 'realt-passwordless',
-    authConnection: 'email_passwordless',
-    rainbowLogo: '',
-  },
-};
-
-const stagingLoginModal: LoginMethodConfigWithRainbowLogo = {
-  discord: {
-    name: 'discord',
-    authConnectionId: 'realt-discord-staging',
-    authConnection: 'discord',
-    rainbowLogo: discordLogo,
-  },
-  facebook: {
-    name: 'facebook',
-    authConnectionId: 'realt-facebook-staging',
-    authConnection: 'facebook',
-    rainbowLogo: discordLogo,
-  },
-  google: {
-    name: 'googe',
-    authConnectionId: 'realt-google-staging',
-    authConnection: 'google',
-    rainbowLogo: googleLogo,
-  },
-  twitch: {
-    name: 'twitch',
-    authConnectionId: 'realt-twitchtv-staging',
-    authConnection: 'twitch',
-    rainbowLogo: twitchLogo,
-  },
-  email_passwordless: {
-    name: 'email_passwordless',
-    authConnectionId: 'realt-passwordless-staging',
-    authConnection: 'email_passwordless',
-    rainbowLogo: '',
-  },
-};
-
 const torusConfig: TorusConfig = {
   mfaLevel: 'optional',
   networks:
@@ -450,30 +368,9 @@ const torusConfig: TorusConfig = {
       ? networks
       : networks.filter((network) => !network.isTestnet),
   enableLogging: false,
-  ...(env == 'production'
-    ? {
-        loginConfig: loginModal,
-      }
-    : // (env == 'development') ? {
-      //   loginConfig: stagingLoginModal
-      // } :
-      {}),
 };
 
 export const aaClient: AAClientConfig = {
-  walletList: [
-    {
-      groupName: REALTOKEN_AA_GROUP_NAME.AA_ADVANCED_AND_EXTERNAL,
-      wallets: [
-        metaMaskWallet,
-        rabbyWallet,
-        walletConnectWallet,
-        ledgerWallet,
-        trustWallet,
-        frameWallet,
-      ],
-    },
-  ],
   uiConfig: {
     appName: 'Yam | You & Me',
     appUrl: 'https://yam.realtoken.network',
@@ -500,11 +397,6 @@ export const aaClient: AAClientConfig = {
     process.env.NEXT_PUBLIC_ETHERSPOT_KEY ??
     '' /* Etherspot api key - currently not needed */,
   torusConfig: torusConfig,
-  // discordTokenRevokeConfig: {
-  //   url: process.env.NEXT_PUBLIC_DISCORD_URL ?? '',
-  //   apiKey: process.env.NEXT_PUBLIC_DISCORD_API_KEY ?? '',
-  // },
-  customModal: true,
   guardians: [
     // RealT guardians
     '0x8422207d24321c9d753c6806ca6b8448bb3dd465',

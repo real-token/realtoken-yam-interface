@@ -1,8 +1,6 @@
-import { useState } from 'react';
-
 import { ActionIcon, Button, Flex, Text } from '@mantine/core';
-import { useAA } from '@real-token/aa-core';
 import { useCurrentNetwork } from '@real-token/core';
+import { useSendTransactions } from '@real-token/web3';
 import {
   IconArrowDownLeft,
   IconArrowUpRight,
@@ -10,21 +8,20 @@ import {
   IconExternalLink,
   IconScale,
 } from '@tabler/icons';
-import { useMutation } from '@tanstack/react-query';
 
-import { useAtomValue } from 'jotai';
 import { useAccount, usePublicClient } from 'wagmi';
 
 import { ExtendedChainConfig } from '../../../../config/aaConfig';
-import { ContractsID } from '../../../../constants';
 import {
   OFFER_BEST_TYPE,
   useMatchedOfferBestType,
 } from '../../../../hooks/useMatchedOfferBestType';
 import { useOfferInfos } from '../../../../hooks/useOfferInfos';
-import { providerAtom } from '../../../../states';
 import { OFFER_TYPE, Offer } from '../../../../types/offer';
-import { buy } from '../../../../utils/tx/buy';
+import {
+  BuyTransactionContext,
+  buyTransactions,
+} from '../../../../utils/tx/buy';
 import { openInNewTab } from '../../../../utils/window';
 import { OfferTypeBadge } from '../../../Offer/OfferTypeBadge/OfferTypeBadge';
 import classes from './MatchedOffer.module.css';
@@ -46,14 +43,20 @@ export const MatchedOffer = ({
   const { getOfferBestTypeTranslation } = useMatchedOfferBestType();
 
   const publicClient = usePublicClient();
-  const aa = useAA();
   const activeChain = useCurrentNetwork<ExtendedChainConfig>();
 
-  const { mutate: buyOffer, isPending: isSubmitting } = useMutation({
-    mutationFn: (amount: number) => {
-      return buy(aa, account, publicClient, activeChain, offer, amount);
-    },
-  });
+  const { sendTransactions, isPending: isSubmitting } =
+    useSendTransactions<BuyTransactionContext>({
+      initialContext: {
+        account: account as `0x${string}`,
+      },
+    });
+
+  const buyOffer = (amount: number) => {
+    sendTransactions(
+      buyTransactions(publicClient, activeChain, offer, amount)
+    );
+  };
 
   return (
     <Flex direction={'column'} className={classes.container}>

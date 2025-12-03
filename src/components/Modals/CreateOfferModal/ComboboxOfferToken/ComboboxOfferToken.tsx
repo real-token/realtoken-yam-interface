@@ -185,7 +185,7 @@ export const ComboboxOfferToken = ({
   const sortedDatas = useMemo(
     () =>
       dataWithAmounts.sort((a, b) => {
-        return b.balance.comparedTo(a.balance);
+        return b.balance.comparedTo(a.balance) ?? 0;
       }),
     [dataWithAmounts]
   );

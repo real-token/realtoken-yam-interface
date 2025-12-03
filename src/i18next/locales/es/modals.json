@@ -150,7 +150,16 @@
     "amount": "Cantidad",
     "cancel": "Cancelar",
     "confirm": "Confirmar",
-    "summary": "Resumen"
+    "summary": "Resumen",
+    "summaryText1": "Modificarás el precio de",
+    "summaryText2": "y la cantidad de",
+    "summaryText3": "a",
+    "unit": "Unidad para el precio",
+    "shieldError": {
+      "line1": "Estás actualizando a un precio de ${{price}}, lo que representa una diferencia de precio de {{difference}}%",
+      "line2": "Pero has elegido una diferencia de precio máxima de +/-${{difference}}%"
+    },
+    "priceInfo": "Estás actualizando con un precio de ${{price}}, lo que representa una diferencia de precio de {{difference}}%"
   },
   "offerMatching": {
     "title": "Coincidencia de ofertas",

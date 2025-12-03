@@ -2,18 +2,16 @@ import { useTranslation } from 'react-i18next';
 
 import { Button, Flex, Select, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { showNotification, updateNotification } from '@mantine/notifications';
 import { useCurrentNetwork } from '@real-token/core';
-import { useSendTransaction } from '@real-token/web3';
+import { useSendTransactions } from '@real-token/web3';
 
 import { utils } from 'ethers';
 
-import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { useRole } from 'src/hooks/useRole';
 import { ROLE, USER_ROLE } from 'src/types/admin';
 import { calcRem } from 'src/utils/style';
+import { grantRoleTransaction } from 'src/utils/tx/admin';
 
-import { realTokenYamUpgradeableABI } from '../../../abis';
 import { ExtendedChainConfig } from '../../../config/aaConfig';
 import { Action } from '../Action';
 
@@ -55,52 +53,15 @@ export const GrantRole = () => {
 
   const currentNetwork = useCurrentNetwork<ExtendedChainConfig>();
 
-  const { sendTransaction } = useSendTransaction({
-    onSent: () => {
-      const notificationGrantRole = {
-        key: 'grant-role',
-        hash: '',
-        href: '',
-      };
-
-      showNotification(
-        NOTIFICATIONS[NotificationsID.approveOfferLoading](
-          notificationGrantRole
-        )
-      );
-    },
-    onSuccess: (tx) => {
-      updateNotification(
-        NOTIFICATIONS[NotificationsID.grantRoleSuccess]({
-          key: 'grant-role',
-          href: `${currentNetwork?.blockExplorerUrl}tx/${tx.transactionHash}`,
-          hash: tx.transactionHash,
-        })
-      );
-    },
-    onError: (error) => {
-      console.error(error);
-      updateNotification(
-        NOTIFICATIONS[NotificationsID.grantRoleInvalid]({
-          key: 'grant-role',
-          hash: '',
-          href: '',
-        })
-      );
-    },
-  });
+  const { sendTransactions } = useSendTransactions({});
 
   const grantRole = async (formValues: GrandRoleForm) => {
-    sendTransaction({
-      abi: realTokenYamUpgradeableABI,
-      to: currentNetwork?.contracts
-        .realTokenYamUpgradeableAddress as `0x${string}`,
-      functionName: 'grantRole',
-      args: [
-        formValues.type as `0x${string}`,
-        formValues.address as `0x${string}`,
-      ],
-    });
+    const transactions = grantRoleTransaction(
+      currentNetwork,
+      formValues.type as `0x${string}`,
+      formValues.address as `0x${string}`
+    );
+    sendTransactions(transactions);
   };
 
   return (

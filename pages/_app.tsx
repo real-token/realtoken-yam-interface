@@ -6,7 +6,6 @@ import '@mantine/core/styles.css';
 import { notifications } from '@mantine/notifications';
 import '@mantine/notifications/styles.css';
 import '@rainbow-me/rainbowkit/styles.css';
-import { CONNECTION_MODE } from '@real-token/aa-modal';
 import {
   NetworkId,
   RealTokenUiProvider,
@@ -110,23 +109,6 @@ const App = ({ Component, pageProps }: AppProps) => {
               showNetworks: showAllNetworks,
               defaultNetworkId: NetworkId.gnosis,
               networksConfig: networks,
-              aaModalConfig: {
-                connectionModeVisibility: {
-                  [CONNECTION_MODE.aa]: true,
-                  [CONNECTION_MODE.external]: true,
-                  [CONNECTION_MODE.tba]: false,
-                },
-                connectionModeConfig: {
-                  [CONNECTION_MODE.aa]: {
-                    showAdvancedWalletConnection: true,
-                    showSocialLogins: true,
-                    showEmailPasswordless: true,
-                  },
-                  [CONNECTION_MODE.external]: {
-                    showReadOnly: true,
-                  },
-                },
-              },
             }}
           >
             <MantineProviders

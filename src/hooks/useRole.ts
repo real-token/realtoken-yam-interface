@@ -27,8 +27,10 @@ export const useRole: UseRole = (address) => {
   const getAddressRole = (): Promise<USER_ROLE> => {
     return new Promise<USER_ROLE>(async (resolve, reject) => {
       try {
-        if (!config || !addressToCheck || !networkConfig || !!addressToCheck)
+        if (!config || !addressToCheck || !networkConfig) {
+          console.error('[UseRole] Missing config or address to check');
           return;
+        }
 
         const realTokenYamUpgradeableAddress =
           networkConfig.contracts.realTokenYamUpgradeableAddress;
@@ -54,6 +56,7 @@ export const useRole: UseRole = (address) => {
               args: [moderatorRole, addressToCheck as `0x${string}`],
             },
           ],
+          multicallAddress: '0xcA11bde05977b3631167028862bE2a173976CA11',
         });
 
         const isAdmin = multicallResult[0]?.result;
@@ -81,6 +84,7 @@ export const useRole: UseRole = (address) => {
     queryFn: getAddressRole,
     enabled: !!config && !!addressToCheck && !!networkConfig,
   });
+  console.log('data', data);
 
   return {
     role: data ?? USER_ROLE.NO_ROLE,
