@@ -29,6 +29,8 @@ next.tar
 .DS_Store
 *.pem
 
+.vscode/settings.json
+
 # debug
 npm-debug.log*
 yarn-debug.log*
