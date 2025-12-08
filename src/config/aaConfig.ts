@@ -27,12 +27,12 @@ if (!ethWssUrl || !ethRpcUrl) {
 
 const web3AuthApiKey = process.env.NEXT_PUBLIC_WEB3_AUTH_API_KEY;
 if (!web3AuthApiKey) {
-  throw new Error('WEB3_AUTH_API_KEY env var must be set');
+  throw new Error('NEXT_PUBLIC_WEB3_AUTH_API_KEY env var must be set');
 }
 
 const wcProjectId = process.env.NEXT_PUBLIC_WC_PROJECTID;
 if (!wcProjectId) {
-  throw new Error('WC_PROJECTID env var must be set');
+  throw new Error('NEXT_PUBLIC_WC_PROJECTID env var must be set');
 }
 
 export const gnosisChainId = '0x64';
