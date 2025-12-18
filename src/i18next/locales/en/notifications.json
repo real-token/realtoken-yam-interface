@@ -1,5 +1,6 @@
 {
   "graphIssue": "There are troubles with offer loadings with TheGraph. We are actively working on it, thanks for your understanding.",
+  "graphSyncing": "The graph is syncing, data could not load properly. Please wait the synchronization completetion.",
   "grantRoleLoading": {
     "title": "Copied 🎉",
     "message": "Your transaction is being validated."

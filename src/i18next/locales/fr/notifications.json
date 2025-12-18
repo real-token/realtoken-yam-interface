@@ -1,5 +1,6 @@
 {
   "graphIssue": "Il y a des soucis sur le chargements des offers avec TheGraph. Nous travaillons activement dessus, merci pour votre compréhension.",
+  "graphSyncing": "Le graphe est en cours de synchronisation, les données pourraient ne pas se charger correctement. Veuillez patienter jusqu'à la fin de la synchronisation.",
   "grantRoleLoading": {
     "title": "Veuillez patienter",
     "message": "Votre transaction est en cours de validation."
