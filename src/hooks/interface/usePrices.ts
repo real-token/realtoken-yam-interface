@@ -19,6 +19,12 @@ export const usePrices: UsePrices = () => {
             const res = await fetch(
                 `/api/prices/${chainId}`,
             );
+            if (!res.ok) {
+                // Si erreur, retourner un objet vide plutôt que de planter
+                // Cela sera amélioré en Phase 1 avec le mode dégradé
+                console.warn(`Failed to fetch prices for chainId ${chainId}:`, res.status, res.statusText);
+                return {};
+            }
             return await res.json();
         }
     });

@@ -13,6 +13,19 @@
     "nameFilterPlaceholder": "Search",
     "showOnlyWhitelisted": "Show only whitelisted properties's offers",
     "hideDust": "Hide dust offers",
-    "hideDustValue": "Amount under which the offer is hidden"
+    "hideDustValue": "Amount under which the offer is hidden",
+    "offerIdInput": {
+      "label": "Search for an offer by ID",
+      "labelDegraded": "Search for an offer by ID (degraded mode)",
+      "placeholder": "Ex: 123",
+      "button": "View offer",
+      "checking": "Checking...",
+      "errorEmpty": "Please enter an offer ID",
+      "errorInvalid": "ID must be a positive number",
+      "errorNotFound": "This offer does not exist or has been deleted",
+      "offerExists": "This offer exists",
+      "offerNotExists": "This offer does not exist",
+      "info": "You can search for a specific offer by entering its ID above."
+    }
   }
 }

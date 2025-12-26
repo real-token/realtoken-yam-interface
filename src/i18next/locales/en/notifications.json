@@ -1,6 +1,11 @@
 {
   "graphIssue": "There are troubles with offer loadings with TheGraph. We are actively working on it, thanks for your understanding.",
   "graphSyncing": "The graph is syncing, data could not load properly. Please wait the synchronization completetion.",
+  "degradedMode": {
+    "title": "Degraded mode activated",
+    "message": "TheGraph is inaccessible or offers cannot be loaded. Use the ID search below to access a specific offer via direct RPC.",
+    "tip": "💡 Tip: You can always view a specific offer by entering its ID below. This feature works even in degraded mode thanks to direct RPC calls (Multicall3)."
+  },
   "grantRoleLoading": {
     "title": "Copied 🎉",
     "message": "Your transaction is being validated."
@@ -89,5 +94,22 @@
   "buyOfferInvalid": {
     "title": "Error",
     "message": "You can not buy this offer. Please make sure: You are whitelisted for the offer token, the offer token is not in locking periode, you have enough buyer token balance in your wallet to pay the offer."
+  },
+  "theGraphError": {
+    "indexingError": {
+      "title": "TheGraph Indexing Issue",
+      "message": "The TheGraph subgraph is experiencing indexing problems. Some data may be unavailable or outdated.",
+      "checkStatus": "Check subgraph status",
+      "tip": "💡 You can still use the offer ID search to access specific offers via direct RPC."
+    },
+    "networkError": {
+      "title": "TheGraph Network Error",
+      "message": "Unable to connect to TheGraph. Please check your internet connection.",
+      "tip": "💡 You can still use the offer ID search to access specific offers via direct RPC."
+    },
+    "unknownError": {
+      "title": "TheGraph Error",
+      "message": "An error occurred while fetching data from TheGraph."
+    }
   }
 }

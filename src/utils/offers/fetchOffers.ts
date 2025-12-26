@@ -110,6 +110,7 @@ export const fetchOffersTheGraph = (
             }
           }
         `,
+        errorPolicy: 'all', // Permet de recevoir les données même en cas d'erreur partielle
         // context: {
         //   fetchOptions: {
         //     signal: abortController.signal
@@ -117,7 +118,32 @@ export const fetchOffersTheGraph = (
         // }
       });
 
-      const offersToFetch = activeOfferResult.data[graphNetworkPrefix].global.activeOffersCount;
+      // Vérifier s'il y a des erreurs dans la réponse
+      if (activeOfferResult.errors && activeOfferResult.errors.length > 0) {
+        const firstError = activeOfferResult.errors[0];
+        // Si c'est une erreur d'indexation, on peut quand même essayer de continuer avec les données partielles
+        if (
+          firstError.extensions?.code === 'SUBGRAPH_INDEXING_ERROR' ||
+          firstError.message?.includes('indexing error') ||
+          firstError.message?.includes('indexing_error')
+        ) {
+          console.warn('Subgraph indexing error detected, but continuing with partial data');
+          // On peut continuer si on a des données, sinon on rejette
+          if (!activeOfferResult.data?.[graphNetworkPrefix]?.global) {
+            throw firstError;
+          }
+        } else {
+          // Pour les autres erreurs, on rejette
+          throw firstError;
+        }
+      }
+
+      // Vérifier que les données sont présentes
+      if (!activeOfferResult.data?.[graphNetworkPrefix]?.global) {
+        throw new Error('No data received from TheGraph');
+      }
+
+      const offersToFetch = activeOfferResult.data[graphNetworkPrefix].global.activeOffersCount || 0;
       console.log('Amount of offersToFetch: ', offersToFetch);
 
       const offersRes = await apiClient.query({
@@ -164,15 +190,42 @@ export const fetchOffersTheGraph = (
             }
           }
         `,
+        errorPolicy: 'all', // Permet de recevoir les données même en cas d'erreur partielle
         //  context: {
         //   fetchOptions: {
         //     signal: abortController.signal
         //   }
         // }
-      })
+      });
 
-      const offers: OfferGraphQl[] = offersRes.data[graphNetworkPrefix].offers;
-      console.log('offers: ', offers.length)
+      // Vérifier s'il y a des erreurs dans la réponse
+      if (offersRes.errors && offersRes.errors.length > 0) {
+        const firstError = offersRes.errors[0];
+        // Si c'est une erreur d'indexation, on peut quand même essayer de continuer avec les données partielles
+        if (
+          firstError.extensions?.code === 'SUBGRAPH_INDEXING_ERROR' ||
+          firstError.message?.includes('indexing error') ||
+          firstError.message?.includes('indexing_error')
+        ) {
+          console.warn('Subgraph indexing error detected, but continuing with partial data');
+          // On continue si on a des données, sinon on rejette
+          if (!offersRes.data?.[graphNetworkPrefix]?.offers) {
+            throw firstError;
+          }
+        } else {
+          // Pour les autres erreurs, on rejette
+          throw firstError;
+        }
+      }
+
+      const offers: OfferGraphQl[] = offersRes.data?.[graphNetworkPrefix]?.offers || [];
+      console.log('offers: ', offers.length);
+      
+      // Si on n'a pas d'offres mais qu'on devrait en avoir, c'est peut-être une erreur
+      if (offers.length === 0 && offersToFetch > 0 && offersRes.errors) {
+        // On rejette seulement si on n'a vraiment aucune donnée
+        throw offersRes.errors[0];
+      }
 
       const accountRealtokenDuplicates: string[] = offers.map(
         (val) => val.seller.address + '-' + val.offerToken.address
@@ -251,7 +304,9 @@ export const fetchOffersTheGraph = (
 
       resolve(offersData);
     } catch (err) {
-      console.log('Error while fetching offers from TheGraph', err);
+      console.error('Error while fetching offers from TheGraph', err);
+      // Propager l'erreur pour que React Query puisse la gérer
+      reject(err);
     }
   });
 };

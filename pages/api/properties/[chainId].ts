@@ -9,20 +9,55 @@ import { ChainsID } from '../../../src/constants';
 const getTokenFromCommunityAPI = new Promise<APIPropertiesToken[]>(
   async (resolve, reject) => {
     try {
+      const apiKey = process.env.COMMUNITY_API_KEY;
+
+      if (!apiKey) {
+        console.error('COMMUNITY_API_KEY is missing in environment variables');
+        reject(
+          new Error(
+            'COMMUNITY_API_KEY environment variable is required. Please add it to your .env file.'
+          )
+        );
+        return;
+      }
+
+      if (apiKey.trim() === '') {
+        console.error('COMMUNITY_API_KEY is empty (whitespace only)');
+        reject(
+          new Error(
+            'COMMUNITY_API_KEY is empty. Please set a valid API key in your .env file.'
+          )
+        );
+        return;
+      }
+
       const response = await axios.get<APIPropertiesToken[]>(
         'https://api.realtoken.community/v1/token',
         {
           headers: {
-            'X-AUTH-REALT-TOKEN': process.env.COMMUNITY_API_KEY ?? '',
+            'X-AUTH-REALT-TOKEN': apiKey.trim(),
           },
         }
       );
 
       const tokens: APIPropertiesToken[] = response.data;
       resolve(tokens);
-    } catch (err) {
-      console.error('Failed to fetch properties from community');
-      reject(err);
+    } catch (err: unknown) {
+      const axiosError = err as {
+        response?: { status?: number; statusText?: string };
+      };
+      console.error(
+        'Failed to fetch properties from community API:',
+        axiosError?.response?.status,
+        axiosError?.response?.statusText
+      );
+      if (axiosError?.response?.status === 401) {
+        reject(
+          new Error('Invalid COMMUNITY_API_KEY. Please check your .env file.')
+        );
+      } else {
+        reject(err);
+      }
     }
   }
 );
@@ -136,15 +171,32 @@ const handler: NextApiHandler = async (
 ) => {
   try {
     const { chainId: id } = req.query;
-    const chainId: string = id as string;
-
-    if (!chainId) {
-      return res.status(400).json({ error: 'ChainId is missing.' });
+    if (!id || typeof id !== 'string') {
+      return res.status(400).json({ error: 'ChainId is missing or invalid.' });
     }
 
-    // const [communityApiToken,wlTokens] = await Promise.all([getTokenFromCommunityAPI,getWhitelistedProperties(parseInt(chainId))]);
+    const chainId = parseInt(id, 10);
+    if (isNaN(chainId)) {
+      return res.status(400).json({ error: 'ChainId must be a valid number.' });
+    }
+
+    // Vérifier que le chainId est supporté
+    const supportedChains = [
+      ChainsID.Gnosis,
+      ChainsID.Ethereum,
+      ChainsID.Sepolia,
+    ];
+    if (!supportedChains.includes(chainId)) {
+      return res.status(400).json({
+        error: `ChainId ${chainId} is not supported. Supported chains: ${supportedChains.join(
+          ', '
+        )}`,
+      });
+    }
+
+    // const [communityApiToken,wlTokens] = await Promise.all([getTokenFromCommunityAPI,getWhitelistedProperties(chainId)]);
     const [communityApiToken] = await Promise.all([getTokenFromCommunityAPI]);
-    const tokens = await getTokens(parseInt(chainId), communityApiToken, []);
+    const tokens = await getTokens(chainId, communityApiToken, []);
 
     // const extendedTokens = tokenToGetPrice.get(parseInt(chainId))?.filter(token => !token.isBuyToken) ?? [] as PropertiesToken[];
     // console.log(extendedTokens);
