@@ -4,7 +4,22 @@
   "degradedMode": {
     "title": "Modo degradado activado",
     "message": "TheGraph es inaccesible o las ofertas no se pueden cargar. Use la búsqueda por ID a continuación para acceder a una oferta específica mediante RPC directo.",
-    "tip": "💡 Consejo: Siempre puede ver una oferta específica ingresando su ID a continuación. Esta función funciona incluso en modo degradado gracias a las llamadas RPC directas (Multicall3)."
+    "tip": "💡 Consejo: Siempre puede ver una oferta específica ingresando su ID a continuación. Esta función funciona incluso en modo degradado gracias a las llamadas RPC directas (Multicall3).",
+    "overlay": {
+      "indexingError": {
+        "title": "Problema de indexación",
+        "message": "Los datos no se pueden cargar desde TheGraph. Use la búsqueda por ID para acceder a ofertas específicas."
+      },
+      "networkError": {
+        "title": "Error de red",
+        "message": "No se puede conectar a TheGraph. Por favor verifica tu conexión a internet."
+      },
+      "generic": {
+        "title": "Modo degradado",
+        "message": "Los datos no se pueden cargar. Use la búsqueda por ID para acceder a ofertas específicas."
+      },
+      "partialData": "Algunos datos pueden estar desactualizados."
+    }
   },
   "grantRoleLoading": {
     "title": "Esperando",
