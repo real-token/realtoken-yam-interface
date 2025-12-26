@@ -22,6 +22,7 @@ import { Offer } from 'src/types/offer';
 
 import { usePublicOffers } from '../../../hooks/offers/usePublicOffers';
 import { SelectCreatable } from '../../CreatableSelect/CreatableSelect';
+import { DegradedModeOverlay } from '../../DegradedModeOverlay';
 import { GridPane } from './GridPane';
 
 export const MarketGrid: FC = () => {
@@ -59,61 +60,63 @@ export const MarketGrid: FC = () => {
   }, [filteredDatas, page, pageSize]);
 
   return (
-    <Flex gap={'md'} direction={'column'} align={'center'}>
-      <Grid gutter={25} style={{ width: '100%' }}>
-        {offers.length > 0
-          ? paginationOffers.map((offer: Offer, index: number) => (
-              <Grid.Col span={4} key={`grid-${index}`}>
-                <GridPane offer={offer} />
-              </Grid.Col>
-            ))
-          : // TODO: add message when no offers
-            undefined}
-      </Grid>
-      <Group
-        justify={'center'}
-        align={'center'}
-        gap={8}
-        p={'sm'}
-        style={(theme) => ({
-          borderTop: theme.other.border,
-          width: '100%',
-        })}
-      >
-        <Pagination {...paginationProps} boundaries={mediaQuery ? 1 : 0} />
-        <Menu
-          position={'top'}
-          closeOnItemClick={false}
-          opened={isOpen}
-          onOpen={handlers.open}
-          onClose={handlers.close}
+    <DegradedModeOverlay blockInteraction={offers.length === 0}>
+      <Flex gap={'md'} direction={'column'} align={'center'}>
+        <Grid gutter={25} style={{ width: '100%' }}>
+          {offers.length > 0
+            ? paginationOffers.map((offer: Offer, index: number) => (
+                <Grid.Col span={4} key={`grid-${index}`}>
+                  <GridPane offer={offer} />
+                </Grid.Col>
+              ))
+            : // TODO: add message when no offers
+              undefined}
+        </Grid>
+        <Group
+          justify={'center'}
+          align={'center'}
+          gap={8}
+          p={'sm'}
+          style={(theme) => ({
+            borderTop: theme.other.border,
+            width: '100%',
+          })}
         >
-          <Menu.Target>
-            <ActionIcon size={32} color={'brand'}>
-              <IconAdjustmentsHorizontal size={16} />
-            </ActionIcon>
-          </Menu.Target>
-          <Menu.Dropdown>
-            <Menu.Label pb={0}>{t('lineNumber')}</Menu.Label>
-            <SelectCreatable
-              value={pageSize.toString()}
-              setValue={(value) => setPageSize(Number(value))}
-              data={data}
-            />
-            <Menu.Label pb={0}>{t('goTo')}</Menu.Label>
-            <Select
-              p={5}
-              searchable={true}
-              nothingFoundMessage={t('noOption')}
-              value={paginationProps.page?.toString()}
-              onChange={(value) => paginationProps.onChange!(Number(value))}
-              data={[
-                ...range(1, paginationProps.total).map((idx) => idx.toString()),
-              ]}
-            />
-          </Menu.Dropdown>
-        </Menu>
-      </Group>
-    </Flex>
+          <Pagination {...paginationProps} boundaries={mediaQuery ? 1 : 0} />
+          <Menu
+            position={'top'}
+            closeOnItemClick={false}
+            opened={isOpen}
+            onOpen={handlers.open}
+            onClose={handlers.close}
+          >
+            <Menu.Target>
+              <ActionIcon size={32} color={'brand'}>
+                <IconAdjustmentsHorizontal size={16} />
+              </ActionIcon>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Label pb={0}>{t('lineNumber')}</Menu.Label>
+              <SelectCreatable
+                value={pageSize.toString()}
+                setValue={(value) => setPageSize(Number(value))}
+                data={data}
+              />
+              <Menu.Label pb={0}>{t('goTo')}</Menu.Label>
+              <Select
+                p={5}
+                searchable={true}
+                nothingFoundMessage={t('noOption')}
+                value={paginationProps.page?.toString()}
+                onChange={(value) => paginationProps.onChange!(Number(value))}
+                data={[
+                  ...range(1, paginationProps.total).map((idx) => idx.toString()),
+                ]}
+              />
+            </Menu.Dropdown>
+          </Menu>
+        </Group>
+      </Flex>
+    </DegradedModeOverlay>
   );
 };

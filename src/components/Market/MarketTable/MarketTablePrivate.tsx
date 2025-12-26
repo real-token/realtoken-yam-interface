@@ -19,6 +19,7 @@ import { OFFERS_TYPE, useRightTableColumn } from 'src/hooks/useRightTableColumns
 import { MarketSort } from '../MarketSort/MarketSort';
 import { useOffers } from '../../../hooks/interface/useOffers';
 import { usePrivateOffers } from '../../../hooks/offers/usePrivateOffers';
+import { DegradedModeOverlay } from '../../DegradedModeOverlay';
 
 export const MarketTablePrivate: FC = () => {
   
@@ -58,28 +59,30 @@ export const MarketTablePrivate: FC = () => {
   });
 
   return (
-    <Flex direction={"column"} gap={"sm"} mt={10}>
-      <MarketSort 
-        sellCount={sellCount}
-        buyCount={buyCount}
-        exchangeCount={exchangeCount}
-      />
-      <Table
-        tableProps={{
-          highlightOnHover: true,
-          verticalSpacing: 'sm',
-          horizontalSpacing: 'xs',
-          style: (theme) => ({
-            border: theme.other.border(theme),
-            borderRadius: theme.radius[theme.defaultRadius as MantineSize],
-            borderCollapse: 'separate',
-            borderSpacing: 0,
-          }),
-        }}
-        table={table}
-        tablecaptionOptions={{ refreshState: [offersAreLoading, () => refetch()], visible: true }}
-        TableSubRow={MarketSubRow}
-      />
-    </Flex>
+    <DegradedModeOverlay blockInteraction={offers.length === 0}>
+      <Flex direction={"column"} gap={"sm"} mt={10}>
+        <MarketSort 
+          sellCount={sellCount}
+          buyCount={buyCount}
+          exchangeCount={exchangeCount}
+        />
+        <Table
+          tableProps={{
+            highlightOnHover: true,
+            verticalSpacing: 'sm',
+            horizontalSpacing: 'xs',
+            style: (theme) => ({
+              border: theme.other.border(theme),
+              borderRadius: theme.radius[theme.defaultRadius as MantineSize],
+              borderCollapse: 'separate',
+              borderSpacing: 0,
+            }),
+          }}
+          table={table}
+          tablecaptionOptions={{ refreshState: [offersAreLoading, () => refetch()], visible: true }}
+          TableSubRow={MarketSubRow}
+        />
+      </Flex>
+    </DegradedModeOverlay>
   );
 };

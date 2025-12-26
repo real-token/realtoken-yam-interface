@@ -4,7 +4,22 @@
   "degradedMode": {
     "title": "Degraded mode activated",
     "message": "TheGraph is inaccessible or offers cannot be loaded. Use the ID search below to access a specific offer via direct RPC.",
-    "tip": "💡 Tip: You can always view a specific offer by entering its ID below. This feature works even in degraded mode thanks to direct RPC calls (Multicall3)."
+    "tip": "💡 Tip: You can always view a specific offer by entering its ID below. This feature works even in degraded mode thanks to direct RPC calls (Multicall3).",
+    "overlay": {
+      "indexingError": {
+        "title": "Indexing Issue",
+        "message": "Data cannot be loaded from TheGraph. Use the ID search to access specific offers."
+      },
+      "networkError": {
+        "title": "Network Error",
+        "message": "Unable to connect to TheGraph. Please check your internet connection."
+      },
+      "generic": {
+        "title": "Degraded Mode",
+        "message": "Data cannot be loaded. Use the ID search to access specific offers."
+      },
+      "partialData": "Some data may be outdated."
+    }
   },
   "grantRoleLoading": {
     "title": "Copied 🎉",
