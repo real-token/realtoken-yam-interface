@@ -18,6 +18,10 @@ export const useProperties: UseProperties = ()  => {
         queryKey: ['properties', chainId],
         meta: { errCode: REACT_QUERY_ERRORS.FETCH_WL_PROPERTIES },
         enabled: !!chainId,
+        staleTime: 24 * 60 * 60 * 1000, // 24h (changement rare)
+        cacheTime: 7 * 24 * 60 * 60 * 1000, // 7 jours
+        retry: 2, // Retry 2 fois en cas d'erreur
+        retryDelay: 1000, // 1 seconde entre les retries
         queryFn: async (): Promise<PropertiesToken[]> => {
             if(!chainId) return [];
             const response = await fetch(`/api/properties/${chainId}`);

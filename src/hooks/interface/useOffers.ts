@@ -23,10 +23,15 @@ type UseOffers = () => {
 export const useOffers: UseOffers = () => {
   const { chainId, account } = useWeb3React();
 
+  // Chargement parallèle des prérequis
+  // Les hooks useProperties, usePrices et useWlProperties s'exécutent déjà en parallèle
+  // car React exécute tous les hooks de manière indépendante
   const { properties, propertiesAreLoading } = useProperties();
   const { prices, pricesAreLoading } = usePrices();
   const { wlProperties, wlPropertiesAreLoading } = useWlProperties();
 
+  // Charger les offres même si wlProperties échoue (utiliser tableau vide comme fallback)
+  // Les données génériques (properties, prices) doivent être disponibles
   const {
     isLoading: loading,
     data: offers,
@@ -38,22 +43,31 @@ export const useOffers: UseOffers = () => {
     queryKey: ['offers', chainId],
     meta: { errCode: REACT_QUERY_ERRORS.FETCH_OFFERS },
     enabled:
-      !!chainId && !!account && !!properties && !!prices && !!wlProperties,
+      !!chainId && 
+      !!account && 
+      !!properties && 
+      !propertiesAreLoading &&
+      !!prices && 
+      !pricesAreLoading,
+      // Ne pas attendre wlProperties - utiliser [] comme fallback si non disponible
     queryFn: async (): Promise<Offer[]> => {
-      if (!chainId || !account || !properties || !prices || !wlProperties)
+      if (!chainId || !account || !properties || !prices)
         return OFFER_LOADING;
+
+      // Utiliser wlProperties si disponible, sinon tableau vide (fallback)
+      // Cela permet de charger les offres même si wlProperties échoue
+      const wlProps = wlProperties ?? [];
 
       let offersData = OFFER_LOADING;
       if (
         ALLOWED_CHAINS_ID.includes(chainId.toString()) &&
-        wlProperties &&
         prices
       ) {
         offersData = await fetchOffersTheGraph(
           account,
           chainId,
           properties,
-          wlProperties,
+          wlProps, // Utiliser le fallback si wlProperties échoue
           prices,
           () => {}
         );
@@ -61,6 +75,9 @@ export const useOffers: UseOffers = () => {
 
       return offersData;
     },
+    staleTime: Infinity, // Pas de TTL - mise à jour via événements blockchain
+    cacheTime: Infinity, // Conservé indéfiniment
+    refetchInterval: 5 * 60 * 1000, // Vérifier toutes les 5 min si événements manqués
     // Permettre de garder les données en cache même en cas d'erreur
     // pour permettre un fonctionnement partiel
     keepPreviousData: true,

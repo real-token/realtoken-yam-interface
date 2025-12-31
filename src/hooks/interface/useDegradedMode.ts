@@ -9,7 +9,7 @@ import { ParsedGraphQLError } from '../../utils/errors/parseGraphQLError';
  */
 export function useDegradedMode(): {
   isDegraded: boolean;
-  errorType?: 'SUBGRAPH_INDEXING_ERROR' | 'NETWORK_ERROR' | 'UNKNOWN_ERROR';
+  errorType?: 'SUBGRAPH_INDEXING_ERROR' | 'NETWORK_ERROR' | 'AUTHENTICATION_ERROR' | 'UNKNOWN_ERROR';
   errorMessage?: string;
   subgraphUrl?: string;
   parsedError: ParsedGraphQLError | null;

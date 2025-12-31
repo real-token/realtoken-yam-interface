@@ -15,6 +15,10 @@ export const usePrices: UsePrices = () => {
         queryKey: ['prices', chainId],
         meta: { errCode: REACT_QUERY_ERRORS.FETCH_PRICES },
         enabled: !!chainId,
+        staleTime: 60 * 60 * 1000, // 1h (changement modéré)
+        cacheTime: 24 * 60 * 60 * 1000, // 24h
+        retry: 2, // Retry 2 fois en cas d'erreur
+        retryDelay: 1000, // 1 seconde entre les retries
         queryFn: async (): Promise<Price> => {
             const res = await fetch(
                 `/api/prices/${chainId}`,

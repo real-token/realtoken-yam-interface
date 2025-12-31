@@ -126,5 +126,11 @@
       "title": "TheGraph Error",
       "message": "An error occurred while fetching data from TheGraph."
     }
+  },
+  "authenticationError": {
+    "title": "API Connection Error",
+    "message": "Unable to connect to the API. Please check your authentication configuration.",
+    "tip": "💡 This error indicates an authentication problem with the API. Contact the administrator if the problem persists.",
+    "retry": "Retry"
   }
 }

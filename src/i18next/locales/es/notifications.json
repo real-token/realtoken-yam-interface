@@ -126,5 +126,11 @@
       "title": "Error TheGraph",
       "message": "Ocurrió un error al recuperar datos de TheGraph."
     }
+  },
+  "authenticationError": {
+    "title": "Error de conexión a la API",
+    "message": "No se puede conectar a la API. Por favor verifica tu configuración de autenticación.",
+    "tip": "💡 Este error indica un problema de autenticación con la API. Contacta al administrador si el problema persiste.",
+    "retry": "Reintentar"
   }
 }
