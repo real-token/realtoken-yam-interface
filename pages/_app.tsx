@@ -49,6 +49,9 @@ import {
   REACT_QUERY_ERRORS,
   REACT_QUERY_ERRORS_DATA,
 } from '../src/types/ReactQueryErrors';
+import { createLogger } from '../src/utils/logger';
+
+const logger = createLogger('App');
 
 export const i18n = initLanguage(resources);
 
@@ -62,7 +65,6 @@ const showAllNetworks = process.env.NEXT_PUBLIC_SHOW_ALL_NETWORKS === 'true';
 
 const env = process.env.NEXT_PUBLIC_ENV ?? 'development';
 const walletConnectKey = process.env.NEXT_PUBLIC_WALLET_CONNECT_KEY ?? '';
-// console.log("key: ", walletConnectKey)
 
 const [walletConnectV2, walletConnectV2Hooks] = getWalletConnectV2<CustomChain>(
   customChains,
@@ -196,21 +198,21 @@ const queryClient = new QueryClient({
       // Les erreurs d'authentification sont gérées par AuthenticationErrorOverlay
       // Ne pas afficher de notification générique
       if (isAuthError) {
-        console.error('Authentication error detected, handled by AuthenticationErrorOverlay component');
+        logger.debug('Authentication error detected, handled by AuthenticationErrorOverlay component');
         return;
       }
 
       // Ne pas afficher de notification générique pour les erreurs TheGraph
       // Le composant TheGraphErrorNotification s'en charge
       if (isTheGraphError) {
-        console.warn(
+        logger.debug(
           'TheGraph error detected, handled by TheGraphErrorNotification component'
         );
         return;
       }
 
       if (errCode) {
-        console.error(`${errCode}: ${err}`);
+        logger.error(`${errCode}: ${err}`);
         const errorData = REACT_QUERY_ERRORS_DATA[errCode];
         notifications.show({
           color: 'red',
@@ -219,7 +221,7 @@ const queryClient = new QueryClient({
           message: errorData.message,
         });
       } else {
-        console.error('Unknown error: ', err);
+        logger.error('Unknown error: ', err);
         // Ne pas afficher de notification pour les erreurs inconnues non-critiques
         // Seulement logger pour éviter de spammer l'utilisateur
       }

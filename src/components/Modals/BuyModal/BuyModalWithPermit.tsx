@@ -29,6 +29,8 @@ import { BUY_METHODS, buy } from '../../../utils/tx/buy';
 import { Erc20, Erc20ABI } from '../../../abis';
 import { AvailableConnectors, ConnectorsDatas } from '@realtoken/realt-commons';
 import { useApproveOffer } from '../../../hooks/useApproveOffer';
+import { createLogger } from '../../../utils/logger';
+const logger = createLogger('src/components/Modals/BuyModal/BuyModalWithPermit');
 
 type BuyModalWithPermitProps = {
   offer: Offer,
@@ -93,12 +95,12 @@ export const BuyModalWithPermit: FC<
   const getOfferTokenInfos = async () => {
     if(!offerToken) return;
     try{
-      // console.log("offerToken: ", offerToken)
-      // console.log("sellerAddress: ", sellerAddress)
+
+
       const balanceSeller = await offerToken.balanceOf(offer.sellerAddress)
       setOfferTokenSellerBalance((balanceSeller ?? BigNumber(0)).toString())
     }catch(err){
-      console.log(err)
+      logger.debug(err)
     }
   }
   useEffect(() => {
@@ -154,7 +156,7 @@ export const BuyModalWithPermit: FC<
   },[balance,offer]);
 
   const { approveNeeded, approve, approveLoading } = useApproveOffer(offer, values.amount);
-  console.log('approveNeeded: ', approveNeeded)
+  logger.debug('approveNeeded: ', approveNeeded)
 
   const priceTranslation: Map<OFFER_TYPE,string> = new Map<OFFER_TYPE,string>([
     [OFFER_TYPE.BUY,t("buyOfferTypePrice")],

@@ -3,6 +3,9 @@ import { REACT_QUERY_ERRORS } from "../../types/ReactQueryErrors";
 import { useWeb3React } from "@web3-react/core";
 import { graphqlQuery } from "../../utils/graphql/graphqlApiClient";
 import { CHAINS, ChainsID } from "../../constants";
+import { createLogger } from "../../utils/logger";
+
+const logger = createLogger('useWlProperties');
 
 type UseWlProperties = () => {
     wlPropertiesAreLoading: boolean;
@@ -28,7 +31,7 @@ export const useWlProperties: UseWlProperties = () => {
             try {
                 const prefix = CHAINS[chainId as ChainsID]?.graphPrefixes?.realtoken;
                 if (!prefix) {
-                    console.warn(`Unsupported chainId: ${chainId}`);
+                    logger.warn(`Unsupported chainId: ${chainId}`);
                     return [];
                 }
 
@@ -69,12 +72,12 @@ export const useWlProperties: UseWlProperties = () => {
                     );
 
                     if (authError) {
-                        console.error('Authentication error in WL properties, blocking interface:', authError);
+                        logger.error('Authentication error in WL properties, blocking interface:', authError);
                         throw new Error(authError.message || 'Authentication error');
                     }
 
                     // Pour les autres erreurs, retourner tableau vide
-                    console.warn('Failed to fetch WL properties with GraphQL errors, using empty array as fallback:', errors);
+                    logger.warn('Failed to fetch WL properties with GraphQL errors, using empty array as fallback:', errors);
                     return [];
                 }
 
@@ -101,12 +104,12 @@ export const useWlProperties: UseWlProperties = () => {
 
                 // Si erreur d'authentification, laisser remonter pour bloquer l'interface
                 if (hasAuthError) {
-                    console.error('Authentication error in WL properties, blocking interface:', error);
+                    logger.error('Authentication error in WL properties, blocking interface:', error);
                     throw error; // Laisser remonter l'erreur pour qu'elle soit détectée par useAuthError
                 }
 
                 // Pour les autres erreurs (réseau, etc.), retourner tableau vide
-                console.warn('Failed to fetch WL properties (non-auth error), using empty array as fallback:', error);
+                logger.warn('Failed to fetch WL properties (non-auth error), using empty array as fallback:', error);
                 return [];
             }
         }

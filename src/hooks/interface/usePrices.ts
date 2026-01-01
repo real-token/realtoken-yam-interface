@@ -2,6 +2,9 @@ import { useQuery } from "react-query";
 import { useWeb3React } from "@web3-react/core";
 import { REACT_QUERY_ERRORS } from "../../types/ReactQueryErrors";
 import { Price } from "../../types/price";
+import { createLogger } from "../../utils/logger";
+
+const logger = createLogger('usePrices');
 
 type UsePrices = () => {
     pricesAreLoading: boolean;
@@ -26,7 +29,7 @@ export const usePrices: UsePrices = () => {
             if (!res.ok) {
                 // Si erreur, retourner un objet vide plutôt que de planter
                 // Cela sera amélioré en Phase 1 avec le mode dégradé
-                console.warn(`Failed to fetch prices for chainId ${chainId}:`, res.status, res.statusText);
+                logger.warn(`Failed to fetch prices for chainId ${chainId}:`, res.status, res.statusText);
                 return {};
             }
             return await res.json();

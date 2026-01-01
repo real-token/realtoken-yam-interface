@@ -14,6 +14,8 @@ import { Approves } from "../../hooks/getBatchApprove";
 import { useMutation, useQuery } from "react-query";
 import { usePropertiesToken } from "../../hooks/usePropertiesToken";
 import { useAllowedTokens } from "../../hooks/useAllowedTokens";
+import { createLogger } from '../../utils/logger';
+const logger = createLogger('src/components/CreateOffer/CreateOfferApprovePane');
 
 const checkNeedApprove = (amount: BigNumber, tokenAddress: string, provider: Web3Provider, account: string, realTokenYamUpgradeable: string) => {
     return new Promise<boolean>(async (resolve, reject) => {
@@ -21,8 +23,8 @@ const checkNeedApprove = (amount: BigNumber, tokenAddress: string, provider: Web
             const contract = getContract<Erc20>(tokenAddress, Erc20ABI, provider);
             if(!contract) throw new Error('Contract not found');
             const allowance = await contract.allowance(account, realTokenYamUpgradeable);
-            console.log(allowance.toString(), amount.toString(10));
-            console.log(new BigNumber(allowance.toString()).lt(amount).toString());
+            logger.debug(allowance.toString(), amount.toString(10));
+            logger.debug(new BigNumber(allowance.toString()).lt(amount).toString());
             resolve(new BigNumber(allowance.toString()).lt(amount));
         }catch(e){
             reject(e);
@@ -36,7 +38,7 @@ const approveAmount = (amount: BigNumber, tokenAddress: string, provider: Web3Pr
             const contract = getContract<Erc20>(tokenAddress, Erc20ABI, provider, account);
             if(!contract) throw new Error('Contract not found');
 
-            console.log(amount.toString(10))
+            logger.debug(amount.toString(10))
 
             const tx = await contract.approve(realTokenYamUpgradeable, amount.toString(10));
 
@@ -86,7 +88,7 @@ export const CreateOfferApprovePane = ({ tokenAddress, approval }: CreateOfferAp
                 account,
                 realTokenYamUpgradeable.address
             );
-            console.log('needApprove: ',needApprove);
+            logger.debug('needApprove: ',needApprove);
             addApproval(tokenAddress, !needApprove);
             return needApprove;
         }
@@ -106,7 +108,7 @@ export const CreateOfferApprovePane = ({ tokenAddress, approval }: CreateOfferAp
             refetch();
         },
         onError: (e) => {
-            console.error(e);
+            logger.error(e);
         }
     })
 

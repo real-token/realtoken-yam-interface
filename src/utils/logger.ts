@@ -1,8 +1,12 @@
+import { createLogger } from './logger';
+const logger = createLogger('src/utils/logger');
+
 /**
  * Système de logging extensible avec gestion des niveaux via variable d'environnement
  *
  * Niveaux disponibles :
  * - error : Erreurs critiques (TOUJOURS affiché, même si non spécifié)
+ * - warn : Avertissements (affiché par défaut)
  * - info : Informations importantes
  * - log : Logs généraux
  * - debug : Logs de débogage détaillés
@@ -26,10 +30,11 @@
 
 /**
  * Enum des niveaux de log disponibles
- * Ordre d'importance : error < info < log < debug
+ * Ordre d'importance : error < warn < info < log < debug
  */
 export enum LogLevel {
   ERROR = 'error',
+  WARN = 'warn',
   INFO = 'info',
   LOG = 'log',
   DEBUG = 'debug',
@@ -40,9 +45,10 @@ export enum LogLevel {
  */
 export const LOG_LEVEL_HIERARCHY: Record<LogLevel, number> = {
   [LogLevel.ERROR]: 0,
-  [LogLevel.INFO]: 1,
-  [LogLevel.LOG]: 2,
-  [LogLevel.DEBUG]: 3,
+  [LogLevel.WARN]: 1,
+  [LogLevel.INFO]: 2,
+  [LogLevel.LOG]: 3,
+  [LogLevel.DEBUG]: 4,
 };
 
 /**
@@ -101,7 +107,7 @@ function getEnabledLogLevels(): Set<LogLevel> {
       }
     } else {
       // Niveau invalide, utiliser les défauts
-      console.warn(
+      logger.warn(
         `[Logger] Niveau de log invalide "${levelStr}". Niveaux valides: ${validLevels.join(
           ', '
         )}. Utilisation du niveau par défaut.`
@@ -118,7 +124,7 @@ function getEnabledLogLevels(): Set<LogLevel> {
         hasValidLevel = true;
       } else {
         // Niveau invalide dans une liste, l'ignorer avec un avertissement
-        console.warn(
+        logger.warn(
           `[Logger] Niveau de log invalide "${levelStr}" ignoré. Niveaux valides: ${validLevels.join(
             ', '
           )}.`
@@ -174,6 +180,7 @@ function formatMessage(
  */
 export interface ILogger {
   error(message: string, ...args: any[]): void;
+  warn(message: string, ...args: any[]): void;
   info(message: string, ...args: any[]): void;
   log(message: string, ...args: any[]): void;
   debug(message: string, ...args: any[]): void;
@@ -203,7 +210,21 @@ class Logger implements ILogger {
         this.prefix,
         message
       );
-      console.error(formattedMessage, ...args);
+      logger.error(formattedMessage, ...args);
+    }
+  }
+
+  /**
+   * Log un avertissement (affiché par défaut)
+   */
+  warn(message: string, ...args: any[]): void {
+    if (shouldLog(LogLevel.WARN)) {
+      const formattedMessage = formatMessage(
+        LogLevel.WARN,
+        this.prefix,
+        message
+      );
+      logger.warn(formattedMessage, ...args);
     }
   }
 
@@ -217,7 +238,7 @@ class Logger implements ILogger {
         this.prefix,
         message
       );
-      console.info(formattedMessage, ...args);
+      logger.info(formattedMessage, ...args);
     }
   }
 
@@ -231,7 +252,7 @@ class Logger implements ILogger {
         this.prefix,
         message
       );
-      console.log(formattedMessage, ...args);
+      logger.debug(formattedMessage, ...args);
     }
   }
 
@@ -245,7 +266,7 @@ class Logger implements ILogger {
         this.prefix,
         message
       );
-      console.debug(formattedMessage, ...args);
+      logger.debug(formattedMessage, ...args);
     }
   }
 }

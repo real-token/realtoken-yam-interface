@@ -5,6 +5,9 @@ import { UserBalances } from "../../types/UserBalance";
 import BigNumber from "bignumber.js";
 import { graphqlQuery } from "../../utils/graphql/graphqlApiClient";
 import { CHAINS, ChainsID } from "../../constants";
+import { createLogger } from "../../utils/logger";
+
+const logger = createLogger('useUserBalance');
 
 type UseUserBalance = () => {
     userBalancesAreLoading: boolean;
@@ -24,7 +27,7 @@ export const useUserBalance: UseUserBalance = () => {
             try {
                 const prefix = CHAINS[chainId as ChainsID]?.graphPrefixes?.realtoken;
                 if (!prefix) {
-                    console.warn(`Unsupported chainId: ${chainId}`);
+                    logger.warn(`Unsupported chainId: ${chainId}`);
                     return {};
                 }
 
@@ -60,12 +63,12 @@ export const useUserBalance: UseUserBalance = () => {
                     );
 
                     if (authError) {
-                        console.error('Authentication error in user balances, blocking interface:', authError);
+                        logger.error('Authentication error in user balances, blocking interface:', authError);
                         throw new Error(authError.message || 'Authentication error');
                     }
 
                     // Pour les autres erreurs, retourner objet vide
-                    console.warn('Failed to fetch user balances with GraphQL errors, returning empty object:', errors);
+                    logger.warn('Failed to fetch user balances with GraphQL errors, returning empty object:', errors);
                     return {};
                 }
 
@@ -90,12 +93,12 @@ export const useUserBalance: UseUserBalance = () => {
 
                 // Si erreur d'authentification, laisser remonter pour bloquer l'interface
                 if (hasAuthError) {
-                    console.error('Authentication error in user balances, blocking interface:', error);
+                    logger.error('Authentication error in user balances, blocking interface:', error);
                     throw error;
                 }
 
                 // Pour les autres erreurs (réseau, etc.), retourner objet vide
-                console.warn('Failed to fetch user balances (non-auth error), returning empty object:', error);
+                logger.warn('Failed to fetch user balances (non-auth error), returning empty object:', error);
                 return {};
             }
         }

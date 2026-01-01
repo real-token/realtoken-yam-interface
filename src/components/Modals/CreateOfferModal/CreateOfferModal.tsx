@@ -21,6 +21,8 @@ import { CreateOfferProvider } from './CreateOfferModal/CreateOfferContext';
 import { useAssetPrice } from '../../../hooks/useAssetPrice';
 import { BuyOfferModal } from './CreateOfferModal/types/BuyOfferModal';
 import { ExchangeOfferModal } from './CreateOfferModal/types/ExchangeOfferModal';
+import { createLogger } from '../../../utils/logger';
+const logger = createLogger('src/components/Modals/CreateOfferModal/CreateOfferModal');
 
 export const approveOffer = (
   createdOffer: CreatedOffer, 
@@ -42,7 +44,7 @@ export const approveOffer = (
       );
 
       if (!offerToken) {
-        console.log('offerToken not found');
+        logger.debug('offerToken not found');
         return;
       }
 
@@ -50,9 +52,9 @@ export const approveOffer = (
       const oldAllowance = await offerToken.allowance(account,realTokenYamUpgradeable.address);
       const amountInWeiToPermit = amount.plus(new BigNumber(oldAllowance.toString())).toString(10);
 
-      console.log("amountInWei: ", createdOffer.amount.toString())
-      console.log("oldAllowance: ", oldAllowance.toString())
-      console.log("amountInWeiToPermit: ", amountInWeiToPermit)
+      logger.debug("amountInWei: ", createdOffer.amount.toString())
+      logger.debug("oldAllowance: ", oldAllowance.toString())
+      logger.debug("amountInWeiToPermit: ", amountInWeiToPermit)
 
       // TokenType = 3: ERC20 Without Permit, do Approve/CreateOffer
       BigNumber.set({EXPONENTIAL_AT: 35});
@@ -121,7 +123,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   
   const isModification  = offer.price !== undefined;
 
-  console.log('isModification: ', isModification, offer)
+  logger.debug('isModification: ', isModification, offer)
 
   const { account, provider } = useWeb3React();
 
@@ -155,7 +157,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
       isPrivateOffer: (value, values) => value ? !values.buyerAddress || values.buyerAddress == "" ? 'You need to choose a buyer address if offer is private' : null : null
     },
     onValuesChange: (values) => {
-      console.log(values);
+      logger.debug(values);
     },
   });
 
@@ -169,12 +171,12 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
   const createdOffer = async (formValues: SellFormValues) => {
     try{
 
-      console.log('createOffer/formValues', formValues);
+      logger.debug('createOffer/formValues', formValues);
 
       setButtonLoading(true);
 
       if(!provider || !values.amount || !values.price){
-        console.error('provider, amount or price not found');
+        logger.error('provider, amount or price not found');
         setButtonLoading(false);
         return;
       };
@@ -209,7 +211,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
         isPrivateOffer: formValues.isPrivateOffer,
       };
 
-      console.log(
+      logger.debug(
         'createOffer/createOfferAdded',
         JSON.stringify(createdOffer, null, 4)
       );
@@ -224,7 +226,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
       setButtonLoading(false);
 
     }catch(err){
-      console.error(err);
+      logger.error(err);
       setButtonLoading(false);
     }
   }

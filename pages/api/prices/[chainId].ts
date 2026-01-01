@@ -9,6 +9,9 @@ import {
   GetPriceTokenCoingecko,
 } from '../../../src/types/GetPriceTokens';
 import { Price } from '../../../src/types/price';
+import { createLogger } from '../../../src/utils/logger';
+
+const logger = createLogger('API /prices/[chainId]');
 
 // RPC URLs avec valeurs par défaut (public RPCs)
 // Vérifier si les variables sont définies ET non vides
@@ -110,7 +113,7 @@ const handler: NextApiHandler = async (
       .status(200)
       .json(pricesParsed);
   } catch (err) {
-    console.log(err);
+    logger.error('Failed to fetch asset prices:', err);
     return res.status(500).json({ error: 'Failed to fetch asset prices' });
   }
 };

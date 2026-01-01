@@ -15,7 +15,9 @@ import { parseOffer } from './parseOffer';
 import { useRootStore } from '../../zustandStore/store';
 import { getExtendedTokens } from '../../constants/GetPriceToken';
 import { graphqlQuery } from '../graphql/graphqlApiClient';
+import { createLogger } from '../logger';
 
+const logger = createLogger('fetchOffers');
 const nbrFirst = 1000;
 
 export const getBigDataGraphRealtoken = async (
@@ -29,11 +31,8 @@ export const getBigDataGraphRealtoken = async (
 
   const graphNetworkPrefix = chainConfig.graphPrefixes.realtoken;
 
-  // console.log('getBigDataGraphRealtoken', realtokenAccount.length);
-
   const accountRealtoken: string =
     '"' + realtokenAccount.map((account: string) => account).join('","') + '"';
-  //console.log('DEBUG accountRealtoken', accountRealtoken);
 
   // Toutes les requêtes passent par l'API Gateway (NEXT_PUBLIC_API_URL)
   const result = await graphqlQuery({
@@ -57,7 +56,6 @@ export const getBigDataGraphRealtoken = async (
       }
     `,
   });
-  //console.log('DEBUG getBigDataGraphRealtoken data', result.data);
 
   const accountBalances = result.data?.[graphNetworkPrefix]?.accountBalances || [];
 
@@ -67,12 +65,6 @@ export const getBigDataGraphRealtoken = async (
         (allowance: { id: string; allowance: string }) =>
           accountBalance.id + '-' + realTokenYamUpgradeable === allowance.id
       );
-    /*  console.log(
-      'DEBUG data.accountBalances.map allowance',
-      allowance,
-      data.allowances,
-      accountBalance.id + '-' + realTokenYamUpgradeable
-    ); */
 
     return {
       id: accountBalance.id,
@@ -125,7 +117,7 @@ export const fetchOffersTheGraph = (
         
         if (isAuthError) {
           // Erreur d'authentification - laisser remonter pour bloquer l'interface
-          console.error('[fetchOffersTheGraph] Authentication error in activeOffersCount query:', firstError);
+          logger.error('[fetchOffersTheGraph] Authentication error in activeOffersCount query:', firstError);
           throw new Error(firstError.message || 'Authentication error');
         }
         
@@ -135,7 +127,7 @@ export const fetchOffersTheGraph = (
           firstError.message?.includes('indexing error') ||
           firstError.message?.includes('indexing_error')
         ) {
-          console.warn('Subgraph indexing error detected, but continuing with partial data');
+          logger.warn('Subgraph indexing error detected, but continuing with partial data');
           // On peut continuer si on a des données, sinon on rejette
           if (!activeOfferResult.data?.[graphNetworkPrefix]?.global) {
             throw firstError;
@@ -152,7 +144,7 @@ export const fetchOffersTheGraph = (
       }
 
       const offersToFetch = activeOfferResult.data[graphNetworkPrefix].global.activeOffersCount || 0;
-      console.log('Amount of offersToFetch: ', offersToFetch);
+      logger.debug('Amount of offersToFetch: ', offersToFetch);
 
       // Toutes les requêtes passent par l'API Gateway (NEXT_PUBLIC_API_URL)
       const offersRes = await graphqlQuery({
@@ -210,7 +202,7 @@ export const fetchOffersTheGraph = (
           firstError.message?.includes('indexing error') ||
           firstError.message?.includes('indexing_error')
         ) {
-          console.warn('Subgraph indexing error detected, but continuing with partial data');
+          logger.warn('Subgraph indexing error detected, but continuing with partial data');
           // On continue si on a des données, sinon on rejette
           if (!offersRes.data?.[graphNetworkPrefix]?.offers) {
             throw firstError;
@@ -222,7 +214,7 @@ export const fetchOffersTheGraph = (
       }
 
       const offers: OfferGraphQl[] = offersRes.data?.[graphNetworkPrefix]?.offers || [];
-      console.log('offers: ', offers.length);
+      logger.debug('offers: ', offers.length);
       
       // Si on n'a pas d'offres mais qu'on devrait en avoir, c'est peut-être une erreur
       if (offers.length === 0 && offersToFetch > 0 && offersRes.errors && offersRes.errors.length > 0) {
@@ -234,7 +226,6 @@ export const fetchOffersTheGraph = (
         (val) => val.seller.address + '-' + val.offerToken.address
       );
       const accountBalanceId = [...new Set(accountRealtokenDuplicates)]; // remove duplicates
-      // //console.log('Debug liste accountBalanceId', accountBalanceId);
 
       const bigDataRealTokenPromises = [];
       for (let i = 0; i < accountBalanceId.length; i += nbrFirst) {
@@ -247,14 +238,12 @@ export const fetchOffersTheGraph = (
         bigDataRealTokenPromises.push(
           getBigDataGraphRealtoken(chainId, batch)
         );
-        //console.log('DEBUG for realtokenData', i, batchSize, realtokenData);
       }
 
       const dataRealtoken = (
         await Promise.all(bigDataRealTokenPromises)
       ).flat() as DataRealtokenType[];
 
-      // //console.log('Debug Query dataRealtoken', dataRealtoken);
 
       const extendedTokensAddress = getExtendedTokens(chainId).map((token) => token.contractAddress);
 
@@ -269,7 +258,6 @@ export const fetchOffersTheGraph = (
                     offer.seller.address + '-' + offer.offerToken.address
                 )!;
 
-              // console.log('wlProperties: ', wlProperties)
               const offerData: Offer = await parseOffer(
                 account,
                 offer,
@@ -286,14 +274,14 @@ export const fetchOffersTheGraph = (
 
               resolve(offerData);
             } catch (err) {
-              console.log('Error when parsingOffer: ', err);
+              logger.error('Error when parsingOffer: ', err);
               reject(err);
             }
           })
       );
 
       const parsedOffers = await Promise.all(promises);
-      console.log('Offers formated', parsedOffers.length);
+      logger.debug('Offers formated', parsedOffers.length);
 
       // ERROR_RANGE is used to check if the number of offers fetched is correctly
       // This is the -/+ range difference accepted
@@ -303,11 +291,10 @@ export const fetchOffersTheGraph = (
       }
 
       offersData.push(...parsedOffers);
-      // // console.log('Offers formated', offersData.length);
 
       resolve(offersData);
     } catch (err) {
-      console.error('Error while fetching offers from TheGraph', err);
+      logger.error('Error while fetching offers from TheGraph', err);
       // Propager l'erreur pour que React Query puisse la gérer
       reject(err);
     }

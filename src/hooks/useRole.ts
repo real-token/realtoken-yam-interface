@@ -4,6 +4,8 @@ import { useQuery } from "react-query"
 import { ContractsID } from "src/constants"
 import { ROLE, USER_ROLE } from "src/types/admin"
 import { useContract } from "./useContract"
+import { createLogger } from '../utils/logger';
+const logger = createLogger('src/hooks/useRole');
 
 type UseRole = () => {
     role: USER_ROLE
@@ -38,7 +40,7 @@ export const useRole: UseRole = () => {
                 resolve(USER_ROLE.NO_ROLE)
 
             }catch(err){
-                console.log("Fail to get address role: ", err);
+                logger.debug("Fail to get address role: ", err);
                 reject();
             }
         });

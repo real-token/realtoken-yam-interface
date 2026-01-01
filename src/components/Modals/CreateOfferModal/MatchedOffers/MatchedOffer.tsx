@@ -13,6 +13,8 @@ import { providerAtom } from "../../../../states";
 import { useState } from "react";
 import { openInNewTab } from "../../../../utils/window";
 import classes from './MatchedOffer.module.css';
+import { createLogger } from '../../../../utils/logger';
+const logger = createLogger('src/components/Modals/CreateOfferModal/MatchedOffers/MatchedOffer');
 
 interface MatchedOfferProps{
     offerBestType?: OFFER_BEST_TYPE,
@@ -56,7 +58,7 @@ export const MatchedOffer = ({ offerBestType, offer, amount } : MatchedOfferProp
             );
 
         }catch(err){
-            console.log(err);
+            logger.debug(err);
             setSubmitting(false);
         }
     }

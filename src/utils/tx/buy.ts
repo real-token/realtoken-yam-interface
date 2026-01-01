@@ -8,6 +8,8 @@ import { CoinBridgeToken, coinBridgeTokenABI } from "../../abis";
 import { Offer } from "../../types/offer";
 import { getContract } from "../getContract";
 import { AvailableConnectors, ConnectorsDatas } from "@realtoken/realt-commons";
+import { createLogger } from '../logger';
+const logger = createLogger('src/utils/tx/buy');
 
 export enum BUY_METHODS{
   buyWithApprove = "buyWithApprove",
@@ -22,7 +24,7 @@ export const approve = async (
     
 
   }catch(err){
-    console.error(err);
+    logger.error(err);
   }
 }
 
@@ -49,15 +51,14 @@ export const buy = async (
         }
 
         const buyMethod = method ?? BUY_METHODS.buyWithApprove;
-        // console.log("buyMethod: ", buyMethod)
+
 
         const price = parseFloat(offer.price);
 
         const amountInWei = new BigNumber(parseInt(new BigNumber(amount.toString()).shiftedBy(Number(offer.offerTokenDecimals)).toString()));
         const priceInWei = new BigNumber(price.toString()).shiftedBy(Number(offer.buyerTokenDecimals));
 
-        // console.log("amountInWei: ", amountInWei.toString())
-        // console.log("priceInWei: ", priceInWei.toString())
+
 
         const buyerToken = getContract<CoinBridgeToken>(
             offer.buyerTokenAddress,
@@ -67,25 +68,25 @@ export const buy = async (
         );
 
         if(!buyerToken){
-          console.error("buyerToken is undefined");
+          logger.error("buyerToken is undefined");
           return;
         };
 
         const buyerTokenAmount = new BigNumber(parseInt(amountInWei.multipliedBy(priceInWei).shiftedBy(-offer.offerTokenDecimals).toString()));
         const transactionDeadline = Math.floor(Date.now() / 1000) + 3600; // permit valable during 1h
 
-        console.log("buyerTokenAmount: ", buyerTokenAmount.toString())
+        logger.debug("buyerTokenAmount: ", buyerTokenAmount.toString())
 
         let approveNeeded = false;
         if(buyMethod == BUY_METHODS.buyWithApprove){
           const allowance = await buyerToken.allowance(account, realTokenYamUpgradeable.address);
-          console.log("allowance: ", allowance.toString());
+          logger.debug("allowance: ", allowance.toString());
           if(allowance.lt(buyerTokenAmount.toString(10))){
             approveNeeded = true;
           }
         }
 
-        console.log("approveNeeded: ", approveNeeded)
+        logger.debug("approveNeeded: ", approveNeeded)
 
         const buyerTokenType = await realTokenYamUpgradeable.getTokenType(
           offer.buyerTokenAddress
@@ -315,7 +316,7 @@ export const buy = async (
                 )
               );
           } else {
-            console.log('Token is not whitelisted');
+            logger.debug('Token is not whitelisted');
             showNotification(NOTIFICATIONS[NotificationsID.buyOfferInvalid]());
           }
         }
@@ -323,7 +324,7 @@ export const buy = async (
         if(onFinished) onFinished();
 
       } catch (e) {
-        console.error('Error in BuyModalWithPermit', e);
+        logger.error('Error in BuyModalWithPermit', e);
         showNotification(NOTIFICATIONS[NotificationsID.buyOfferInvalid]());
         setSubmitting(false);
       }

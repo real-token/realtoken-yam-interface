@@ -37,6 +37,8 @@ import { useRootStore } from '../../zustandStore/store';
 import classes from './CreateOffer.module.css';
 import { CreateOfferApprovePane } from './CreateOfferApprovePane';
 import { CreateOfferPane } from './CreateOfferPane';
+import { createLogger } from '../../utils/logger';
+const logger = createLogger('src/components/CreateOffer/CreateOffers');
 
 const approveOffer = (
   offerTokenAddress: string,
@@ -66,7 +68,7 @@ const approveOffer = (
       );
 
       if (!offerToken) {
-        console.log('offerToken not found');
+        logger.debug('offerToken not found');
         return;
       }
 
@@ -74,15 +76,15 @@ const approveOffer = (
         account,
         realTokenYamUpgradeable.address
       );
-      console.log('oldAllowance: ', oldAllowance.toString());
+      logger.debug('oldAllowance: ', oldAllowance.toString());
 
       const amountInWeiToPermit = amountToApprove
         .plus(new BigNumber(oldAllowance.toString()))
         .toString(10);
 
-      console.log('amountInWei: ', amountToApprove.toString());
-      console.log('oldAllowance: ', oldAllowance.toString());
-      console.log('amountInWeiToPermit: ', amountInWeiToPermit);
+      logger.debug('amountInWei: ', amountToApprove.toString());
+      logger.debug('oldAllowance: ', oldAllowance.toString());
+      logger.debug('amountInWeiToPermit: ', amountInWeiToPermit);
 
       // TokenType = 3: ERC20 Without Permit, do Approve/CreateOffer
       BigNumber.set({ EXPONENTIAL_AT: 35 });
@@ -206,17 +208,17 @@ export const CreateOffer = () => {
   };
 
   const createOffers = async () => {
-    console.log('createOffers');
+    logger.debug('createOffers');
 
     try {
       if (!account || !provider || !realTokenYamUpgradeable) return;
 
       // setLoading(true);
 
-      console.log(offers);
+      logger.debug(offers);
 
       if (offers.length == 1) {
-        console.log('length=1');
+        logger.debug('length=1');
         const offer = offers[0];
 
         const offerToken = getContract<CoinBridgeToken>(
@@ -240,13 +242,13 @@ export const CreateOffer = () => {
           connector ==
           ConnectorsDatas.get(AvailableConnectors.walletConnectV2)
             ?.connectorKey;
-        console.log('isSafe', isSafe);
-        console.log('isWallectConnect', isWallectConnect);
+        logger.debug('isSafe', isSafe);
+        logger.debug('isWallectConnect', isWallectConnect);
 
         let permitAnswer: any | undefined = undefined;
         let needPermit = false;
         if (offerTokenType == 1 && !isSafe && !isWallectConnect) {
-          console.log(
+          logger.debug(
             'coinBridgeTokenPermitSignature',
             account,
             realTokenYamUpgradeable.address,
@@ -266,8 +268,8 @@ export const CreateOffer = () => {
           );
         } else if (offerTokenType == 2 && !isSafe && !isWallectConnect) {
           // TokenType = 2: ERC20 With Permit
-          console.log('erc20PermitSignature');
-          console.log(new BigNumber(offer.amount).toString(10));
+          logger.debug('erc20PermitSignature');
+          logger.debug(new BigNumber(offer.amount).toString(10));
           needPermit = true;
           permitAnswer = await erc20PermitSignature(
             account,
@@ -278,7 +280,7 @@ export const CreateOffer = () => {
             provider
           );
         } else if (offerTokenType == 3 || isSafe || isWallectConnect) {
-          console.log('approveOffer');
+          logger.debug('approveOffer');
           await approveOffer(
             offer.offerTokenAddress,
             new BigNumber(offer.amount),
@@ -290,14 +292,14 @@ export const CreateOffer = () => {
           );
         }
 
-        console.log('pass2');
+        logger.debug('pass2');
 
         if (needPermit && !permitAnswer) {
           setLoading(false);
           return;
         }
 
-        console.log('pass permitAnswer');
+        logger.debug('pass permitAnswer');
 
         let createOfferTx;
         if (
@@ -305,13 +307,13 @@ export const CreateOffer = () => {
           !isSafe &&
           !isWallectConnect
         ) {
-          console.log(
+          logger.debug(
             'Type 1 or 2 and is not safe',
             JSON.stringify(permitAnswer, null, 4)
           );
           const { r, s, v } = permitAnswer;
 
-          console.log(
+          logger.debug(
             offer.offerTokenAddress,
             offer.buyerTokenAddress,
             offer.buyerAddress,
@@ -337,7 +339,7 @@ export const CreateOffer = () => {
             s
           );
         } else {
-          console.log('TEST 1');
+          logger.debug('TEST 1');
           createOfferTx = await realTokenYamUpgradeable.createOffer(
             offer.offerTokenAddress,
             offer.buyerTokenAddress,
@@ -347,7 +349,7 @@ export const CreateOffer = () => {
           );
         }
 
-        console.log('pass3');
+        logger.debug('pass3');
 
         if (!createOfferTx) {
           setLoading(false);
@@ -364,7 +366,7 @@ export const CreateOffer = () => {
           NOTIFICATIONS[NotificationsID.createOfferLoading](notificationPayload)
         );
 
-        console.log('pass4');
+        logger.debug('pass4');
 
         createOfferTx.wait().then(({ status }) => {
           updateNotification(
@@ -376,7 +378,7 @@ export const CreateOffer = () => {
           );
 
           if (status == 1) {
-            console.log('test1');
+            logger.debug('test1');
             resetOffers();
             refetch();
           }
@@ -412,7 +414,7 @@ export const CreateOffer = () => {
           if (!createdOffer.amount || !createdOffer.price) return;
 
           if (!offerToken) {
-            console.log('offerToken not found');
+            logger.debug('offerToken not found');
             return;
           }
 
@@ -429,7 +431,7 @@ export const CreateOffer = () => {
           _amounts.push(new BigNumber(createdOffer.amount).toString(10));
         }
 
-        console.log(_offerTokens, _buyerTokens, _buyers, _prices, _amounts);
+        logger.debug(_offerTokens, _buyerTokens, _buyers, _prices, _amounts);
 
         const createBatchOffersTx =
           await realTokenYamUpgradeable.createOfferBatch(
@@ -460,7 +462,7 @@ export const CreateOffer = () => {
           );
 
           if (status == 1) {
-            console.log('test2');
+            logger.debug('test2');
             resetOffers();
             refetch();
           }
@@ -468,18 +470,18 @@ export const CreateOffer = () => {
         });
       }
     } catch (err) {
-      console.log('Error when sending createBatch tx: ', err);
+      logger.debug('Error when sending createBatch tx: ', err);
       setLoading(false);
       setNotification(true);
     }
   };
 
   const createBatchOffer = async () => {
-    console.log('createBatchOffer');
+    logger.debug('createBatchOffer');
 
     try {
       if (!account || !provider || !realTokenYamUpgradeable) {
-        console.error('account, provider or realTokenYamUpgradeable not found');
+        logger.error('account, provider or realTokenYamUpgradeable not found');
         return;
       }
 
@@ -503,7 +505,7 @@ export const CreateOffer = () => {
         if (!createdOffer.amount || !createdOffer.price) return;
 
         if (!offerToken) {
-          console.log('offerToken not found');
+          logger.debug('offerToken not found');
           return;
         }
 
@@ -516,7 +518,7 @@ export const CreateOffer = () => {
         _amounts.push(createdOffer.amount);
       }
 
-      console.log(_offerTokens, _buyerTokens, _buyers, _prices, _amounts);
+      logger.debug(_offerTokens, _buyerTokens, _buyers, _prices, _amounts);
 
       const createBatchOffersTx =
         await realTokenYamUpgradeable.createOfferBatch(
@@ -547,7 +549,7 @@ export const CreateOffer = () => {
         );
 
         if (status == 1) {
-          console.log('test2');
+          logger.debug('test2');
           resetOffers();
           refetch();
           resetApprovals();
@@ -557,7 +559,7 @@ export const CreateOffer = () => {
       });
     } catch (err) {
       // TODO: Add error notification
-      console.error(err);
+      logger.error(err);
       setLoading(false);
     }
   };

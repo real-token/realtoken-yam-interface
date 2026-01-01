@@ -52,6 +52,8 @@ import { Table } from '../../Table';
 import { MarketSort } from '../MarketSort/MarketSort';
 import { MarketSubRow } from '../MarketSubRow';
 import { DegradedModeOverlay } from '../../DegradedModeOverlay';
+import { createLogger } from '../../../utils/logger';
+const logger = createLogger('src/components/Market/MarketTable/MarketTableAdmin');
 
 export const MarketTableAdmin: FC = () => {
   const { offersAreLoading, refetch, offers: allOffers } = useOffers();
@@ -96,7 +98,7 @@ export const MarketTableAdmin: FC = () => {
   }, [allOffers, offersAreLoading]);
 
   const { offers } = useTypedOffers(allOffers);
-  console.log('admin offers by offer type', offers.length);
+  logger.debug('admin offers by offer type', offers.length);
 
   const modals = useModals();
   const { t: t3 } = useTranslation('modals');

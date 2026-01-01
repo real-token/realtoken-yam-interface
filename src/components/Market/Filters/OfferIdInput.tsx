@@ -26,6 +26,8 @@ import { OfferRPCService } from 'src/services/offerRPCService';
 import { useContract } from 'src/hooks/useContract';
 import { ContractsID } from 'src/constants/contracts';
 import { useDebounce } from 'src/hooks/useDebounce';
+import { createLogger } from '../../../utils/logger';
+const logger = createLogger('src/components/Market/Filters/OfferIdInput');
 
 /**
  * Composant pour saisir un ID d'offre et naviguer vers la page de l'offre
@@ -55,7 +57,7 @@ export const OfferIdInput: FC = () => {
     try {
       return new OfferRPCService(provider, yamContract, chainId);
     } catch (error) {
-      console.error('Failed to create OfferRPCService:', error);
+      logger.error('Failed to create OfferRPCService:', error);
       return null;
     }
   }, [provider, yamContract, chainId]);
@@ -124,7 +126,7 @@ export const OfferIdInput: FC = () => {
 
         // En cas d'erreur réseau, ne pas bloquer l'utilisateur
         // On laisse le statut à 'idle' pour permettre quand même la soumission
-        console.error('Error checking offer existence:', err);
+        logger.error('Error checking offer existence:', err);
         setValidationStatus('idle');
         setError(null);
       }

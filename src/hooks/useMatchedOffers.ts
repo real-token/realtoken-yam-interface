@@ -11,6 +11,8 @@ import { useContract } from "./useContract";
 import { ContractsID } from "../constants";
 import { MultiPathOffer } from "../types/offer/MultiPathOffer";
 import { usePublicOffers } from "./offers/usePublicOffers";
+import { createLogger } from '../utils/logger';
+const logger = createLogger('src/hooks/useMatchedOffers');
 
 const getReverseOfferType = (offerType: OFFER_TYPE) => {
     switch(offerType){
@@ -140,7 +142,7 @@ export const useMatchedOffers: UseMatchedOffers = (offerType, offerTokenAddress,
         
                 }
             }catch(err){
-                console.log(err);
+                logger.debug(err);
                 reject(err);
             }
         });
@@ -164,8 +166,7 @@ export const useMatchedOffers: UseMatchedOffers = (offerType, offerTokenAddress,
             const offerAmount: BigNumber = new BigNumber(parseInt(new BigNumber(offer.amount.toString()).shiftedBy(Number(offer.offerTokenDecimals)).toString()));
             const priceInWei = new BigNumber(offer.price.toString()).shiftedBy(Number(offer.buyerTokenDecimals));
 
-            // console.log("offerAmount: ", offerAmount.toString());
-            // console.log("amountWanted: ", amountWanted.toString());
+
 
             let amountInWei: BigNumber;
             let amountToApprove: BigNumber;

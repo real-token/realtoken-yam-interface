@@ -1,5 +1,8 @@
 import { Offer } from 'src/types/offer/Offer';
 import { BigNumber } from '@ethersproject/bignumber';
+import { createLogger } from '../utils/logger';
+
+const logger = createLogger('OfferCacheService');
 
 const DB_NAME = 'YAM_OFFERS_CACHE';
 const DB_VERSION = 2; // Incrémenté pour ajouter lastAccessed
@@ -43,7 +46,7 @@ export class OfferCacheService {
       const request = indexedDB.open(DB_NAME, DB_VERSION);
 
       request.onerror = () => {
-        console.error('Failed to open IndexedDB:', request.error);
+        logger.error('Failed to open IndexedDB:', request.error);
         reject(request.error);
       };
 
@@ -132,7 +135,7 @@ export class OfferCacheService {
             resolve(null);
           };
           deleteRequest.onerror = () => {
-            console.error('Error deleting expired offer:', deleteRequest.error);
+            logger.error('Error deleting expired offer:', deleteRequest.error);
             resolve(null);
           };
           return;
@@ -147,13 +150,13 @@ export class OfferCacheService {
         };
         
         updateRequest.onerror = () => {
-          console.error('Error updating access time:', updateRequest.error);
+          logger.error('Error updating access time:', updateRequest.error);
           resolve(cached); // Retourner quand même l'offre
         };
       };
 
       request.onerror = () => {
-        console.error('Error getting offer from cache:', request.error);
+        logger.error('Error getting offer from cache:', request.error);
         reject(request.error);
       };
     });
@@ -192,7 +195,7 @@ export class OfferCacheService {
       };
 
       request.onerror = () => {
-        console.error('Error getting offer from cache:', request.error);
+        logger.error('Error getting offer from cache:', request.error);
         reject(request.error);
       };
     });
@@ -242,13 +245,13 @@ export class OfferCacheService {
           await this.enforceCacheLimit(chainId);
           resolve();
         } catch (err) {
-          console.error('Error enforcing cache limit:', err);
+          logger.error('Error enforcing cache limit:', err);
           resolve(); // Ne pas faire échouer la sauvegarde
         }
       };
 
       putRequest.onerror = () => {
-        console.error('Error saving offer to cache:', putRequest.error);
+        logger.error('Error saving offer to cache:', putRequest.error);
         reject(putRequest.error);
       };
     });
@@ -314,7 +317,7 @@ export class OfferCacheService {
               }
             };
             deleteRequest.onerror = () => {
-              console.error('Error deleting old offer:', deleteRequest.error);
+              logger.error('Error deleting old offer:', deleteRequest.error);
               deleted++;
               if (deleted === totalToDelete) {
                 resolve();
@@ -327,7 +330,7 @@ export class OfferCacheService {
       };
 
       request.onerror = () => {
-        console.error('Error getting offers for cache limit:', request.error);
+        logger.error('Error getting offers for cache limit:', request.error);
         reject(request.error);
       };
     });
@@ -385,7 +388,7 @@ export class OfferCacheService {
       };
 
       request.onerror = () => {
-        console.error('Error deleting offer from cache:', request.error);
+        logger.error('Error deleting offer from cache:', request.error);
         reject(request.error);
       };
     });
@@ -442,7 +445,7 @@ export class OfferCacheService {
       };
 
       request.onerror = () => {
-        console.error('Error cleaning expired offers:', request.error);
+        logger.error('Error cleaning expired offers:', request.error);
         reject(request.error);
       };
     });
@@ -482,7 +485,7 @@ export class OfferCacheService {
       };
 
       request.onerror = () => {
-        console.error('Error getting all cached offers:', request.error);
+        logger.error('Error getting all cached offers:', request.error);
         reject(request.error);
       };
     });

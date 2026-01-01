@@ -9,6 +9,8 @@ import { wlTokensAtom } from "src/states";
 import { calcRem } from "src/utils/style";
 import { utils } from "ethers";
 import { useTranslation } from "react-i18next";
+import { createLogger } from '../../../../utils/logger';
+const logger = createLogger('src/components/Admin/actions/addWL/AddWL');
 
 interface AddWLForm{
     type: string;
@@ -57,7 +59,7 @@ export const AddWL: FC<AddWLProps> = ({ index }) => {
     const [wlTokens,setWlTokens] = useAtom(wlTokensAtom);
 
     // useEffect(() => {
-    //     console.log(wlTokens)
+
     // },[wlTokens])
 
     const realTokenYamUpgradeable = useContract(ContractsID.realTokenYamUpgradeable);
@@ -65,13 +67,13 @@ export const AddWL: FC<AddWLProps> = ({ index }) => {
     const [isLoading,setIsLoading] = useState<boolean>(false);
     const getIsAlreadyWL = (): Promise<boolean> => {
         return new Promise<boolean>(async (resolve,reject) => {
-            console.log("TEST, ", realTokenYamUpgradeable)
+            logger.debug("TEST, ", realTokenYamUpgradeable)
             try{
                 if(!realTokenYamUpgradeable) return;
 
                 const tokenType = await realTokenYamUpgradeable.getTokenType(values.address);
 
-                console.log("tokenType: ", tokenType)
+                logger.debug("tokenType: ", tokenType)
 
                 if(tokenType == 0){
                     resolve(false);
@@ -83,7 +85,7 @@ export const AddWL: FC<AddWLProps> = ({ index }) => {
                 }
                 resolve(false);
             }catch(err){
-                console.log(err);
+                logger.debug(err);
                 reject(err);
             }
         });

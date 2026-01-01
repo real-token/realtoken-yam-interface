@@ -35,6 +35,8 @@ import { useQuery } from 'react-query';
 import { OFFER_TYPE } from '../../../types/offer';
 import { WalletERC20Balance } from '../../WalletBalance/WalletERC20Balance';
 import { useWalletERC20Balance } from '../../../hooks/useWalletERC20Balance';
+import { createLogger } from '../../../utils/logger';
+const logger = createLogger('src/components/Modals/UpdateModal/UpdateModalWithPermit');
 
 type UpdateModalProps = {
   offer: Offer;
@@ -125,7 +127,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
   const onHandleSubmit = useCallback(
     async (rawValues: UpdateFormValues) => {
 
-      console.log('rawValues', rawValues);
+      logger.debug('rawValues', rawValues);
 
       try {
 
@@ -150,7 +152,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
         }
 
         const formValues = getFormValues();
-        console.log('formValues', formValues);
+        logger.debug('formValues', formValues);
 
         if (
           !account ||
@@ -170,7 +172,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           account
         );
         if (!offerToken) {
-          console.log('offerToken not found');
+          logger.debug('offerToken not found');
           return;
         }
 
@@ -183,7 +185,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
           await realTokenYamUpgradeable.getInitialOffer(offer.offerId);
 
         const oldAmountInWei = BigNumber(amount._hex);
-        console.log('oldAmountInWei', oldAmountInWei.toString(10));
+        logger.debug('oldAmountInWei', oldAmountInWei.toString(10));
 
         /*
          * Si old allowance est supperieur au amount old Yam : retirer du old alowance le old YAM amount et ajouter le new Amount YAM
@@ -343,7 +345,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
         }
 
       } catch (e) {
-        console.error('Error UpdateModal', e);
+        logger.error('Error UpdateModal', e);
         setSubmitting(false);
       }
     },
@@ -373,7 +375,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
       const tokenSymbol = await offerToken?.symbol();
       setOfferTokenSymbol(tokenSymbol);
     } catch (err) {
-      console.log(err);
+      logger.debug(err);
     }
   };
   useEffect(() => {
@@ -386,7 +388,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
       const tokenSymbol = await buyerToken?.symbol();
       setBuyTokenSymbol(tokenSymbol);
     } catch (err) {
-      console.log(err);
+      logger.debug(err);
     }
   };
   useEffect(() => {

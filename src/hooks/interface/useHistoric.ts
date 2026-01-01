@@ -4,6 +4,9 @@ import { useWeb3React } from "@web3-react/core";
 import { CHAINS, ChainsID } from "../../constants";
 import { getPurchases, getSales } from "../../utils/historic/historic";
 import { Historic } from "../../types/historic";
+import { createLogger } from "../../utils/logger";
+
+const logger = createLogger('useHistoric');
 
 type UseHistoric = () => {
     historicsAreLoading: boolean;
@@ -20,7 +23,7 @@ export const useHistoric: UseHistoric = () => {
         enabled: !!chainId && !!account,
         queryFn: async () => {
             if(!chainId || !account) return [];
-            console.log('FETCH HISTORICS')
+            logger.debug('FETCH HISTORICS')
     
             const graphNetworkPrefix = CHAINS[chainId as ChainsID].graphPrefixes.yam;
     

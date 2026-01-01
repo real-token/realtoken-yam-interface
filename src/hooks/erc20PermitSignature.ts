@@ -2,6 +2,8 @@ import type { Web3Provider } from '@ethersproject/providers';
 import { Contract, utils } from 'ethers';
 import { tokenToGetPrice } from '../constants/GetPriceToken';
 import { ChainsID } from '@realtoken/realt-commons';
+import { createLogger } from '../utils/logger';
+const logger = createLogger('src/hooks/erc20PermitSignature');
 
 // This function is used for general tokens with permit function
 const erc20PermitSignature = async (
@@ -23,19 +25,19 @@ const erc20PermitSignature = async (
       nonce = await contract.nonces(owner);
     }
 
-    console.log(contract.address)
+    logger.debug(contract.address)
     
     let version = undefined;
     try{
       version = await contract.version();
     }catch(e){
-      console.error(e)
-      console.log('No version function in contract.')
+      logger.error(e)
+      logger.debug('No version function in contract.')
       try {
         version = (await contract.eip712Domain()).version;
       } catch (e) {
-        console.error(e)
-        console.log('No eip712Domain function in contract.')
+        logger.error(e)
+        logger.debug('No eip712Domain function in contract.')
         throw Error("Cannot get permit version from contract.");
       }
     }
@@ -44,15 +46,15 @@ const erc20PermitSignature = async (
     try{
       VERSION = await contract.VERSION();
     }catch(e){
-      console.log('No VERSION function in contract.')
+      logger.debug('No VERSION function in contract.')
     }
 
     let revision = undefined;
     try{
       revision = await contract.EIP712_REVISION();
     }catch(e){
-      console.error(e)
-      console.log('No EIP712_REVISION function in contract.')
+      logger.error(e)
+      logger.debug('No EIP712_REVISION function in contract.')
     }
 
     if(!version && !VERSION && !revision) throw Error("Cannot get permit version from contract.");
@@ -72,7 +74,7 @@ const erc20PermitSignature = async (
       chainId: library.network.chainId,
       verifyingContract: contract.address,
     };
-    console.log(domain)
+    logger.debug(domain)
     const Permit = [
       { name: 'owner', type: 'address' },
       { name: 'spender', type: 'address' },
@@ -89,7 +91,7 @@ const erc20PermitSignature = async (
       deadline: transactionDeadline,
     };
 
-    console.log(message)
+    logger.debug(message)
 
     // eslint-disable-next-line object-shorthand
     const data = JSON.stringify({
@@ -111,7 +113,7 @@ const erc20PermitSignature = async (
       v,
     };
   } catch (e) {
-    console.log('Error getting permit signature: ', e);
+    logger.debug('Error getting permit signature: ', e);
     return e;
   }
 };

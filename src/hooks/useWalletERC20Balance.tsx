@@ -6,6 +6,8 @@ import { Erc20, Erc20ABI } from "src/abis";
 import { getContract } from "src/utils";
 import { WalletERC20Balance } from "src/components/WalletBalance/WalletERC20Balance";
 import { useQuery } from "react-query";
+import { createLogger } from '../utils/logger';
+const logger = createLogger('src/hooks/useWalletERC20Balance');
 
 interface TokenInfos{
     balance: BigNumber;
@@ -52,7 +54,7 @@ export const useWalletERC20Balance = (
                 })
                 
             }catch(err){
-                console.log("Failed to get wallet balance: ", err);
+                logger.debug("Failed to get wallet balance: ", err);
                 reject(err);
             }
         })

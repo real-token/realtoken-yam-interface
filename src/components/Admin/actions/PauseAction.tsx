@@ -5,6 +5,8 @@ import { useQuery } from "react-query";
 import { ContractsID, NOTIFICATIONS, NotificationsID } from "src/constants";
 import { useActiveChain, useContract } from "src/hooks";
 import { Action } from "../Action"
+import { createLogger } from '../../../utils/logger';
+const logger = createLogger('src/components/Admin/actions/PauseAction');
 
 export const PauseAction = () => {
 
@@ -64,7 +66,7 @@ export const PauseAction = () => {
             );
 
         }catch(err){
-            console.log(err);
+            logger.debug(err);
         }
 
     }

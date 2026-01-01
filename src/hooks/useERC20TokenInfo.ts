@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { Erc20, Erc20ABI } from "src/abis";
 import { getContract } from "src/utils";
+import { createLogger } from '../utils/logger';
+const logger = createLogger('src/hooks/useERC20TokenInfo');
 
 interface ERC20TokensInfos{
     decimals: string;
@@ -52,7 +54,7 @@ export const useERC20TokenInfo: UseERC20TokenInfo = (tokenAddress) => {
                 resolove(res)
                 
             }catch(err){
-                console.log("Failed to get ERC20 token infos: ", err);
+                logger.debug("Failed to get ERC20 token infos: ", err);
                 reject(err);
             }
         })

@@ -6,6 +6,8 @@ import { Offer, OFFER_TYPE } from "src/types/offer";
 import { Price as P, Price } from "src/types/price";
 import { getContract } from "../utils";
 import { GetPriceTokenChainLink } from "../types/GetPriceTokens";
+import { createLogger } from '../utils/logger';
+const logger = createLogger('src/controllers/ChainLinkCall');
 
 export const getChainlinkPrice = (allowedToken: GetPriceTokenChainLink, rpcUrl: string) => {
     return new Promise<Price>(async (resolve,reject) => {
@@ -39,7 +41,7 @@ export const getChainlinkPrice = (allowedToken: GetPriceTokenChainLink, rpcUrl: 
         resolve({ contractAddress: tokenAddress, price: tokenPrice.toString() });
   
       }catch(err){
-        console.log("Error while getting oracle price: ", err);
+        logger.debug("Error while getting oracle price: ", err);
         reject(err)
       }
     });

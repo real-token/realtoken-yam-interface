@@ -7,6 +7,8 @@ import { Price } from 'src/types/price';
 import { Offer as OfferGraphQl } from '../../../gql/graphql';
 import { getPriceInDollar } from '../price';
 import { getNotWhitelistedTokens } from '../whitelist';
+import { createLogger } from '../logger';
+const logger = createLogger('src/utils/offers/parseOffer');
 
 // TOKEN TYPE
 // 1 = RealToken
@@ -35,17 +37,16 @@ export const parseOffer = (
   ): Promise<Offer> => {
     return new Promise<Offer>(async (resolve, reject) => {
       try {
-        // console.log(
+
         //   'DEBUG parseOffer accountUserRealtoken',
         //   accountUserRealtoken
         // );
 
-        // console.log('proopertiesToken', propertiesToken);
   
         let balanceWallet = '0';
         let allowance = '0';
         // let logLabel = 'Erreur Type token parseOffer or seller not data in graph realtoken';
-        // console.log("OFFER: ", offer)
+
         if (BigNumber(offer.availableAmount).gt(0)) {
           if (
             offer.offerToken.tokenType === 1 &&
@@ -66,15 +67,7 @@ export const parseOffer = (
             // logLabel = 'parseOffer type 2/3 blance/allowance';
           }
 
-        /*  console.log(logLabel, {
-            sellerAdress: offer.seller.address,
-            'offer ID': BigNumber(offer.id).toString(),
-            'Token name': offer.offerToken.name,
-            'Token type': offer.offerToken.tokenType,
-            BalanceWallet: balanceWallet,
-            Allowance: allowance,
-            'YAM autorisé': offer.availableAmount,
-          }); */
+        
         }
 
         const isExtendedToken = extendedTokensAddress.includes(offer.seller.address) || extendedTokensAddress.includes(offer.offerToken.address);
@@ -132,10 +125,9 @@ export const parseOffer = (
         o.priceDelta = getPriceDelta(prices,o);
         o.accountWhitelisted = getNotWhitelistedTokens(wlPropertiesId, o, propertiesToken).length == 0;
 
-        // console.log(offer.availableAmount, balanceWallet, allowance)
         resolve(o);
       } catch (err) {
-        console.log('Error when fetching account from TheGraph', err);
+        logger.debug('Error when fetching account from TheGraph', err);
         reject(err);
       }
   });
@@ -230,7 +222,7 @@ const getOfficialPrice = (
 const getOfficialYield = (
   propertyToken: PropertiesToken | undefined
 ): number | undefined => {
-  // console.log("getOfficialYield: ", propertyToken)
+
   if (propertyToken) {
     const originalYield = propertyToken.annualYield
       ? propertyToken.annualYield * 100

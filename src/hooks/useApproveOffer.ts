@@ -9,6 +9,8 @@ import { useWeb3React } from '@web3-react/core';
 import { Web3Provider } from "@ethersproject/providers";
 import { useActiveChain } from "./useActiveChain";
 import { showNotification, updateNotification } from "@mantine/notifications";
+import { createLogger } from '../utils/logger';
+const logger = createLogger('src/hooks/useApproveOffer');
 
 type UseOffersComputedDatas = (
     offer: Offer,
@@ -64,12 +66,12 @@ export const useApproveOffer: UseApproveOffer = (offer, amount) => {
         try{
 
             const allowance = await buyerToken.allowance(account, realTokenYamUpgradeable.address);
-            console.log("ALLOWANCE: ", allowance.toString());
-            console.log("buyerTokenAmount: ", buyerTokenAmount.toString(10));
+            logger.debug("ALLOWANCE: ", allowance.toString());
+            logger.debug("buyerTokenAmount: ", buyerTokenAmount.toString(10));
 
             setApproveNeeded(allowance.lt(buyerTokenAmount.toString(10)));
         }catch(err){
-            console.error('Cannot check approval: ', err);
+            logger.error('Cannot check approval: ', err);
         }
     }
 
@@ -117,7 +119,7 @@ export const useApproveOffer: UseApproveOffer = (offer, amount) => {
                 });
 
         }catch(err){
-             console.error('Cannot approve: ', err);
+             logger.error('Cannot approve: ', err);
              setApproveLoading(false);
         }
     }

@@ -8,6 +8,8 @@ import { ContractsID } from "src/constants";
 import { useContract } from "src/hooks";
 import { calcRem } from "src/utils/style";
 import { useTranslation } from "react-i18next";
+import { createLogger } from '../../../utils/logger';
+const logger = createLogger('src/components/Admin/actions/CheckRole');
 
 interface GetRoleForm{
     address: string;
@@ -50,7 +52,7 @@ export const CheckRole = () => {
         setRole(USER_ROLE.NO_ROLE)
 
         }catch(err){
-            console.log("Failed to check role: ", err);
+            logger.debug("Failed to check role: ", err);
         }
 
     }

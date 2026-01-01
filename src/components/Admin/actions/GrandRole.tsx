@@ -9,6 +9,8 @@ import { useActiveChain, useContract } from "src/hooks";
 import { showNotification, updateNotification } from "@mantine/notifications";
 import { useTranslation } from "react-i18next";
 import { useRole } from "src/hooks/useRole";
+import { createLogger } from '../../../utils/logger';
+const logger = createLogger('src/components/Admin/actions/GrandRole');
 
 interface GrandRoleForm{
     type: string;
@@ -52,7 +54,7 @@ export const GrantRole = () => {
             
             if(!realTokenYamUpgradeable) return;
 
-            console.log(formValues)
+            logger.debug(formValues)
 
             const grantRoleTx = await realTokenYamUpgradeable.grantRole(formValues.type,formValues.address);
 
@@ -81,7 +83,7 @@ export const GrantRole = () => {
             await grantRoleTx.wait(1);
 
         }catch(err){
-            console.log("Failed to grant role: ", err)
+            logger.debug("Failed to grant role: ", err)
         }
         
     }

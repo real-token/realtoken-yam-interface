@@ -35,6 +35,8 @@ import { OfferTypeBadge } from 'src/components/Offer/OfferTypeBadge/OfferTypeBad
 import { OFFER_TYPE, Offer } from 'src/types/offer';
 import { getReduceAddress } from 'src/utils/address';
 import { ENV, isEnvs } from 'src/utils/isEnv';
+import { createLogger } from '../utils/logger';
+const logger = createLogger('src/hooks/column');
 
 type ColumnFn<T> = (
   t: TFunction<'buy', 'table'>,
@@ -237,7 +239,7 @@ export const sellerAddressColumn: ColumnFn<string> = (t, span) => {
     navigator.clipboard
       .writeText(textToCopy)
       .then(() => setCopySuccess(true))
-      .catch((err) => console.error('Error copying text: ', err));
+      .catch((err) => logger.error('Error copying text: ', err));
   };
   return {
     id: 'sellerAddress',
@@ -496,7 +498,7 @@ export const yieldDeltaColumn: ColumnFn<number> = (t, span) => {
       const valueB = parseFloat(rowB.original.yieldDelta?.toString() ?? '0');
 
       if (rowA.original.offerId == '41790') {
-        console.log(valueA, valueB);
+        logger.debug(valueA, valueB);
       }
 
       if (valueA == undefined || valueB == undefined) return -1;

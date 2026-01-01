@@ -30,11 +30,6 @@ const authLink = setContext(async (_, { headers }) => {
   const token = await AuthService.getTokenAsync();
   
   // Debug: logger le token seulement si nécessaire (commenté pour réduire les logs)
-  // if (token) {
-  //   console.log('[getClientURL] Token disponible, longueur:', token.length, 'Début:', token.substring(0, 20) + '...');
-  // } else {
-  //   console.warn('[getClientURL] ⚠ Aucun token disponible');
-  // }
   
   // Ne envoyer le header Authorization QUE si on a un token
   const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};

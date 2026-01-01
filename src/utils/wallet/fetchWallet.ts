@@ -6,6 +6,8 @@ import { CHAINS, ChainsID } from 'src/constants';
 import { Account } from 'src/types/Account';
 
 import { Account as AccountGraphQL } from '../../../.graphclient/index';
+import { createLogger } from '../logger';
+const logger = createLogger('src/utils/wallet/fetchWallet');
 
 const getTheGraphURL = (chainId: number): string => {
   switch (chainId) {
@@ -83,7 +85,7 @@ export const fetchWallet = (
         allowance: 0,
       };
 
-      console.log('graphAccount', graphAccount);
+      logger.debug('graphAccount', graphAccount);
 
       if (graphAccount) {
         if (graphAccount.balances[0]?.amount)
@@ -108,11 +110,10 @@ export const fetchWallet = (
         // }
       }
 
-      // console.log('account', account);
 
       resolve(account);
     } catch (err) {
-      console.log(err);
+      logger.debug(err);
       reject(err);
     }
   });

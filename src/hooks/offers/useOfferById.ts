@@ -9,6 +9,8 @@ import { useActiveChain } from '../useActiveChain';
 import { Offer } from 'src/types/offer/Offer';
 import { REACT_QUERY_ERRORS } from 'src/types/ReactQueryErrors';
 import { offerCacheService } from 'src/services/offerCacheService';
+import { createLogger } from '../../utils/logger';
+const logger = createLogger('src/hooks/offers/useOfferById');
 
 /**
  * Hook pour récupérer une offre par ID via RPC direct
@@ -30,7 +32,7 @@ export function useOfferById(offerId: string | number | BigNumber) {
     try {
       return new OfferRPCService(provider, yamContract, chainId);
     } catch (error) {
-      console.error('Failed to create OfferRPCService:', error);
+      logger.error('Failed to create OfferRPCService:', error);
       return null;
     }
   }, [provider, yamContract, chainId]);
@@ -55,7 +57,7 @@ export function useOfferById(offerId: string | number | BigNumber) {
         }
       })
       .catch((err) => {
-        console.error('Error loading cached offer:', err);
+        logger.error('Error loading cached offer:', err);
       });
   }, [chainId, offerIdBN]);
 
@@ -102,7 +104,7 @@ export function useOfferById(offerId: string | number | BigNumber) {
                 );
               })
               .catch((err) => {
-                console.error('Background refresh failed:', err);
+                logger.error('Background refresh failed:', err);
               });
           }
           return cached.offer as Partial<Offer>;
@@ -144,7 +146,7 @@ export function useOfferById(offerId: string | number | BigNumber) {
         offer,
         'rpc'
       ).catch((err) => {
-        console.error('Error saving offer to cache:', err);
+        logger.error('Error saving offer to cache:', err);
       });
     }
   }, [offer, chainId, offerIdBN]);

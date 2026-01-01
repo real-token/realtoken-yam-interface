@@ -12,6 +12,8 @@ import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { useActiveChain, useContract } from 'src/hooks';
 import { useWeb3React } from '@web3-react/core';
 import { useOffers } from '../../../hooks/interface/useOffers';
+import { createLogger } from '../../../utils/logger';
+const logger = createLogger('src/components/Modals/DeleteModal/DeleteModal');
 
 type DeleteModalProps = {
   offerIds: string[];
@@ -103,7 +105,7 @@ export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
             
           );
       } catch (e) {
-        console.error('Error in DeleteModal', e);
+        logger.error('Error in DeleteModal', e);
         setSubmitting(false);
       }
     },

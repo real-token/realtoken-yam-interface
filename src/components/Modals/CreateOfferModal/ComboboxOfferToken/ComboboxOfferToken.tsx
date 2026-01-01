@@ -21,6 +21,8 @@ import BigNumber from 'bignumber.js';
 import { Erc20, Erc20ABI } from '../../../../abis';
 import { useUserBalance } from '../../../../hooks/interface/useUserBalance';
 import classes from './ComboboxOfferToken.module.css';
+import { createLogger } from '../../../../utils/logger';
+const logger = createLogger('src/components/Modals/CreateOfferModal/ComboboxOfferToken/ComboboxOfferToken');
 
 export type DataWithBalance = ComboboxItem & {
   balance: BigNumber;
@@ -127,11 +129,11 @@ export const ComboboxOfferToken = ({
       setAssetsBalances(assets);
       setAssetsBalancesAreLoading(false);
     } catch (err) {
-      console.error(err);
+      logger.error(err);
     }
   };
   useEffect(() => {
-    console.log(type);
+    logger.debug(type);
     if (type == 'others') {
       fetchBalances();
     }

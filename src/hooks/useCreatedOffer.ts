@@ -6,6 +6,8 @@ import { PropertiesToken } from "src/types";
 import { CreatedOffer } from "src/types/offer/CreatedOffer";
 import { getContract } from "src/utils";
 import { usePropertiesToken } from "./usePropertiesToken";
+import { createLogger } from '../utils/logger';
+const logger = createLogger('src/hooks/useCreatedOffer');
 
 type UseCreatedOffer = (
     createdOffer: CreatedOffer|undefined
@@ -40,7 +42,7 @@ export const useCreatedOffer: UseCreatedOffer = (createdOffer) => {
                 if(contract) getTokenSymbol(contract,setOfferTokenSymbol);
             }
         }catch(err){
-            console.log("Error while getting offerToken symbol", err);
+            logger.debug("Error while getting offerToken symbol", err);
         }
     },[propertiesToken, createdOffer, account, provider])
 
@@ -57,7 +59,7 @@ export const useCreatedOffer: UseCreatedOffer = (createdOffer) => {
                 if(contract) getTokenSymbol(contract,setBuyTokenSymbol);
             }
         }catch(err){
-            console.log("Error while getting offerToken symbol", err);
+            logger.debug("Error while getting offerToken symbol", err);
         }
     },[propertiesToken, createdOffer, account, provider])
 

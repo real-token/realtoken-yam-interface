@@ -4,6 +4,9 @@ import {
   APIPropertiesToken,
   RmmPropertiesToken,
 } from '../../../src/types/PropertiesToken';
+import { createLogger } from '../../../src/utils/logger';
+
+const logger = createLogger('API /rmm-properties/[chainId]');
 
 const getTokenFromCommunityAPI = new Promise<APIPropertiesToken[]>(
   async (resolve, reject) => {
@@ -21,7 +24,7 @@ const getTokenFromCommunityAPI = new Promise<APIPropertiesToken[]>(
       const tokens: APIPropertiesToken[] = await response.json();
       resolve(tokens);
     } catch (err) {
-      console.error('Failed to fetch properties from community');
+      logger.error('Failed to fetch properties from community:', err);
       reject(err);
     }
   }
@@ -229,7 +232,7 @@ const handler: NextApiHandler = async (
 
     return res.status(200).json(tokens);
   } catch (err) {
-    console.log(err);
+    logger.error('Failed to fetch properties:', err);
     res.status(500).json({ error: 'Failed to fetch properties' });
   }
 };

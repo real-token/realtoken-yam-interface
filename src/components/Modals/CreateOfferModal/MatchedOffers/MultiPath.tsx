@@ -18,6 +18,8 @@ import { Web3Provider } from "@ethersproject/providers";
 import { showNotification, updateNotification } from "@mantine/notifications";
 import { MultiPathOffer } from "../../../../types/offer/MultiPathOffer";
 import classes from './MultiPath.module.css';
+import { createLogger } from '../../../../utils/logger';
+const logger = createLogger('src/components/Modals/CreateOfferModal/MatchedOffers/MultiPath');
 
 export interface AveragePrice{
     totalPriceInDollar: number;
@@ -111,9 +113,8 @@ export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage, mul
                 prices.push(priceInWei.toString());
 
                 const offerAmountToApprove = new BigNumber(offer.multiPathAmountToApprove);
-    
-                // console.log("offer decimals: ", Number(offer.offerTokenDecimals), offer.offerTokenName)
-                // console.log("buyer decimals: ", Number(offer.buyerTokenDecimals), offer.buyerTokenName)
+
+
                 
                 amountsToApprove.push({
                     amount: offerAmountToApprove,
@@ -122,8 +123,8 @@ export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage, mul
                 amountsToBuy.push(offer.multiPathAmount);
 
                 const userBalance = new BigNumber((await buyerToken.balanceOf(account)).toString());
-                // console.log("userBalance: ", userBalance.toString());
-                // console.log("amountToApprove: ", amountToApprove.toString());
+
+
 
                 if(userBalance.lt(offerAmountToApprove)){
                     missingTokenBalance.push({
@@ -140,7 +141,6 @@ export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage, mul
         if(realTokenYamUpgradeable && amount && account) fetchBuyDatas();
     },[account, activeChain, amount, offers, provider, realTokenYamUpgradeable]);
 
-    // console.log(buyDatas)
 
     const buy = async () => {
         try{
@@ -176,7 +176,7 @@ export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage, mul
                 // get current allowance
                 const oldAllowance = new BigNumber((await buyerToken.allowance(account,realTokenYamUpgradeable.address)).toString());
 
-                console.log(oldAllowance.toString(),amountToApprove.toString())
+                logger.debug(oldAllowance.toString(),amountToApprove.toString())
     
                 if(oldAllowance.lt(amountToApprove)){
                     const approveTx = await buyerToken.approve(
@@ -212,7 +212,7 @@ export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage, mul
                 }
             }
  
-            console.log(
+            logger.debug(
                 ids,
                 prices,
                 amountsToBuy
@@ -250,7 +250,7 @@ export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage, mul
                 );
 
         }catch(err){
-            console.log("Error when trying to buy with multipath: ", err);
+            logger.debug("Error when trying to buy with multipath: ", err);
             showNotification(NOTIFICATIONS[NotificationsID.buyOfferInvalid]());
         }
     }

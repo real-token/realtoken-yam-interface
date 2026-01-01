@@ -1,6 +1,8 @@
 import { CHAINS, ChainsID } from "../constants";
 import { GetPriceTokenCoingecko } from "../types/GetPriceTokens";
 import { Price } from "../types/price"
+import { createLogger } from '../utils/logger';
+const logger = createLogger('src/controllers/CoingeckoApiCall');
 
 export const getCoingeckoApiPrice = (allowedToken: GetPriceTokenCoingecko, chainId: number) => {
     return new Promise<Price>(async (resolve,reject) => {
@@ -27,7 +29,7 @@ export const getCoingeckoApiPrice = (allowedToken: GetPriceTokenCoingecko, chain
         })
 
       }catch(err){
-        console.log("Error while getting oracle price: ", err);
+        logger.debug("Error while getting oracle price: ", err);
         reject(err)
       }
     });

@@ -2,6 +2,8 @@ import type { Web3Provider } from '@ethersproject/providers';
 import { Contract, utils } from 'ethers';
 import { ChainsID } from '../constants';
 import { tokenToGetPrice } from '../constants/GetPriceToken';
+import { createLogger } from '../utils/logger';
+const logger = createLogger('src/hooks/coinBridgeTokenPermitSignature');
 
 // This function is used for general tokens with permit function
 const erc20PermitSignature = async (
@@ -25,19 +27,19 @@ const erc20PermitSignature = async (
     try {
       version = await contract.version();
     } catch (e) {
-      console.log('No version function in contract.', e)
+      logger.debug('No version function in contract.', e)
       try {
         version = await contract.VERSION();
       } catch (e) {
-        console.log('No VERSION function in contract.', e)
+        logger.debug('No VERSION function in contract.', e)
         try {
           version = await contract.EIP712_REVISION();
         } catch (e) {
-          console.log('No EIP712_REVISION function in contract.', e)
+          logger.debug('No EIP712_REVISION function in contract.', e)
           try {
             version = await contract.eip712Domain();
           } catch (e) {
-            console.log('No EIP712_REVISION function in contract.', e)
+            logger.debug('No EIP712_REVISION function in contract.', e)
             throw Error("Cannot get permit version from contract.");
           }
         }
@@ -98,7 +100,7 @@ const erc20PermitSignature = async (
       v,
     };
   } catch (e) {
-    console.error('Error getting permit signature: ', e);
+    logger.error('Error getting permit signature: ', e);
     return e;
   }
 };

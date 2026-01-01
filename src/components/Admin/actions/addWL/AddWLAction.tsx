@@ -11,6 +11,8 @@ import { IconPlus } from "@tabler/icons";
 import { calcRem } from "src/utils/style";
 import { useTranslation } from "react-i18next";
 import classes from './AddWLAction.module.css';
+import { createLogger } from '../../../../utils/logger';
+const logger = createLogger('src/components/Admin/actions/addWL/AddWLAction');
 
 interface AddWLForm{
     type: string;
@@ -71,7 +73,7 @@ export const AddWLAction = () => {
             });
 
         }catch(err){
-            console.log("Error while adding token to WL: ", err);
+            logger.debug("Error while adding token to WL: ", err);
         }
     }
 

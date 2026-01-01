@@ -5,6 +5,9 @@ import axios from 'axios';
 import { APIPropertiesToken, PropertiesToken, ShortProperty } from 'src/types';
 
 import { ChainsID } from '../../../src/constants';
+import { createLogger } from '../../../src/utils/logger';
+
+const logger = createLogger('API /properties/[chainId]');
 
 const getTokenFromCommunityAPI = new Promise<APIPropertiesToken[]>(
   async (resolve, reject) => {
@@ -12,7 +15,7 @@ const getTokenFromCommunityAPI = new Promise<APIPropertiesToken[]>(
       const apiKey = process.env.COMMUNITY_API_KEY;
 
       if (!apiKey) {
-        console.error('COMMUNITY_API_KEY is missing in environment variables');
+        logger.error('COMMUNITY_API_KEY is missing in environment variables');
         reject(
           new Error(
             'COMMUNITY_API_KEY environment variable is required. Please add it to your .env file.'
@@ -22,7 +25,7 @@ const getTokenFromCommunityAPI = new Promise<APIPropertiesToken[]>(
       }
 
       if (apiKey.trim() === '') {
-        console.error('COMMUNITY_API_KEY is empty (whitespace only)');
+        logger.error('COMMUNITY_API_KEY is empty (whitespace only)');
         reject(
           new Error(
             'COMMUNITY_API_KEY is empty. Please set a valid API key in your .env file.'
@@ -46,7 +49,7 @@ const getTokenFromCommunityAPI = new Promise<APIPropertiesToken[]>(
       const axiosError = err as {
         response?: { status?: number; statusText?: string };
       };
-      console.error(
+      logger.error(
         'Failed to fetch properties from community API:',
         axiosError?.response?.status,
         axiosError?.response?.statusText
@@ -122,12 +125,10 @@ const getTokens = async (
   // }else{
 
   communityProperties.forEach((propertyToken: APIPropertiesToken) => {
-    // console.log(propertyToken.blockchainAddresses);
     const contractAddress =
       propertyToken.blockchainAddresses[
         contractKey as keyof typeof propertyToken.blockchainAddresses
       ]?.contract;
-    // console.log(contractAddress);
     if (contractAddress) {
       propertiesNonFiltered.push({
         uuid: propertyToken.uuid,
@@ -150,8 +151,6 @@ const getTokens = async (
   // }
 
   return propertiesNonFiltered;
-
-  console.log(propertiesNonFiltered);
 
   const onlyWLProperties = propertiesNonFiltered.filter(
     (property) =>
@@ -196,13 +195,12 @@ const handler: NextApiHandler = async (
 
     const communityApiToken = await getTokenFromCommunityAPI;
     if (!Array.isArray(communityApiToken)) {
-      console.error('communityApiToken is not an array:', typeof communityApiToken, communityApiToken);
+      logger.error('communityApiToken is not an array:', typeof communityApiToken, communityApiToken);
       return res.status(500).json({ error: 'Invalid response from community API' });
     }
     const tokens = await getTokens(chainId, communityApiToken, []);
 
     // const extendedTokens = tokenToGetPrice.get(parseInt(chainId))?.filter(token => !token.isBuyToken) ?? [] as PropertiesToken[];
-    // console.log(extendedTokens);
 
     return res
       .setHeader(
@@ -212,7 +210,7 @@ const handler: NextApiHandler = async (
       .status(200)
       .json(tokens);
   } catch (err) {
-    console.log(err);
+    logger.error('Failed to fetch properties:', err);
     return res.status(500).json({ error: 'Failed to fetch properties' });
   }
 };

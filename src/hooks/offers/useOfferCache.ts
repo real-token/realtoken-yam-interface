@@ -6,6 +6,8 @@ import { useContract } from '../useContract';
 import { ContractsID } from 'src/constants/contracts';
 import { offerCacheService } from 'src/services/offerCacheService';
 import { Offer } from 'src/types/offer/Offer';
+import { createLogger } from '../../utils/logger';
+const logger = createLogger('src/hooks/offers/useOfferCache');
 
 /**
  * Hook pour écouter les événements blockchain et mettre à jour le cache local
@@ -33,7 +35,7 @@ export function useOfferCacheEvents() {
       amount: BigNumber,
       event: any
     ) => {
-      console.log('OfferCreated event:', offerId.toString());
+      logger.debug('OfferCreated event:', offerId.toString());
       
       // Invalider le cache React Query pour forcer un re-fetch
       queryClient.invalidateQueries(['offer', 'rpc', chainId, offerId.toString()]);
@@ -49,7 +51,7 @@ export function useOfferCacheEvents() {
       event: any
     ) => {
       const offerIdStr = offerId.toString();
-      console.log('OfferUpdated event:', offerIdStr);
+      logger.debug('OfferUpdated event:', offerIdStr);
 
       // Vérifier si l'offre est encore en cache (doit écouter les événements)
       const shouldListen = await offerCacheService.shouldListenToEvents(
@@ -59,7 +61,7 @@ export function useOfferCacheEvents() {
 
       if (!shouldListen) {
         // L'offre n'est plus en cache ou trop ancienne, ignorer l'événement
-        console.log(
+        logger.debug(
           `Skipping OfferUpdated for offer ${offerIdStr} - not in cache or too old`
         );
         return;
@@ -95,7 +97,7 @@ export function useOfferCacheEvents() {
     // Handler pour OfferDeleted
     const handleOfferDeleted = async (offerId: BigNumber, event: any) => {
       const offerIdStr = offerId.toString();
-      console.log('OfferDeleted event:', offerIdStr);
+      logger.debug('OfferDeleted event:', offerIdStr);
 
       // Vérifier si l'offre est encore en cache
       const shouldListen = await offerCacheService.shouldListenToEvents(
@@ -105,7 +107,7 @@ export function useOfferCacheEvents() {
 
       if (!shouldListen) {
         // L'offre n'est plus en cache, ignorer l'événement
-        console.log(
+        logger.debug(
           `Skipping OfferDeleted for offer ${offerIdStr} - not in cache or too old`
         );
         return;
@@ -130,7 +132,7 @@ export function useOfferCacheEvents() {
       event: any
     ) => {
       const offerIdStr = offerId.toString();
-      console.log('OfferAccepted event:', offerIdStr);
+      logger.debug('OfferAccepted event:', offerIdStr);
 
       // Vérifier si l'offre est encore en cache
       const shouldListen = await offerCacheService.shouldListenToEvents(
@@ -140,7 +142,7 @@ export function useOfferCacheEvents() {
 
       if (!shouldListen) {
         // L'offre n'est plus en cache, ignorer l'événement
-        console.log(
+        logger.debug(
           `Skipping OfferAccepted for offer ${offerIdStr} - not in cache or too old`
         );
         return;
@@ -188,10 +190,10 @@ export function useOfferCacheEvents() {
       try {
         const deleted = await offerCacheService.cleanExpiredOffers();
         if (deleted > 0) {
-          console.log(`Cleaned ${deleted} expired offers from cache`);
+          logger.debug(`Cleaned ${deleted} expired offers from cache`);
         }
       } catch (error) {
-        console.error('Error cleaning expired offers:', error);
+        logger.error('Error cleaning expired offers:', error);
       }
     }, 60 * 60 * 1000); // Toutes les heures
 

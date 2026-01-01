@@ -17,6 +17,8 @@ import { useActiveChain, useContract } from 'src/hooks';
 import { NumberInput } from '../../NumberInput';
 import { useWeb3React } from '@web3-react/core';
 import { useOfferById } from '../../../hooks/offers/useOfferById';
+import { createLogger } from '../../../utils/logger';
+const logger = createLogger('src/components/Modals/UpdateModal/UpdateModal');
 
 type UpdateModalProps = {
   offerId: string;
@@ -148,7 +150,7 @@ export const UpdateModal: FC<ContextModalProps<UpdateModalProps>> = ({
             )
           );
       } catch (e) {
-        console.error('Error UpdateModal', e);
+        logger.error('Error UpdateModal', e);
       } finally {
         setSubmitting(false);
         triggerTableRefresh(true);
