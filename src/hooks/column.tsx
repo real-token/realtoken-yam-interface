@@ -498,7 +498,7 @@ export const yieldDeltaColumn: ColumnFn<number> = (t, span) => {
       const valueB = parseFloat(rowB.original.yieldDelta?.toString() ?? '0');
 
       if (rowA.original.offerId == '41790') {
-        logger.debug(valueA, valueB);
+        logger.debug('Values:', valueA, valueB);
       }
 
       if (valueA == undefined || valueB == undefined) return -1;

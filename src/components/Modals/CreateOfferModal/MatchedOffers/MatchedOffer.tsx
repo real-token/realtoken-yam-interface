@@ -58,7 +58,7 @@ export const MatchedOffer = ({ offerBestType, offer, amount } : MatchedOfferProp
             );
 
         }catch(err){
-            logger.debug(err);
+            logger.debug('Error in MatchedOffer:', err);
             setSubmitting(false);
         }
     }

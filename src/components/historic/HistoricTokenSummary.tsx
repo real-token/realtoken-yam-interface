@@ -18,7 +18,7 @@ export const HistoricTokenSummary = ({ historic }: HistoricTokenSummaryProps) =>
     const inQuantity = historic.type == OFFER_TYPE.BUY ? parseFloat(historic.quantity) : parseFloat(historic.quantity)*parseFloat(historic.price);
 
     if(historic.purchaseId == "0x20510f991a3c1120610c2cd1b5db98d6999c297e6fdd4ace744fc5ba53876686"){
-        logger.debug(historic)
+        logger.debug('Historic:', historic)
     }
 
     return(

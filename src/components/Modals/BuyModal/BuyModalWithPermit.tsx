@@ -100,7 +100,7 @@ export const BuyModalWithPermit: FC<
       const balanceSeller = await offerToken.balanceOf(offer.sellerAddress)
       setOfferTokenSellerBalance((balanceSeller ?? BigNumber(0)).toString())
     }catch(err){
-      logger.debug(err)
+      logger.debug('Error in BuyModalWithPermit:', err)
     }
   }
   useEffect(() => {

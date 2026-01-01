@@ -23,8 +23,8 @@ const checkNeedApprove = (amount: BigNumber, tokenAddress: string, provider: Web
             const contract = getContract<Erc20>(tokenAddress, Erc20ABI, provider);
             if(!contract) throw new Error('Contract not found');
             const allowance = await contract.allowance(account, realTokenYamUpgradeable);
-            logger.debug(allowance.toString(), amount.toString(10));
-            logger.debug(new BigNumber(allowance.toString()).lt(amount).toString());
+            logger.debug('Allowance and amount:', allowance.toString(), amount.toString(10));
+            logger.debug('Need approve:', new BigNumber(allowance.toString()).lt(amount).toString());
             resolve(new BigNumber(allowance.toString()).lt(amount));
         }catch(e){
             reject(e);
@@ -38,7 +38,7 @@ const approveAmount = (amount: BigNumber, tokenAddress: string, provider: Web3Pr
             const contract = getContract<Erc20>(tokenAddress, Erc20ABI, provider, account);
             if(!contract) throw new Error('Contract not found');
 
-            logger.debug(amount.toString(10))
+            logger.debug('Amount:', amount.toString(10))
 
             const tx = await contract.approve(realTokenYamUpgradeable, amount.toString(10));
 
@@ -108,7 +108,7 @@ export const CreateOfferApprovePane = ({ tokenAddress, approval }: CreateOfferAp
             refetch();
         },
         onError: (e) => {
-            logger.error(e);
+            logger.error('Error in CreateOfferApprovePane:', e);
         }
     })
 

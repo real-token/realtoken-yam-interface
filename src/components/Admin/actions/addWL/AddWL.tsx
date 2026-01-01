@@ -85,7 +85,7 @@ export const AddWL: FC<AddWLProps> = ({ index }) => {
                 }
                 resolve(false);
             }catch(err){
-                logger.debug(err);
+                logger.debug('Error in AddWL:', err);
                 reject(err);
             }
         });

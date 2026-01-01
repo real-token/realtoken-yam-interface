@@ -157,7 +157,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
       isPrivateOffer: (value, values) => value ? !values.buyerAddress || values.buyerAddress == "" ? 'You need to choose a buyer address if offer is private' : null : null
     },
     onValuesChange: (values) => {
-      logger.debug(values);
+      logger.debug('Form values:', values);
     },
   });
 
@@ -226,7 +226,7 @@ export const CreateOfferModal: FC<ContextModalProps<CreateOfferModalProps>> = ({
       setButtonLoading(false);
 
     }catch(err){
-      logger.error(err);
+      logger.error('Error in CreateOfferModal:', err);
       setButtonLoading(false);
     }
   }

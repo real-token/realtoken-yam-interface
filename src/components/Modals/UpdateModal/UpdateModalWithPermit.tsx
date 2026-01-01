@@ -375,7 +375,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
       const tokenSymbol = await offerToken?.symbol();
       setOfferTokenSymbol(tokenSymbol);
     } catch (err) {
-      logger.debug(err);
+      logger.debug('Error:', err);
     }
   };
   useEffect(() => {
@@ -388,7 +388,7 @@ export const UpdateModalWithPermit: FC<ContextModalProps<UpdateModalProps>> = ({
       const tokenSymbol = await buyerToken?.symbol();
       setBuyTokenSymbol(tokenSymbol);
     } catch (err) {
-      logger.debug(err);
+      logger.debug('Error:', err);
     }
   };
   useEffect(() => {

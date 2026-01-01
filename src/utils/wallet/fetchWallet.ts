@@ -113,7 +113,7 @@ export const fetchWallet = (
 
       resolve(account);
     } catch (err) {
-      logger.debug(err);
+      logger.debug('Error fetching wallet:', err);
       reject(err);
     }
   });

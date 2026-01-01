@@ -176,7 +176,7 @@ export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage, mul
                 // get current allowance
                 const oldAllowance = new BigNumber((await buyerToken.allowance(account,realTokenYamUpgradeable.address)).toString());
 
-                logger.debug(oldAllowance.toString(),amountToApprove.toString())
+                logger.debug('Allowance and amount to approve:', oldAllowance.toString(), amountToApprove.toString())
     
                 if(oldAllowance.lt(amountToApprove)){
                     const approveTx = await buyerToken.approve(
@@ -212,11 +212,7 @@ export const MultiPath = ({ offers, amount, multiPathAmountFilledPercentage, mul
                 }
             }
  
-            logger.debug(
-                ids,
-                prices,
-                amountsToBuy
-            )
+            logger.debug('MultiPath data:', { ids, prices, amountsToBuy })
 
             // Buy with buyBatch
             const buyBatchTx = await realTokenYamUpgradeable.buyOfferBatch(

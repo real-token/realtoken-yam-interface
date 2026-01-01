@@ -129,11 +129,11 @@ export const ComboboxOfferToken = ({
       setAssetsBalances(assets);
       setAssetsBalancesAreLoading(false);
     } catch (err) {
-      logger.error(err);
+      logger.error('Error in ComboboxOfferToken:', err);
     }
   };
   useEffect(() => {
-    logger.debug(type);
+    logger.debug('Type:', type);
     if (type == 'others') {
       fetchBalances();
     }

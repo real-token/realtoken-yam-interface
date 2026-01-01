@@ -1,6 +1,3 @@
-import { createLogger } from './logger';
-const logger = createLogger('src/utils/logger');
-
 /**
  * Système de logging extensible avec gestion des niveaux via variable d'environnement
  *
@@ -107,7 +104,7 @@ function getEnabledLogLevels(): Set<LogLevel> {
       }
     } else {
       // Niveau invalide, utiliser les défauts
-      logger.warn(
+      console.warn(
         `[Logger] Niveau de log invalide "${levelStr}". Niveaux valides: ${validLevels.join(
           ', '
         )}. Utilisation du niveau par défaut.`
@@ -124,7 +121,7 @@ function getEnabledLogLevels(): Set<LogLevel> {
         hasValidLevel = true;
       } else {
         // Niveau invalide dans une liste, l'ignorer avec un avertissement
-        logger.warn(
+        console.warn(
           `[Logger] Niveau de log invalide "${levelStr}" ignoré. Niveaux valides: ${validLevels.join(
             ', '
           )}.`
@@ -210,7 +207,7 @@ class Logger implements ILogger {
         this.prefix,
         message
       );
-      logger.error(formattedMessage, ...args);
+      console.error(formattedMessage, ...args);
     }
   }
 
@@ -224,7 +221,7 @@ class Logger implements ILogger {
         this.prefix,
         message
       );
-      logger.warn(formattedMessage, ...args);
+      console.warn(formattedMessage, ...args);
     }
   }
 
@@ -238,7 +235,7 @@ class Logger implements ILogger {
         this.prefix,
         message
       );
-      logger.info(formattedMessage, ...args);
+      console.info(formattedMessage, ...args);
     }
   }
 
@@ -252,7 +249,7 @@ class Logger implements ILogger {
         this.prefix,
         message
       );
-      logger.debug(formattedMessage, ...args);
+      console.log(formattedMessage, ...args);
     }
   }
 
@@ -266,7 +263,7 @@ class Logger implements ILogger {
         this.prefix,
         message
       );
-      logger.debug(formattedMessage, ...args);
+      console.debug(formattedMessage, ...args);
     }
   }
 }

@@ -25,18 +25,18 @@ const erc20PermitSignature = async (
       nonce = await contract.nonces(owner);
     }
 
-    logger.debug(contract.address)
+    logger.debug('Contract address:', contract.address)
     
     let version = undefined;
     try{
       version = await contract.version();
     }catch(e){
-      logger.error(e)
+      logger.error('Error getting version:', e)
       logger.debug('No version function in contract.')
       try {
         version = (await contract.eip712Domain()).version;
       } catch (e) {
-        logger.error(e)
+        logger.error('Error getting eip712Domain:', e)
         logger.debug('No eip712Domain function in contract.')
         throw Error("Cannot get permit version from contract.");
       }
@@ -53,7 +53,7 @@ const erc20PermitSignature = async (
     try{
       revision = await contract.EIP712_REVISION();
     }catch(e){
-      logger.error(e)
+      logger.error('Error getting EIP712_REVISION:', e)
       logger.debug('No EIP712_REVISION function in contract.')
     }
 
@@ -74,7 +74,7 @@ const erc20PermitSignature = async (
       chainId: library.network.chainId,
       verifyingContract: contract.address,
     };
-    logger.debug(domain)
+    logger.debug('Domain:', domain)
     const Permit = [
       { name: 'owner', type: 'address' },
       { name: 'spender', type: 'address' },
@@ -91,7 +91,7 @@ const erc20PermitSignature = async (
       deadline: transactionDeadline,
     };
 
-    logger.debug(message)
+    logger.debug('Message:', message)
 
     // eslint-disable-next-line object-shorthand
     const data = JSON.stringify({

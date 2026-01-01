@@ -215,7 +215,7 @@ export const CreateOffer = () => {
 
       // setLoading(true);
 
-      logger.debug(offers);
+      logger.debug('Offers:', offers);
 
       if (offers.length == 1) {
         logger.debug('length=1');
@@ -269,7 +269,7 @@ export const CreateOffer = () => {
         } else if (offerTokenType == 2 && !isSafe && !isWallectConnect) {
           // TokenType = 2: ERC20 With Permit
           logger.debug('erc20PermitSignature');
-          logger.debug(new BigNumber(offer.amount).toString(10));
+          logger.debug('Offer amount:', new BigNumber(offer.amount).toString(10));
           needPermit = true;
           permitAnswer = await erc20PermitSignature(
             account,
@@ -431,7 +431,7 @@ export const CreateOffer = () => {
           _amounts.push(new BigNumber(createdOffer.amount).toString(10));
         }
 
-        logger.debug(_offerTokens, _buyerTokens, _buyers, _prices, _amounts);
+        logger.debug('Batch data:', { _offerTokens, _buyerTokens, _buyers, _prices, _amounts });
 
         const createBatchOffersTx =
           await realTokenYamUpgradeable.createOfferBatch(
@@ -518,7 +518,7 @@ export const CreateOffer = () => {
         _amounts.push(createdOffer.amount);
       }
 
-      logger.debug(_offerTokens, _buyerTokens, _buyers, _prices, _amounts);
+      logger.debug('Batch data:', { _offerTokens, _buyerTokens, _buyers, _prices, _amounts });
 
       const createBatchOffersTx =
         await realTokenYamUpgradeable.createOfferBatch(
@@ -559,7 +559,7 @@ export const CreateOffer = () => {
       });
     } catch (err) {
       // TODO: Add error notification
-      logger.error(err);
+      logger.error('Error in CreateOffers:', err);
       setLoading(false);
     }
   };

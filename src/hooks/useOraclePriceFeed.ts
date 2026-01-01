@@ -16,7 +16,7 @@ export const useOraclePriceFeed : UseOraclePriceFeed = (tokenAddress) => {
     return useMemo(() => {
         if(!tokenAddress || !prices) return undefined
         logger.debug("tokenAddress: ", tokenAddress);
-        logger.debug(prices[tokenAddress.toLowerCase()]);
+        logger.debug('Price:', prices[tokenAddress.toLowerCase()]);
         return new BigNumber(prices[tokenAddress.toLowerCase()]);
     },[prices, tokenAddress])
 }

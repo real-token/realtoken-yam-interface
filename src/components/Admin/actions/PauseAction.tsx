@@ -66,7 +66,7 @@ export const PauseAction = () => {
             );
 
         }catch(err){
-            logger.debug(err);
+            logger.debug('Error in PauseAction:', err);
         }
 
     }

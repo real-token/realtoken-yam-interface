@@ -24,7 +24,7 @@ export const approve = async (
     
 
   }catch(err){
-    logger.error(err);
+    logger.error('Error in buy:', err);
   }
 }
 

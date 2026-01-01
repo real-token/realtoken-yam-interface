@@ -54,7 +54,7 @@ export const GrantRole = () => {
             
             if(!realTokenYamUpgradeable) return;
 
-            logger.debug(formValues)
+            logger.debug('Grant role form values:', formValues)
 
             const grantRoleTx = await realTokenYamUpgradeable.grantRole(formValues.type,formValues.address);
 

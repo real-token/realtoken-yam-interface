@@ -142,7 +142,7 @@ export const useMatchedOffers: UseMatchedOffers = (offerType, offerTokenAddress,
         
                 }
             }catch(err){
-                logger.debug(err);
+                logger.debug('Error in useMatchedOffers:', err);
                 reject(err);
             }
         });
