@@ -81,6 +81,9 @@ const libraryConnectors = getConnectors({
 
 type AppProps = NextAppProps;
 
+// AuthService est initialisé dans getClientURL.ts
+// Pas besoin d'initialisation supplémentaire ici
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

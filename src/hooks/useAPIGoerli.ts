@@ -1,7 +1,9 @@
 import useSWR from 'swr';
 
 // export const API = 'https://api.realtoken.community/v1/token/'; // use this for mainnet
-export const APIUrlGoerli = 'https://api.preprod.realtoken.community/v1/token/'; // for testing
+export const APIUrlGoerli =
+  process.env.NEXT_PUBLIC_API_URL ||
+  'https://api.preprod.realtoken.community/v1/token/'; // for testing
 export const authGoerli =
   '?realtAuthToken=8c4df57f-preprod-1e94-f29e-dfc1eb62d619';
 

@@ -161,11 +161,44 @@ export function parseGraphQLError(error: unknown): ParsedGraphQLError | null {
     }
   }
 
-  // Erreur générique
+  // Erreur générique - vérifier si c'est une erreur d'authentification dans le message
   if (error instanceof Error) {
+    const errorMessage = error.message?.toLowerCase() || '';
+    
+    // Vérifier si le message contient des indices d'erreur d'authentification
+    if (
+      errorMessage.includes('invalid authentication token') ||
+      errorMessage.includes('invalid authentication') ||
+      errorMessage.includes('authentication failed') ||
+      errorMessage.includes('unauthorized') ||
+      errorMessage.includes('forbidden') ||
+      errorMessage.includes('authentication error')
+    ) {
+      return {
+        type: 'AUTHENTICATION_ERROR',
+        message: error.message,
+      };
+    }
+    
     return {
       type: 'UNKNOWN_ERROR',
       message: error.message,
+    };
+  }
+
+  // Vérifier aussi dans les erreurs string
+  const errorString = String(error).toLowerCase();
+  if (
+    errorString.includes('invalid authentication token') ||
+    errorString.includes('invalid authentication') ||
+    errorString.includes('authentication failed') ||
+    errorString.includes('unauthorized') ||
+    errorString.includes('forbidden') ||
+    errorString.includes('authentication error')
+  ) {
+    return {
+      type: 'AUTHENTICATION_ERROR',
+      message: String(error),
     };
   }
 

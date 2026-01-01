@@ -3,13 +3,13 @@ import { Web3Provider } from '@ethersproject/providers';
 import { PropertiesToken } from '@realtoken/realt-commons';
 import { Offer, DataRealtokenType } from '../../types/offer';
 import { getBigDataGraphRealtoken } from './fetchOffers';
-import { apiClient } from './getClientURL';
 import { getOfferQuery } from './getOfferQuery';
 import { parseOffer } from './parseOffer';
 import { CHAINS, ChainsID } from '../../constants';
 import { Price } from '../../types/price';
 import { Offer as OfferGraphQl } from '../../../gql/graphql';
 import { getExtendedTokens } from '../../constants/GetPriceToken';
+import { graphqlQuery } from '../graphql/graphqlApiClient';
 
 export const fetchOffer = (
   provider: Web3Provider, 
@@ -24,8 +24,9 @@ export const fetchOffer = (
 
       const graphNetworkPrefix = CHAINS[chainId as ChainsID].graphPrefixes.yam;
     
-      const { data } = await apiClient.query({
-        query: gql`
+      // Toutes les requêtes passent par l'API Gateway (NEXT_PUBLIC_API_URL)
+      const result = await graphqlQuery({
+        query: `
           query MyQuery($id: ID!) {
             ${graphNetworkPrefix} {
               offer(id: $id) {
@@ -36,15 +37,15 @@ export const fetchOffer = (
         `,  
         variables: {
           "id": offerId.toString()
-        }}
-      );
+        },
+      });
 
-      const offerFromTheGraph: OfferGraphQl = data[graphNetworkPrefix]?.offer;
+      const offerFromTheGraph: OfferGraphQl = result.data?.[graphNetworkPrefix]?.offer;
 
       if(offerFromTheGraph == null || offerFromTheGraph == undefined) return reject();
 
       const batch = [`${offerFromTheGraph.seller.address}-${offerFromTheGraph.offerToken.address}`]
-      const realtokenData: [DataRealtokenType] = await getBigDataGraphRealtoken(chainId, apiClient, batch);
+      const realtokenData: [DataRealtokenType] = await getBigDataGraphRealtoken(chainId, batch);
 
       const accountUser = realtokenData[0];
 

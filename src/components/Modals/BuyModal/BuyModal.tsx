@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Box, Button, Container, Group, Input, Stack } from '@mantine/core';
+import { Box, Button, Container, Group, Input, Stack, Loader, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { ContextModalProps } from '@mantine/modals';
 import { showNotification, updateNotification } from '@mantine/notifications';
@@ -17,7 +17,7 @@ import { ContractsID, NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { useActiveChain, useContract } from 'src/hooks';
 import { NumberInput } from '../../NumberInput';
 import { useWeb3React } from '@web3-react/core';
-import { usePublicOffers } from '../../../hooks/offers/usePublicOffers';
+import { useOfferById } from '../../../hooks/offers/useOfferById';
 
 type BuyModalProps = {
   offerId: string;
@@ -69,7 +69,9 @@ export const BuyModal: FC<ContextModalProps<BuyModalProps>> = ({
     ContractsID.realTokenYamUpgradeable
   );
 
-  const { offers } = usePublicOffers();
+  // Utiliser useOfferById pour charger uniquement l'offre nécessaire
+  // Plus performant et fonctionne même si TheGraph est down
+  const { offer, isLoading: offerLoading } = useOfferById(offerId);
 
   const { t } = useTranslation('modals', { keyPrefix: 'buy' });
 
@@ -78,14 +80,12 @@ export const BuyModal: FC<ContextModalProps<BuyModalProps>> = ({
     context.closeModal(id);
   }, [context, id, reset]);
 
+  // Utiliser directement l'offre chargée via useOfferById
   useEffect(() => {
-    setAmountMax(
-      Number(
-        offers.find((offer) => offer.offerId === values.offerId)
-          ?.amount as string
-      )
-    );
-  }, [offers, values]);
+    if (offer?.amount) {
+      setAmountMax(Number(offer.amount));
+    }
+  }, [offer]);
 
   useEffect(() => {
     if (!amountMax) return;
@@ -159,6 +159,16 @@ export const BuyModal: FC<ContextModalProps<BuyModalProps>> = ({
       onClose,
     ]
   );
+
+  // Afficher un loader pendant le chargement de l'offre
+  if (offerLoading) {
+    return (
+      <Stack justify={'center'} align={'center'} p="xl">
+        <Loader size="md" />
+        <Text size="sm" c="dimmed">Loading offer data...</Text>
+      </Stack>
+    );
+  }
 
   return (
     <form onSubmit={onSubmit(onHandleSubmit)}>

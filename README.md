@@ -71,16 +71,36 @@
 
 To run the project you will need to set-up a `.env` file in the root folder:
 
-```
+```bash
+# Required: Community API Key (for properties endpoint)
+# Get it from: https://t.me/+XQyoaFfmN61yk7X0
 COMMUNITY_API_KEY=XXXXXXXXXXXX
-NEXT_PUBLIC_ENV=XX
+
+# Required: Environment (dev, staging, or production)
+# Default: dev
+NEXT_PUBLIC_ENV=dev
+
+# Optional: RPC URLs (defaults to public RPCs if not set)
+# GNOSIS_RPC_URL=https://gnosis-rpc.publicnode.com
+# ETHEREUM_RPC_URL=https://eth.llamarpc.com
+# SEPOLIA_RPC_URL=https://ethereum-sepolia-rpc.publicnode.com
+
+# Optional: Other configuration
+# NEXT_PUBLIC_SHOW_ALL_NETWORKS=false
+# NEXT_PUBLIC_WALLET_CONNECT_KEY=your_wallet_connect_key
+# NEXT_PUBLIC_API_KEY=your_api_key
+# NEXT_PUBLIC_API_URL=your_api_url
 ```
 
-To get a `COMMUNITY_API_KEY`, join the dedicated [telegram dev channel](https://t.me/+XQyoaFfmN61yk7X0) then ask for.
+**Required variables:**
 
-The var `NEXT_PUBLIC_ENV` is used to hide/show some features depending the environement.
-Only those values are allowed: `dev`, `staging` or `production`.
-The default value is `dev`;
+- `COMMUNITY_API_KEY`: Required for the `/api/properties` endpoint. Get it from the [telegram dev channel](https://t.me/+XQyoaFfmN61yk7X0).
+- `NEXT_PUBLIC_ENV`: Used to hide/show features depending on the environment. Allowed values: `dev`, `staging`, or `production`. Default: `dev`.
+
+**Optional variables:**
+
+- `GNOSIS_RPC_URL`, `ETHEREUM_RPC_URL`, `SEPOLIA_RPC_URL`: RPC URLs for price fetching. If not set, public RPCs will be used by default.
+- Other `NEXT_PUBLIC_*` variables: See comments above for their usage.
 
 ### Node.js version
 

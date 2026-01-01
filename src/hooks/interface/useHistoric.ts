@@ -25,8 +25,8 @@ export const useHistoric: UseHistoric = () => {
             const graphNetworkPrefix = CHAINS[chainId as ChainsID].graphPrefixes.yam;
     
             const [buyerHistorics, sellerHistorics] = await Promise.all([
-                getPurchases(account, graphNetworkPrefix),
-                getSales(account, graphNetworkPrefix)
+                getPurchases(account, graphNetworkPrefix, chainId),
+                getSales(account, graphNetworkPrefix, chainId)
             ]);
 
             const historics = buyerHistorics.concat(sellerHistorics);

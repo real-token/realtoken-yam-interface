@@ -6,6 +6,17 @@ const nextConfig = {
   experimental: {
     outputStandalone: true,
   },
+  webpack: (config, { isServer }) => {
+    // Exclure fs et path du bundle client
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
+      };
+    }
+    return config;
+  },
   async headers() {
     return [
         {

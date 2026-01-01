@@ -8,12 +8,16 @@ import {
 const getTokenFromCommunityAPI = new Promise<APIPropertiesToken[]>(
   async (resolve, reject) => {
     try {
-      const response = await fetch('https://api.realtoken.community/v1/token', {
-        method: 'GET',
-        headers: {
-          'X-AUTH-REALT-TOKEN': process.env.COMMUNITY_API_KEY ?? '',
-        },
-      });
+      const response = await fetch(
+        process.env.NEXT_PUBLIC_API_URL ||
+          'https://api.realtoken.community/v1/token',
+        {
+          method: 'GET',
+          headers: {
+            'X-AUTH-REALT-TOKEN': process.env.COMMUNITY_API_KEY ?? '',
+          },
+        }
+      );
       const tokens: APIPropertiesToken[] = await response.json();
       resolve(tokens);
     } catch (err) {

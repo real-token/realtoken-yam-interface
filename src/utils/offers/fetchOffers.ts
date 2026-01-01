@@ -1,6 +1,4 @@
 import {
-  ApolloClient,
-  NormalizedCacheObject,
   gql,
 } from '@apollo/client';
 
@@ -13,16 +11,15 @@ import { DataRealtokenType } from 'src/types/offer/DataRealTokenType';
 import { Offer } from 'src/types/offer/Offer';
 import { Price } from 'src/types/price';
 
-import { apiClient } from './getClientURL';
 import { parseOffer } from './parseOffer';
 import { useRootStore } from '../../zustandStore/store';
 import { getExtendedTokens } from '../../constants/GetPriceToken';
+import { graphqlQuery } from '../graphql/graphqlApiClient';
 
 const nbrFirst = 1000;
 
 export const getBigDataGraphRealtoken = async (
   chainId: number,
-  client: ApolloClient<NormalizedCacheObject>,
   realtokenAccount: string[]
 ) => {
   const chainConfig = CHAINS[chainId as ChainsID];
@@ -38,8 +35,9 @@ export const getBigDataGraphRealtoken = async (
     '"' + realtokenAccount.map((account: string) => account).join('","') + '"';
   //console.log('DEBUG accountRealtoken', accountRealtoken);
 
-  const { data } = await client.query({
-    query: gql`
+  // Toutes les requêtes passent par l'API Gateway (NEXT_PUBLIC_API_URL)
+  const result = await graphqlQuery({
+    query: `
       query getAccountsRealtoken {
         ${graphNetworkPrefix} {
           accountBalances(
@@ -59,9 +57,9 @@ export const getBigDataGraphRealtoken = async (
       }
     `,
   });
-  //console.log('DEBUG getBigDataGraphRealtoken data', data);
+  //console.log('DEBUG getBigDataGraphRealtoken data', result.data);
 
-  const accountBalances = data[graphNetworkPrefix].accountBalances;
+  const accountBalances = result.data?.[graphNetworkPrefix]?.accountBalances || [];
 
   return accountBalances.map((accountBalance: DataRealtokenType) => {
     const allowance: { id: string; allowance: string } | undefined =
@@ -100,8 +98,9 @@ export const fetchOffersTheGraph = (
 
       const offersData: Offer[] = [];
 
-      const activeOfferResult = await apiClient.query({
-        query: gql`
+      // Toutes les requêtes passent par l'API Gateway (NEXT_PUBLIC_API_URL)
+      const activeOfferResult = await graphqlQuery({
+        query: `
           query {
             ${graphNetworkPrefix}{
               global(id: "1"){
@@ -110,17 +109,26 @@ export const fetchOffersTheGraph = (
             }
           }
         `,
-        errorPolicy: 'all', // Permet de recevoir les données même en cas d'erreur partielle
-        // context: {
-        //   fetchOptions: {
-        //     signal: abortController.signal
-        //   }
-        // }
       });
 
       // Vérifier s'il y a des erreurs dans la réponse
       if (activeOfferResult.errors && activeOfferResult.errors.length > 0) {
         const firstError = activeOfferResult.errors[0];
+        
+        // Vérifier si c'est une erreur d'authentification
+        const isAuthError = 
+          firstError.extensions?.code === 'THEGRAPH_AUTH_ERROR' ||
+          firstError.extensions?.code === 'AUTHENTICATION_ERROR' ||
+          firstError.extensions?.code === 'DOWNSTREAM_SERVICE_ERROR' ||
+          firstError.message?.toLowerCase().includes('invalid authentication token') ||
+          firstError.message?.toLowerCase().includes('authentication error');
+        
+        if (isAuthError) {
+          // Erreur d'authentification - laisser remonter pour bloquer l'interface
+          console.error('[fetchOffersTheGraph] Authentication error in activeOffersCount query:', firstError);
+          throw new Error(firstError.message || 'Authentication error');
+        }
+        
         // Si c'est une erreur d'indexation, on peut quand même essayer de continuer avec les données partielles
         if (
           firstError.extensions?.code === 'SUBGRAPH_INDEXING_ERROR' ||
@@ -146,8 +154,9 @@ export const fetchOffersTheGraph = (
       const offersToFetch = activeOfferResult.data[graphNetworkPrefix].global.activeOffersCount || 0;
       console.log('Amount of offersToFetch: ', offersToFetch);
 
-      const offersRes = await apiClient.query({
-        query: gql`
+      // Toutes les requêtes passent par l'API Gateway (NEXT_PUBLIC_API_URL)
+      const offersRes = await graphqlQuery({
+        query: `
           query {
             ${graphNetworkPrefix} {
               offers (first: ${offersToFetch}, where: { removedAtBlock: null }) {
@@ -190,12 +199,6 @@ export const fetchOffersTheGraph = (
             }
           }
         `,
-        errorPolicy: 'all', // Permet de recevoir les données même en cas d'erreur partielle
-        //  context: {
-        //   fetchOptions: {
-        //     signal: abortController.signal
-        //   }
-        // }
       });
 
       // Vérifier s'il y a des erreurs dans la réponse
@@ -222,7 +225,7 @@ export const fetchOffersTheGraph = (
       console.log('offers: ', offers.length);
       
       // Si on n'a pas d'offres mais qu'on devrait en avoir, c'est peut-être une erreur
-      if (offers.length === 0 && offersToFetch > 0 && offersRes.errors) {
+      if (offers.length === 0 && offersToFetch > 0 && offersRes.errors && offersRes.errors.length > 0) {
         // On rejette seulement si on n'a vraiment aucune donnée
         throw offersRes.errors[0];
       }
@@ -242,7 +245,7 @@ export const fetchOffersTheGraph = (
         if (batch.length <= 0) break;
 
         bigDataRealTokenPromises.push(
-          getBigDataGraphRealtoken(chainId, apiClient, batch)
+          getBigDataGraphRealtoken(chainId, batch)
         );
         //console.log('DEBUG for realtokenData', i, batchSize, realtokenData);
       }

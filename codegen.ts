@@ -1,7 +1,8 @@
 import { CodegenConfig } from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
-  schema: 'https://api.realtoken.network/graphql',
+  schema:
+    process.env.NEXT_PUBLIC_API_URL || 'https://api.realtoken.network/graphql',
   documents: ['src/**/*.tsx'],
   generates: {
     './gql/': {

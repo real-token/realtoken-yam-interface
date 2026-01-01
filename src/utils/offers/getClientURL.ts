@@ -1,38 +1,15 @@
 import {
   ApolloClient,
   InMemoryCache,
-  NormalizedCacheObject,
   createHttpLink,
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
+import { AuthService } from '../auth/authService';
 
-export const getTheGraphUrlYAM = (chainId: number): string => {
-  switch (chainId) {
-    case 1:
-      return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph';
-    case 5:
-      return 'https://api.thegraph.com/subgraphs/name/realtoken-thegraph/yam-realt-subgraph-goerli';
-    case 100:
-      return 'https://gnosis-mainnet.graph-eu.p2pify.com/144b769c6a2babc002760ad88a90ba24/Yam-Gnosis';
-    default:
-      return '';
-  }
-};
-// get the authentication token from local storage if it exists
-const token = process.env.NEXT_PUBLIC_API_KEY ?? undefined;
-console.log('token', token);
-
-export const getYamClient = (
-  chainId: number
-): ApolloClient<NormalizedCacheObject> => {
-  return new ApolloClient({
-    uri: getTheGraphUrlYAM(chainId),
-    cache: new InMemoryCache(),
-    headers: {
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  });
-};
+// ⚠️ IMPORTANT: Ne pas initialiser AuthService au niveau du module
+// Cela causerait des race conditions lors du build Next.js (plusieurs processus)
+// L'initialisation se fait de manière lazy dans getTokenAsync() quand nécessaire
+// OU utilisez AUTH_TOKEN dans .env pour éviter complètement le login automatique
 
 export const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? undefined;
 if (!apiUrl) {
@@ -43,20 +20,52 @@ const link = createHttpLink({
   uri: apiUrl,
 });
 
-const authLink = setContext((_, { headers }) => {
-  // return the headers to the context so httpLink can read them
+// Créer un authLink pour l'API principale (serveur uniquement)
+const authLink = setContext(async (_, { headers }) => {
+  // Seulement côté serveur
+  if (typeof window !== 'undefined') {
+    return { headers };
+  }
+
+  const token = await AuthService.getTokenAsync();
+  
+  // Debug: logger le token seulement si nécessaire (commenté pour réduire les logs)
+  // if (token) {
+  //   console.log('[getClientURL] Token disponible, longueur:', token.length, 'Début:', token.substring(0, 20) + '...');
+  // } else {
+  //   console.warn('[getClientURL] ⚠ Aucun token disponible');
+  // }
+  
+  // Ne envoyer le header Authorization QUE si on a un token
+  const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
+  
   return {
     headers: {
       ...headers,
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...authHeaders,
     },
   };
 });
 
+/**
+ * Client Apollo pour l'API principale (serveur uniquement)
+ * Utilisé uniquement dans les endpoints API Next.js
+ */
 export const apiClient = new ApolloClient({
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          realTokenGnosis: {
+            // Fusionner les résultats en remplaçant complètement l'ancien résultat
+            // car RealTokenGnosisQuery n'a pas d'ID unique
+            merge(existing, incoming) {
+              return incoming;
+            },
+          },
+        },
+      },
+    },
+  }),
   link: authLink.concat(link),
-  headers: {
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  },
 });

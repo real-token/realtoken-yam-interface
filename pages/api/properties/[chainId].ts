@@ -194,8 +194,11 @@ const handler: NextApiHandler = async (
       });
     }
 
-    // const [communityApiToken,wlTokens] = await Promise.all([getTokenFromCommunityAPI,getWhitelistedProperties(chainId)]);
-    const [communityApiToken] = await Promise.all([getTokenFromCommunityAPI]);
+    const communityApiToken = await getTokenFromCommunityAPI;
+    if (!Array.isArray(communityApiToken)) {
+      console.error('communityApiToken is not an array:', typeof communityApiToken, communityApiToken);
+      return res.status(500).json({ error: 'Invalid response from community API' });
+    }
     const tokens = await getTokens(chainId, communityApiToken, []);
 
     // const extendedTokens = tokenToGetPrice.get(parseInt(chainId))?.filter(token => !token.isBuyToken) ?? [] as PropertiesToken[];

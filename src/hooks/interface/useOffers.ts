@@ -81,8 +81,10 @@ export const useOffers: UseOffers = () => {
     // Permettre de garder les données en cache même en cas d'erreur
     // pour permettre un fonctionnement partiel
     keepPreviousData: true,
-    // Ne pas invalider automatiquement en cas d'erreur pour permettre un fonctionnement partiel
+    // Ne pas retry en cas d'erreur (notamment erreurs d'authentification)
+    // pour éviter les appels multiples inutiles
     retry: false,
+    retryOnMount: false, // Ne pas retry au remount
   });
 
   const parsedError = useMemo(() => {
