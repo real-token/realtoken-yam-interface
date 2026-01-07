@@ -1,36 +1,116 @@
-import { useQuery } from "react-query";
-import { REACT_QUERY_ERRORS } from "../../types/ReactQueryErrors";
-import { useWeb3React } from "@web3-react/core";
-import { mergeExtendedProperties } from "../../utils/properties";
-import { PropertiesToken } from "@realtoken/realt-commons";
-import { getExtendedTokens } from "../../constants/GetPriceToken";
+import { useQuery } from 'react-query';
+
+import { gql } from '@apollo/client';
+import { PropertiesToken } from '@realtoken/realt-commons';
+import { useWeb3React } from '@web3-react/core';
+
+import { getExtendedTokens } from '../../constants/GetPriceToken';
+import { REACT_QUERY_ERRORS } from '../../types/ReactQueryErrors';
+import { apiClient } from '../../utils/offers/getClientURL';
+import { mergeExtendedProperties } from '../../utils/properties';
 
 type UseProperties = () => {
-    propertiesAreLoading: boolean;
-    properties: PropertiesToken[] | undefined;
-}
-export const useProperties: UseProperties = ()  => {
+  propertiesAreLoading: boolean;
+  properties: PropertiesToken[] | undefined;
+};
+export const useProperties: UseProperties = () => {
+  const { chainId } = useWeb3React();
 
-    const { chainId } = useWeb3React();
-    
-    // Fetch properties
-    const { isLoading, data: properties, isSuccess } = useQuery({
-        queryKey: ['properties', chainId],
-        meta: { errCode: REACT_QUERY_ERRORS.FETCH_WL_PROPERTIES },
-        enabled: !!chainId,
-        queryFn: async (): Promise<PropertiesToken[]> => {
-            if(!chainId) return [];
-            const response = await fetch(`/api/properties/${chainId}`);
-            if (response.ok) {
-                const responseJson: PropertiesToken[] = await response.json();
-                return mergeExtendedProperties(responseJson, getExtendedTokens(chainId));
+  // Fetch properties
+  const {
+    isLoading,
+    data: properties,
+    isSuccess,
+  } = useQuery({
+    queryKey: ['properties', chainId],
+    meta: { errCode: REACT_QUERY_ERRORS.FETCH_WL_PROPERTIES },
+    enabled: !!chainId,
+    queryFn: async (): Promise<PropertiesToken[]> => {
+      if (!chainId) return [];
+
+      //   {
+      //     properties: {
+      //         id: string,
+      //         shortName: string,
+      //         fullName: string,
+      //         product: {
+      //             currency: string,
+      //             imageLink: string[],
+      //             annualPercentageYield: number,
+      //             tokens: {
+      //                 tokenIdRules: number
+      //                 price: number
+      //                 blockchainAddresses{
+      //                     networkId: number
+      //                     addressToken: string
+      //                 }
+      //             }[]
+      //         }
+      //     }[]
+      //   }
+
+      const { data } = await apiClient.query({
+        query: gql`
+          query getProperties {
+            privateApi {
+              properties {
+                id
+                shortName
+                fullName
+                product {
+                  currency
+                  imageLink
+                  marketplaceLink
+                  annualPercentageYield
+                  tokens {
+                    tokenIdRules
+                    price
+                    blockchainAddresses {
+                      networkId
+                      addressToken
+                    }
+                  }
+                }
+              }
             }
-            return [];
-        }
-    });
+          }
+        `,
+      });
+      const datasProperties = data?.privateApi?.properties;
+      if (!datasProperties) {
+        throw new Error('No properties found');
+      }
 
-    return { 
-        propertiesAreLoading: isLoading, 
-        properties: properties
-    };
-}
+      return mergeExtendedProperties(
+        datasProperties.map((property: any) => {
+          const contractAddress =
+            property.product.tokens.blockchainAddresses.find(
+              (address: any) => address.networkId === chainId
+            )?.addressToken;
+          if (!contractAddress) {
+            throw new Error('No contract address found');
+          }
+          return {
+            uuid: property.id,
+            shortName: property.shortName,
+            fullName: property.fullName,
+            currency: property.product.currency,
+            marketplaceLink: property.product.marketplaceLink,
+            imageLink: property.product.imageLink[0],
+            officialPrice: property.product.tokens.price,
+            contractAddress: contractAddress,
+            tokenIdRules: property.product.tokens.tokenIdRules,
+            netRentYearPerToken: property.product.tokens.price,
+            annualYield: property.product.annualPercentageYield,
+          };
+        }),
+        getExtendedTokens(chainId)
+      );
+    },
+  });
+
+  return {
+    propertiesAreLoading: isLoading,
+    properties: properties,
+  };
+};
