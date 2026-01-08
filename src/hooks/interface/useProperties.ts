@@ -111,7 +111,7 @@ export const useProperties: UseProperties = () => {
               contractAddress: contractAddress,
               tokenIdRules: property.tokenIdRules ?? 0,
               netRentYearPerToken: property.netRentYearPerToken,
-              annualYield: property.annualPercentageYield,
+              annualYield: property.annualPercentageYield / 100,
             };
           })
           .filter(Boolean),
