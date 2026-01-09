@@ -1,11 +1,6 @@
-import {
-  ApolloClient,
-  NormalizedCacheObject,
-  gql,
-} from '@apollo/client';
+import { ApolloClient, NormalizedCacheObject, gql } from '@apollo/client';
 
 import BigNumber from 'bignumber.js';
-import { Offer as OfferGraphQl } from '../../../gql/graphql';
 
 import { CHAINS, ChainsID } from 'src/constants';
 import { PropertiesToken } from 'src/types';
@@ -13,10 +8,11 @@ import { DataRealtokenType } from 'src/types/offer/DataRealTokenType';
 import { Offer } from 'src/types/offer/Offer';
 import { Price } from 'src/types/price';
 
+import { Offer as OfferGraphQl } from '../../../gql/graphql';
+import { getExtendedTokens } from '../../constants/GetPriceToken';
+import { useRootStore } from '../../zustandStore/store';
 import { apiClient } from './getClientURL';
 import { parseOffer } from './parseOffer';
-import { useRootStore } from '../../zustandStore/store';
-import { getExtendedTokens } from '../../constants/GetPriceToken';
 
 const nbrFirst = 1000;
 
@@ -95,7 +91,6 @@ export const fetchOffersTheGraph = (
   // const { abortController } = useRootStore.getState();
   return new Promise<Offer[]>(async (resolve, reject) => {
     try {
-
       const graphNetworkPrefix = CHAINS[chainId as ChainsID].graphPrefixes.yam;
 
       const offersData: Offer[] = [];
@@ -127,7 +122,9 @@ export const fetchOffersTheGraph = (
           firstError.message?.includes('indexing error') ||
           firstError.message?.includes('indexing_error')
         ) {
-          console.warn('Subgraph indexing error detected, but continuing with partial data');
+          console.warn(
+            'Subgraph indexing error detected, but continuing with partial data'
+          );
           // On peut continuer si on a des données, sinon on rejette
           if (!activeOfferResult.data?.[graphNetworkPrefix]?.global) {
             throw firstError;
@@ -143,8 +140,10 @@ export const fetchOffersTheGraph = (
         throw new Error('No data received from TheGraph');
       }
 
-      const offersToFetch = activeOfferResult.data[graphNetworkPrefix].global.activeOffersCount || 0;
-      console.log('Amount of offersToFetch: ', offersToFetch);
+      // const offersToFetch = activeOfferResult.data[graphNetworkPrefix].global.activeOffersCount || 0;
+      // console.log('Amount of offersToFetch: ', offersToFetch);
+
+      const offersToFetch = 30000;
 
       const offersRes = await apiClient.query({
         query: gql`
@@ -207,7 +206,9 @@ export const fetchOffersTheGraph = (
           firstError.message?.includes('indexing error') ||
           firstError.message?.includes('indexing_error')
         ) {
-          console.warn('Subgraph indexing error detected, but continuing with partial data');
+          console.warn(
+            'Subgraph indexing error detected, but continuing with partial data'
+          );
           // On continue si on a des données, sinon on rejette
           if (!offersRes.data?.[graphNetworkPrefix]?.offers) {
             throw firstError;
@@ -218,9 +219,10 @@ export const fetchOffersTheGraph = (
         }
       }
 
-      const offers: OfferGraphQl[] = offersRes.data?.[graphNetworkPrefix]?.offers || [];
+      const offers: OfferGraphQl[] =
+        offersRes.data?.[graphNetworkPrefix]?.offers || [];
       console.log('offers: ', offers.length);
-      
+
       // Si on n'a pas d'offres mais qu'on devrait en avoir, c'est peut-être une erreur
       if (offers.length === 0 && offersToFetch > 0 && offersRes.errors) {
         // On rejette seulement si on n'a vraiment aucune donnée
@@ -253,7 +255,9 @@ export const fetchOffersTheGraph = (
 
       // //console.log('Debug Query dataRealtoken', dataRealtoken);
 
-      const extendedTokensAddress = getExtendedTokens(chainId).map((token) => token.contractAddress);
+      const extendedTokensAddress = getExtendedTokens(chainId).map(
+        (token) => token.contractAddress
+      );
 
       const promises = offers.map(
         (offer: OfferGraphQl) =>
@@ -295,7 +299,7 @@ export const fetchOffersTheGraph = (
       // ERROR_RANGE is used to check if the number of offers fetched is correctly
       // This is the -/+ range difference accepted
       const ERROR_RANGE = 0.1;
-      if(parsedOffers.length < offersToFetch*(1-ERROR_RANGE)) {
+      if (parsedOffers.length < offersToFetch * (1 - ERROR_RANGE)) {
         setTheGraphIssue(true);
       }
 
