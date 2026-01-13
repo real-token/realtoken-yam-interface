@@ -24,9 +24,11 @@ import BigNumber from 'bignumber.js';
 import { OfferText } from 'src/components/Offer/OfferText';
 import { PropertyCard } from 'src/components/Offer/PropertyCard/PropertyCard';
 import { useOffer } from 'src/hooks/offers/useOffer';
+import { useOfferById } from 'src/hooks/offers/useOfferById';
 import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
 import { ConnectedProvider } from 'src/providers/ConnectProvider';
 import { PropertiesToken } from 'src/types';
+import { Offer } from 'src/types/offer/Offer';
 
 import { BuyActionsWithPermit } from '../../src/components/Market/BuyActions';
 import { DeleteActions } from '../../src/components/Market/DeleteActions';
@@ -39,9 +41,29 @@ const ShowOfferPage: FC = () => {
 
   const offerId: number = parseInt(id as string);
 
-  const { offer, isLoading, hasError } = useOffer(offerId);
-
   const { walletAddress: account } = useAA();
+  // Essayer d'abord RPC direct (fonctionne même si TheGraph est down)
+  const {
+    offer: offerRPC,
+    isLoading: isLoadingRPC,
+    isError: isErrorRPC,
+  } = useOfferById(offerId);
+
+  // Fallback vers TheGraph si RPC échoue ou n'est pas disponible
+  const {
+    offer: offerGraph,
+    isLoading: isLoadingGraph,
+    hasError: hasErrorGraph,
+  } = useOffer(offerId);
+
+  // Utiliser RPC en priorité si disponible, sinon fallback vers GraphQL
+  // offerRPC est Partial<Offer>, offerGraph est Offer | undefined
+  const offer: Offer | undefined =
+    offerRPC && Object.keys(offerRPC).length > 0
+      ? (offerRPC as Offer)
+      : offerGraph;
+  const isLoading = isLoadingRPC || (isErrorRPC && isLoadingGraph);
+  const hasError = isErrorRPC && hasErrorGraph;
 
   const isAccountOffer: boolean = useMemo(() => {
     if (!offer || !account) return false;
@@ -90,7 +112,11 @@ const ShowOfferPage: FC = () => {
                       radius={'md'}
                       style={transitionStyles}
                     >
-                      <Card.Section withBorder={true} inheritPadding={true} p={'xs'}>
+                      <Card.Section
+                        withBorder={true}
+                        inheritPadding={true}
+                        p={'xs'}
+                      >
                         <Flex align={'center'} gap={'xs'}>
                           <IconSettings size={18} />
                           <Text>{'Actions'}</Text>

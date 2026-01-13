@@ -18,6 +18,7 @@ import { OFFERS_TYPE, useRightTableColumn } from 'src/hooks/useRightTableColumns
 import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
 import { useTranslation } from 'react-i18next';
 import { useUserOffers } from '../../../hooks/offers/useUserOffers';
+import { DegradedModeOverlay } from '../../DegradedModeOverlay';
 
 export const MarketTableUser: FC = () => {
 
@@ -75,39 +76,40 @@ export const MarketTableUser: FC = () => {
   });
 
   return (
-    <Flex direction={"column"} gap={"xl"} mt={30}>
-      <Flex direction={"column"} gap={"sm"} align={"flex-start"}>
-        <Text size={'xl'}>
-          {t('title')}
-        </Text>
-        <TextInput 
-            placeholder={t('nameFilterPlaceholder')}
-            value={globalFilter}
-            onChange={(event) => setGlobalFilter(event.currentTarget.value)}
-        />
-        <MarketSort 
-          sellCount={sellCount}
-          buyCount={buyCount}
-          exchangeCount={exchangeCount}
+    <DegradedModeOverlay blockInteraction={offers.length === 0}>
+      <Flex direction={"column"} gap={"xl"} mt={30}>
+        <Flex direction={"column"} gap={"sm"} align={"flex-start"}>
+          <Text size={'xl'}>
+            {t('title')}
+          </Text>
+          <TextInput 
+              placeholder={t('nameFilterPlaceholder')}
+              value={globalFilter}
+              onChange={(event) => setGlobalFilter(event.currentTarget.value)}
+          />
+          <MarketSort 
+            sellCount={sellCount}
+            buyCount={buyCount}
+            exchangeCount={exchangeCount}
+          />
+        </Flex>
+        <Table
+          tableProps={{
+            highlightOnHover: true,
+            verticalSpacing: 'sm',
+            horizontalSpacing: 'xs',
+            style: (theme) => ({
+              border:theme.other.border(theme),
+              borderRadius: theme.radius[theme.defaultRadius as MantineSize],
+              borderCollapse: 'separate',
+              borderSpacing: 0,
+            }),
+          }}
+          table={table}
+          tablecaptionOptions={{ refreshState: [offersAreLoading, () => refetch()], visible: true }}
+          TableSubRow={MarketSubRow}
         />
       </Flex>
-      <Table
-        tableProps={{
-          highlightOnHover: true,
-          verticalSpacing: 'sm',
-          horizontalSpacing: 'xs',
-          style: (theme) => ({
-            border:theme.other.border(theme),
-            borderRadius: theme.radius[theme.defaultRadius as MantineSize],
-            borderCollapse: 'separate',
-            borderSpacing: 0,
-          }),
-        }}
-        table={table}
-        tablecaptionOptions={{ refreshState: [offersAreLoading, () => refetch()], visible: true }}
-        TableSubRow={MarketSubRow}
-      />
-    </Flex>
-    
+    </DegradedModeOverlay>
   );
 };

@@ -11,9 +11,20 @@ import {
 } from '../../../src/types/GetPriceTokens';
 import { Price } from '../../../src/types/price';
 
-const gnosisRpcUrl = process.env.GNOSIS_RPC_URL as string;
-const ethereumRpcUrl = process.env.ETHEREUM_RPC_URL as string;
-const sepoliaRpcUrl = process.env.SEPOLIA_RPC_URL as string;
+// RPC URLs avec valeurs par défaut (public RPCs)
+// Vérifier si les variables sont définies ET non vides
+const gnosisRpcUrl =
+  process.env.GNOSIS_RPC_URL && process.env.GNOSIS_RPC_URL.trim() !== ''
+    ? process.env.GNOSIS_RPC_URL
+    : 'https://gnosis-rpc.publicnode.com';
+const ethereumRpcUrl =
+  process.env.ETHEREUM_RPC_URL && process.env.ETHEREUM_RPC_URL.trim() !== ''
+    ? process.env.ETHEREUM_RPC_URL
+    : 'https://eth.llamarpc.com';
+const sepoliaRpcUrl =
+  process.env.SEPOLIA_RPC_URL && process.env.SEPOLIA_RPC_URL.trim() !== ''
+    ? process.env.SEPOLIA_RPC_URL
+    : 'https://ethereum-sepolia-rpc.publicnode.com';
 
 const rpcUrls = new Map<number, string>([
   [Number(NetworkId.gnosis), gnosisRpcUrl],
@@ -27,14 +38,36 @@ const handler: NextApiHandler = async (
 ) => {
   try {
     const { chainId: id } = req.query;
-    const chainId: number = id as unknown as number;
-    if (!chainId) return res.status(400).json({ error: 'ChainId is missing.' });
+    if (!id || typeof id !== 'string') {
+      return res.status(400).json({ error: 'ChainId is missing or invalid.' });
+    }
 
-    const tokens = tokenToGetPrice.get(Number(chainId));
-    if (!tokens) return res.status(400).json({ error: 'ChainId is invalid.' });
+    const chainId = Number(id);
+    if (isNaN(chainId)) {
+      return res.status(400).json({ error: 'ChainId must be a valid number.' });
+    }
 
-    const rpcUrl = rpcUrls.get(Number(chainId));
-    if (!rpcUrl) return res.status(400).json({ error: 'Cannot find rpc url' });
+    const tokens = tokenToGetPrice.get(chainId);
+    if (!tokens) {
+      return res.status(400).json({
+        error: `ChainId ${chainId} is not supported. Supported chains: ${Array.from(
+          tokenToGetPrice.keys()
+        ).join(', ')}`,
+      });
+    }
+
+    const rpcUrl = rpcUrls.get(chainId);
+    if (!rpcUrl) {
+      return res.status(400).json({
+        error: `RPC URL not configured for chainId ${chainId}. Please set ${
+          chainId === ChainsID.Gnosis
+            ? 'GNOSIS_RPC_URL'
+            : chainId === ChainsID.Ethereum
+            ? 'ETHEREUM_RPC_URL'
+            : 'SEPOLIA_RPC_URL'
+        } in your .env file.`,
+      });
+    }
 
     const prices = await Promise.all<Price>(
       tokens.map((token) => {

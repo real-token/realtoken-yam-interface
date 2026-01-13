@@ -33,6 +33,8 @@ import { resources } from 'src/i18next';
 
 import { modals } from '../src/components';
 import { HeaderNav } from '../src/components/HeaderNav';
+import { OfferCacheProvider } from '../src/components/OfferCacheProvider';
+import { TheGraphErrorNotification } from '../src/components/TheGraphErrorNotification';
 import { FooterLinks } from '../src/components/footer/FooterLinks';
 import { Banners } from '../src/components/header/Banners';
 import {
@@ -67,6 +69,48 @@ const queryClient = new QueryClient({
       query: Query<unknown, unknown, unknown, QueryKey>
     ) => {
       const errCode = query.meta?.errCode as REACT_QUERY_ERRORS;
+
+      // Importer parseGraphQLError de manière dynamique pour éviter les problèmes de circular dependencies
+      // Vérifier si c'est une erreur GraphQL liée à TheGraph
+      let isTheGraphError = false;
+      if (err && typeof err === 'object') {
+        // Vérifier si c'est une erreur Apollo avec graphQLErrors
+        if ('graphQLErrors' in err) {
+          const apolloError = err as {
+            graphQLErrors?: Array<{ extensions?: { code?: string } }>;
+          };
+          if (
+            apolloError.graphQLErrors?.some(
+              (e) => e.extensions?.code === 'SUBGRAPH_INDEXING_ERROR'
+            )
+          ) {
+            isTheGraphError = true;
+          }
+        }
+        // Vérifier si c'est une erreur GraphQL directe
+        if ('errors' in err) {
+          const graphQLError = err as {
+            errors?: Array<{ extensions?: { code?: string } }>;
+          };
+          if (
+            graphQLError.errors?.some(
+              (e) => e.extensions?.code === 'SUBGRAPH_INDEXING_ERROR'
+            )
+          ) {
+            isTheGraphError = true;
+          }
+        }
+      }
+
+      // Ne pas afficher de notification générique pour les erreurs TheGraph
+      // Le composant TheGraphErrorNotification s'en charge
+      if (isTheGraphError) {
+        console.warn(
+          'TheGraph error detected, handled by TheGraphErrorNotification component'
+        );
+        return;
+      }
+
       if (errCode) {
         console.error(`${errCode}: ${err}`);
         const errorData = REACT_QUERY_ERRORS_DATA[errCode];
@@ -78,12 +122,8 @@ const queryClient = new QueryClient({
         });
       } else {
         console.error('Unknown error: ', err);
-        notifications.show({
-          color: 'red',
-          title: 'Error',
-          autoClose: false,
-          message: 'An unknown error occurred',
-        });
+        // Ne pas afficher de notification pour les erreurs inconnues non-critiques
+        // Seulement logger pour éviter de spammer l'utilisateur
       }
     },
   }),
@@ -118,21 +158,24 @@ const App = ({ Component, pageProps }: AppProps) => {
                 position: 'bottom-right',
               }}
             >
-              <Layout
-                currentWebsite={Websites.YAM}
-                head={
-                  <Head
-                    title={'YAM (You And Me)'}
-                    description={'YAM (You And Me)'}
-                  />
-                }
-                headerNav={<HeaderNav />}
-                footerCustomLinks={<FooterLinks />}
-                headerBanner={<Banners />}
-              >
-                <LanguageInit i={i18next} />
-                <Component {...pageProps} />
-              </Layout>
+              <OfferCacheProvider>
+                <Layout
+                  currentWebsite={Websites.YAM}
+                  head={
+                    <Head
+                      title={'YAM (You And Me)'}
+                      description={'YAM (You And Me)'}
+                    />
+                  }
+                  headerNav={<HeaderNav />}
+                  footerCustomLinks={<FooterLinks />}
+                  headerBanner={<Banners />}
+                >
+                  <LanguageInit i={i18next} />
+                  <TheGraphErrorNotification />
+                  <Component {...pageProps} />
+                </Layout>
+              </OfferCacheProvider>
             </MantineProviders>
           </RealTokenUiProvider>
         </JotaiProvider>

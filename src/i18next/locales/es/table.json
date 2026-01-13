@@ -13,6 +13,19 @@
     "nameFilterPlaceholder": "Buscar",
     "showOnlyWhitelisted": "Mostrar solo ofertas de propiedades en lista blanca",
     "hideDust": "Ocultar ofertas de polvo",
-    "hideDustValue": "Cantidad por debajo de la cual la oferta se oculta"
+    "hideDustValue": "Cantidad por debajo de la cual la oferta se oculta",
+    "offerIdInput": {
+      "label": "Buscar una oferta por ID",
+      "labelDegraded": "Buscar una oferta por ID (modo degradado)",
+      "placeholder": "Ej: 123",
+      "button": "Ver oferta",
+      "checking": "Verificando...",
+      "errorEmpty": "Por favor ingrese un ID de oferta",
+      "errorInvalid": "El ID debe ser un número positivo",
+      "errorNotFound": "Esta oferta no existe o ha sido eliminada",
+      "offerExists": "Esta oferta existe",
+      "offerNotExists": "Esta oferta no existe",
+      "info": "Puede buscar una oferta específica ingresando su ID arriba."
+    }
   }
 }

@@ -1,13 +1,12 @@
+import { gql } from '@apollo/client';
 import { PropertiesToken } from '@real-token/types';
 import { useQuery } from '@tanstack/react-query';
-import { gql } from '@apollo/client';
 
 import { useChainId } from 'wagmi';
 
 import { getExtendedTokens } from '../../constants/GetPriceToken';
 import { REACT_QUERY_ERRORS } from '../../types/ReactQueryErrors';
 import { mergeExtendedProperties } from '../../utils/properties';
-import { apiClient } from '../../utils/offers/getClientURL';
 
 const GET_PROPERTIES_QUERY = gql`
   query getProperties {
@@ -47,6 +46,7 @@ export const useProperties: UseProperties = () => {
   const {
     isLoading,
     data: properties,
+    isSuccess,
   } = useQuery({
     queryKey: ['properties', chainId],
     meta: { errCode: REACT_QUERY_ERRORS.FETCH_WL_PROPERTIES },
@@ -54,49 +54,122 @@ export const useProperties: UseProperties = () => {
     queryFn: async (): Promise<PropertiesToken[]> => {
       if (!chainId) return [];
 
-      try {
-        const response = await apiClient.query({
-          query: GET_PROPERTIES_QUERY,
-        });
+      //   {
+      //     properties: {
+      //         id: string,
+      //         shortName: string,
+      //         fullName: string,
+      //         product: {
+      //             currency: string,
+      //             imageLink: string[],
+      //             annualPercentageYield: number,
+      //             tokens: {
+      //                 tokenIdRules: number
+      //                 price: number
+      //                 blockchainAddresses{
+      //                     networkId: number
+      //                     addressToken: string
+      //                 }
+      //             }[]
+      //         }
+      //     }[]
+      //   }
 
-        const tokens: any[] = response.data.privateApi.tokens;
+      // const { data } = await apiClient.query({
+      //   query: gql`
+      //     query getProperties {
+      //       privateApi {
+      //         properties {
+      //           id
+      //           shortName
+      //           fullName
+      //           product {
+      //             currency
+      //             imageLink
+      //             marketplaceLink
+      //             annualPercentageYield
+      //             tokens {
+      //               tokenIdRules
+      //               price
+      //               blockchainAddresses {
+      //                 networkId
+      //                 addressToken
+      //               }
+      //             }
+      //           }
+      //         }
+      //       }
+      //     }
+      //   `,
+      // });
+      // const datasProperties = data?.privateApi?.properties;
+      // if (!datasProperties) {
+      //   throw new Error('No properties found');
+      // }
 
-        const transformedTokens: PropertiesToken[] = tokens
-          .flatMap((token) => {
-            const contractAddress = token.blockchainAddresses?.find(
-              (addr: any) => addr.networkId === chainId
-            )?.addressToken;
+      const tokens = await fetch('/tokens.json');
+      const datasProperties = await tokens.json();
 
-            if (!contractAddress) return [];
-
-            const property: PropertiesToken = {
-              uuid: token.tokenIdRules?.toString() ?? '',
-              shortName: token.shortName,
-              fullName: token.fullName,
-              contractAddress: contractAddress.toLowerCase(),
-              officialPrice: token.price,
-              currency: token.product?.currency ?? '',
-              marketplaceLink: token.product?.marketplaceLink ?? '',
-              imageLink: token.product?.imageLink ?? [],
-              netRentYearPerToken: token.product?.rentsValue?.netRentYearlyPerToken ?? 0,
-              tokenIdRules: token.tokenIdRules ?? 0,
-            };
-
-            if (token.product?.rentsValue?.netRentYearlyPerToken && token.price) {
-              property.annualYield = token.product.rentsValue.netRentYearlyPerToken / token.price;
+      return mergeExtendedProperties(
+        datasProperties
+          .map((property: any) => {
+            // Sélectionner l'adresse selon le chainId
+            let contractAddress: string | undefined;
+            if (chainId === 1) {
+              contractAddress = property.ethereumContract;
+            } else if (chainId === 100) {
+              contractAddress =
+                property.gnosisContract || property.xDaiContract;
             }
 
-            return [property];
-          });
+            // Ignorer les propriétés sans contrat sur ce réseau
+            if (!contractAddress) {
+              return null;
+            }
 
-        return mergeExtendedProperties(
-          transformedTokens,
-          getExtendedTokens(chainId)
-        );
-      } catch (error) {
-        console.error('Failed to fetch properties from GraphQL API', error);
-        return [];
-      }
+            return {
+              uuid: property.uuid,
+              shortName: property.shortName,
+              fullName: property.fullName,
+              currency: property.currency,
+              marketplaceLink: property.marketplaceLink,
+              imageLink: property.imageLink,
+              officialPrice: property.tokenPrice,
+              contractAddress: contractAddress,
+              tokenIdRules: property.tokenIdRules ?? 0,
+              netRentYearPerToken: property.netRentYearPerToken,
+              annualYield: property.annualPercentageYield / 100,
+            };
+          })
+          .filter(Boolean),
+        getExtendedTokens(chainId)
+      );
+
+      // return mergeExtendedProperties(
+      //   datasProperties.map((property: any) => {
+      //     const contractAddress =
+      //       property.product.tokens.blockchainAddresses.find(
+      //         (address: any) => address.networkId === chainId
+      //       )?.addressToken;
+      //     if (!contractAddress) {
+      //       throw new Error('No contract address found');
+      //     }
+      //     return {
+      //       uuid: property.id,
+      //       shortName: property.shortName,
+      //       fullName: property.fullName,
+      //       currency: property.product.currency,
+      //       marketplaceLink: property.product.marketplaceLink,
+      //       imageLink: property.product.imageLink[0],
+      //       officialPrice: property.product.tokens.price,
+      //       contractAddress: contractAddress,
+      //       tokenIdRules: property.product.tokens.tokenIdRules,
+      //       netRentYearPerToken: property.product.tokens.price,
+      //       annualYield: property.product.annualPercentageYield,
+      //     };
+      //   }),
+      //   getExtendedTokens(chainId)
+      // );
     },
   });
 

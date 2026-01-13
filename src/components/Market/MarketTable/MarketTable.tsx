@@ -31,6 +31,7 @@ import {
 import { usePublicOffers } from '../../../hooks/offers/usePublicOffers';
 import { Table } from '../../Table';
 import { MarketSubRow } from '../MarketSubRow';
+import { DegradedModeOverlay } from '../../DegradedModeOverlay';
 
 export const MarketTable: FC = () => {
   const {
@@ -131,22 +132,24 @@ export const MarketTable: FC = () => {
   });
 
   return (
-    <Table
-      tableProps={{
-        highlightOnHover: true,
-        verticalSpacing: 'sm',
-        horizontalSpacing: 'xs',
-        style: () => ({
-          overflow: 'hidden',
-        }),
-      }}
-      table={table}
-      tablecaptionOptions={{
-        refreshState: [offersAreLoading, () => refetchPublicOffers()],
-        visible: true,
-      }}
-      TableSubRow={MarketSubRow}
-      isLoading={offersAreLoading}
-    />
+    <DegradedModeOverlay blockInteraction={offers.length === 0}>
+      <Table
+        tableProps={{
+          highlightOnHover: true,
+          verticalSpacing: 'sm',
+          horizontalSpacing: 'xs',
+          style: () => ({
+            overflow: 'hidden',
+          }),
+        }}
+        table={table}
+        tablecaptionOptions={{
+          refreshState: [offersAreLoading, () => refetchPublicOffers()],
+          visible: true,
+        }}
+        TableSubRow={MarketSubRow}
+        isLoading={offersAreLoading}
+      />
+    </DegradedModeOverlay>
   );
 };

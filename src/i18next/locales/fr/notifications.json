@@ -1,5 +1,26 @@
 {
   "graphIssue": "Il y a des soucis sur le chargements des offers avec TheGraph. Nous travaillons activement dessus, merci pour votre compréhension.",
+  "graphSyncing": "Le graphe est en cours de synchronisation, les données pourraient ne pas se charger correctement. Veuillez patienter jusqu'à la fin de la synchronisation.",
+  "degradedMode": {
+    "title": "Mode dégradé activé",
+    "message": "TheGraph est inaccessible ou les offres ne peuvent pas être chargées. Utilisez la recherche par ID ci-dessous pour accéder à une offre spécifique via RPC direct.",
+    "tip": "💡 Astuce : Vous pouvez toujours consulter une offre spécifique en saisissant son ID ci-dessous. Cette fonctionnalité fonctionne même en mode dégradé grâce aux appels RPC directs (Multicall3).",
+    "overlay": {
+      "indexingError": {
+        "title": "Problème d'indexation",
+        "message": "Les données ne peuvent pas être chargées depuis TheGraph. Utilisez la recherche par ID pour accéder à des offres spécifiques."
+      },
+      "networkError": {
+        "title": "Erreur réseau",
+        "message": "Impossible de se connecter à TheGraph. Vérifiez votre connexion internet."
+      },
+      "generic": {
+        "title": "Mode dégradé",
+        "message": "Les données ne peuvent pas être chargées. Utilisez la recherche par ID pour accéder à des offres spécifiques."
+      },
+      "partialData": "Certaines données peuvent être obsolètes."
+    }
+  },
   "grantRoleLoading": {
     "title": "Veuillez patienter",
     "message": "Votre transaction est en cours de validation."
@@ -87,5 +108,22 @@
   "buyOfferInvalid": {
     "title": "Erreur",
     "message": "Vous ne pouvez acquérir cette offre. Merci de vérifier: Vous êtes sur liste blanche pour ce token, le token n'est pas en période de blocage, vous avez suffisamment de votre jeton d'achat dans votre portefeuille."
+  },
+  "theGraphError": {
+    "indexingError": {
+      "title": "Problème d'indexation TheGraph",
+      "message": "Le subgraph TheGraph rencontre des problèmes d'indexation. Certaines données peuvent être indisponibles ou obsolètes.",
+      "checkStatus": "Vérifier le statut du subgraph",
+      "tip": "💡 Vous pouvez toujours utiliser la recherche par ID d'offre pour accéder à des offres spécifiques via RPC direct."
+    },
+    "networkError": {
+      "title": "Erreur réseau TheGraph",
+      "message": "Impossible de se connecter à TheGraph. Vérifiez votre connexion internet.",
+      "tip": "💡 Vous pouvez toujours utiliser la recherche par ID d'offre pour accéder à des offres spécifiques via RPC direct."
+    },
+    "unknownError": {
+      "title": "Erreur TheGraph",
+      "message": "Une erreur s'est produite lors de la récupération des données depuis TheGraph."
+    }
   }
 }

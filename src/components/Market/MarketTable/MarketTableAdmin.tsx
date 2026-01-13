@@ -51,6 +51,7 @@ import { useOffers } from '../../../hooks/interface/useOffers';
 import { Table } from '../../Table';
 import { MarketSort } from '../MarketSort/MarketSort';
 import { MarketSubRow } from '../MarketSubRow';
+import { DegradedModeOverlay } from '../../DegradedModeOverlay';
 
 export const MarketTableAdmin: FC = () => {
   const { offersAreLoading, refetch, offers: allOffers } = useOffers();
@@ -310,45 +311,47 @@ export const MarketTableAdmin: FC = () => {
   });
 
   return (
-    <Flex direction={'column'} gap={'sm'} align={'flex-start'} mt={20}>
-      <TextInput
-        placeholder={t2('nameFilterPlaceholder')}
-        value={globalFilter}
-        onChange={(event) => setGlobalFilter(event.currentTarget.value)}
-      />
-      <Flex direction={'column'} gap={'md'}>
-        <MarketSort />
-        <Flex gap={'md'} align={'end'}>
-          <NumberInput
-            label={'Offer shown (nothing for all)'}
-            min={0}
-            max={offers.length}
-            value={offerLimit}
-            onChange={(value) =>
-              value ? setOfferLimit(Number(value)) : setOfferLimit(undefined)
-            }
-          />
-          <Checkbox
-            label={'Offers with available amount = 0'}
-            checked={filterZeroAmount}
-            onChange={() => setFilterZeroAmount(!filterZeroAmount)}
-          />
+    <DegradedModeOverlay blockInteraction={offers.length === 0}>
+      <Flex direction={'column'} gap={'sm'} align={'flex-start'} mt={20}>
+        <TextInput
+          placeholder={t2('nameFilterPlaceholder')}
+          value={globalFilter}
+          onChange={(event) => setGlobalFilter(event.currentTarget.value)}
+        />
+        <Flex direction={'column'} gap={'md'}>
+          <MarketSort />
+          <Flex gap={'md'} align={'end'}>
+            <NumberInput
+              label={'Offer shown (nothing for all)'}
+              min={0}
+              max={offers.length}
+              value={offerLimit}
+              onChange={(value) =>
+                value ? setOfferLimit(Number(value)) : setOfferLimit(undefined)
+              }
+            />
+            <Checkbox
+              label={'Offers with available amount = 0'}
+              checked={filterZeroAmount}
+              onChange={() => setFilterZeroAmount(!filterZeroAmount)}
+            />
+          </Flex>
         </Flex>
+        <Table
+          tableProps={{
+            highlightOnHover: true,
+            verticalSpacing: 'sm',
+            horizontalSpacing: 'xs',
+          }}
+          table={table}
+          tablecaptionOptions={{
+            refreshState: [offersAreLoading, refetch],
+            visible: true,
+          }}
+          TableSubRow={MarketSubRow}
+        />
       </Flex>
-      <Table
-        tableProps={{
-          highlightOnHover: true,
-          verticalSpacing: 'sm',
-          horizontalSpacing: 'xs',
-        }}
-        table={table}
-        tablecaptionOptions={{
-          refreshState: [offersAreLoading, refetch],
-          visible: true,
-        }}
-        TableSubRow={MarketSubRow}
-      />
-    </Flex>
+    </DegradedModeOverlay>
   );
 };
 

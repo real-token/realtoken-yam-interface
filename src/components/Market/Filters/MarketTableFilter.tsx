@@ -8,6 +8,7 @@ import { useAtom } from 'jotai';
 import { nameFilterValueAtom } from '../../../states';
 import { HideDustCheckbox } from './HideDustCheckbox';
 import { ShowOnlyWlCheckbox } from './OnlyShowWLCheckbox';
+import { OfferIdInput } from './OfferIdInput';
 
 export const MarketTableFilter: FC = () => {
   const { t } = useTranslation('table', { keyPrefix: 'filters' });
@@ -22,6 +23,10 @@ export const MarketTableFilter: FC = () => {
       mb={20}
     >
       <Text size={'xl'}>{t('title')}</Text>
+      
+      {/* Composant de saisie d'ID d'offre */}
+      <OfferIdInput />
+      
       <TextInput
         placeholder={t('nameFilterPlaceholder')}
         value={nameFilterValue}

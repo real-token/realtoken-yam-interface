@@ -1,11 +1,10 @@
 import { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
 
+import { gql } from '@apollo/client';
 import { NetworkId } from '@real-token/core';
 
-import { gql } from '@apollo/client';
-import { apiClient } from 'src/utils/offers/getClientURL';
-
 import { APIPropertiesToken, PropertiesToken } from 'src/types';
+import { apiClient } from 'src/utils/offers/getClientURL';
 
 interface BlockchainAddress {
   networkId: number;
@@ -74,39 +73,61 @@ const getTokenFromCommunityAPI = new Promise<APIPropertiesToken[]>(
         tokenPrice: token.price,
         currency: token.product?.currency ?? '',
         uuid: token.tokenIdRules?.toString() ?? '',
-        ethereumContract: token.blockchainAddresses?.find((addr: BlockchainAddress) => addr.networkId === 1)?.addressToken ?? '',
-        xDaiContract: token.blockchainAddresses?.find((addr: BlockchainAddress) => addr.networkId === 100)?.addressToken ?? '',
-        gnosisContract: token.blockchainAddresses?.find((addr: BlockchainAddress) => addr.networkId === 100)?.addressToken ?? '',
+        ethereumContract:
+          token.blockchainAddresses?.find(
+            (addr: BlockchainAddress) => addr.networkId === 1
+          )?.addressToken ?? '',
+        xDaiContract:
+          token.blockchainAddresses?.find(
+            (addr: BlockchainAddress) => addr.networkId === 100
+          )?.addressToken ?? '',
+        gnosisContract:
+          token.blockchainAddresses?.find(
+            (addr: BlockchainAddress) => addr.networkId === 100
+          )?.addressToken ?? '',
         marketplaceLink: token.product?.marketplaceLink ?? '',
         imageLink: token.product?.imageLink ?? [],
-        netRentYearPerToken: token.product?.rentsValue?.netRentYearlyPerToken ?? 0,
+        netRentYearPerToken:
+          token.product?.rentsValue?.netRentYearlyPerToken ?? 0,
         tokenIdRules: token.tokenIdRules ?? 0,
         blockchainAddresses: {
           ethereum: {
             chainName: 'ethereum',
             chainId: 1,
-            contract: token.blockchainAddresses?.find((addr: BlockchainAddress) => addr.networkId === 1)?.addressToken ?? '',
+            contract:
+              token.blockchainAddresses?.find(
+                (addr: BlockchainAddress) => addr.networkId === 1
+              )?.addressToken ?? '',
             distributor: '',
             maintenance: '',
           },
           xDai: {
             chainName: 'xDai',
             chainId: 100,
-            contract: token.blockchainAddresses?.find((addr: BlockchainAddress) => addr.networkId === 100)?.addressToken ?? '',
+            contract:
+              token.blockchainAddresses?.find(
+                (addr: BlockchainAddress) => addr.networkId === 100
+              )?.addressToken ?? '',
             distributor: '',
             maintenance: '',
           },
           gnosis: {
             chainName: 'gnosis',
             chainId: 100,
-            contract: token.blockchainAddresses?.find((addr: BlockchainAddress) => addr.networkId === 100)?.addressToken ?? '',
+            contract:
+              token.blockchainAddresses?.find(
+                (addr: BlockchainAddress) => addr.networkId === 100
+              )?.addressToken ?? '',
             distributor: '',
             maintenance: '',
           },
           sepolia: {
             chainName: 'sepolia',
             chainId: 11155111,
-            contract: token.blockchainAddresses?.find((addr: BlockchainAddress) => addr.networkId === 11155111)?.addressToken ?? '',
+            contract:
+              token.blockchainAddresses?.find(
+                (addr: BlockchainAddress) => addr.networkId === 11155111
+              )?.addressToken ?? '',
             distributor: '',
             maintenance: '',
           },
@@ -216,15 +237,32 @@ const handler: NextApiHandler = async (
 ) => {
   try {
     const { chainId: id } = req.query;
-    const chainId: string = id as string;
-
-    if (!chainId) {
-      return res.status(400).json({ error: 'ChainId is missing.' });
+    if (!id || typeof id !== 'string') {
+      return res.status(400).json({ error: 'ChainId is missing or invalid.' });
     }
 
-    // const [communityApiToken,wlTokens] = await Promise.all([getTokenFromCommunityAPI,getWhitelistedProperties(parseInt(chainId))]);
+    const chainId = parseInt(id, 10);
+    if (isNaN(chainId)) {
+      return res.status(400).json({ error: 'ChainId must be a valid number.' });
+    }
+
+    // Vérifier que le chainId est supporté
+    const supportedChains = [
+      NetworkId.gnosis,
+      NetworkId.ethereum,
+      NetworkId.sepolia,
+    ];
+    if (!supportedChains.includes(chainId)) {
+      return res.status(400).json({
+        error: `ChainId ${chainId} is not supported. Supported chains: ${supportedChains.join(
+          ', '
+        )}`,
+      });
+    }
+
+    // const [communityApiToken,wlTokens] = await Promise.all([getTokenFromCommunityAPI,getWhitelistedProperties(chainId)]);
     const [communityApiToken] = await Promise.all([getTokenFromCommunityAPI]);
-    const tokens = await getTokens(parseInt(chainId), communityApiToken);
+    const tokens = await getTokens(chainId, communityApiToken);
 
     // const extendedTokens = tokenToGetPrice.get(parseInt(chainId))?.filter(token => !token.isBuyToken) ?? [] as PropertiesToken[];
     // console.log(extendedTokens);
