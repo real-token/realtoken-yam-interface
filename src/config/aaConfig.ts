@@ -367,7 +367,7 @@ const torusConfig: TorusConfig = {
     env === 'development' || env == 'local' || env == 'testnet'
       ? networks
       : networks.filter((network) => !network.isTestnet),
-  enableLogging: false,
+  enableLogging: true,
   ...(env == 'production' || env == 'staging'
     ? {
         loginConfig: {

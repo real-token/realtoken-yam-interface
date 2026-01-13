@@ -6,7 +6,10 @@ import {
   ApiPriceToken,
   tokenToGetPriceApi,
 } from '../../../src/constants/GetPriceTokenApi';
-import { getChainlinkPrice } from '../../../src/controllers/ChainLinkCall';
+import {
+  ChainlinkPriceParams,
+  getChainlinkPricesBatch,
+} from '../../../src/controllers/ChainLinkCall';
 import { getCoingeckoApiPrice } from '../../../src/controllers/CoingeckoApiCall';
 import { Price } from '../../../src/types/price';
 
@@ -78,55 +81,60 @@ const handler: NextApiHandler = async (
     }
 
     console.log('[prices] Starting price fetches...');
-    const prices = await Promise.all<Price>(
-      tokens.map(async (token: ApiPriceToken): Promise<Price> => {
-        const defaultPrice: Price = {
+
+    // Group tokens by price source type
+    const chainlinkTokens: ChainlinkPriceParams[] = [];
+    const coingeckoTokens: ApiPriceToken[] = [];
+    const customTokens: ApiPriceToken[] = [];
+
+    for (const token of tokens) {
+      if (token.priceFnc.type === 'chainlink') {
+        chainlinkTokens.push({
           contractAddress: token.contractAddress,
-          price: '0',
-        };
+          priceFnc: { type: 'chainlink', contractAddress: token.priceFnc.contractAddress },
+        });
+      } else if (token.priceFnc.type === 'coingecko-api') {
+        coingeckoTokens.push(token);
+      } else if (token.priceFnc.type === 'custom-fnc') {
+        customTokens.push(token);
+      }
+    }
 
-        try {
-          const priceFnc = token.priceFnc;
+    // Fetch all prices in parallel by type
+    const [chainlinkPrices, coingeckoPrices, customPrices] = await Promise.all([
+      // Batch all chainlink calls into one multicall
+      chainlinkTokens.length > 0
+        ? getChainlinkPricesBatch(chainId, chainlinkTokens, rpcUrl)
+        : Promise.resolve([]),
 
-          if (priceFnc.type === 'chainlink') {
-            return await getChainlinkPrice(
-              chainId,
-              {
-                contractAddress: token.contractAddress,
-                priceFnc: { type: 'chainlink', contractAddress: priceFnc.contractAddress },
-              },
-              rpcUrl
-            );
-          }
-
-          if (priceFnc.type === 'coingecko-api') {
-            return await getCoingeckoApiPrice(
-              {
-                contractAddress: token.contractAddress,
-                priceFnc: { type: 'coingecko-api', address: priceFnc.address },
-              },
-              chainId
-            );
-          }
-
-          if (priceFnc.type === 'custom-fnc') {
-            const price = await priceFnc.fnc();
-            return {
+      // Coingecko calls in parallel
+      Promise.all(
+        coingeckoTokens.map((token) =>
+          getCoingeckoApiPrice(
+            {
               contractAddress: token.contractAddress,
-              price: price.toString(),
-            };
-          }
+              priceFnc: { type: 'coingecko-api', address: (token.priceFnc as { type: 'coingecko-api'; address?: string }).address },
+            },
+            chainId
+          ).catch(() => ({ contractAddress: token.contractAddress, price: '0' }))
+        )
+      ),
 
-          return defaultPrice;
-        } catch (error) {
-          console.error(
-            `Failed to get price for ${token.contractAddress}:`,
-            error
-          );
-          return defaultPrice;
-        }
-      })
-    );
+      // Custom functions in parallel
+      Promise.all(
+        customTokens.map(async (token) => {
+          try {
+            const fnc = (token.priceFnc as { type: 'custom-fnc'; fnc: () => Promise<number> }).fnc;
+            const price = await fnc();
+            return { contractAddress: token.contractAddress, price: price.toString() };
+          } catch {
+            return { contractAddress: token.contractAddress, price: '0' };
+          }
+        })
+      ),
+    ]);
+
+    const prices: Price[] = [...chainlinkPrices, ...coingeckoPrices, ...customPrices];
 
     console.log('[prices] All fetches completed, processing results...');
     const pricesParsed = prices.reduce<Record<string, number>>((acc, price) => {

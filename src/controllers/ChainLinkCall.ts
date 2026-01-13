@@ -1,6 +1,5 @@
 import BigNumber from 'bignumber.js';
 import { createPublicClient, http } from 'viem';
-import { readContract } from 'viem/actions';
 import { gnosis, mainnet, sepolia } from 'viem/chains';
 
 import { oraclePriceFeedABI } from 'src/abis';
@@ -16,6 +15,9 @@ export interface ChainlinkPriceParams {
   };
 }
 
+// Chainlink USD price feeds always use 8 decimals
+const CHAINLINK_USD_DECIMALS = 8;
+
 // Map chainId to viem chain objects
 const getChainFromId = (chainId: number) => {
   switch (chainId) {
@@ -30,59 +32,63 @@ const getChainFromId = (chainId: number) => {
   }
 };
 
+// Batch fetch all chainlink prices in a single multicall
+export const getChainlinkPricesBatch = async (
+  chainId: number,
+  tokens: ChainlinkPriceParams[],
+  rpcUrl: string
+): Promise<Price[]> => {
+  const startTime = Date.now();
+  console.log(`[chainlink] Batch fetching ${tokens.length} prices...`);
+
+  const chain = getChainFromId(chainId);
+  const client = createPublicClient({
+    chain,
+    transport: http(rpcUrl, { timeout: 10000 }),
+    batch: { multicall: true },
+  });
+
+  const results = await Promise.all(
+    tokens.map(async (token): Promise<Price> => {
+      const oracleAddress = token.priceFnc.contractAddress;
+      if (!oracleAddress) {
+        return { contractAddress: token.contractAddress, price: '1' };
+      }
+
+      try {
+        const assetPrice = await client.readContract({
+          address: oracleAddress as `0x${string}`,
+          abi: oraclePriceFeedABI,
+          functionName: 'latestAnswer',
+        });
+
+        const tokenPrice = new BigNumber((assetPrice as bigint).toString()).shiftedBy(
+          -CHAINLINK_USD_DECIMALS
+        );
+
+        return {
+          contractAddress: token.contractAddress,
+          price: tokenPrice.toString(),
+        };
+      } catch (err) {
+        console.error(`[chainlink] Error for ${token.contractAddress.slice(0, 10)}:`, err);
+        return { contractAddress: token.contractAddress, price: '1' };
+      }
+    })
+  );
+
+  console.log(`[chainlink] Batch completed in ${Date.now() - startTime}ms`);
+  return results;
+};
+
+// Single price fetch (legacy, for compatibility)
 export const getChainlinkPrice = async (
   chainId: number,
   allowedToken: ChainlinkPriceParams,
   rpcUrl: string
 ): Promise<Price> => {
-  const tokenAddress = allowedToken.contractAddress;
-  const oracleContractAddress = allowedToken.priceFnc.contractAddress;
-  const startTime = Date.now();
-
-  const defaultPrice: Price = {
-    contractAddress: tokenAddress,
-    price: BigNumber(1).toString(),
-  };
-
-  if (!oracleContractAddress) {
-    return defaultPrice;
-  }
-
-  try {
-    console.log(`[chainlink] Fetching price for ${tokenAddress.slice(0, 10)}...`);
-    const chain = getChainFromId(chainId);
-    const client = createPublicClient({
-      chain,
-      transport: http(rpcUrl, { timeout: 5000 }), // 5s timeout
-    });
-
-    // Execute both RPC calls in parallel
-    const [assetPrice, assetDecimals] = await Promise.all([
-      readContract(client, {
-        address: oracleContractAddress as `0x${string}`,
-        abi: oraclePriceFeedABI,
-        functionName: 'latestAnswer',
-      }) as Promise<bigint>,
-      readContract(client, {
-        address: oracleContractAddress as `0x${string}`,
-        abi: oraclePriceFeedABI,
-        functionName: 'decimals',
-      }) as Promise<number>,
-    ]);
-
-    const tokenPrice = new BigNumber(assetPrice.toString()).shiftedBy(
-      -assetDecimals
-    );
-
-    console.log(`[chainlink] Got price for ${tokenAddress.slice(0, 10)} in ${Date.now() - startTime}ms`);
-    return {
-      contractAddress: tokenAddress,
-      price: tokenPrice.toString(),
-    };
-  } catch (err) {
-    console.error(`[chainlink] Error for ${tokenAddress.slice(0, 10)} after ${Date.now() - startTime}ms:`, err);
-    return defaultPrice;
-  }
+  const results = await getChainlinkPricesBatch(chainId, [allowedToken], rpcUrl);
+  return results[0];
 };
 
 export const getPriceInDollar = (
