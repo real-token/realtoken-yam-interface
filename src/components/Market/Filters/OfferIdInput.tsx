@@ -1,4 +1,4 @@
-import { FC, useState, FormEvent, useEffect, useRef } from 'react';
+import { FC, useState, FormEvent, useEffect, useRef, useMemo } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import {
@@ -19,12 +19,14 @@ import {
   IconX,
 } from '@tabler/icons';
 import { useDegradedMode } from 'src/hooks/interface/useDegradedMode';
-import { useWeb3React } from '@web3-react/core';
+import { useChainId } from 'wagmi';
 import { BigNumber } from '@ethersproject/bignumber';
-import { useMemo } from 'react';
+import { JsonRpcProvider } from '@ethersproject/providers';
+import { Contract } from '@ethersproject/contracts';
 import { OfferRPCService } from 'src/services/offerRPCService';
-import { useContract } from 'src/hooks/useContract';
-import { ContractsID } from 'src/constants/contracts';
+import { realTokenYamUpgradeableABI } from 'src/abis';
+import { RealTokenYamUpgradeable } from 'src/abis/types/RealTokenYamUpgradeable';
+import { networks, ExtendedChainConfig } from 'src/config/aaConfig';
 import { useDebounce } from 'src/hooks/useDebounce';
 
 /**
@@ -35,8 +37,7 @@ export const OfferIdInput: FC = () => {
   const { t } = useTranslation('table', { keyPrefix: 'filters.offerIdInput' });
   const { t: tNotifications } = useTranslation('notifications');
   const router = useRouter();
-  const { provider, chainId } = useWeb3React();
-  const yamContract = useContract(ContractsID.realTokenYamUpgradeable);
+  const chainId = useChainId();
   const [offerId, setOfferId] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [isChecking, setIsChecking] = useState<boolean>(false);
@@ -50,15 +51,29 @@ export const OfferIdInput: FC = () => {
   const validationAbortRef = useRef<AbortController | null>(null);
 
   const offerRPCService = useMemo(() => {
-    if (!provider || !yamContract || !chainId) return null;
+    if (!chainId) return null;
+
+    const chainIdHex = `0x${chainId.toString(16)}`;
+    const networkConfig = networks.find(
+      (n: ExtendedChainConfig) => n.chainId === chainIdHex
+    );
+
+    if (!networkConfig) return null;
 
     try {
+      const provider = new JsonRpcProvider(networkConfig.rpcTarget);
+      const yamContract = new Contract(
+        networkConfig.contracts.realTokenYamUpgradeableAddress,
+        realTokenYamUpgradeableABI,
+        provider
+      ) as unknown as RealTokenYamUpgradeable;
+
       return new OfferRPCService(provider, yamContract, chainId);
     } catch (error) {
       console.error('Failed to create OfferRPCService:', error);
       return null;
     }
-  }, [provider, yamContract, chainId]);
+  }, [chainId]);
 
   // Vérification en temps réel de l'existence de l'offre (avec debounce)
   useEffect(() => {

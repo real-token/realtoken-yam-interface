@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useOffers } from './useOffers';
-import { useWeb3React } from '@web3-react/core';
+import { useAccount, useChainId } from 'wagmi';
 import { ParsedGraphQLError } from '../../utils/errors/parseGraphQLError';
 
 /**
@@ -14,7 +14,8 @@ export function useDegradedMode(): {
   subgraphUrl?: string;
   parsedError: ParsedGraphQLError | null;
 } {
-  const { chainId, account } = useWeb3React();
+  const chainId = useChainId();
+  const { address: account } = useAccount();
   const { offersAreLoading, isError, parsedError } = useOffers();
 
   const degradedMode = useMemo(() => {

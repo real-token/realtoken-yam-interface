@@ -368,6 +368,40 @@ const torusConfig: TorusConfig = {
       ? networks
       : networks.filter((network) => !network.isTestnet),
   enableLogging: false,
+  ...(env == 'production' || env == 'staging'
+    ? {
+        loginConfig: {
+          facebook: {
+            name: 'facebook',
+            authConnectionId: 'realt-facebook',
+            authConnection: 'facebook',
+            showOnModal: true,
+          },
+          twitch: {
+            name: 'twitch',
+            authConnectionId: 'realt-twitchtv',
+            authConnection: 'twitch',
+            showOnModal: true,
+          },
+          discord: {
+            name: 'discord',
+            authConnectionId: 'realt-discord',
+            authConnection: 'discord',
+            showOnModal: true,
+          },
+          google: {
+            name: 'google',
+            authConnectionId: 'realt-google',
+            authConnection: 'google',
+          },
+          email_passwordless: {
+            name: 'email_passwordless',
+            authConnectionId: 'realt-passwordless',
+            authConnection: 'email_passwordless',
+          },
+        },
+      }
+    : {}),
 };
 
 export const aaClient: AAClientConfig = {

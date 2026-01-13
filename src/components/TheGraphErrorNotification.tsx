@@ -1,10 +1,12 @@
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { notifications } from '@mantine/notifications';
-import { IconAlertTriangle, IconX } from '@tabler/icons';
-import { useDegradedMode } from 'src/hooks/interface/useDegradedMode';
+
 import { Anchor, Stack, Text } from '@mantine/core';
-import { Link } from '@realtoken/realt-commons';
+import { notifications } from '@mantine/notifications';
+import { Link } from '@real-token/ui-components';
+import { IconAlertTriangle, IconX } from '@tabler/icons';
+
+import { useDegradedMode } from 'src/hooks/interface/useDegradedMode';
 
 /**
  * Composant qui affiche une notification non-bloquante en cas d'erreur TheGraph
@@ -12,7 +14,8 @@ import { Link } from '@realtoken/realt-commons';
  */
 export const TheGraphErrorNotification: React.FC = () => {
   const { t } = useTranslation('notifications');
-  const { isDegraded, errorType, errorMessage, subgraphUrl, parsedError } = useDegradedMode();
+  const { isDegraded, errorType, errorMessage, subgraphUrl, parsedError } =
+    useDegradedMode();
   const notificationShownRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -46,13 +49,18 @@ export const TheGraphErrorNotification: React.FC = () => {
       title = t('theGraphError.indexingError.title');
       message = (
         <Stack gap={4}>
-          <Text size="sm">{t('theGraphError.indexingError.message')}</Text>
+          <Text size='sm'>{t('theGraphError.indexingError.message')}</Text>
           {subgraphUrl && (
-            <Anchor component={Link} href={subgraphUrl} target="_blank" size="sm">
+            <Anchor
+              component={Link}
+              href={subgraphUrl}
+              target='_blank'
+              size='sm'
+            >
               {t('theGraphError.indexingError.checkStatus')}
             </Anchor>
           )}
-          <Text size="xs" c="dimmed" mt={4}>
+          <Text size='xs' c='dimmed' mt={4}>
             {t('theGraphError.indexingError.tip')}
           </Text>
         </Stack>
@@ -61,8 +69,8 @@ export const TheGraphErrorNotification: React.FC = () => {
       title = t('theGraphError.networkError.title');
       message = (
         <Stack gap={4}>
-          <Text size="sm">{t('theGraphError.networkError.message')}</Text>
-          <Text size="xs" c="dimmed" mt={4}>
+          <Text size='sm'>{t('theGraphError.networkError.message')}</Text>
+          <Text size='xs' c='dimmed' mt={4}>
             {t('theGraphError.networkError.tip')}
           </Text>
         </Stack>
@@ -71,9 +79,9 @@ export const TheGraphErrorNotification: React.FC = () => {
       title = t('theGraphError.unknownError.title');
       message = (
         <Stack gap={4}>
-          <Text size="sm">{t('theGraphError.unknownError.message')}</Text>
+          <Text size='sm'>{t('theGraphError.unknownError.message')}</Text>
           {errorMessage && (
-            <Text size="xs" c="dimmed">
+            <Text size='xs' c='dimmed'>
               {errorMessage}
             </Text>
           )}

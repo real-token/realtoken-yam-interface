@@ -3653,16 +3653,16 @@
     subscriptions-transport-ws "^0.9.0"
     wagmi "2.16.1"
 
-"@real-token/aa-modal@3.1.2":
-  version "3.1.2"
-  resolved "https://npm.pkg.github.com/download/@real-token/aa-modal/3.1.2/90a430f3974f238b8eef45a8d575863306d16964#90a430f3974f238b8eef45a8d575863306d16964"
-  integrity sha512-l6M0ymyfX0q+ztYmLhtSfguM/uGy6/CoHVBaOlMwBrLbZFU5B2GPJGXko4mjCzRPCoZYDQAApwPgicHlbJ5F4A==
+"@real-token/aa-modal@3.1.4":
+  version "3.1.4"
+  resolved "https://npm.pkg.github.com/download/@real-token/aa-modal/3.1.4/4952a61dd2b484e4cb8dac58270318febda6bd9c#4952a61dd2b484e4cb8dac58270318febda6bd9c"
+  integrity sha512-YhGM6potTAnKK0DCDOkQ6VtF+58TY67DWlCbTu+yGpNeJTvb7aMzWLJfALN2InkkX9wk5Wb5N9dVCAugWbQmBA==
   dependencies:
     "@babel/core" "^7.24.7"
     "@babel/runtime" "^7.24.7"
     "@mantine/form" "^7.17.3"
     "@mantine/notifications" "^7.17.3"
-    "@real-token/web3" "^3.1.2"
+    "@real-token/web3" "^3.1.4"
     "@tabler/icons-react" "^3.19.0"
     clsx "^2.1.1"
     i18next "25.5.2"
@@ -3674,58 +3674,58 @@
     react-i18next "16.0.0"
     tslib "^2.7.0"
 
-"@real-token/core@3.1.2":
-  version "3.1.2"
-  resolved "https://npm.pkg.github.com/download/@real-token/core/3.1.2/228c4428ec7d710a098c7f2ae538b1ba1b9a708e#228c4428ec7d710a098c7f2ae538b1ba1b9a708e"
-  integrity sha512-QkQWF7sqo2A/QSVF37wnf6ifDKfvuUGHGmRGd++q0jTlc98/ZuYWqs7C138aGdXY0W4MvExXkN3YkbpI3XATfw==
+"@real-token/core@3.1.4":
+  version "3.1.4"
+  resolved "https://npm.pkg.github.com/download/@real-token/core/3.1.4/d2e7e418f3598d9200fb0ba8d215af0e9a80e93b#d2e7e418f3598d9200fb0ba8d215af0e9a80e93b"
+  integrity sha512-LankS0R0Okzozm0Rlvw9T2niZp9omHYG//yBYi1MDTAPB2ckmylbkYKSr0lBvR5lfLNvvS7vtZ1+JCbOM6AelQ==
   dependencies:
     "@babel/core" "^7.24.7"
     "@babel/runtime" "^7.24.7"
-    "@real-token/types" "3.1.2"
+    "@real-token/types" "3.1.4"
     lodash "^4.17.21"
     react "^18.3.1"
     react-dom "^18.3.1"
 
-"@real-token/i18n-locales@3.1.2", "@real-token/i18n-locales@^3.1.2":
-  version "3.1.2"
-  resolved "https://npm.pkg.github.com/download/@real-token/i18n-locales/3.1.2/416f7018926a146a4dcf2fa45048f58b91d086d3#416f7018926a146a4dcf2fa45048f58b91d086d3"
-  integrity sha512-/XafsCKxWj5crTExHB6NiX7jBe5C4ns+bEdzp7tLRXco1V+ahSI5upH8gWXu0c0zhBXifc3ywT6ErHbPGyCo4Q==
+"@real-token/i18n-locales@3.1.4", "@real-token/i18n-locales@^3.1.4":
+  version "3.1.4"
+  resolved "https://npm.pkg.github.com/download/@real-token/i18n-locales/3.1.4/b23766402ac5f736ea7adbf479b3885ee5228089#b23766402ac5f736ea7adbf479b3885ee5228089"
+  integrity sha512-Ft4XBnek5SA81uj4Xj0POgsKNzS4O9PLItA56wUcnzRg/dUl8PMCY1uS3JEMP/Udg7bKEkBJzuBYjot9R4JdAg==
   dependencies:
     i18next-browser-languagedetector "^8.0.2"
     i18next-resources-for-ts "^1.2.1"
     react-cookie "^8.0.1"
 
-"@real-token/types@3.1.2", "@real-token/types@^3.1.2":
-  version "3.1.2"
-  resolved "https://npm.pkg.github.com/download/@real-token/types/3.1.2/07663b1546f73c22073af82b7dbe6845359706f5#07663b1546f73c22073af82b7dbe6845359706f5"
-  integrity sha512-C0xt89mE5A/w/phvHAuc/IIDuZuHWLzdpvPQg9OWTSavQ6unoo7FSsi95hPy2wfBN6EH2XzYoQaQIBYm4Ol0ZA==
+"@real-token/types@3.1.4", "@real-token/types@^3.1.4":
+  version "3.1.4"
+  resolved "https://npm.pkg.github.com/download/@real-token/types/3.1.4/f380b596d069d26157e94f953131fa143fc26083#f380b596d069d26157e94f953131fa143fc26083"
+  integrity sha512-HCE8a2touep0k2kWjd/DhLPV8H+hMGb5UUR1PBnwJ7j2JAvH0tQuXD5sY63CJs3IoJCwVwIuMBIM7g97vEiBqQ==
   dependencies:
     "@babel/core" "^7.24.7"
     "@babel/runtime" "^7.24.7"
 
-"@real-token/ui-components@3.1.2":
-  version "3.1.2"
-  resolved "https://npm.pkg.github.com/download/@real-token/ui-components/3.1.2/d040fc1fd41216d4ceabf22e7fe600a1665313df#d040fc1fd41216d4ceabf22e7fe600a1665313df"
-  integrity sha512-AzDOLzUzvNNC/CD+6lzQV/RV+tWp4jygsIOXCStgn9sQeC3HrlsfFrlK98e+5G4Qs3+k8iOnZL2ntkQ1kTBgng==
+"@real-token/ui-components@3.1.4":
+  version "3.1.4"
+  resolved "https://npm.pkg.github.com/download/@real-token/ui-components/3.1.4/3c019e92e2fa49c3bca3b7219e53264fa171824f#3c019e92e2fa49c3bca3b7219e53264fa171824f"
+  integrity sha512-iPWBygFnDSDbAytcrvjuraIZFHw8fAxe3iGnzwYVLCT1O91+71j15baOQNuDFr/T7Kywoh5ft7x0+KONH6gOLQ==
   dependencies:
     "@babel/runtime" "^7.24.7"
-    "@real-token/i18n-locales" "3.1.2"
-    "@real-token/types" "3.1.2"
+    "@real-token/i18n-locales" "3.1.4"
+    "@real-token/types" "3.1.4"
     "@tabler/icons-react" "^3.19.0"
     clsx "^2.1.1"
     country-flag-icons "^1.5.7"
     react-cookie "^8.0.1"
     tabler-icons-react "*"
 
-"@real-token/web3@3.1.2", "@real-token/web3@^3.1.2":
-  version "3.1.2"
-  resolved "https://npm.pkg.github.com/download/@real-token/web3/3.1.2/9e7a415f05fc553b5221e3c9e67c910f37340fbb#9e7a415f05fc553b5221e3c9e67c910f37340fbb"
-  integrity sha512-jNBUjzo/szHwXqt97h5YJfP0FLSsH4JWBjbHVhWEwtD/f+RvGScS6BIT8Ax/EEN9SlX8gVmOdPX/3Q2y+C+Zug==
+"@real-token/web3@3.1.4", "@real-token/web3@^3.1.4":
+  version "3.1.4"
+  resolved "https://npm.pkg.github.com/download/@real-token/web3/3.1.4/c964413969f1c17d8a5d8a674298bdbbfe2ffc48#c964413969f1c17d8a5d8a674298bdbbfe2ffc48"
+  integrity sha512-VWR6/RZohe1F65W69YhrhZFVhSYIcAgwg3Qqh3TyqpvK9jPamgEXYjP7criCmZjzGQyzgXK518y3+LJSnT2SsA==
   dependencies:
     "@rabby-wallet/rabby-action" "^0.1.8"
     "@rabby-wallet/rabby-api" "^0.9.11"
-    "@real-token/i18n-locales" "^3.1.2"
-    "@real-token/types" "^3.1.2"
+    "@real-token/i18n-locales" "^3.1.4"
+    "@real-token/types" "^3.1.4"
     "@tabler/icons-react" "^3.19.0"
     abitype "^1.0.8"
     bignumber.js "^9.3.0"
@@ -6600,10 +6600,10 @@ camelize@^1.0.0:
   resolved "https://registry.yarnpkg.com/camelize/-/camelize-1.0.1.tgz#89b7e16884056331a35d6b5ad064332c91daa6c3"
   integrity sha512-dU+Tx2fsypxTgtLoE36npi3UqcjSSMNYfkqgmoEhtZrraP5VWq0K7FkWVTYa8eMPtnU/G2txVsfdCJTn9uzpuQ==
 
-caniuse-lite@^1.0.30001283, caniuse-lite@^1.0.30001688:
-  version "1.0.30001706"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001706.tgz#902c3f896f4b2968031c3a546ab2ef8b465a2c8f"
-  integrity sha512-3ZczoTApMAZwPKYWmwVbQMFpXBDds3/0VciVoUwPUbldlYyVLmRVuRs/PcUZtHpbLRpzzDvrvnFuREsGt6lUug==
+caniuse-lite@^1.0.30001579, caniuse-lite@^1.0.30001754:
+  version "1.0.30001759"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001759.tgz#d569e7b010372c6b0ca3946e30dada0a2e9d5006"
+  integrity sha512-Pzfx9fOKoKvevQf8oCXoyNRQ5QyxJj+3O0Rqx2V5oxT61KGx8+n6hV/IUyJeifUci2clnmmKVpvtiqRzgiWjSw==
 
 capital-case@^1.0.4:
   version "1.0.4"
@@ -8037,7 +8037,7 @@ ethers@^4.0.47:
     uuid "2.0.1"
     xmlhttprequest "1.8.0"
 
-ethers@^5.6.8, ethers@^5.6.9, "ethersv5@npm:ethers@^5.0.32":
+ethers@^5.5.3, ethers@^5.6.9, ethers@^5.7.2, "ethersv5@npm:ethers@^5.0.32":
   version "5.8.0"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-5.8.0.tgz#97858dc4d4c74afce83ea7562fe9493cedb4d377"
   integrity sha512-DUq+7fHrCg1aPDFCHx6UIPb3nmt2XMpM7Y/g2gLhsl3lIBqeAfOJIl1qEvRf2uq3BiKxmh6Fh5pfp2ieyek7Kg==
@@ -11812,7 +11812,7 @@ string-format@^2.0.0:
   resolved "https://registry.yarnpkg.com/string-format/-/string-format-2.0.0.tgz#f2df2e7097440d3b65de31b6d40d54c96eaffb9b"
   integrity sha512-bbEs3scLeYNXLecRRuk6uJxdXUSj6le/8rNPHChIJTn2V79aXVTR1EH2OH5zLKKoz0V02fOUKZZcw01pLUShZA==
 
-"string-width-cjs@npm:string-width@^4.2.0":
+"string-width-cjs@npm:string-width@^4.2.0", string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -11820,15 +11820,6 @@ string-format@^2.0.0:
     emoji-regex "^8.0.0"
     is-fullwidth-code-point "^3.0.0"
     strip-ansi "^6.0.1"
-
-string-width@^3.0.0, string-width@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/string-width/-/string-width-3.1.0.tgz#22767be21b62af1081574306f69ac51b62203961"
-  integrity sha512-vafcv6KjVZKSgz06oM/H6GDBrAtz8vdhQakGjFIvNrHA6y3HCF1CInLy+QLq8dTJPQ1b+KDUqDFctkdRW44e1w==
-  dependencies:
-    emoji-regex "^7.0.1"
-    is-fullwidth-code-point "^2.0.0"
-    strip-ansi "^5.1.0"
 
 string-width@^5.0.1, string-width@^5.1.2:
   version "5.1.2"
@@ -11914,19 +11905,19 @@ string_decoder@^1.1.1, string_decoder@^1.3.0:
   dependencies:
     safe-buffer "~5.2.0"
 
+string_decoder@~1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/string_decoder/-/string_decoder-1.1.1.tgz#9cf1611ba62685d7030ae9e4ba34149c3af03fc8"
+  integrity sha512-n/ShnvDi6FHbbVfviro+WojiFzv+s8MPMHBczVePfUpDJLwoLT0ht1l4YwBCbi8pJAveEEdnkHyPyTP/mzRfwg==
+  dependencies:
+    safe-buffer "~5.1.0"
+
 "strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@^6.0.0, strip-ansi@^6.0.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
   dependencies:
     ansi-regex "^5.0.1"
-
-strip-ansi@^5.0.0, strip-ansi@^5.1.0, strip-ansi@^5.2.0:
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-5.2.0.tgz#8c9a536feb6afc962bdfa5b104a5091c1ad9c0ae"
-  integrity sha512-DuRs1gKbBqsMKIZlrffwlug8MHkcnpjs5VPmL1PAh+mA30U0DTotfDZ0d2UUsXpPmPmMMJ6W773MaA3J+lbiWA==
-  dependencies:
-    ansi-regex "^4.1.0"
 
 strip-ansi@^7.0.1:
   version "7.1.2"
@@ -12947,7 +12938,7 @@ wordwrapjs@^4.0.0:
     reduce-flatten "^2.0.0"
     typical "^5.2.0"
 
-"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0":
+"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
@@ -12960,15 +12951,6 @@ wrap-ansi@^6.0.1, wrap-ansi@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-6.2.0.tgz#e9393ba07102e6c91a3b221478f0257cd2856e53"
   integrity sha512-r6lPcBGxZXlIcymEu7InxDMhdW0KDxpLgoFLcguasxCaJ/SOIZwINatK9KY/tf+ZrlywOKU0UDj3ATXUBfxJXA==
-  dependencies:
-    ansi-styles "^4.0.0"
-    string-width "^4.1.0"
-    strip-ansi "^6.0.0"
-
-wrap-ansi@^7.0.0:
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
-  integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
   dependencies:
     ansi-styles "^4.0.0"
     string-width "^4.1.0"

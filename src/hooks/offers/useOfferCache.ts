@@ -1,9 +1,12 @@
-import { useEffect, useRef } from 'react';
-import { useWeb3React } from '@web3-react/core';
+import { useEffect, useRef, useMemo } from 'react';
+import { useChainId } from 'wagmi';
 import { BigNumber } from '@ethersproject/bignumber';
-import { useQueryClient } from 'react-query';
-import { useContract } from '../useContract';
-import { ContractsID } from 'src/constants/contracts';
+import { useQueryClient } from '@tanstack/react-query';
+import { JsonRpcProvider } from '@ethersproject/providers';
+import { Contract } from '@ethersproject/contracts';
+import { realTokenYamUpgradeableABI } from 'src/abis';
+import { RealTokenYamUpgradeable } from 'src/abis/types/RealTokenYamUpgradeable';
+import { networks, ExtendedChainConfig } from 'src/config/aaConfig';
 import { offerCacheService } from 'src/services/offerCacheService';
 import { Offer } from 'src/types/offer/Offer';
 
@@ -12,10 +15,30 @@ import { Offer } from 'src/types/offer/Offer';
  * Écoute les événements : OfferCreated, OfferUpdated, OfferDeleted, OfferAccepted
  */
 export function useOfferCacheEvents() {
-  const { chainId, provider } = useWeb3React();
+  const chainId = useChainId();
   const queryClient = useQueryClient();
-  const yamContract = useContract(ContractsID.realTokenYamUpgradeable);
   const listenersRef = useRef<Array<() => void>>([]);
+
+  // Créer le provider ethers et le contrat à partir de la config réseau
+  const { provider, yamContract } = useMemo(() => {
+    if (!chainId) return { provider: null, yamContract: null };
+
+    const chainIdHex = `0x${chainId.toString(16)}`;
+    const networkConfig = networks.find(
+      (n: ExtendedChainConfig) => n.chainId === chainIdHex
+    );
+
+    if (!networkConfig) return { provider: null, yamContract: null };
+
+    const ethersProvider = new JsonRpcProvider(networkConfig.rpcTarget);
+    const contract = new Contract(
+      networkConfig.contracts.realTokenYamUpgradeableAddress,
+      realTokenYamUpgradeableABI,
+      ethersProvider
+    ) as unknown as RealTokenYamUpgradeable;
+
+    return { provider: ethersProvider, yamContract: contract };
+  }, [chainId]);
 
   useEffect(() => {
     if (!yamContract || !chainId || !provider) return;
@@ -36,7 +59,7 @@ export function useOfferCacheEvents() {
       console.log('OfferCreated event:', offerId.toString());
       
       // Invalider le cache React Query pour forcer un re-fetch
-      queryClient.invalidateQueries(['offer', 'rpc', chainId, offerId.toString()]);
+      queryClient.invalidateQueries({ queryKey: ['offer', 'rpc', chainId, offerId.toString()] });
       
       // Le cache IndexedDB sera mis à jour lors du prochain fetch
     };
@@ -115,7 +138,7 @@ export function useOfferCacheEvents() {
       await offerCacheService.deleteOffer(chainId, offerId);
 
       // Supprimer de React Query
-      queryClient.removeQueries(['offer', 'rpc', chainId, offerIdStr]);
+      queryClient.removeQueries({ queryKey: ['offer', 'rpc', chainId, offerIdStr] });
     };
 
     // Handler pour OfferAccepted

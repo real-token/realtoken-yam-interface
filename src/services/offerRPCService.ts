@@ -4,8 +4,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { Interface } from '@ethersproject/abi';
 import { RealTokenYamUpgradeable } from 'src/abis/types/RealTokenYamUpgradeable';
 import { Offer } from 'src/types/offer/Offer';
-import { CHAINS, ChainsID } from 'src/constants';
-import { ContractsID } from 'src/constants/contracts';
+import { networks, ExtendedChainConfig } from 'src/config/aaConfig';
 import BigNumberJS from 'bignumber.js';
 
 // Adresses Multicall3 sur différentes chaînes
@@ -82,11 +81,14 @@ export class OfferRPCService {
     }
 
     // Récupérer l'adresse du contrat depuis la configuration de la chaîne
-    const chain = CHAINS[chainId as ChainsID];
-    if (!chain) {
+    const chainIdHex = `0x${chainId.toString(16)}`;
+    const networkConfig = networks.find(
+      (n: ExtendedChainConfig) => n.chainId === chainIdHex
+    );
+    if (!networkConfig) {
       throw new Error(`Chain ${chainId} not supported`);
     }
-    this.yamContractAddress = chain.contracts[ContractsID.realTokenYamUpgradeable].address;
+    this.yamContractAddress = networkConfig.contracts.realTokenYamUpgradeableAddress;
   }
 
   /**
