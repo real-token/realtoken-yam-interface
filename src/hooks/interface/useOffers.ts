@@ -7,8 +7,11 @@ import { useChainId } from 'wagmi';
 
 import { REACT_QUERY_ERRORS } from '../../types/ReactQueryErrors';
 import { OFFER_LOADING, Offer } from '../../types/offer';
+import {
+  ParsedGraphQLError,
+  parseGraphQLError,
+} from '../../utils/errors/parseGraphQLError';
 import { fetchOffersTheGraph } from '../../utils/offers/fetchOffers';
-import { parseGraphQLError, ParsedGraphQLError } from '../../utils/errors/parseGraphQLError';
 import { usePrices } from './usePrices';
 import { useProperties } from './useProperties';
 import { useWlProperties } from './useWlProperties';
@@ -59,7 +62,7 @@ export const useOffers: UseOffers = () => {
     },
     // Permettre de garder les données en cache même en cas d'erreur
     // pour permettre un fonctionnement partiel
-    keepPreviousData: true,
+    // keepPreviousData: true,
     // Ne pas invalider automatiquement en cas d'erreur pour permettre un fonctionnement partiel
     retry: false,
   });

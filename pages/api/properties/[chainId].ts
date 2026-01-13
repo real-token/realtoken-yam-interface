@@ -252,7 +252,7 @@ const handler: NextApiHandler = async (
       NetworkId.ethereum,
       NetworkId.sepolia,
     ];
-    if (!supportedChains.includes(chainId)) {
+    if (!supportedChains.includes(chainId as unknown as NetworkId)) {
       return res.status(400).json({
         error: `ChainId ${chainId} is not supported. Supported chains: ${supportedChains.join(
           ', '

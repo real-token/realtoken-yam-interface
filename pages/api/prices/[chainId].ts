@@ -60,9 +60,9 @@ const handler: NextApiHandler = async (
     if (!rpcUrl) {
       return res.status(400).json({
         error: `RPC URL not configured for chainId ${chainId}. Please set ${
-          chainId === ChainsID.Gnosis
+          chainId.toString() === NetworkId.gnosis
             ? 'GNOSIS_RPC_URL'
-            : chainId === ChainsID.Ethereum
+            : chainId.toString() === NetworkId.ethereum
             ? 'ETHEREUM_RPC_URL'
             : 'SEPOLIA_RPC_URL'
         } in your .env file.`,
