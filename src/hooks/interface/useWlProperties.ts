@@ -59,7 +59,7 @@ export const useWlProperties: UseWlProperties = () => {
       const userIds = data[prefix]?.account?.userIds;
 
       let wlTokenIds: string[] | undefined = undefined;
-      if (userIds) {
+      if (userIds && userIds.length > 0) {
         wlTokenIds = userIds[0].attributeKeys;
       }
 
