@@ -22,6 +22,7 @@ export const getCoingeckoApiPrice = async (
   allowedToken: CoingeckoPriceParams,
   chainId: number
 ): Promise<Price> => {
+  const startTime = Date.now();
   const defaultPrice: Price = {
     contractAddress: allowedToken.contractAddress,
     price: '0',
@@ -29,7 +30,7 @@ export const getCoingeckoApiPrice = async (
 
   const coingeckoNetworkId = coingeckoNetworkIds.get(chainId);
   if (!coingeckoNetworkId) {
-    console.error(`Coingecko network ID not found for chainId ${chainId}`);
+    console.error(`[coingecko] Network ID not found for chainId ${chainId}`);
     return defaultPrice;
   }
 
@@ -37,6 +38,7 @@ export const getCoingeckoApiPrice = async (
     allowedToken.priceFnc.address ?? allowedToken.contractAddress;
 
   try {
+    console.log(`[coingecko] Fetching price for ${tokenAddress.slice(0, 10)}...`);
     const res = await fetch(
       `https://api.geckoterminal.com/api/v2/simple/networks/${coingeckoNetworkId}/token_price/${tokenAddress}`,
       { signal: AbortSignal.timeout(5000) } // 5s timeout
@@ -44,7 +46,7 @@ export const getCoingeckoApiPrice = async (
 
     if (!res.ok) {
       console.error(
-        `Coingecko API error for ${tokenAddress}: ${res.status} ${res.statusText}`
+        `[coingecko] API error for ${tokenAddress.slice(0, 10)}: ${res.status} ${res.statusText}`
       );
       return defaultPrice;
     }
@@ -52,12 +54,13 @@ export const getCoingeckoApiPrice = async (
     const data = await res.json();
     const price = data.data?.attributes?.token_prices?.[tokenAddress];
 
+    console.log(`[coingecko] Got price for ${tokenAddress.slice(0, 10)} in ${Date.now() - startTime}ms`);
     return {
       contractAddress: allowedToken.contractAddress,
       price: price ?? '0',
     };
   } catch (err) {
-    console.error(`Error fetching coingecko price for ${tokenAddress}:`, err);
+    console.error(`[coingecko] Error for ${tokenAddress.slice(0, 10)} after ${Date.now() - startTime}ms:`, err);
     return defaultPrice;
   }
 };

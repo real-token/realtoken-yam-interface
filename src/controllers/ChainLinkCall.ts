@@ -37,6 +37,7 @@ export const getChainlinkPrice = async (
 ): Promise<Price> => {
   const tokenAddress = allowedToken.contractAddress;
   const oracleContractAddress = allowedToken.priceFnc.contractAddress;
+  const startTime = Date.now();
 
   const defaultPrice: Price = {
     contractAddress: tokenAddress,
@@ -48,6 +49,7 @@ export const getChainlinkPrice = async (
   }
 
   try {
+    console.log(`[chainlink] Fetching price for ${tokenAddress.slice(0, 10)}...`);
     const chain = getChainFromId(chainId);
     const client = createPublicClient({
       chain,
@@ -72,12 +74,13 @@ export const getChainlinkPrice = async (
       -assetDecimals
     );
 
+    console.log(`[chainlink] Got price for ${tokenAddress.slice(0, 10)} in ${Date.now() - startTime}ms`);
     return {
       contractAddress: tokenAddress,
       price: tokenPrice.toString(),
     };
   } catch (err) {
-    console.error(`Error reading oracle for ${tokenAddress}:`, err);
+    console.error(`[chainlink] Error for ${tokenAddress.slice(0, 10)} after ${Date.now() - startTime}ms:`, err);
     return defaultPrice;
   }
 };

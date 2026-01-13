@@ -11,15 +11,15 @@ import { getCoingeckoApiPrice } from '../../../src/controllers/CoingeckoApiCall'
 import { Price } from '../../../src/types/price';
 
 // RPC URLs avec valeurs par défaut (public RPCs)
-// Vérifier si les variables sont définies ET non vides
+// Note: Les RPC publics peuvent bloquer les IPs Vercel - préférer des RPC privés en production
 const gnosisRpcUrl =
   process.env.GNOSIS_RPC_URL && process.env.GNOSIS_RPC_URL.trim() !== ''
     ? process.env.GNOSIS_RPC_URL
-    : 'https://gnosis-rpc.publicnode.com';
+    : 'https://rpc.gnosis.gateway.fm';
 const ethereumRpcUrl =
   process.env.ETHEREUM_RPC_URL && process.env.ETHEREUM_RPC_URL.trim() !== ''
     ? process.env.ETHEREUM_RPC_URL
-    : 'https://eth.llamarpc.com';
+    : 'https://ethereum-rpc.publicnode.com';
 const sepoliaRpcUrl =
   process.env.SEPOLIA_RPC_URL && process.env.SEPOLIA_RPC_URL.trim() !== ''
     ? process.env.SEPOLIA_RPC_URL
@@ -35,8 +35,13 @@ const handler: NextApiHandler = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
+  const startTime = Date.now();
+  console.log('[prices] Handler started');
+
   try {
     const { chainId: id } = req.query;
+    console.log('[prices] chainId from query:', id);
+
     if (!id || typeof id !== 'string') {
       return res.status(400).json({ error: 'ChainId is missing or invalid.' });
     }
@@ -47,6 +52,8 @@ const handler: NextApiHandler = async (
     }
 
     const tokens = tokenToGetPriceApi.get(chainId);
+    console.log('[prices] tokens count:', tokens?.length ?? 0);
+
     if (!tokens) {
       return res.status(400).json({
         error: `ChainId ${chainId} is not supported. Supported chains: ${Array.from(
@@ -56,6 +63,8 @@ const handler: NextApiHandler = async (
     }
 
     const rpcUrl = rpcUrls.get(chainId);
+    console.log('[prices] rpcUrl:', rpcUrl);
+
     if (!rpcUrl) {
       return res.status(400).json({
         error: `RPC URL not configured for chainId ${chainId}. Please set ${
@@ -68,6 +77,7 @@ const handler: NextApiHandler = async (
       });
     }
 
+    console.log('[prices] Starting price fetches...');
     const prices = await Promise.all<Price>(
       tokens.map(async (token: ApiPriceToken): Promise<Price> => {
         const defaultPrice: Price = {
@@ -118,18 +128,23 @@ const handler: NextApiHandler = async (
       })
     );
 
+    console.log('[prices] All fetches completed, processing results...');
     const pricesParsed = prices.reduce<Record<string, number>>((acc, price) => {
       if (!price) return acc;
       acc[price.contractAddress.toLowerCase()] = Number(price.price);
       return acc;
     }, {});
 
+    const duration = Date.now() - startTime;
+    console.log(`[prices] Success in ${duration}ms, returning ${Object.keys(pricesParsed).length} prices`);
+
     return res
       .setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate')
       .status(200)
       .json(pricesParsed);
   } catch (err) {
-    console.log(err);
+    const duration = Date.now() - startTime;
+    console.error(`[prices] Error after ${duration}ms:`, err);
     return res.status(500).json({ error: 'Failed to fetch asset prices' });
   }
 };
