@@ -23,64 +23,56 @@ const getChainFromId = (chainId: number) => {
   }
 };
 
-export const getChainlinkPrice = (
+export const getChainlinkPrice = async (
   chainId: number,
   allowedToken: GetPriceTokenChainLink,
   rpcUrl: string
-) => {
-  return new Promise<Price>(async (resolve, reject) => {
-    try {
-      const chain = getChainFromId(chainId);
-      const client = createPublicClient({
-        chain,
-        transport: http(rpcUrl),
-      });
+): Promise<Price> => {
+  const tokenAddress = allowedToken.contractAddress;
+  const oracleContractAddress = allowedToken.priceFnc.contractAddress;
 
-      const tokenAddress = allowedToken.contractAddress;
-      const oracleContractAddress = allowedToken.priceFnc.contractAddress;
+  const defaultPrice: Price = {
+    contractAddress: tokenAddress,
+    price: BigNumber(1).toString(),
+  };
 
-      if (!oracleContractAddress) {
-        resolve({
-          contractAddress: tokenAddress,
-          price: BigNumber(1).toString(),
-        });
-        return;
-      }
+  if (!oracleContractAddress) {
+    return defaultPrice;
+  }
 
-      try {
-        const assetPrice = (await readContract(client, {
-          address: oracleContractAddress as `0x${string}`,
-          abi: oraclePriceFeedABI,
-          functionName: 'latestAnswer',
-        })) as bigint;
+  try {
+    const chain = getChainFromId(chainId);
+    const client = createPublicClient({
+      chain,
+      transport: http(rpcUrl, { timeout: 5000 }), // 5s timeout
+    });
 
-        const assetDecimals = (await readContract(client, {
-          address: oracleContractAddress as `0x${string}`,
-          abi: oraclePriceFeedABI,
-          functionName: 'decimals',
-        })) as number;
+    // Execute both RPC calls in parallel
+    const [assetPrice, assetDecimals] = await Promise.all([
+      readContract(client, {
+        address: oracleContractAddress as `0x${string}`,
+        abi: oraclePriceFeedABI,
+        functionName: 'latestAnswer',
+      }) as Promise<bigint>,
+      readContract(client, {
+        address: oracleContractAddress as `0x${string}`,
+        abi: oraclePriceFeedABI,
+        functionName: 'decimals',
+      }) as Promise<number>,
+    ]);
 
-        const tokenPrice = new BigNumber(assetPrice.toString()).shiftedBy(
-          -assetDecimals
-        );
+    const tokenPrice = new BigNumber(assetPrice.toString()).shiftedBy(
+      -assetDecimals
+    );
 
-        resolve({
-          contractAddress: tokenAddress,
-          price: tokenPrice.toString(),
-        });
-      } catch (contractError) {
-        console.log('Error reading oracle contract: ', contractError);
-        // Fallback to price 1 if contract read fails
-        resolve({
-          contractAddress: tokenAddress,
-          price: BigNumber(1).toString(),
-        });
-      }
-    } catch (err) {
-      console.log('Error while getting oracle price: ', err);
-      reject(err);
-    }
-  });
+    return {
+      contractAddress: tokenAddress,
+      price: tokenPrice.toString(),
+    };
+  } catch (err) {
+    console.error(`Error reading oracle for ${tokenAddress}:`, err);
+    return defaultPrice;
+  }
 };
 
 export const getPriceInDollar = (

@@ -70,34 +70,46 @@ const handler: NextApiHandler = async (
     }
 
     const prices = await Promise.all<Price>(
-      tokens.map((token) => {
-        return new Promise(async (resolve) => {
+      tokens.map(async (token): Promise<Price> => {
+        const defaultPrice: Price = {
+          contractAddress: token.contractAddress,
+          price: '0',
+        };
+
+        try {
           const getPriceType = token.priceFnc.type;
+
           if (getPriceType === 'chainlink') {
-            const price = await getChainlinkPrice(
+            return await getChainlinkPrice(
               chainId,
               token as GetPriceTokenChainLink,
               rpcUrl
             );
-            resolve(price);
-          } else if (getPriceType === 'coingecko-api') {
-            const price = await getCoingeckoApiPrice(
+          }
+
+          if (getPriceType === 'coingecko-api') {
+            return await getCoingeckoApiPrice(
               token as GetPriceTokenCoingecko,
               chainId
             );
-            resolve(price);
-          } else if (getPriceType === 'custom-fnc') {
+          }
+
+          if (getPriceType === 'custom-fnc') {
             const price = await token.priceFnc.fnc();
-            resolve({
+            return {
               contractAddress: token.contractAddress,
               price: price.toString(),
-            });
+            };
           }
-          resolve({
-            contractAddress: token.contractAddress,
-            price: '0',
-          });
-        });
+
+          return defaultPrice;
+        } catch (error) {
+          console.error(
+            `Failed to get price for ${token.contractAddress}:`,
+            error
+          );
+          return defaultPrice;
+        }
       })
     );
 

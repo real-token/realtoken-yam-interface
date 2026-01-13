@@ -1,42 +1,55 @@
-import { readCurrentNetworkConfig } from '@real-token/core';
+import { NetworkId } from '@real-token/core';
 
-import { ExtendedChainConfig, networks } from '../config/aaConfig';
 import { GetPriceTokenCoingecko } from '../types/GetPriceTokens';
 import { Price } from '../types/price';
 
-export const getCoingeckoApiPrice = (
+// Map chainId to coingecko network ID (avoid importing aaConfig which has env checks)
+const coingeckoNetworkIds = new Map<number, string>([
+  [Number(NetworkId.gnosis), 'xdai'],
+  [Number(NetworkId.ethereum), 'eth'],
+  [Number(NetworkId.sepolia), 'xdai'], // Sepolia uses xdai for price lookup
+]);
+
+export const getCoingeckoApiPrice = async (
   allowedToken: GetPriceTokenCoingecko,
   chainId: number
-) => {
-  return new Promise<Price>(async (resolve, reject) => {
-    try {
-      const currentNetworkConfig =
-        readCurrentNetworkConfig<ExtendedChainConfig>(networks, chainId);
-      if (!currentNetworkConfig) {
-        return reject('Network not found');
-      }
-      const coingeckoNetworkId = currentNetworkConfig.coingeckoNetworkId;
+): Promise<Price> => {
+  const defaultPrice: Price = {
+    contractAddress: allowedToken.contractAddress,
+    price: '0',
+  };
 
-      const tokenAddress =
-        allowedToken.priceFnc.address ?? allowedToken.contractAddress;
+  const coingeckoNetworkId = coingeckoNetworkIds.get(chainId);
+  if (!coingeckoNetworkId) {
+    console.error(`Coingecko network ID not found for chainId ${chainId}`);
+    return defaultPrice;
+  }
 
-      const res = await fetch(
-        `https://api.geckoterminal.com/api/v2/simple/networks/${coingeckoNetworkId}/token_price/${tokenAddress}`
+  const tokenAddress =
+    allowedToken.priceFnc.address ?? allowedToken.contractAddress;
+
+  try {
+    const res = await fetch(
+      `https://api.geckoterminal.com/api/v2/simple/networks/${coingeckoNetworkId}/token_price/${tokenAddress}`,
+      { signal: AbortSignal.timeout(5000) } // 5s timeout
+    );
+
+    if (!res.ok) {
+      console.error(
+        `Coingecko API error for ${tokenAddress}: ${res.status} ${res.statusText}`
       );
-      if (!res.ok) {
-        return reject('Failed to fetch price from coingecko api');
-      }
-
-      const data = await res.json();
-      const price = data.data.attributes.token_prices[tokenAddress];
-
-      resolve({
-        contractAddress: allowedToken.contractAddress,
-        price: price ?? 0,
-      });
-    } catch (err) {
-      console.log('Error while getting oracle price: ', err);
-      reject(err);
+      return defaultPrice;
     }
-  });
+
+    const data = await res.json();
+    const price = data.data?.attributes?.token_prices?.[tokenAddress];
+
+    return {
+      contractAddress: allowedToken.contractAddress,
+      price: price ?? '0',
+    };
+  } catch (err) {
+    console.error(`Error fetching coingecko price for ${tokenAddress}:`, err);
+    return defaultPrice;
+  }
 };
