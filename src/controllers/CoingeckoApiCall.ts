@@ -1,7 +1,15 @@
 import { NetworkId } from '@real-token/core';
 
-import { GetPriceTokenCoingecko } from '../types/GetPriceTokens';
 import { Price } from '../types/price';
+
+// Simplified type for API usage (no React dependencies)
+export interface CoingeckoPriceParams {
+  contractAddress: string;
+  priceFnc: {
+    type: 'coingecko-api';
+    address?: string;
+  };
+}
 
 // Map chainId to coingecko network ID (avoid importing aaConfig which has env checks)
 const coingeckoNetworkIds = new Map<number, string>([
@@ -11,7 +19,7 @@ const coingeckoNetworkIds = new Map<number, string>([
 ]);
 
 export const getCoingeckoApiPrice = async (
-  allowedToken: GetPriceTokenCoingecko,
+  allowedToken: CoingeckoPriceParams,
   chainId: number
 ): Promise<Price> => {
   const defaultPrice: Price = {

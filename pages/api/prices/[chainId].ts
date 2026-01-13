@@ -2,13 +2,12 @@ import { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
 
 import { NetworkId } from '@real-token/core';
 
-import { tokenToGetPrice } from '../../../src/constants/GetPriceToken';
+import {
+  ApiPriceToken,
+  tokenToGetPriceApi,
+} from '../../../src/constants/GetPriceTokenApi';
 import { getChainlinkPrice } from '../../../src/controllers/ChainLinkCall';
 import { getCoingeckoApiPrice } from '../../../src/controllers/CoingeckoApiCall';
-import {
-  GetPriceTokenChainLink,
-  GetPriceTokenCoingecko,
-} from '../../../src/types/GetPriceTokens';
 import { Price } from '../../../src/types/price';
 
 // RPC URLs avec valeurs par défaut (public RPCs)
@@ -47,11 +46,11 @@ const handler: NextApiHandler = async (
       return res.status(400).json({ error: 'ChainId must be a valid number.' });
     }
 
-    const tokens = tokenToGetPrice.get(chainId);
+    const tokens = tokenToGetPriceApi.get(chainId);
     if (!tokens) {
       return res.status(400).json({
         error: `ChainId ${chainId} is not supported. Supported chains: ${Array.from(
-          tokenToGetPrice.keys()
+          tokenToGetPriceApi.keys()
         ).join(', ')}`,
       });
     }
@@ -70,32 +69,38 @@ const handler: NextApiHandler = async (
     }
 
     const prices = await Promise.all<Price>(
-      tokens.map(async (token): Promise<Price> => {
+      tokens.map(async (token: ApiPriceToken): Promise<Price> => {
         const defaultPrice: Price = {
           contractAddress: token.contractAddress,
           price: '0',
         };
 
         try {
-          const getPriceType = token.priceFnc.type;
+          const priceFnc = token.priceFnc;
 
-          if (getPriceType === 'chainlink') {
+          if (priceFnc.type === 'chainlink') {
             return await getChainlinkPrice(
               chainId,
-              token as GetPriceTokenChainLink,
+              {
+                contractAddress: token.contractAddress,
+                priceFnc: { type: 'chainlink', contractAddress: priceFnc.contractAddress },
+              },
               rpcUrl
             );
           }
 
-          if (getPriceType === 'coingecko-api') {
+          if (priceFnc.type === 'coingecko-api') {
             return await getCoingeckoApiPrice(
-              token as GetPriceTokenCoingecko,
+              {
+                contractAddress: token.contractAddress,
+                priceFnc: { type: 'coingecko-api', address: priceFnc.address },
+              },
               chainId
             );
           }
 
-          if (getPriceType === 'custom-fnc') {
-            const price = await token.priceFnc.fnc();
+          if (priceFnc.type === 'custom-fnc') {
+            const price = await priceFnc.fnc();
             return {
               contractAddress: token.contractAddress,
               price: price.toString(),

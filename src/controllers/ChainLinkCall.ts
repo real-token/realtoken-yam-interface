@@ -7,7 +7,14 @@ import { oraclePriceFeedABI } from 'src/abis';
 import { OFFER_TYPE, Offer } from 'src/types/offer';
 import { Price as P, Price } from 'src/types/price';
 
-import { GetPriceTokenChainLink } from '../types/GetPriceTokens';
+// Simplified type for API usage (no React dependencies)
+export interface ChainlinkPriceParams {
+  contractAddress: string;
+  priceFnc: {
+    type: 'chainlink';
+    contractAddress: string;
+  };
+}
 
 // Map chainId to viem chain objects
 const getChainFromId = (chainId: number) => {
@@ -25,7 +32,7 @@ const getChainFromId = (chainId: number) => {
 
 export const getChainlinkPrice = async (
   chainId: number,
-  allowedToken: GetPriceTokenChainLink,
+  allowedToken: ChainlinkPriceParams,
   rpcUrl: string
 ): Promise<Price> => {
   const tokenAddress = allowedToken.contractAddress;
