@@ -113,8 +113,8 @@ export const getAllTx = async (
   lastTimestamp: string,
   graphPrefix: string,
   type: 'buyer' | 'seller'
-): Promise<any[]> => {
-  const historics = [];
+): Promise<Historic[]> => {
+  const historics: Historic[] = [];
   let timestamp = lastTimestamp + 1;
   while (true) {
     const { data } = await apiClient.query({

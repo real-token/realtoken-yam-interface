@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="YAM (You And Me)" />
+    <title>YAM (You And Me)</title>
+    <script>
+      // Node.js polyfills for Web3 libraries
+      window.global = window;
+      window.process = window.process || { env: {}, nextTick: function(cb) { queueMicrotask(cb); } };
+      if (!window.process.nextTick) {
+        window.process.nextTick = function(cb) { queueMicrotask(cb); };
+      }
+    </script>
+    <script>
+      // Mantine ColorSchemeScript equivalent
+      (function() {
+        var colorScheme = localStorage.getItem('mantine-color-scheme-value');
+        if (!colorScheme) {
+          colorScheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.setAttribute('data-mantine-color-scheme', colorScheme);
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

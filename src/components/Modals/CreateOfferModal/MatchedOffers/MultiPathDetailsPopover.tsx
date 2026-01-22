@@ -1,6 +1,6 @@
 import { Text, Popover, Flex } from "@mantine/core"
 import { AveragePrice } from "./MultiPath"
-import { IconInfoCircle } from "@tabler/icons";
+import { IconInfoCircle } from "@tabler/icons-react";
 import { useDisclosure } from "@mantine/hooks";
 import { useTranslation } from "react-i18next";
 

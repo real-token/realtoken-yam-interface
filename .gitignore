@@ -17,10 +17,9 @@ yalc.lock
 # testing
 /coverage
 
-# next.js
-/.next/
-/out/
-next.tar
+# Vite
+/dist
+*.local
 
 # production
 /build

@@ -6,7 +6,7 @@ import { Button, Checkbox, Flex, Text } from '@mantine/core';
 import { showNotification, updateNotification } from '@mantine/notifications';
 import { useCurrentNetwork } from '@real-token/core';
 import { useSendBatchTransaction } from '@real-token/web3';
-import { IconArrowRight } from '@tabler/icons';
+import { IconArrowRight } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { multicall, readContract } from '@wagmi/core';
 

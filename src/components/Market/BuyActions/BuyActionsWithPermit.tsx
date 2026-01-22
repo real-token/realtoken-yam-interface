@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ActionIcon, Group, Popover, Text } from '@mantine/core';
 import { useModals } from '@mantine/modals';
-import { IconShoppingCart } from '@tabler/icons';
+import { IconShoppingCart } from '@tabler/icons-react';
 
 import { useAccount } from 'wagmi';
 

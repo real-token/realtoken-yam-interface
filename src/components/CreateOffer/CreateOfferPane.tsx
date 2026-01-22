@@ -1,6 +1,6 @@
 import { ActionIcon, Flex, Skeleton, Text } from "@mantine/core"
 import { openConfirmModal, useModals } from "@mantine/modals"
-import { IconEdit, IconPlus, IconTrash } from "@tabler/icons"
+import { IconEdit, IconPlus, IconTrash } from "@tabler/icons-react"
 import { FC, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useCreatedOffer } from "src/hooks/useCreatedOffer"

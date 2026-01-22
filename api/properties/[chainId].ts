@@ -1,10 +1,10 @@
-import { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 import { gql } from '@apollo/client';
 import { NetworkId } from '@real-token/core';
 
-import { APIPropertiesToken, PropertiesToken } from 'src/types';
-import { apiClient } from 'src/utils/offers/getClientURL';
+import { APIPropertiesToken, PropertiesToken } from '../../src/types';
+import { apiClient } from '../../src/utils/offers/getClientURL';
 
 interface BlockchainAddress {
   networkId: number;
@@ -166,47 +166,11 @@ const getTokens = async (
 
   const contractKey = getContractAddressFromChainId(chainId);
 
-  // if(chainId == ChainsID.Sepolia){
-
-  //     const chainConfig = CHAINS[ChainsID.Sepolia];
-  //     const { graphPrefixes } = chainConfig;
-
-  //     //
-  //     const res = await apiClient.query({
-  //         query: gql`
-  //             query getTokens{
-  //                 ${graphPrefixes.realtoken}{
-  //                     tokens{
-  //                         tokenId
-  //                         address
-  //                     }
-  //                 }
-  //             }
-  //         `
-  //     })
-  //     const properties: any[] = res.data[graphPrefixes.realtoken].tokens;
-
-  //     properties.forEach((propertie) => {
-  //         const propertiesCommunity = communityProperties.find((token) => token.tokenIdRules == propertie.tokenId);
-  //         if(propertiesCommunity){
-  //             propertiesNonFiltered.push({
-  //                 ...propertiesCommunity,
-  //                 contractAddress: propertie.address,
-  //                 officialPrice: propertiesCommunity.tokenPrice,
-  //                 annualYield: propertiesCommunity.tokenPrice ? propertiesCommunity.netRentYearPerToken/propertiesCommunity.tokenPrice : 0
-  //             })
-  //         }
-  //     })
-
-  // }else{
-
   communityProperties.forEach((propertyToken: APIPropertiesToken) => {
-    // console.log(propertyToken.blockchainAddresses);
     const contractAddress =
       propertyToken.blockchainAddresses[
         contractKey as keyof typeof propertyToken.blockchainAddresses
       ]?.contract;
-    // console.log(contractAddress);
     if (contractAddress) {
       propertiesNonFiltered.push({
         uuid: propertyToken.uuid,
@@ -226,15 +190,14 @@ const getTokens = async (
       });
     }
   });
-  // }
 
   return propertiesNonFiltered;
 };
 
-const handler: NextApiHandler = async (
-  req: NextApiRequest,
-  res: NextApiResponse
-) => {
+export default async function handler(
+  req: VercelRequest,
+  res: VercelResponse
+) {
   try {
     const { chainId: id } = req.query;
     if (!id || typeof id !== 'string') {
@@ -260,12 +223,8 @@ const handler: NextApiHandler = async (
       });
     }
 
-    // const [communityApiToken,wlTokens] = await Promise.all([getTokenFromCommunityAPI,getWhitelistedProperties(chainId)]);
     const [communityApiToken] = await Promise.all([getTokenFromCommunityAPI]);
     const tokens = await getTokens(chainId, communityApiToken);
-
-    // const extendedTokens = tokenToGetPrice.get(parseInt(chainId))?.filter(token => !token.isBuyToken) ?? [] as PropertiesToken[];
-    // console.log(extendedTokens);
 
     return res
       .setHeader(
@@ -278,5 +237,4 @@ const handler: NextApiHandler = async (
     console.log(err);
     return res.status(500).json({ error: 'Failed to fetch properties' });
   }
-};
-export default handler;
+}

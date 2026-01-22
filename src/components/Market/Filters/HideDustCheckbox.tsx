@@ -8,7 +8,7 @@ import {
   NumberInput,
   Popover,
 } from '@mantine/core';
-import { IconSettings } from '@tabler/icons';
+import { IconSettings } from '@tabler/icons-react';
 
 import { useAtom } from 'jotai';
 

@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { createFileRoute } from '@tanstack/react-router'
+import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import {
   Anchor,
@@ -9,11 +10,11 @@ import {
   Loader,
   Select,
   Text,
-} from '@mantine/core';
-import { useAA } from '@real-token/aa-core';
-import { useCurrentNetwork } from '@real-token/core';
-import { IconDownload } from '@tabler/icons';
-import { IconExclamationCircle } from '@tabler/icons';
+} from '@mantine/core'
+import { useAA } from '@real-token/aa-core'
+import { useCurrentNetwork } from '@real-token/core'
+import { IconDownload } from '@tabler/icons-react'
+import { IconExclamationCircle } from '@tabler/icons-react'
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -22,45 +23,45 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   useReactTable,
-} from '@tanstack/react-table';
+} from '@tanstack/react-table'
 
-import { stringify } from 'csv-stringify/sync';
-import { saveAs } from 'file-saver';
-import moment from 'moment';
+import { stringify } from 'csv-stringify/sync'
+import { saveAs } from 'file-saver'
+import moment from 'moment'
 
-import { OfferTypeBadge } from '../../src/components/Offer/OfferTypeBadge/OfferTypeBadge';
-import { Table } from '../../src/components/Table';
-import { HistoricTokenSummary } from '../../src/components/historic/HistoricTokenSummary';
-import { ExtendedChainConfig } from '../../src/config/aaConfig';
-import { useHistoric } from '../../src/hooks/interface/useHistoric';
-import { ConnectedProvider } from '../../src/providers/ConnectProvider';
-import { Historic } from '../../src/types/historic';
-import { getReduceAddress } from '../../src/utils/address';
+import { OfferTypeBadge } from 'src/components/Offer/OfferTypeBadge/OfferTypeBadge'
+import { Table } from 'src/components/Table'
+import { HistoricTokenSummary } from 'src/components/historic/HistoricTokenSummary'
+import { ExtendedChainConfig } from 'src/config/aaConfig'
+import { useHistoric } from 'src/hooks/interface/useHistoric'
+import { ConnectedProvider } from 'src/providers/ConnectProvider'
+import { Historic } from 'src/types/historic'
+import { getReduceAddress } from 'src/utils/address'
 
-export default function HistoricPage() {
-  const { walletAddress: account } = useAA();
+function HistoricPage() {
+  const { walletAddress: account } = useAA()
 
-  const { historics, historicsAreLoading, isError } = useHistoric();
+  const { historics, historicsAreLoading, isError } = useHistoric()
 
-  const currentNetwork = useCurrentNetwork<ExtendedChainConfig>();
-  const blockExplorerUrl = currentNetwork?.blockExplorerUrl;
+  const currentNetwork = useCurrentNetwork<ExtendedChainConfig>()
+  const blockExplorerUrl = currentNetwork?.blockExplorerUrl
 
-  const { t } = useTranslation('historic');
+  const { t } = useTranslation('historic')
 
-  const [parseLocalDate, setParseLocalDate] = useState(false);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [parseLocalDate, setParseLocalDate] = useState(false)
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
-  const [downloadLoading, setDownloadLoading] = useState(false);
+  const [downloadLoading, setDownloadLoading] = useState(false)
   const download = () => {
-    setDownloadLoading(true);
+    setDownloadLoading(true)
 
     const parsedHistorics = historics.map((historic) => {
-      const buyerToken = historic.offer.buyerToken;
-      const offerToken = historic.offer.offerToken;
+      const buyerToken = historic.offer.buyerToken
+      const offerToken = historic.offer.offerToken
 
       const outQuantity =
-        parseFloat(historic.quantity) * parseFloat(historic.price);
-      const txhash = historic.purchaseId.split('-')[0];
+        parseFloat(historic.quantity) * parseFloat(historic.price)
+      const txhash = historic.purchaseId.split('-')[0]
 
       const date = parseLocalDate
         ? moment
@@ -69,7 +70,7 @@ export default function HistoricPage() {
         : moment
             .unix(parseInt(historic.createdAtTimestamp))
             .utc()
-            .format('YYYY-MM-DD HH:mm Z');
+            .format('YYYY-MM-DD HH:mm Z')
 
       return {
         type: historic.type,
@@ -81,8 +82,8 @@ export default function HistoricPage() {
         sold_token_name: offerToken.name,
         sold_token_symbol: offerToken.symbol,
         sold_token_quantity: outQuantity,
-      };
-    });
+      }
+    })
 
     saveAs(
       new File(
@@ -105,9 +106,9 @@ export default function HistoricPage() {
         `purchase-historic-${account}.csv`,
         { type: 'text/csv' }
       )
-    );
-    setDownloadLoading(false);
-  };
+    )
+    setDownloadLoading(false)
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const columns: ColumnDef<Historic, any>[] = useMemo(
@@ -121,7 +122,7 @@ export default function HistoricPage() {
             <Flex justify={'center'}>
               <OfferTypeBadge offerType={cell.row.original.type} />
             </Flex>
-          );
+          )
         },
       },
       {
@@ -129,14 +130,14 @@ export default function HistoricPage() {
         accessorKey: 'purchaseId',
         header: t('table.columnTitle.txHash'),
         cell: ({ getValue }: { getValue: () => string }) => {
-          const txhash = getValue() ? getValue().split('-')[0] : '';
+          const txhash = getValue() ? getValue().split('-')[0] : ''
           return (
             <Flex justify={'center'}>
               <Anchor href={`${blockExplorerUrl}tx/${txhash}`} target={'_blank'}>
                 <Text>{getReduceAddress(txhash)}</Text>
               </Anchor>
             </Flex>
-          );
+          )
         },
         meta: { colSpan: 3 },
       },
@@ -167,22 +168,22 @@ export default function HistoricPage() {
             <Flex direction={'column'} gap={4}>
               <HistoricTokenSummary historic={row.original} />
             </Flex>
-          );
+          )
         },
         meta: { colSpan: 10 },
       },
     ],
     [t, blockExplorerUrl, parseLocalDate]
-  );
+  )
 
   const data = useMemo(() => {
-    return historics ?? [];
-  }, [historics]);
+    return historics ?? []
+  }, [historics])
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 20,
-  });
+  })
 
   const table = useReactTable({
     columns,
@@ -198,7 +199,7 @@ export default function HistoricPage() {
     onColumnFiltersChange: setColumnFilters,
     enableColumnFilters: true,
     meta: { colSpan: 16 },
-  });
+  })
 
   if (isError) {
     return (
@@ -212,7 +213,7 @@ export default function HistoricPage() {
         <IconExclamationCircle size={'200px'} color={'#AE740A'} />
         <Text size={'xl'}>{t('errorLoading')}</Text>
       </Flex>
-    );
+    )
   }
 
   if (historicsAreLoading) {
@@ -228,7 +229,7 @@ export default function HistoricPage() {
         <Text fz={'xl'}>{t('historicAreLoading')}</Text>
         <Loader size={'xl'} />
       </Flex>
-    );
+    )
   }
 
   return (
@@ -269,7 +270,9 @@ export default function HistoricPage() {
                 : 'all'
             }
             onChange={(value) =>
-              setColumnFilters(value == 'all' ? [] : [{ id: 'type', value: value }])
+              setColumnFilters(
+                value == 'all' ? [] : [{ id: 'type', value: value }]
+              )
             }
           />
           <Checkbox
@@ -289,5 +292,9 @@ export default function HistoricPage() {
         />
       </Flex>
     </ConnectedProvider>
-  );
+  )
 }
+
+export const Route = createFileRoute('/historic')({
+  component: HistoricPage,
+})

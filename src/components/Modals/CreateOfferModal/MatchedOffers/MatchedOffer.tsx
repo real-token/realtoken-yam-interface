@@ -7,7 +7,7 @@ import {
   IconCash,
   IconExternalLink,
   IconScale,
-} from '@tabler/icons';
+} from '@tabler/icons-react';
 
 import { useAccount, usePublicClient } from 'wagmi';
 

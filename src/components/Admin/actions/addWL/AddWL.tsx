@@ -11,7 +11,7 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useCurrentNetwork } from '@real-token/core';
-import { IconEdit, IconX } from '@tabler/icons';
+import { IconEdit, IconX } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { readContract } from '@wagmi/core';
 

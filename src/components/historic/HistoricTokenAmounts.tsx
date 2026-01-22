@@ -1,7 +1,7 @@
 import { Flex, Text, Skeleton, Image } from "@mantine/core";
 import { Historic } from "../../types/historic";
 import { HistoricTokenInfos } from "./HistoricTokenInfos";
-import { IconArrowDownRight, IconArrowUpRight } from "@tabler/icons";
+import { IconArrowDownRight, IconArrowUpRight } from "@tabler/icons-react";
 
 interface HistoricTokenSummaryProps{
     historic: Historic;

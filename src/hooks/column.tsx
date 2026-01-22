@@ -15,7 +15,7 @@ import {
   IconChevronUp,
   IconCopy,
   IconTrash,
-} from '@tabler/icons';
+} from '@tabler/icons-react';
 import { ColumnDef, RowSelectionState, Table } from '@tanstack/react-table';
 
 import BigNumber from 'bignumber.js';

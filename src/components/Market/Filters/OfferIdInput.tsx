@@ -1,5 +1,5 @@
 import { FC, useState, FormEvent, useEffect, useRef, useMemo } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import {
   TextInput,
@@ -17,7 +17,7 @@ import {
   IconArrowRight,
   IconCheck,
   IconX,
-} from '@tabler/icons';
+} from '@tabler/icons-react';
 import { useDegradedMode } from 'src/hooks/interface/useDegradedMode';
 import { useChainId } from 'wagmi';
 import { BigNumber } from '@ethersproject/bignumber';
@@ -36,7 +36,7 @@ import { useDebounce } from 'src/hooks/useDebounce';
 export const OfferIdInput: FC = () => {
   const { t } = useTranslation('table', { keyPrefix: 'filters.offerIdInput' });
   const { t: tNotifications } = useTranslation('notifications');
-  const router = useRouter();
+  const navigate = useNavigate();
   const chainId = useChainId();
   const [offerId, setOfferId] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
@@ -196,7 +196,7 @@ export const OfferIdInput: FC = () => {
     // Rediriger vers la page de l'offre
     // La validation en temps réel a déjà vérifié l'existence si possible
     // Si elle n'a pas pu vérifier (erreur réseau), on redirige quand même
-    router.push(`/offer/${idNumber}`);
+    navigate({ to: '/offer/$id', params: { id: idNumber.toString() } });
   };
 
   const handleQuickSearch = () => {

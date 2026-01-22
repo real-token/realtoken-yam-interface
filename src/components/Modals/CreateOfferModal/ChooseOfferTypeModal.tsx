@@ -1,7 +1,7 @@
 /* eslint-disable react/display-name */
 import { Button, Flex, Text, Tooltip } from '@mantine/core';
 import { ContextModalProps, useModals } from '@mantine/modals';
-import { IconInfoCircle } from '@tabler/icons';
+import { IconInfoCircle } from '@tabler/icons-react';
 import { Dispatch, FC, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOfferType } from 'src/hooks/useOfferType';

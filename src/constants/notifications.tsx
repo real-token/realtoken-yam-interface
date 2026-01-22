@@ -3,7 +3,7 @@ import { Translation } from 'react-i18next';
 import { Anchor, Stack, Text } from '@mantine/core';
 import { NotificationData } from '@mantine/notifications';
 import { Link } from '@real-token/ui-components';
-import { IconCheck, IconX } from '@tabler/icons';
+import { IconCheck, IconX } from '@tabler/icons-react';
 
 import { asConst, shortenString } from 'src/utils';
 

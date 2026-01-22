@@ -7,7 +7,7 @@ import { Flex, Select, Divider, Text } from '@mantine/core';
 import { useTranslation } from "react-i18next";
 import { useCreateOfferContext } from "../CreateOfferContext";
 import { ComboboxOfferToken } from "../../ComboboxOfferToken/ComboboxOfferToken";
-import { IconSwitchVertical } from "@tabler/icons";
+import { IconSwitchVertical } from "@tabler/icons-react";
 import { ExchangeRateComputing } from "../ExchangeRateComputing";
 import BigNumber from "bignumber.js";
 

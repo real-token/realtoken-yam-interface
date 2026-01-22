@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Anchor, Stack, Text } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { Link } from '@real-token/ui-components';
-import { IconAlertTriangle, IconX } from '@tabler/icons';
+import { IconAlertTriangle, IconX } from '@tabler/icons-react';
 
 import { useDegradedMode } from 'src/hooks/interface/useDegradedMode';
 

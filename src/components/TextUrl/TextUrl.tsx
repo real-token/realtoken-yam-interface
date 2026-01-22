@@ -1,5 +1,5 @@
 import { Flex, Text } from "@mantine/core";
-import { IconExternalLink } from "@tabler/icons";
+import { IconExternalLink } from "@tabler/icons-react";
 import { openInNewTab } from "src/utils/window";
 import styled from "styled-components";
 

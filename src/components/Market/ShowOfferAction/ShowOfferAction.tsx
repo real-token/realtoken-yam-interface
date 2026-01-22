@@ -1,5 +1,5 @@
 import { ActionIcon } from "@mantine/core";
-import { IconEye } from "@tabler/icons";
+import { IconEye } from "@tabler/icons-react";
 import { FC } from "react";
 import { Offer } from "src/types/offer/Offer";
 import { openInNewTab } from "src/utils/window";

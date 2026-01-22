@@ -1,5 +1,5 @@
 import { Flex, Skeleton, Text } from "@mantine/core"
-import { IconWallet } from "@tabler/icons"
+import { IconWallet } from "@tabler/icons-react"
 import React from "react";
 import { FC } from "react"
 import { useTranslation } from "react-i18next";

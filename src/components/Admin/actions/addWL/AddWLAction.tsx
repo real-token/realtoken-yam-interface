@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, Flex, Text } from '@mantine/core';
 import { useCurrentNetwork } from '@real-token/core';
 import { useSendTransactions } from '@real-token/web3';
-import { IconPlus } from '@tabler/icons';
+import { IconPlus } from '@tabler/icons-react';
 
 import { useAtom } from 'jotai';
 

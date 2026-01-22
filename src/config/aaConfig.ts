@@ -5,34 +5,34 @@ import { EthereumLogo, GnosisLogo } from '@real-token/ui-components';
 
 import { Address } from 'viem';
 
-const env = process.env.NEXT_PUBLIC_NODE_ENV ?? 'production';
+const env = import.meta.env.VITE_NODE_ENV ?? 'production';
 
-const sepoliaWssUrl = process.env.NEXT_PUBLIC_SEPOLIA_WSS_URL;
-const sepoliaRpcUrl = process.env.NEXT_PUBLIC_SEPOLIA_RPC_URL;
+const sepoliaWssUrl = import.meta.env.VITE_SEPOLIA_WSS_URL;
+const sepoliaRpcUrl = import.meta.env.VITE_SEPOLIA_RPC_URL;
 if (!sepoliaWssUrl || !sepoliaRpcUrl) {
-  throw new Error('SEPOLIA_WSS_URL and SEPOLIA_RPC_URL env var must be set');
+  throw new Error('VITE_SEPOLIA_WSS_URL and VITE_SEPOLIA_RPC_URL env var must be set');
 }
 
-const gnosisWssUrl = process.env.NEXT_PUBLIC_GNOSIS_WSS_URL;
-const gnosisRpcUrl = process.env.NEXT_PUBLIC_GNOSIS_RPC_URL;
+const gnosisWssUrl = import.meta.env.VITE_GNOSIS_WSS_URL;
+const gnosisRpcUrl = import.meta.env.VITE_GNOSIS_RPC_URL;
 if (!gnosisWssUrl || !gnosisRpcUrl) {
-  throw new Error('GNOSIS_WSS_URL and GNOSIS_RPC_URL env var must be set');
+  throw new Error('VITE_GNOSIS_WSS_URL and VITE_GNOSIS_RPC_URL env var must be set');
 }
 
-const ethWssUrl = process.env.NEXT_PUBLIC_ETH_WSS_URL;
-const ethRpcUrl = process.env.NEXT_PUBLIC_ETH_RPC_URL;
+const ethWssUrl = import.meta.env.VITE_ETH_WSS_URL;
+const ethRpcUrl = import.meta.env.VITE_ETH_RPC_URL;
 if (!ethWssUrl || !ethRpcUrl) {
-  throw new Error('ETH_WSS_URL and ETH_RPC_URL env var must be set');
+  throw new Error('VITE_ETH_WSS_URL and VITE_ETH_RPC_URL env var must be set');
 }
 
-const web3AuthApiKey = process.env.NEXT_PUBLIC_WEB3_AUTH_API_KEY;
+const web3AuthApiKey = import.meta.env.VITE_WEB3_AUTH_API_KEY;
 if (!web3AuthApiKey) {
-  throw new Error('NEXT_PUBLIC_WEB3_AUTH_API_KEY env var must be set');
+  throw new Error('VITE_WEB3_AUTH_API_KEY env var must be set');
 }
 
-const wcProjectId = process.env.NEXT_PUBLIC_WC_PROJECTID;
+const wcProjectId = import.meta.env.VITE_WC_PROJECTID;
 if (!wcProjectId) {
-  throw new Error('NEXT_PUBLIC_WC_PROJECTID env var must be set');
+  throw new Error('VITE_WC_PROJECTID env var must be set');
 }
 
 export const gnosisChainId = '0x64';
@@ -428,7 +428,7 @@ export const aaClient: AAClientConfig = {
   // chainIdHex: env === "local" || env === "testnet" ? "0xaa36a7" : "0x64",
   chainId: 0x64,
   etherspotApiKey:
-    process.env.NEXT_PUBLIC_ETHERSPOT_KEY ??
+    import.meta.env.VITE_ETHERSPOT_KEY ??
     '' /* Etherspot api key - currently not needed */,
   torusConfig: torusConfig,
   guardians: [
@@ -443,6 +443,6 @@ export const aaClient: AAClientConfig = {
     name: 'RealToken Wallet',
     description: 'RealToken account abstraction wallet',
     icons: ['https://avatars.githubusercontent.com/u/53057739'],
-    url: process.env.NEXT_PUBLIC_WC_URL ?? '',
+    url: import.meta.env.VITE_WC_URL ?? '',
   },
 };

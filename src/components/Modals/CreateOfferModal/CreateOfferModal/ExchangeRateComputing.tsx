@@ -4,7 +4,7 @@ import { UseFormReturnType } from "@mantine/form";
 import { SellFormValues } from "../CreateOfferModal";
 import { useTranslation } from "react-i18next";
 import { NumberInput } from "../../../NumberInput";
-import { IconArrowRight } from "@tabler/icons";
+import { IconArrowRight } from "@tabler/icons-react";
 import { useCreateOfferContext } from "./CreateOfferContext";
 
 interface ExchangeRateComputingProps{

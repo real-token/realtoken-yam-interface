@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { Button, Flex, Skeleton, Text } from '@mantine/core';
 import { useCurrentNetwork } from '@real-token/core';
 import { encodeTransaction, useSendTransactions } from '@real-token/web3';
-import { IconCheck } from '@tabler/icons';
+import { IconCheck } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 
 import BigNumber from 'bignumber.js';

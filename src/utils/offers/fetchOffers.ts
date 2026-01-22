@@ -240,7 +240,7 @@ export const fetchOffersTheGraph = async (
   const accountBalanceId = [...new Set(accountRealtokenDuplicates)]; // remove duplicates
   // //console.log('Debug liste accountBalanceId', accountBalanceId);
 
-  const bigDataRealTokenPromises = [];
+  const bigDataRealTokenPromises: Promise<DataRealtokenType[]>[] = [];
   for (let i = 0; i < accountBalanceId.length; i += nbrFirst) {
     const batch: string[] = accountBalanceId.slice(i, i + nbrFirst);
     /* dataRealtoken.push(

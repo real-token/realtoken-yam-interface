@@ -1,5 +1,5 @@
 import { ActionIcon, Group, Text } from '@mantine/core';
-import { IconChevronDown, IconChevronUp, IconSelector } from '@tabler/icons';
+import { IconChevronDown, IconChevronUp, IconSelector } from '@tabler/icons-react';
 import { Header, flexRender } from '@tanstack/react-table';
 import classes from './TableHeader.module.css';
 

@@ -306,7 +306,7 @@ export class OfferRPCService {
       ]);
 
     // 3. Récupérer les données utilisateur si fourni
-    let userTokenData = null;
+    let userTokenData: { offerTokenBalance: string; offerTokenAllowance: string; buyerTokenBalance: string } | null = null;
     if (userAddress) {
       userTokenData = await this.getUserTokenData(
         userAddress,

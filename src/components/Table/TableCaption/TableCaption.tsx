@@ -12,7 +12,7 @@ import {
   Select,
 } from '@mantine/core';
 import { range, useDisclosure } from '@mantine/hooks';
-import { IconAdjustmentsHorizontal, IconRefresh } from '@tabler/icons';
+import { IconAdjustmentsHorizontal, IconRefresh } from '@tabler/icons-react';
 import { Table } from '@tanstack/react-table';
 
 import { useAtom } from 'jotai';

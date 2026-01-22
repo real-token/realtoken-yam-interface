@@ -1,17 +1,17 @@
-import { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 import { NetworkId } from '@real-token/core';
 
 import {
   ApiPriceToken,
   tokenToGetPriceApi,
-} from '../../../src/constants/GetPriceTokenApi';
+} from '../../src/constants/GetPriceTokenApi';
 import {
   ChainlinkPriceParams,
   getChainlinkPricesBatch,
-} from '../../../src/controllers/ChainLinkCall';
-import { getCoingeckoApiPrice } from '../../../src/controllers/CoingeckoApiCall';
-import { Price } from '../../../src/types/price';
+} from '../../src/controllers/ChainLinkCall';
+import { getCoingeckoApiPrice } from '../../src/controllers/CoingeckoApiCall';
+import { Price } from '../../src/types/price';
 
 // RPC URLs avec valeurs par défaut (public RPCs)
 // Note: Les RPC publics peuvent bloquer les IPs Vercel - préférer des RPC privés en production
@@ -34,10 +34,10 @@ const rpcUrls = new Map<number, string>([
   [Number(NetworkId.sepolia), sepoliaRpcUrl],
 ]);
 
-const handler: NextApiHandler = async (
-  req: NextApiRequest,
-  res: NextApiResponse
-) => {
+export default async function handler(
+  req: VercelRequest,
+  res: VercelResponse
+) {
   const startTime = Date.now();
   console.log('[prices] Handler started');
 
@@ -155,5 +155,4 @@ const handler: NextApiHandler = async (
     console.error(`[prices] Error after ${duration}ms:`, err);
     return res.status(500).json({ error: 'Failed to fetch asset prices' });
   }
-};
-export default handler;
+}

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, Divider, Flex } from '@mantine/core';
 import { useCurrentNetwork } from '@real-token/core';
 import { useIsAA, useSendTransactions } from '@real-token/web3';
-import { IconArrowBack } from '@tabler/icons';
+import { IconArrowBack } from '@tabler/icons-react';
 
 import BigNumber from 'bignumber.js';
 import { useAccount } from 'wagmi';

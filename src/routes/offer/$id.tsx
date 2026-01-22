@@ -1,7 +1,7 @@
-import { FC, useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { FC, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { useRouter } from 'next/router';
+import { createFileRoute } from '@tanstack/react-router'
 
 import {
   Affix,
@@ -11,84 +11,82 @@ import {
   Skeleton,
   Text,
   Transition,
-} from '@mantine/core';
-import { useAA } from '@real-token/aa-core';
+} from '@mantine/core'
+import { useAA } from '@real-token/aa-core'
 import {
   IconError404,
   IconExclamationCircle,
   IconSettings,
-} from '@tabler/icons';
+} from '@tabler/icons-react'
 
-import BigNumber from 'bignumber.js';
+import BigNumber from 'bignumber.js'
 
-import { OfferText } from 'src/components/Offer/OfferText';
-import { PropertyCard } from 'src/components/Offer/PropertyCard/PropertyCard';
-import { useOffer } from 'src/hooks/offers/useOffer';
-import { useOfferById } from 'src/hooks/offers/useOfferById';
-import { usePropertiesToken } from 'src/hooks/usePropertiesToken';
-import { ConnectedProvider } from 'src/providers/ConnectProvider';
-import { PropertiesToken } from 'src/types';
-import { Offer } from 'src/types/offer/Offer';
+import { OfferText } from 'src/components/Offer/OfferText'
+import { PropertyCard } from 'src/components/Offer/PropertyCard/PropertyCard'
+import { useOffer } from 'src/hooks/offers/useOffer'
+import { useOfferById } from 'src/hooks/offers/useOfferById'
+import { usePropertiesToken } from 'src/hooks/usePropertiesToken'
+import { ConnectedProvider } from 'src/providers/ConnectProvider'
+import { PropertiesToken } from 'src/types'
+import { Offer } from 'src/types/offer/Offer'
 
-import { BuyActionsWithPermit } from '../../src/components/Market/BuyActions';
-import { DeleteActions } from '../../src/components/Market/DeleteActions';
-import { UpdateActionsWithPermit } from '../../src/components/Market/UpdateActions';
-import classes from './Offer.module.css';
+import { BuyActionsWithPermit } from 'src/components/Market/BuyActions'
+import { DeleteActions } from 'src/components/Market/DeleteActions'
+import { UpdateActionsWithPermit } from 'src/components/Market/UpdateActions'
+import classes from './Offer.module.css'
 
 const ShowOfferPage: FC = () => {
-  const router = useRouter();
-  const { id } = router.query;
+  const { id } = Route.useParams()
 
-  const offerId: number = parseInt(id as string);
+  const offerId: number = parseInt(id as string)
 
-  const { walletAddress: account } = useAA();
+  const { walletAddress: account } = useAA()
   // Essayer d'abord RPC direct (fonctionne même si TheGraph est down)
   const {
     offer: offerRPC,
     isLoading: isLoadingRPC,
     isError: isErrorRPC,
-  } = useOfferById(offerId);
+  } = useOfferById(offerId)
 
   // Fallback vers TheGraph si RPC échoue ou n'est pas disponible
   const {
     offer: offerGraph,
     isLoading: isLoadingGraph,
     hasError: hasErrorGraph,
-  } = useOffer(offerId);
+  } = useOffer(offerId)
 
   // Utiliser RPC en priorité si disponible, sinon fallback vers GraphQL
-  // offerRPC est Partial<Offer>, offerGraph est Offer | undefined
   const offer: Offer | undefined =
     offerRPC && Object.keys(offerRPC).length > 0
       ? (offerRPC as Offer)
-      : offerGraph;
-  const isLoading = isLoadingRPC || (isErrorRPC && isLoadingGraph);
-  const hasError = isErrorRPC && hasErrorGraph;
+      : offerGraph
+  const isLoading = isLoadingRPC || (isErrorRPC && isLoadingGraph)
+  const hasError = isErrorRPC && hasErrorGraph
 
   const isAccountOffer: boolean = useMemo(() => {
-    if (!offer || !account) return false;
-    return offer.sellerAddress == account.toLowerCase();
-  }, [offer, account]);
+    if (!offer || !account) return false
+    return offer.sellerAddress == account.toLowerCase()
+  }, [offer, account])
 
-  const { t } = useTranslation('modals', { keyPrefix: 'buy' });
+  const { t } = useTranslation('modals', { keyPrefix: 'buy' })
 
-  const [propertyTokens, setPropertyTokens] = useState<PropertiesToken[]>([]);
-  const { getPropertyToken, propertiesIsloading } = usePropertiesToken();
+  const [propertyTokens, setPropertyTokens] = useState<PropertiesToken[]>([])
+  const { getPropertyToken, propertiesIsloading } = usePropertiesToken()
 
   useEffect(() => {
     if (!offer || propertiesIsloading || propertyTokens.length > 0)
-      return undefined;
+      return undefined
 
     if (offer.buyerTokenType == 1) {
-      const token = getPropertyToken(offer.buyerTokenAddress);
-      if (token) setPropertyTokens((prev) => [...prev, token]);
+      const token = getPropertyToken(offer.buyerTokenAddress)
+      if (token) setPropertyTokens((prev) => [...prev, token])
     }
 
     if (offer.offerTokenType == 1) {
-      const token = getPropertyToken(offer.offerTokenAddress);
-      if (token) setPropertyTokens((prev) => [...prev, token]);
+      const token = getPropertyToken(offer.offerTokenAddress)
+      if (token) setPropertyTokens((prev) => [...prev, token])
     }
-  }, [getPropertyToken, offer, propertiesIsloading, propertyTokens.length]);
+  }, [getPropertyToken, offer, propertiesIsloading, propertyTokens.length])
 
   return (
     <ConnectedProvider>
@@ -215,7 +213,9 @@ const ShowOfferPage: FC = () => {
         )}
       </Flex>
     </ConnectedProvider>
-  );
-};
+  )
+}
 
-export default ShowOfferPage;
+export const Route = createFileRoute('/offer/$id')({
+  component: ShowOfferPage,
+})

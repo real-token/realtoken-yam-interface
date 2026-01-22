@@ -12,7 +12,7 @@ import {
   Text,
   useCombobox,
 } from '@mantine/core';
-import { IconCheck } from '@tabler/icons';
+import { IconCheck } from '@tabler/icons-react';
 import { multicall } from '@wagmi/core';
 
 import BigNumber from 'bignumber.js';
