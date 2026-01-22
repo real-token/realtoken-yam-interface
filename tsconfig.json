@@ -20,6 +20,6 @@
     },
     "types": ["vite/client"]
   },
-  "include": ["src", "api"],
+  "include": ["src", "api-src"],
   "exclude": ["node_modules"]
 }

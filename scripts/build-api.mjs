@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = join(__dirname, '..');
 
-// Find all .ts files in api/ directory recursively
+// Find all .ts files in api-src/ directory recursively
 function findApiFiles(dir, files = []) {
   const items = readdirSync(dir);
   for (const item of items) {
@@ -27,8 +27,9 @@ const allDeps = [
   ...Object.keys(pkg.devDependencies || {}),
 ];
 
-const apiDir = join(rootDir, 'api');
-const entryPoints = findApiFiles(apiDir);
+const apiSrcDir = join(rootDir, 'api-src');
+const apiOutDir = join(rootDir, 'api');
+const entryPoints = findApiFiles(apiSrcDir);
 
 console.log('Building API functions:', entryPoints);
 
@@ -38,7 +39,7 @@ await esbuild.build({
   platform: 'node',
   target: 'node18',
   format: 'esm',
-  outdir: join(rootDir, 'api'),
+  outdir: apiOutDir,
   outExtension: { '.js': '.js' },
   allowOverwrite: true,
   // Mark all node_modules as external - Vercel will resolve them at runtime
@@ -46,7 +47,7 @@ await esbuild.build({
   alias: {
     'src': join(rootDir, 'src'),
   },
-  outbase: apiDir,
+  outbase: apiSrcDir,
   // Add banner to handle ESM/CJS interop
   banner: {
     js: `import { createRequire } from 'module'; const require = createRequire(import.meta.url);`,
