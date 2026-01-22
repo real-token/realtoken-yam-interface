@@ -39,10 +39,13 @@ export const getCoingeckoApiPrice = async (
 
   try {
     console.log(`[coingecko] Fetching price for ${tokenAddress.slice(0, 10)}...`);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
     const res = await fetch(
       `https://api.geckoterminal.com/api/v2/simple/networks/${coingeckoNetworkId}/token_price/${tokenAddress}`,
-      { signal: AbortSignal.timeout(5000) } // 5s timeout
+      { signal: controller.signal }
     );
+    clearTimeout(timeoutId);
 
     if (!res.ok) {
       console.error(
