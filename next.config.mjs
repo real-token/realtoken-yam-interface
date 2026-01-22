@@ -2,7 +2,7 @@
 
 /** @type { NextConfig } */
 const nextConfig = {
-  reactStrictMode: true,
+  // reactStrictMode: true,
   transpilePackages: ['@rabby-wallet/rabby-action'],
   output: 'standalone',
   async headers() {
