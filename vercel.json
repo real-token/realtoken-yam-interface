@@ -1,12 +1,7 @@
 {
-  "buildCommand": "vite build",
+  "buildCommand": "yarn build",
   "outputDirectory": "dist",
   "framework": "vite",
-  "functions": {
-    "api/**/*.js": {
-      "maxDuration": 30
-    }
-  },
   "rewrites": [
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
