@@ -8209,7 +8209,7 @@ esbuild@^0.21.3:
     "@esbuild/win32-ia32" "0.21.5"
     "@esbuild/win32-x64" "0.21.5"
 
-esbuild@~0.27.0:
+esbuild@^0.27.2, esbuild@~0.27.0:
   version "0.27.2"
   resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.27.2.tgz#d83ed2154d5813a5367376bb2292a9296fc83717"
   integrity sha512-HyNQImnsOC7X9PMNaCIeAm4ISCQXs5a5YasTXVliKv4uuBo1dKrG0A+uQS8M5eXjVMnLg3WgXaKvprHlFJQffw==

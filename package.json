@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && node scripts/build-api.mjs",
+    "build:api": "node scripts/build-api.mjs",
     "preview": "vite preview",
     "lint": "eslint src --ext ts,tsx",
     "gql:generate": "npx graphql-code-generator --config ./codegen.ts",
@@ -79,6 +80,7 @@
     "@typescript-eslint/parser": "^5.30.0",
     "@vercel/node": "^3.2.0",
     "@vitejs/plugin-react-swc": "^3.7.0",
+    "esbuild": "^0.27.2",
     "eslint": "8.18.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-react-hooks": "^4.6.0",
