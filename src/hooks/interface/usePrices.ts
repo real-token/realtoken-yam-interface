@@ -17,7 +17,9 @@ export const usePrices: UsePrices = () => {
     meta: { errCode: REACT_QUERY_ERRORS.FETCH_PRICES },
     enabled: !!chainId,
     queryFn: async (): Promise<Price> => {
-      const res = await fetch(`/api/prices/${chainId}`);
+      const res = await fetch(
+        `${import.meta.env.VITE_ASSETS_API_URL}/prices/${chainId}`
+      );
       return await res.json();
     },
   });
