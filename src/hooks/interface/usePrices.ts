@@ -18,7 +18,12 @@ export const usePrices: UsePrices = () => {
     enabled: !!chainId,
     queryFn: async (): Promise<Price> => {
       const res = await fetch(
-        `${import.meta.env.VITE_ASSETS_API_URL}/prices/${chainId}`
+        `${import.meta.env.VITE_ASSETS_API_URL}/prices/${chainId}`,
+        {
+          headers: import.meta.env.VITE_ASSETS_API_KEY ? {
+            "X-API-Key": import.meta.env.VITE_ASSETS_API_KEY
+          } : {}
+        }
       );
       return await res.json();
     },

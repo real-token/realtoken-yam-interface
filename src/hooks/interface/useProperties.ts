@@ -55,7 +55,12 @@ export const useProperties: UseProperties = () => {
       if (!chainId) return [];
 
       const tokens = await fetch(
-        `${import.meta.env.VITE_ASSETS_API_URL}/properties/${chainId}`
+        `${import.meta.env.VITE_ASSETS_API_URL}/properties/${chainId}`,
+        {
+          headers: import.meta.env.VITE_ASSETS_API_KEY ? {
+            "X-API-Key": import.meta.env.VITE_ASSETS_API_KEY
+          } : {}
+        }
       );
       const datasProperties = await tokens.json();
       return mergeExtendedProperties(

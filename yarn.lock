@@ -741,6 +741,19 @@
     lru-cache "^6.0.0"
     tslib "^2.5.0"
 
+"@esbuild-plugins/node-globals-polyfill@^0.2.3":
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/@esbuild-plugins/node-globals-polyfill/-/node-globals-polyfill-0.2.3.tgz#0e4497a2b53c9e9485e149bc92ddb228438d6bcf"
+  integrity sha512-r3MIryXDeXDOZh7ih1l/yE9ZLORCd5e8vWg02azWRGj5SPTuoh69A2AIyn0Z31V/kHBfZ4HgWJ+OK3GTTwLmnw==
+
+"@esbuild-plugins/node-modules-polyfill@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@esbuild-plugins/node-modules-polyfill/-/node-modules-polyfill-0.2.2.tgz#cefa3dc0bd1c16277a8338b52833420c94987327"
+  integrity sha512-LXV7QsWJxRuMYvKbiznh+U1ilIop3g2TeKRzUxOG5X3YITc8JyyTa90BmLwqqv0YnX4v32CSlG+vsziZp9dMvA==
+  dependencies:
+    escape-string-regexp "^4.0.0"
+    rollup-plugin-node-polyfills "^0.2.1"
+
 "@esbuild/aix-ppc64@0.21.5":
   version "0.21.5"
   resolved "https://registry.yarnpkg.com/@esbuild/aix-ppc64/-/aix-ppc64-0.21.5.tgz#c7184a326533fcdf1b8ee0733e21c713b975575f"
@@ -3755,84 +3768,84 @@
     subscriptions-transport-ws "^0.9.0"
     wagmi "2.16.1"
 
-"@real-token/aa-modal@3.1.4":
-  version "3.1.4"
-  resolved "https://npm.pkg.github.com/download/@real-token/aa-modal/3.1.4/4952a61dd2b484e4cb8dac58270318febda6bd9c#4952a61dd2b484e4cb8dac58270318febda6bd9c"
-  integrity sha512-YhGM6potTAnKK0DCDOkQ6VtF+58TY67DWlCbTu+yGpNeJTvb7aMzWLJfALN2InkkX9wk5Wb5N9dVCAugWbQmBA==
+"@real-token/aa-modal@3.1.5":
+  version "3.1.5"
+  resolved "https://npm.pkg.github.com/download/@real-token/aa-modal/3.1.5/7d319226ed2aa1be9a422981ae668b4e11e078f1#7d319226ed2aa1be9a422981ae668b4e11e078f1"
+  integrity sha512-CqdmKax4IZuJH0xCMHbZfUeyhfKA8pqO/iV2sNYyQ57T/tJxoJTciB85zGDLdDDbzsP8VFBYesqb7qtV5YGJ8A==
   dependencies:
     "@babel/core" "^7.24.7"
     "@babel/runtime" "^7.24.7"
     "@mantine/form" "^7.17.3"
     "@mantine/notifications" "^7.17.3"
-    "@real-token/web3" "^3.1.4"
+    "@real-token/web3" "^3.1.5"
     "@tabler/icons-react" "^3.19.0"
     clsx "^2.1.1"
     i18next "25.5.2"
     i18next-browser-languagedetector "^8.0.2"
     jotai "^2.10.4"
-    lodash "^4.17.21"
+    lodash-es "^4.17.21"
     qrcode.react "^4.2.0"
     react-country-flag "^3.1.0"
     react-i18next "16.0.0"
     tslib "^2.7.0"
 
-"@real-token/core@3.1.4":
-  version "3.1.4"
-  resolved "https://npm.pkg.github.com/download/@real-token/core/3.1.4/d2e7e418f3598d9200fb0ba8d215af0e9a80e93b#d2e7e418f3598d9200fb0ba8d215af0e9a80e93b"
-  integrity sha512-LankS0R0Okzozm0Rlvw9T2niZp9omHYG//yBYi1MDTAPB2ckmylbkYKSr0lBvR5lfLNvvS7vtZ1+JCbOM6AelQ==
+"@real-token/core@3.1.5":
+  version "3.1.5"
+  resolved "https://npm.pkg.github.com/download/@real-token/core/3.1.5/4494cd859abb97594750b64132e6616db268da48#4494cd859abb97594750b64132e6616db268da48"
+  integrity sha512-TMyQLeGvB4XY5frowoukMn/6rSwsgWDPduYs+fjwjpIF9ktK3w+rMAdHpr1h7Rd2l/ZgHQJzj9kH3BUFDXVUPw==
   dependencies:
     "@babel/core" "^7.24.7"
     "@babel/runtime" "^7.24.7"
-    "@real-token/types" "3.1.4"
-    lodash "^4.17.21"
+    "@real-token/types" "3.1.5"
+    lodash-es "^4.17.21"
     react "^18.3.1"
     react-dom "^18.3.1"
 
-"@real-token/i18n-locales@3.1.4", "@real-token/i18n-locales@^3.1.4":
-  version "3.1.4"
-  resolved "https://npm.pkg.github.com/download/@real-token/i18n-locales/3.1.4/b23766402ac5f736ea7adbf479b3885ee5228089#b23766402ac5f736ea7adbf479b3885ee5228089"
-  integrity sha512-Ft4XBnek5SA81uj4Xj0POgsKNzS4O9PLItA56wUcnzRg/dUl8PMCY1uS3JEMP/Udg7bKEkBJzuBYjot9R4JdAg==
+"@real-token/i18n-locales@3.1.5", "@real-token/i18n-locales@^3.1.5":
+  version "3.1.5"
+  resolved "https://npm.pkg.github.com/download/@real-token/i18n-locales/3.1.5/4e5dfa3d71da18d84d65446f48ae2b4b7458d230#4e5dfa3d71da18d84d65446f48ae2b4b7458d230"
+  integrity sha512-R95Udu9pe4WouACut6iXSxoysDyGY9EFT/Qx7H9h9qbrCofayRZWkIizEzEQV55HwfVOUDJnkVdjpmdeL1jUMg==
   dependencies:
     i18next-browser-languagedetector "^8.0.2"
     i18next-resources-for-ts "^1.2.1"
     react-cookie "^8.0.1"
 
-"@real-token/types@3.1.4", "@real-token/types@^3.1.4":
-  version "3.1.4"
-  resolved "https://npm.pkg.github.com/download/@real-token/types/3.1.4/f380b596d069d26157e94f953131fa143fc26083#f380b596d069d26157e94f953131fa143fc26083"
-  integrity sha512-HCE8a2touep0k2kWjd/DhLPV8H+hMGb5UUR1PBnwJ7j2JAvH0tQuXD5sY63CJs3IoJCwVwIuMBIM7g97vEiBqQ==
+"@real-token/types@3.1.5", "@real-token/types@^3.1.5":
+  version "3.1.5"
+  resolved "https://npm.pkg.github.com/download/@real-token/types/3.1.5/640ef90de59dbd710a92467518f39e0f48323093#640ef90de59dbd710a92467518f39e0f48323093"
+  integrity sha512-2Pwz3zM422W1Ro4DHSjNXYupJqsc/eThFu3L7qVCd2YaJu7TvRtte+AgvjRGRulOup9W0NKO28Hm1oT/wFhmlg==
   dependencies:
     "@babel/core" "^7.24.7"
     "@babel/runtime" "^7.24.7"
 
-"@real-token/ui-components@3.1.4":
-  version "3.1.4"
-  resolved "https://npm.pkg.github.com/download/@real-token/ui-components/3.1.4/3c019e92e2fa49c3bca3b7219e53264fa171824f#3c019e92e2fa49c3bca3b7219e53264fa171824f"
-  integrity sha512-iPWBygFnDSDbAytcrvjuraIZFHw8fAxe3iGnzwYVLCT1O91+71j15baOQNuDFr/T7Kywoh5ft7x0+KONH6gOLQ==
+"@real-token/ui-components@3.1.5":
+  version "3.1.5"
+  resolved "https://npm.pkg.github.com/download/@real-token/ui-components/3.1.5/8e201aed6c9e51c7963f38f2f1d75ce090332935#8e201aed6c9e51c7963f38f2f1d75ce090332935"
+  integrity sha512-cKXLBGtsM53lgQJO4Z3zkZNbqWs6Cmu94u5TQdzfeyiLeUIwcIbQ6A90WHjWHv+c6I3CtaWwncX2l1DaIkDdmg==
   dependencies:
     "@babel/runtime" "^7.24.7"
-    "@real-token/i18n-locales" "3.1.4"
-    "@real-token/types" "3.1.4"
+    "@real-token/i18n-locales" "3.1.5"
+    "@real-token/types" "3.1.5"
     "@tabler/icons-react" "^3.19.0"
     clsx "^2.1.1"
     country-flag-icons "^1.5.7"
     react-cookie "^8.0.1"
     tabler-icons-react "*"
 
-"@real-token/web3@3.1.4", "@real-token/web3@^3.1.4":
-  version "3.1.4"
-  resolved "https://npm.pkg.github.com/download/@real-token/web3/3.1.4/c964413969f1c17d8a5d8a674298bdbbfe2ffc48#c964413969f1c17d8a5d8a674298bdbbfe2ffc48"
-  integrity sha512-VWR6/RZohe1F65W69YhrhZFVhSYIcAgwg3Qqh3TyqpvK9jPamgEXYjP7criCmZjzGQyzgXK518y3+LJSnT2SsA==
+"@real-token/web3@3.1.5", "@real-token/web3@^3.1.5":
+  version "3.1.5"
+  resolved "https://npm.pkg.github.com/download/@real-token/web3/3.1.5/e3918dfffc7cbe866e2d5c67615172f9dd642672#e3918dfffc7cbe866e2d5c67615172f9dd642672"
+  integrity sha512-xoYfeEBFD2eqnp3mbQldUhmRoIejhoxtzMDvNdNPyR0lXwGi4Fremi6KirVFRBa8MrCS/M1CRXlBF8F1Q0kTjA==
   dependencies:
     "@rabby-wallet/rabby-action" "^0.1.8"
     "@rabby-wallet/rabby-api" "^0.9.11"
-    "@real-token/i18n-locales" "^3.1.4"
-    "@real-token/types" "^3.1.4"
+    "@real-token/i18n-locales" "^3.1.5"
+    "@real-token/types" "^3.1.5"
     "@tabler/icons-react" "^3.19.0"
     abitype "^1.0.8"
     bignumber.js "^9.3.0"
     buffer "^6.0.3"
-    lodash "^4.17.21"
+    lodash-es "^4.17.21"
     p-queue "^8.1.0"
     uuid "^13.0.0"
 
@@ -8023,6 +8036,11 @@ estraverse@^5.1.0, estraverse@^5.2.0:
   resolved "https://registry.yarnpkg.com/estraverse/-/estraverse-5.3.0.tgz#2eea5290702f26ab8fe5370370ff86c965d21123"
   integrity sha512-MMdARuVEQziNTeJD8DgMqmhwR11BRQ/cBP+pLtYdSTnf3MIO8fFeiINEbX36ZdNlfU/7A9f3gUw49B3oQsvwBA==
 
+estree-walker@^0.6.1:
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/estree-walker/-/estree-walker-0.6.1.tgz#53049143f40c6eb918b23671d1fe3219f3a1b362"
+  integrity sha512-SqmZANLWS0mnatqbSfRP5g8OXZC12Fgg1IwNtLsyHDzJizORW4khDfjPqJZsemPWBB2uqykUah5YpQ6epsqC/w==
+
 estree-walker@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/estree-walker/-/estree-walker-2.0.2.tgz#52f010178c2a4c117a7757cfe942adb7d2da4cac"
@@ -9655,7 +9673,7 @@ locate-path@^6.0.0:
   dependencies:
     p-locate "^5.0.0"
 
-lodash-es@^4.17.23:
+lodash-es@^4.17.21, lodash-es@^4.17.23:
   version "4.17.23"
   resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.17.23.tgz#58c4360fd1b5d33afc6c0bbd3d1149349b1138e0"
   integrity sha512-kVI48u3PZr38HdYz98UmfPnXl2DXrpdctLrFLCd3kOx1xUkOmpFPx7gCWWM5MPkL/fD8zb+Ph0QzjGFs4+hHWg==
@@ -9782,6 +9800,13 @@ lru-cache@^7.14.1:
   version "7.18.3"
   resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-7.18.3.tgz#f793896e0fd0e954a59dfdd82f0773808df6aa89"
   integrity sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==
+
+magic-string@^0.25.3:
+  version "0.25.9"
+  resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.25.9.tgz#de7f9faf91ef8a1c91d02c2e5314c8277dbcdd1c"
+  integrity sha512-RmF0AsMzgt25qzqqLc1+MbHmhdx0ojF2Fvs4XnOqz2ZOBXzzkEwc/dJQZCYHAn7v1jbVOjAZfK8msRn4BxO4VQ==
+  dependencies:
+    sourcemap-codec "^1.4.8"
 
 magic-string@^0.30.21, magic-string@^0.30.3:
   version "0.30.21"
@@ -11304,6 +11329,29 @@ ripple-keypairs@^2.0.0:
     "@xrplf/isomorphic" "^1.0.0"
     ripple-address-codec "^5.0.0"
 
+rollup-plugin-inject@^3.0.0:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-inject/-/rollup-plugin-inject-3.0.2.tgz#e4233855bfba6c0c12a312fd6649dff9a13ee9f4"
+  integrity sha512-ptg9PQwzs3orn4jkgXJ74bfs5vYz1NCZlSQMBUA0wKcGp5i5pA1AO3fOUEte8enhGUC+iapTCzEWw2jEFFUO/w==
+  dependencies:
+    estree-walker "^0.6.1"
+    magic-string "^0.25.3"
+    rollup-pluginutils "^2.8.1"
+
+rollup-plugin-node-polyfills@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-node-polyfills/-/rollup-plugin-node-polyfills-0.2.1.tgz#53092a2744837164d5b8a28812ba5f3ff61109fd"
+  integrity sha512-4kCrKPTJ6sK4/gLL/U5QzVT8cxJcofO0OU74tnB19F40cmuAKSzH5/siithxlofFEjwvw1YAhPmbvGNA6jEroA==
+  dependencies:
+    rollup-plugin-inject "^3.0.0"
+
+rollup-pluginutils@^2.8.1:
+  version "2.8.2"
+  resolved "https://registry.yarnpkg.com/rollup-pluginutils/-/rollup-pluginutils-2.8.2.tgz#72f2af0748b592364dbd3389e600e5a9444a351e"
+  integrity sha512-EEp9NhnUkwY8aif6bxgovPHMoMoNr2FulJziTndpt5H9RdwC47GSGuII9XxpSdzVGM0GWrNPHV6ie1LTNJPaLQ==
+  dependencies:
+    estree-walker "^0.6.1"
+
 rollup@^4.20.0:
   version "4.56.0"
   resolved "https://registry.yarnpkg.com/rollup/-/rollup-4.56.0.tgz#65959d13cfbd7e48b8868c05165b1738f0143862"
@@ -11687,6 +11735,11 @@ source-map@~0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
   integrity sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==
+
+sourcemap-codec@^1.4.8:
+  version "1.4.8"
+  resolved "https://registry.yarnpkg.com/sourcemap-codec/-/sourcemap-codec-1.4.8.tgz#ea804bd94857402e6992d05a38ef1ae35a9ab4c4"
+  integrity sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==
 
 split-on-first@^1.0.0:
   version "1.1.0"
