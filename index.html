@@ -7,14 +7,6 @@
     <meta name="description" content="YAM (You And Me)" />
     <title>YAM (You And Me)</title>
     <script>
-      // Node.js polyfills for Web3 libraries
-      window.global = window;
-      window.process = window.process || { env: {}, nextTick: function(cb) { queueMicrotask(cb); } };
-      if (!window.process.nextTick) {
-        window.process.nextTick = function(cb) { queueMicrotask(cb); };
-      }
-    </script>
-    <script>
       // Mantine ColorSchemeScript equivalent
       (function() {
         var colorScheme = localStorage.getItem('mantine-color-scheme-value');
