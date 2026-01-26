@@ -9,12 +9,7 @@ export default defineConfig({
         tanstackRouter(),
         react(),
         nodePolyfills({
-            globals: {
-                Buffer: true,
-                global: true,
-                process: true,
-            },
-            protocolImports: true,
+            include: ["process", "buffer"],
         }),
     ],
     resolve: {
@@ -23,8 +18,7 @@ export default defineConfig({
         },
     },
     define: {
-        // For libraries that still use process.env
-        'process.env': {},
+        'process.env': process.env,
     },
     server: {
         port: 3000,
