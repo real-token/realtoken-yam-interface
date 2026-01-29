@@ -3768,16 +3768,16 @@
     subscriptions-transport-ws "^0.9.0"
     wagmi "2.16.1"
 
-"@real-token/aa-modal@3.1.5":
-  version "3.1.5"
-  resolved "https://npm.pkg.github.com/download/@real-token/aa-modal/3.1.5/7d319226ed2aa1be9a422981ae668b4e11e078f1#7d319226ed2aa1be9a422981ae668b4e11e078f1"
-  integrity sha512-CqdmKax4IZuJH0xCMHbZfUeyhfKA8pqO/iV2sNYyQ57T/tJxoJTciB85zGDLdDDbzsP8VFBYesqb7qtV5YGJ8A==
+"@real-token/aa-modal@3.1.7":
+  version "3.1.7"
+  resolved "https://npm.pkg.github.com/download/@real-token/aa-modal/3.1.7/4e0a0514184a8e7d0c1c09df5248c7b8bdc01b8a#4e0a0514184a8e7d0c1c09df5248c7b8bdc01b8a"
+  integrity sha512-Il2ijFH45II6W/RC7Hnyp+A2fSRfUym4Rc+1ft1vVZf+5QROoZ3KE4SZikgFTQtgCKnwLXcYOUQRdqYD0H6Ugg==
   dependencies:
     "@babel/core" "^7.24.7"
     "@babel/runtime" "^7.24.7"
     "@mantine/form" "^7.17.3"
     "@mantine/notifications" "^7.17.3"
-    "@real-token/web3" "^3.1.5"
+    "@real-token/web3" "^3.1.7"
     "@tabler/icons-react" "^3.19.0"
     clsx "^2.1.1"
     i18next "25.5.2"
@@ -3789,58 +3789,58 @@
     react-i18next "16.0.0"
     tslib "^2.7.0"
 
-"@real-token/core@3.1.5":
-  version "3.1.5"
-  resolved "https://npm.pkg.github.com/download/@real-token/core/3.1.5/4494cd859abb97594750b64132e6616db268da48#4494cd859abb97594750b64132e6616db268da48"
-  integrity sha512-TMyQLeGvB4XY5frowoukMn/6rSwsgWDPduYs+fjwjpIF9ktK3w+rMAdHpr1h7Rd2l/ZgHQJzj9kH3BUFDXVUPw==
+"@real-token/core@3.1.7":
+  version "3.1.7"
+  resolved "https://npm.pkg.github.com/download/@real-token/core/3.1.7/402fd1adf040d2ecf071a58bedffcff6514b9e63#402fd1adf040d2ecf071a58bedffcff6514b9e63"
+  integrity sha512-bQpEEvyIR6koePOzZxF4HDX83srgQ2dXwCk9UmoHgnTNlngFFrZ59T+scD4mwOjtUueEoV0YKoLN+fA6E8+9dA==
   dependencies:
     "@babel/core" "^7.24.7"
     "@babel/runtime" "^7.24.7"
-    "@real-token/types" "3.1.5"
+    "@real-token/types" "3.1.7"
     lodash-es "^4.17.21"
     react "^18.3.1"
     react-dom "^18.3.1"
 
-"@real-token/i18n-locales@3.1.5", "@real-token/i18n-locales@^3.1.5":
-  version "3.1.5"
-  resolved "https://npm.pkg.github.com/download/@real-token/i18n-locales/3.1.5/4e5dfa3d71da18d84d65446f48ae2b4b7458d230#4e5dfa3d71da18d84d65446f48ae2b4b7458d230"
-  integrity sha512-R95Udu9pe4WouACut6iXSxoysDyGY9EFT/Qx7H9h9qbrCofayRZWkIizEzEQV55HwfVOUDJnkVdjpmdeL1jUMg==
+"@real-token/i18n-locales@3.1.7", "@real-token/i18n-locales@^3.1.7":
+  version "3.1.7"
+  resolved "https://npm.pkg.github.com/download/@real-token/i18n-locales/3.1.7/74a35755bc169e7fed0318b2905fb3c5140aa54a#74a35755bc169e7fed0318b2905fb3c5140aa54a"
+  integrity sha512-EvzoGiWwWleDFgMt4Z+cqizFV8oF0eL4MkIC5UGt9eNLqTxknkmCOKnKfbTPssFO82Zl5SE1WvjVa14Ubrz2QA==
   dependencies:
     i18next-browser-languagedetector "^8.0.2"
     i18next-resources-for-ts "^1.2.1"
     react-cookie "^8.0.1"
 
-"@real-token/types@3.1.5", "@real-token/types@^3.1.5":
-  version "3.1.5"
-  resolved "https://npm.pkg.github.com/download/@real-token/types/3.1.5/640ef90de59dbd710a92467518f39e0f48323093#640ef90de59dbd710a92467518f39e0f48323093"
-  integrity sha512-2Pwz3zM422W1Ro4DHSjNXYupJqsc/eThFu3L7qVCd2YaJu7TvRtte+AgvjRGRulOup9W0NKO28Hm1oT/wFhmlg==
+"@real-token/types@3.1.7", "@real-token/types@^3.1.7":
+  version "3.1.7"
+  resolved "https://npm.pkg.github.com/download/@real-token/types/3.1.7/3db14acdbb522b53aaa8f1e0675b96fd279d64c2#3db14acdbb522b53aaa8f1e0675b96fd279d64c2"
+  integrity sha512-91jVXk23B6nuRwwdp09inlv/aMscH2shoyPDsWKFRFTsUZb1QBzXq0Tn0fjJzqIpqH1mtExhY2Or6g9wT9ZNbQ==
   dependencies:
     "@babel/core" "^7.24.7"
     "@babel/runtime" "^7.24.7"
 
-"@real-token/ui-components@3.1.5":
-  version "3.1.5"
-  resolved "https://npm.pkg.github.com/download/@real-token/ui-components/3.1.5/8e201aed6c9e51c7963f38f2f1d75ce090332935#8e201aed6c9e51c7963f38f2f1d75ce090332935"
-  integrity sha512-cKXLBGtsM53lgQJO4Z3zkZNbqWs6Cmu94u5TQdzfeyiLeUIwcIbQ6A90WHjWHv+c6I3CtaWwncX2l1DaIkDdmg==
+"@real-token/ui-components@3.1.7":
+  version "3.1.7"
+  resolved "https://npm.pkg.github.com/download/@real-token/ui-components/3.1.7/5175df98857a8486cf3e50bdaea859faf1e4078e#5175df98857a8486cf3e50bdaea859faf1e4078e"
+  integrity sha512-1c9N78aaCClR4raKag1I+yzHZNK5WBLGFJn2uNDunrV1qSb4HSnkupOcZSzpzo1m8bHMJhCGvbjCGdBJBLe1KA==
   dependencies:
     "@babel/runtime" "^7.24.7"
-    "@real-token/i18n-locales" "3.1.5"
-    "@real-token/types" "3.1.5"
+    "@real-token/i18n-locales" "3.1.7"
+    "@real-token/types" "3.1.7"
     "@tabler/icons-react" "^3.19.0"
     clsx "^2.1.1"
     country-flag-icons "^1.5.7"
     react-cookie "^8.0.1"
     tabler-icons-react "*"
 
-"@real-token/web3@3.1.5", "@real-token/web3@^3.1.5":
-  version "3.1.5"
-  resolved "https://npm.pkg.github.com/download/@real-token/web3/3.1.5/e3918dfffc7cbe866e2d5c67615172f9dd642672#e3918dfffc7cbe866e2d5c67615172f9dd642672"
-  integrity sha512-xoYfeEBFD2eqnp3mbQldUhmRoIejhoxtzMDvNdNPyR0lXwGi4Fremi6KirVFRBa8MrCS/M1CRXlBF8F1Q0kTjA==
+"@real-token/web3@3.1.7", "@real-token/web3@^3.1.7":
+  version "3.1.7"
+  resolved "https://npm.pkg.github.com/download/@real-token/web3/3.1.7/d784d16e855c84cdcfb636dc84c0e12742678948#d784d16e855c84cdcfb636dc84c0e12742678948"
+  integrity sha512-RumU3uK05wzVdHp64yG39AS2nVbEGk8SSKp3I28mgbvhPy0pMfR9iP5/2l3o5FqGD+ZB97oooHxIawzUVMeJ4Q==
   dependencies:
     "@rabby-wallet/rabby-action" "^0.1.8"
     "@rabby-wallet/rabby-api" "^0.9.11"
-    "@real-token/i18n-locales" "^3.1.5"
-    "@real-token/types" "^3.1.5"
+    "@real-token/i18n-locales" "^3.1.7"
+    "@real-token/types" "^3.1.7"
     "@tabler/icons-react" "^3.19.0"
     abitype "^1.0.8"
     bignumber.js "^9.3.0"

@@ -150,16 +150,19 @@ function RootComponent() {
             >
               <OfferCacheProvider>
                 <Layout
-                  currentWebsite={Websites.YAM}
+                  header={{
+                    nav: <HeaderNav />,
+                    banner: <Banners />,
+                    currentWebsite: Websites.YAM,
+                    disableWalletConnect: true
+                  }}
                   head={
                     <Head
                       title={'YAM (You And Me)'}
                       description={'YAM (You And Me)'}
                     />
                   }
-                  headerNav={<HeaderNav />}
                   footerCustomLinks={<FooterLinks />}
-                  headerBanner={<Banners />}
                 >
                   <LanguageInit i={i18next} />
                   <TheGraphErrorNotification />
