@@ -1,54 +1,49 @@
-import { createRootRoute, Outlet } from '@tanstack/react-router'
-import { I18nextProvider } from 'react-i18next'
+import { I18nextProvider } from 'react-i18next';
 
-import { notifications } from '@mantine/notifications'
+import { notifications } from '@mantine/notifications';
 import {
   NetworkId,
   RealTokenUiProvider,
   SHOW_NETWORKS,
-} from '@real-token/core'
-import { LanguageInit, initLanguage } from '@real-token/i18n-locales'
+} from '@real-token/core';
+import { LanguageInit, initLanguage } from '@real-token/i18n-locales';
 import {
   Head,
   Layout,
   MantineProviders,
   Websites,
-} from '@real-token/ui-components'
-import { RealTokenWeb3Provider } from '@real-token/web3'
+} from '@real-token/ui-components';
+import { RealTokenWeb3Provider } from '@real-token/web3';
 import {
   Query,
   QueryCache,
   QueryClient,
   QueryKey,
-} from '@tanstack/react-query'
+} from '@tanstack/react-query';
+import { Outlet, createRootRoute } from '@tanstack/react-router';
 
-import i18next from 'i18next'
+import i18next from 'i18next';
 
-import { Provider as JotaiProvider } from 'jotai'
+import { Provider as JotaiProvider } from 'jotai';
 
-import { resources } from 'src/i18next'
-
-import { modals } from 'src/components'
-import { HeaderNav } from 'src/components/HeaderNav'
-import { OfferCacheProvider } from 'src/components/OfferCacheProvider'
-import { TheGraphErrorNotification } from 'src/components/TheGraphErrorNotification'
-import { FooterLinks } from 'src/components/footer/FooterLinks'
-import { Banners } from 'src/components/header/Banners'
-import {
-  ExtendedChainConfig,
-  aaClient,
-  networks,
-} from 'src/config/aaConfig'
-import { modalStyles, theme } from 'src/theme'
+import { modals } from 'src/components';
+import { HeaderNav } from 'src/components/HeaderNav';
+import { OfferCacheProvider } from 'src/components/OfferCacheProvider';
+import { TheGraphErrorNotification } from 'src/components/TheGraphErrorNotification';
+import { FooterLinks } from 'src/components/footer/FooterLinks';
+import { Banners } from 'src/components/header/Banners';
+import { ExtendedChainConfig, aaClient, networks } from 'src/config/aaConfig';
+import { resources } from 'src/i18next';
+import { modalStyles, theme } from 'src/theme';
 import {
   REACT_QUERY_ERRORS,
   REACT_QUERY_ERRORS_DATA,
-} from 'src/types/ReactQueryErrors'
+} from 'src/types/ReactQueryErrors';
 
 const showAllNetworks =
   import.meta.env.VITE_SHOW_ALL_NETWORKS === 'true'
     ? SHOW_NETWORKS.ALL
-    : SHOW_NETWORKS.MAINNETS
+    : SHOW_NETWORKS.MAINNETS;
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -62,35 +57,35 @@ const queryClient = new QueryClient({
       err: Error,
       query: Query<unknown, unknown, unknown, QueryKey>
     ) => {
-      const errCode = query.meta?.errCode as REACT_QUERY_ERRORS
+      const errCode = query.meta?.errCode as REACT_QUERY_ERRORS;
 
       // Vérifier si c'est une erreur GraphQL liée à TheGraph
-      let isTheGraphError = false
+      let isTheGraphError = false;
       if (err && typeof err === 'object') {
         // Vérifier si c'est une erreur Apollo avec graphQLErrors
         if ('graphQLErrors' in err) {
           const apolloError = err as {
-            graphQLErrors?: Array<{ extensions?: { code?: string } }>
-          }
+            graphQLErrors?: Array<{ extensions?: { code?: string } }>;
+          };
           if (
             apolloError.graphQLErrors?.some(
               (e) => e.extensions?.code === 'SUBGRAPH_INDEXING_ERROR'
             )
           ) {
-            isTheGraphError = true
+            isTheGraphError = true;
           }
         }
         // Vérifier si c'est une erreur GraphQL directe
         if ('errors' in err) {
           const graphQLError = err as {
-            errors?: Array<{ extensions?: { code?: string } }>
-          }
+            errors?: Array<{ extensions?: { code?: string } }>;
+          };
           if (
             graphQLError.errors?.some(
               (e) => e.extensions?.code === 'SUBGRAPH_INDEXING_ERROR'
             )
           ) {
-            isTheGraphError = true
+            isTheGraphError = true;
           }
         }
       }
@@ -99,28 +94,28 @@ const queryClient = new QueryClient({
       if (isTheGraphError) {
         console.warn(
           'TheGraph error detected, handled by TheGraphErrorNotification component'
-        )
-        return
+        );
+        return;
       }
 
       if (errCode) {
-        console.error(`${errCode}: ${err}`)
-        const errorData = REACT_QUERY_ERRORS_DATA[errCode]
+        console.error(`${errCode}: ${err}`);
+        const errorData = REACT_QUERY_ERRORS_DATA[errCode];
         notifications.show({
           color: 'red',
           title: 'Error',
           autoClose: false,
           message: errorData.message,
-        })
+        });
       } else {
-        console.error('Unknown error: ', err)
+        console.error('Unknown error: ', err);
       }
     },
   }),
-})
+});
 
 function RootComponent() {
-  initLanguage({ resources: resources, debug: false })
+  initLanguage({ resources: resources, debug: false });
 
   return (
     <RealTokenWeb3Provider
@@ -138,6 +133,21 @@ function RootComponent() {
               showNetworks: showAllNetworks,
               defaultNetworkId: NetworkId.gnosis,
               networksConfig: networks,
+              aaModalConfig: {
+                connectionModeConfig: {
+                  aa: {
+                    showEmailPasswordless: true,
+                  },
+                  external: {
+                    showReadOnly: true,
+                  },
+                },
+                connectionModeVisibility: {
+                  aa: true,
+                  external: true,
+                  tba: false,
+                },
+              },
             }}
           >
             <MantineProviders
@@ -154,7 +164,7 @@ function RootComponent() {
                     nav: <HeaderNav />,
                     banner: <Banners />,
                     currentWebsite: Websites.YAM,
-                    disableWalletConnect: true
+                    disableWalletConnect: true,
                   }}
                   head={
                     <Head
@@ -174,9 +184,9 @@ function RootComponent() {
         </JotaiProvider>
       </I18nextProvider>
     </RealTokenWeb3Provider>
-  )
+  );
 }
 
 export const Route = createRootRoute({
   component: RootComponent,
-})
+});
