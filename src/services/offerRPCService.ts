@@ -361,7 +361,16 @@ export class OfferRPCService {
     userAddress?: string
   ): Promise<Partial<Offer>> {
     // 1. Récupérer les données de base de l'offre
-    const offerData = await this.getOfferById(offerId);
+    let offerData: OfferRPCData;
+    try {
+      offerData = await this.getOfferById(offerId);
+    } catch {
+      // showOffer a revert : l'offre n'existe pas ou a été supprimée
+      return {
+        offerId: offerId.toString(),
+        removed: true,
+      };
+    }
 
     // 2. Récupérer les infos des tokens en parallèle
     const [offerTokenInfo, buyerTokenInfo, offerTokenType, buyerTokenType] =
@@ -407,7 +416,7 @@ export class OfferRPCService {
       balanceWallet: userTokenData?.offerTokenBalance || '0',
       allowanceToken: userTokenData?.offerTokenAllowance || '0',
       removed: false,
-      createdAtTimestamp: 0, // Non disponible via RPC, nécessiterait un événement
+      createdAtTimestamp: 0,
     };
 
     return offer;
