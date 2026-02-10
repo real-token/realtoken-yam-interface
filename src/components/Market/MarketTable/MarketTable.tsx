@@ -48,7 +48,10 @@ export const MarketTable: FC = () => {
   const hideDust = useAtomValue(hideDustAtom);
   useEffect(() => {
     if (hideDust) {
-      setColumnFilters([{ id: 'amount', value: [hideDustValue, null] }]);
+      setColumnFilters((prev) => [
+        ...prev.filter((filter) => filter.id !== 'amount'),
+        { id: 'amount', value: [hideDustValue, null] },
+      ]);
     } else {
       setColumnFilters((prev) =>
         [...prev].filter((filter) => filter.id !== 'amount')
@@ -59,11 +62,9 @@ export const MarketTable: FC = () => {
   const showOnlyWhitelisted = useAtomValue(showOnlyWhitelistedAtom);
   useEffect(() => {
     if (showOnlyWhitelisted && !offersAreLoading) {
-      setColumnFilters([
-        {
-          id: 'whitelisted',
-          value: 'true',
-        },
+      setColumnFilters((prev) => [
+        ...prev.filter((filter) => filter.id !== 'whitelisted'),
+        { id: 'whitelisted', value: 'true' },
       ]);
     } else {
       setColumnFilters((prev) =>
