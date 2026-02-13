@@ -24,7 +24,7 @@
     "@rabby-wallet/rabby-action": "^0.1.12",
     "@rabby-wallet/rabby-api": "^0.9.29",
     "@react-native-async-storage/async-storage": "^2.2.0",
-    "@real-token/aa-core": "2.1.0-alpha.11",
+    "@real-token/aa-core": "2.1.0-alpha.14",
     "@real-token/aa-modal": "3.1.8",
     "@real-token/core": "3.1.8",
     "@real-token/i18n-locales": "3.1.8",
