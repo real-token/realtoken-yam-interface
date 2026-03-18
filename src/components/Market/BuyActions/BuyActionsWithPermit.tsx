@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ActionIcon, Group, Popover, Text } from '@mantine/core';
@@ -33,7 +33,7 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
 
   const { properties } = useProperties();
 
-  const { wlProperties } = useWlProperties();
+  const { wlProperties, wlPropertiesAreLoading } = useWlProperties();
 
   const { t } = useTranslation('modals');
   const { t: t1 } = useTranslation('buy', { keyPrefix: 'table' });
@@ -61,17 +61,9 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
     });
   }, [modals, t]);
 
-  const [tokenNotWhitelisted, setTokenNotWhitelisted] = useState<
-    PropertiesToken[]
-  >([]);
-  useEffect(() => {
-    if (!wlProperties || !buyOffer || !properties) return;
-    const notWlTokens = getNotWhitelistedTokens(
-      wlProperties,
-      buyOffer,
-      properties
-    );
-    setTokenNotWhitelisted(notWlTokens);
+  const tokenNotWhitelisted = useMemo(() => {
+    if (!wlProperties || !buyOffer || !properties) return [];
+    return getNotWhitelistedTokens(wlProperties, buyOffer, properties);
   }, [wlProperties, buyOffer, properties]);
 
   const isAccountOffer = useMemo(() => {
@@ -120,7 +112,7 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
                 }
                 className={buttonClassName ?? ''}
                 disabled={
-                  tokenNotWhitelisted.length > 0 || !buyOffer || cannotBuy
+                  wlPropertiesAreLoading || tokenNotWhitelisted.length > 0 || !buyOffer || cannotBuy
                 }
               >
                 <IconShoppingCart size={16} aria-label={'Buy'} />

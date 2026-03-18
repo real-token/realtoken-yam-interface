@@ -41,7 +41,7 @@ export const useWlProperties: UseWlProperties = () => {
                         userId
                         attributeKeys
                         trustedIntermediary{
-                        address 
+                        address
                         weight
                         }
                     }
@@ -49,11 +49,7 @@ export const useWlProperties: UseWlProperties = () => {
                 }
                 }
             `,
-        // context: {
-        //     fetchOptions: {
-        //     signal: abortController.signal
-        //     }
-        // }
+        fetchPolicy: 'network-only',
       });
 
       const userIds = data[prefix]?.account?.userIds;

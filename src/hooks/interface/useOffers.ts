@@ -40,7 +40,7 @@ export const useOffers: UseOffers = () => {
     error,
     refetch,
   } = useQuery({
-    queryKey: ['offers', chainId],
+    queryKey: ['offers', chainId, account],
     meta: { errCode: REACT_QUERY_ERRORS.FETCH_OFFERS },
     enabled:
       !!chainId && !!account && !!properties && !!prices && !!wlProperties,
