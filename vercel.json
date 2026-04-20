@@ -1,5 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "if [ -z \"$NODE_AUTH_TOKEN\" ]; then echo 'NODE_AUTH_TOKEN is required for private @real-token packages (GitHub Packages).' && exit 1; fi && printf '\\n//npm.pkg.github.com/:_authToken=%s\\n' \"$NODE_AUTH_TOKEN\" >> .npmrc && yarn install",
   "rewrites": [
     {
       "source": "/(.*)",

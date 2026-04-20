@@ -2,10 +2,10 @@
 
 .yalc
 yalc.lock
-.npmrc
 .yarnrc
 
 .vscode
+.next
 
 .env
 
@@ -48,3 +48,6 @@ api/**/*.js
 # typescript
 *.tsbuildinfo
 .env.sentry-build-plugin
+
+.cursor/debug-*.log
+scripts/debug-github-packages-auth.mjs
