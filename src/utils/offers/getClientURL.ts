@@ -19,8 +19,7 @@ export const getTheGraphUrlYAM = (chainId: number): string => {
   }
 };
 // get the authentication token from local storage if it exists
-const token = process.env.NEXT_PUBLIC_API_KEY ?? undefined;
-console.log('token', token);
+const token = import.meta.env.VITE_API_KEY ?? undefined;
 
 export const getYamClient = (
   chainId: number
@@ -34,9 +33,9 @@ export const getYamClient = (
   });
 };
 
-export const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? undefined;
+export const apiUrl = import.meta.env.VITE_API_URL ?? undefined;
 if (!apiUrl) {
-  throw new Error('Missing "NEXT_PUBLIC_API_URL" var env');
+  throw new Error('Missing "VITE_API_URL" var env');
 }
 
 const link = createHttpLink({
@@ -56,7 +55,4 @@ const authLink = setContext((_, { headers }) => {
 export const apiClient = new ApolloClient({
   cache: new InMemoryCache(),
   link: authLink.concat(link),
-  headers: {
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  },
 });

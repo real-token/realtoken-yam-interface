@@ -5,5 +5,5 @@ export enum ENV{
 }
 
 export const isEnvs = (envs: ENV[]) => {
-    return envs.includes(process.env.NEXT_PUBLIC_ENV as ENV);
+    return envs.includes(import.meta.env.VITE_ENV as ENV);
 }

@@ -1,22 +1,27 @@
-import { useMemo } from "react";
-import { Offer, OFFER_LOADING } from "../../types/offer";
-import { useOffers } from "../interface/useOffers";
-import { useWeb3React } from "@web3-react/core";
+import { useMemo } from 'react';
+
+import { useAccount } from 'wagmi';
+
+import { OFFER_LOADING, Offer } from '../../types/offer';
+import { useOffers } from '../interface/useOffers';
 
 type UseUserOffers = () => {
-    offers: Offer[];
-    offersAreLoading: boolean;
-    refetch: () => void;
-}
+  offers: Offer[];
+  offersAreLoading: boolean;
+  refetch: () => void;
+};
 export const useUserOffers: UseUserOffers = () => {
-    
-    const { offers, offersAreLoading, refetch } = useOffers();
-    const { account } = useWeb3React();
+  const { offers, offersAreLoading, refetch } = useOffers();
+  const { address: account } = useAccount();
 
-    const userOffers = useMemo(() => {
-        if (!account || !offers) return OFFER_LOADING;
-        return offers.filter((offer: Offer) => offer.sellerAddress && offer.sellerAddress.toLowerCase() == account.toLowerCase());
-    }, [offers, account]);
-    
-    return { offers: userOffers, offersAreLoading, refetch };
-}
+  const userOffers = useMemo(() => {
+    if (!account || !offers) return OFFER_LOADING;
+    return offers.filter(
+      (offer: Offer) =>
+        offer.sellerAddress &&
+        offer.sellerAddress.toLowerCase() == account.toLowerCase()
+    );
+  }, [offers, account]);
+
+  return { offers: userOffers, offersAreLoading, refetch };
+};

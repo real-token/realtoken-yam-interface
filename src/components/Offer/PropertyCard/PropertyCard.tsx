@@ -1,5 +1,5 @@
 import { Flex, Skeleton, Text, useMantineTheme } from "@mantine/core"
-import { IconExternalLink } from "@tabler/icons"
+import { IconExternalLink } from "@tabler/icons-react"
 import { PropertiesToken } from "src/types"
 import { Offer } from "src/types/offer"
 import { openInNewTab } from "src/utils/window"

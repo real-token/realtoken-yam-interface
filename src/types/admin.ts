@@ -1,10 +1,12 @@
+import { Address } from "viem"
+
 export enum USER_ROLE{
     ADMIN = "ADMIN",
     MODERATOR = "MODERATOR",
     NO_ROLE = "NO_ROLE"
 }
 
-export const ROLE: Map<USER_ROLE,string> = new Map<USER_ROLE,string>([
+export const ROLE: Map<USER_ROLE,Address> = new Map<USER_ROLE,Address>([
     [USER_ROLE.MODERATOR,"0x71f3d55856e4058ed06ee057d79ada615f65cdf5f9ee88181b914225088f834f"],
     [USER_ROLE.ADMIN,"0x0000000000000000000000000000000000000000000000000000000000000000"]
 ])

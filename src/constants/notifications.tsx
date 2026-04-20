@@ -1,12 +1,11 @@
 import { Translation } from 'react-i18next';
 
 import { Anchor, Stack, Text } from '@mantine/core';
-// import { Link } from '@mantine/next';
 import { NotificationData } from '@mantine/notifications';
-import { IconCheck, IconX } from '@tabler/icons';
+import { Link } from '@real-token/ui-components';
+import { IconCheck, IconX } from '@tabler/icons-react';
 
 import { asConst, shortenString } from 'src/utils';
-import { Link } from '@realtoken/realt-commons';
 
 export enum NotificationsID {
   userCopied = 'userCopied',
@@ -29,9 +28,17 @@ export enum NotificationsID {
   createOfferInvalid = 'createOfferInvalid',
   buyOfferInvalid = 'buyOfferInvalid',
 
-  grantRoleLoading = "grantRoleLoading",
-  grantRoleSuccess = "grantRoleSuccess",
-  grantRoleInvalid = "grantRoleInvalid",
+  pauseLoading = 'pauseLoading',
+  pauseSuccess = 'pauseSuccess',
+  pauseError = 'pauseError',
+
+  unpauseLoading = 'unpauseLoading',
+  unpauseSuccess = 'unpauseSuccess',
+  unpauseError = 'unpauseError',
+
+  grantRoleLoading = 'grantRoleLoading',
+  grantRoleSuccess = 'grantRoleSuccess',
+  grantRoleInvalid = 'grantRoleInvalid',
 }
 
 export const NOTIFICATIONS = asConst<
@@ -560,9 +567,7 @@ export const NOTIFICATIONS = asConst<
     ),
     message: (
       <Translation ns={'notifications'}>
-        {(t) => (
-          <Stack gap={1}>{`${t('createOfferInvalid.message')}`}</Stack>
-        )}
+        {(t) => <Stack gap={1}>{`${t('createOfferInvalid.message')}`}</Stack>}
       </Translation>
     ),
   }),
@@ -579,6 +584,170 @@ export const NOTIFICATIONS = asConst<
     message: (
       <Translation ns={'notifications'}>
         {(t) => <Stack gap={1}>{`${t('buyOfferInvalid.message')}`}</Stack>}
+      </Translation>
+    ),
+  }),
+
+  [NotificationsID.pauseLoading]: (payload: {
+    key: string;
+    hash: string;
+    href: string;
+  }) => ({
+    id: `pause-${payload.key}`,
+    loading: true,
+    autoClose: false,
+    disallowClose: true,
+    title: (
+      <Translation ns={'notifications'}>
+        {(t) => t('pauseLoading.title')}
+      </Translation>
+    ),
+    message: (
+      <Translation ns={'notifications'}>
+        {(t) => (
+          <Stack gap={1}>
+            {`${t('pauseLoading.message')}`}
+            <Anchor component={Link} href={payload.href} target={'_blank'}>
+              <Text>{`(${shortenString(payload.hash)})`}</Text>
+            </Anchor>
+          </Stack>
+        )}
+      </Translation>
+    ),
+  }),
+
+  [NotificationsID.pauseSuccess]: (payload: {
+    key: string;
+    hash: string;
+    href: string;
+  }) => ({
+    id: `pause-${payload.key}`,
+    color: 'teal',
+    icon: <IconCheck size={16} />,
+    title: (
+      <Translation ns={'notifications'}>
+        {(t) => t('pauseSuccess.title')}
+      </Translation>
+    ),
+    message: (
+      <Translation ns={'notifications'}>
+        {(t) => (
+          <Stack gap={1}>
+            {`${t('pauseSuccess.message')}`}
+            <Anchor component={Link} href={payload.href} target={'_blank'}>
+              <Text>{`(${shortenString(payload.hash)})`}</Text>
+            </Anchor>
+          </Stack>
+        )}
+      </Translation>
+    ),
+  }),
+
+  [NotificationsID.pauseError]: (payload: {
+    key: string;
+    hash: string;
+    href: string;
+  }) => ({
+    id: `pause-${payload.key}`,
+    color: 'red',
+    icon: <IconX size={14} />,
+    title: (
+      <Translation ns={'notifications'}>
+        {(t) => t('pauseError.title')}
+      </Translation>
+    ),
+    message: (
+      <Translation ns={'notifications'}>
+        {(t) => (
+          <Stack gap={1}>
+            {`${t('pauseError.message')}`}
+            <Anchor component={Link} href={payload.href} target={'_blank'}>
+              <Text>{`(${shortenString(payload.hash)})`}</Text>
+            </Anchor>
+          </Stack>
+        )}
+      </Translation>
+    ),
+  }),
+
+  [NotificationsID.unpauseLoading]: (payload: {
+    key: string;
+    hash: string;
+    href: string;
+  }) => ({
+    id: `unpause-${payload.key}`,
+    loading: true,
+    autoClose: false,
+    disallowClose: true,
+    title: (
+      <Translation ns={'notifications'}>
+        {(t) => t('unpauseLoading.title')}
+      </Translation>
+    ),
+    message: (
+      <Translation ns={'notifications'}>
+        {(t) => (
+          <Stack gap={1}>
+            {`${t('unpauseLoading.message')}`}
+            <Anchor component={Link} href={payload.href} target={'_blank'}>
+              <Text>{`(${shortenString(payload.hash)})`}</Text>
+            </Anchor>
+          </Stack>
+        )}
+      </Translation>
+    ),
+  }),
+
+  [NotificationsID.unpauseSuccess]: (payload: {
+    key: string;
+    hash: string;
+    href: string;
+  }) => ({
+    id: `unpause-${payload.key}`,
+    color: 'teal',
+    icon: <IconCheck size={16} />,
+    title: (
+      <Translation ns={'notifications'}>
+        {(t) => t('unpauseSuccess.title')}
+      </Translation>
+    ),
+    message: (
+      <Translation ns={'notifications'}>
+        {(t) => (
+          <Stack gap={1}>
+            {`${t('unpauseSuccess.message')}`}
+            <Anchor component={Link} href={payload.href} target={'_blank'}>
+              <Text>{`(${shortenString(payload.hash)})`}</Text>
+            </Anchor>
+          </Stack>
+        )}
+      </Translation>
+    ),
+  }),
+
+  [NotificationsID.unpauseError]: (payload: {
+    key: string;
+    hash: string;
+    href: string;
+  }) => ({
+    id: `unpause-${payload.key}`,
+    color: 'red',
+    icon: <IconX size={14} />,
+    title: (
+      <Translation ns={'notifications'}>
+        {(t) => t('unpauseError.title')}
+      </Translation>
+    ),
+    message: (
+      <Translation ns={'notifications'}>
+        {(t) => (
+          <Stack gap={1}>
+            {`${t('unpauseError.message')}`}
+            <Anchor component={Link} href={payload.href} target={'_blank'}>
+              <Text>{`(${shortenString(payload.hash)})`}</Text>
+            </Anchor>
+          </Stack>
+        )}
       </Translation>
     ),
   }),

@@ -1,11 +1,13 @@
-import { useQuery, useQueryClient } from 'react-query';
-import { useWeb3React } from '@web3-react/core';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useAccount, useChainId, usePublicClient } from 'wagmi';
 import { BigNumber } from '@ethersproject/bignumber';
 import { useMemo, useEffect, useState } from 'react';
+import { JsonRpcProvider } from '@ethersproject/providers';
+import { Contract } from '@ethersproject/contracts';
 import { OfferRPCService } from 'src/services/offerRPCService';
-import { useContract } from '../useContract';
-import { ContractsID } from 'src/constants/contracts';
-import { useActiveChain } from '../useActiveChain';
+import { realTokenYamUpgradeableABI } from 'src/abis';
+import { RealTokenYamUpgradeable } from 'src/abis/types/RealTokenYamUpgradeable';
+import { networks, ExtendedChainConfig } from 'src/config/aaConfig';
 import { Offer } from 'src/types/offer/Offer';
 import { REACT_QUERY_ERRORS } from 'src/types/ReactQueryErrors';
 import { offerCacheService } from 'src/services/offerCacheService';
@@ -16,10 +18,31 @@ import { offerCacheService } from 'src/services/offerCacheService';
  * Utilise Multicall3 pour optimiser les appels
  */
 export function useOfferById(offerId: string | number | BigNumber) {
-  const { provider, account, chainId } = useWeb3React();
-  const activeChain = useActiveChain();
-  const yamContract = useContract(ContractsID.realTokenYamUpgradeable);
+  const chainId = useChainId();
+  const { address: account } = useAccount();
+  const publicClient = usePublicClient();
   const queryClient = useQueryClient();
+
+  // Créer le provider ethers et le contrat à partir de la config réseau
+  const { provider, yamContract } = useMemo(() => {
+    if (!chainId) return { provider: null, yamContract: null };
+
+    const chainIdHex = `0x${chainId.toString(16)}`;
+    const networkConfig = networks.find(
+      (n: ExtendedChainConfig) => n.chainId === chainIdHex
+    );
+
+    if (!networkConfig) return { provider: null, yamContract: null };
+
+    const ethersProvider = new JsonRpcProvider(networkConfig.rpcTarget);
+    const contract = new Contract(
+      networkConfig.contracts.realTokenYamUpgradeableAddress,
+      realTokenYamUpgradeableABI,
+      ethersProvider
+    ) as unknown as RealTokenYamUpgradeable;
+
+    return { provider: ethersProvider, yamContract: contract };
+  }, [chainId]);
 
   // Note: L'écoute des événements est gérée globalement par OfferCacheProvider
   // Pas besoin de l'activer ici pour éviter les doublons
@@ -129,10 +152,10 @@ export function useOfferById(offerId: string | number | BigNumber) {
     },
     enabled: !!offerRPCService && !!offerIdBN && !!chainId,
     staleTime: Infinity, // Cache persistant - mise à jour via événements blockchain
-    cacheTime: Infinity, // Conservé indéfiniment
+    gcTime: Infinity, // Conservé indéfiniment (anciennement cacheTime)
     meta: { errCode: REACT_QUERY_ERRORS.FETCH_OFFER_RPC },
     retry: 1, // Retry une seule fois en cas d'erreur réseau
-    initialData: initialCachedOffer, // Utiliser le cache local comme données initiales
+    ...(initialCachedOffer && { initialData: initialCachedOffer }), // Utiliser le cache local comme données initiales
   });
 
   // Sauvegarder dans le cache quand les données changent

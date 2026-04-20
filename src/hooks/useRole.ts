@@ -1,60 +1,93 @@
-import { useWeb3React } from "@web3-react/core"
-import { useEffect, useState } from "react"
-import { useQuery } from "react-query"
-import { ContractsID } from "src/constants"
-import { ROLE, USER_ROLE } from "src/types/admin"
-import { useContract } from "./useContract"
+import { useEffect, useState } from 'react';
 
-type UseRole = () => {
-    role: USER_ROLE
-}
+import { useCurrentNetwork } from '@real-token/core';
+import { useQuery } from '@tanstack/react-query';
+import { multicall } from '@wagmi/core';
 
-export const useRole: UseRole = () => {
+import { useAccount, useConfig } from 'wagmi';
 
-    const { account } = useWeb3React();
-    const [role,setRole] = useState<USER_ROLE>(USER_ROLE.NO_ROLE);
+import { ROLE, USER_ROLE } from 'src/types/admin';
 
-    const realTokenYamUpgradeable = useContract(ContractsID.realTokenYamUpgradeable);
-    
-    const getAddressIsAdmin = (): Promise<USER_ROLE> => {
-        return new Promise<USER_ROLE>(async (resolve,reject) => {
-            try{
-                if(!realTokenYamUpgradeable || !account) return;
+import { realTokenYamUpgradeableABI } from '../abis';
+import { ExtendedChainConfig } from '../config/aaConfig';
 
-                const [isAdmin,isModerator] = await Promise.all([
-                    realTokenYamUpgradeable.hasRole(ROLE.get(USER_ROLE.ADMIN) ?? "",account),
-                    realTokenYamUpgradeable.hasRole(ROLE.get(USER_ROLE.MODERATOR) ?? "",account)
-                ]);
+type UseRole = (address?: string) => {
+  role: USER_ROLE;
+  isPending: boolean;
+};
 
-                if(isAdmin){
-                    resolve(USER_ROLE.ADMIN);
-                    return;
-                }
-                if(isModerator){
-                    resolve(USER_ROLE.MODERATOR);
-                    return;
-                }
+export const useRole: UseRole = (address) => {
+  const { address: account } = useAccount();
+  const config = useConfig();
 
-                resolve(USER_ROLE.NO_ROLE)
+  const addressToCheck = address ?? account;
 
-            }catch(err){
-                console.log("Fail to get address role: ", err);
-                reject();
-            }
+  const networkConfig = useCurrentNetwork<ExtendedChainConfig>();
+
+  const getAddressRole = (): Promise<USER_ROLE> => {
+    return new Promise<USER_ROLE>(async (resolve, reject) => {
+      try {
+        if (!config || !addressToCheck || !networkConfig) {
+          console.error('[UseRole] Missing config or address to check');
+          return;
+        }
+
+        const realTokenYamUpgradeableAddress =
+          networkConfig.contracts.realTokenYamUpgradeableAddress;
+
+        const adminRole = ROLE.get(USER_ROLE.ADMIN);
+        const moderatorRole = ROLE.get(USER_ROLE.MODERATOR);
+        if (!adminRole || !moderatorRole) {
+          throw new Error('Admin or moderator role not found');
+        }
+
+        const multicallResult = await multicall(config, {
+          contracts: [
+            {
+              abi: realTokenYamUpgradeableABI,
+              address: realTokenYamUpgradeableAddress,
+              functionName: 'hasRole',
+              args: [adminRole, addressToCheck as `0x${string}`],
+            },
+            {
+              abi: realTokenYamUpgradeableABI,
+              address: realTokenYamUpgradeableAddress,
+              functionName: 'hasRole',
+              args: [moderatorRole, addressToCheck as `0x${string}`],
+            },
+          ],
+          multicallAddress: '0xcA11bde05977b3631167028862bE2a173976CA11',
         });
-    }
 
-    const { data, refetch } = useQuery(["isAdmin"],getAddressIsAdmin,{ enabled: (realTokenYamUpgradeable !== undefined && account !== undefined) });
+        const isAdmin = multicallResult[0]?.result;
+        const isModerator = multicallResult[1]?.result;
 
-    useEffect(() => {
-        if(account) refetch();
-    },[account])
+        if (isAdmin) {
+          resolve(USER_ROLE.ADMIN);
+          return;
+        }
+        if (isModerator) {
+          resolve(USER_ROLE.MODERATOR);
+          return;
+        }
 
-    useEffect(() => {
-        if(data !== undefined) setRole(data);
-    },[data])
+        resolve(USER_ROLE.NO_ROLE);
+      } catch (err) {
+        console.log('Fail to get address role: ', err);
+        reject();
+      }
+    });
+  };
 
-    return{
-        role
-    }
-}
+  const { data, isPending } = useQuery({
+    queryKey: ['role', addressToCheck],
+    queryFn: getAddressRole,
+    enabled: !!config && !!addressToCheck && !!networkConfig,
+  });
+  console.log('data', data);
+
+  return {
+    role: data ?? USER_ROLE.NO_ROLE,
+    isPending,
+  };
+};

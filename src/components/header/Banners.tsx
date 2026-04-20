@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 
 import { Flex, Text } from '@mantine/core';
-import { IconAlertCircle } from '@tabler/icons';
+import { IconAlertCircle } from '@tabler/icons-react';
 
 import { useDegradedMode } from '../../hooks/interface/useDegradedMode';
 import classes from './Banner.module.css';

@@ -4,11 +4,12 @@ import { Flex, Text } from '@mantine/core';
 import { useRole } from 'src/hooks/useRole';
 import { isRole, USER_ROLE } from 'src/types/admin';
 import classes from './HeaderNav.module.css';
-import { useRouter } from 'next/router';
+import { useNavigate, useLocation } from '@tanstack/react-router';
 
 export const HeaderNav: FC = () => {
   const { t } = useTranslation('header');
-  const router = useRouter();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const colorSelected = '#cfaa70';
 
@@ -20,8 +21,8 @@ export const HeaderNav: FC = () => {
           size={'xl'}
           fw={700}
           className={classes.link}
-          c={router.pathname === '/' ? colorSelected : ''}
-          onClick={() => router.push('/')}
+          c={location.pathname === '/' ? colorSelected : ''}
+          onClick={() => navigate({ to: '/' })}
         >
           {t('titleCat1')}
         </Text>
@@ -29,8 +30,8 @@ export const HeaderNav: FC = () => {
           size={'xl'}
           fw={700}
           className={classes.link}
-          c={router.pathname === '/my-offers' ? colorSelected : ''}
-          onClick={() => router.push('/my-offers')}
+          c={location.pathname === '/my-offers' ? colorSelected : ''}
+          onClick={() => navigate({ to: '/my-offers' })}
         >
           {t('titleCat2')}
         </Text>
@@ -38,18 +39,18 @@ export const HeaderNav: FC = () => {
           size={'xl'}
           fw={700}
           className={classes.link}
-          c={router.pathname === '/historic' ? colorSelected : ''}
-          onClick={() => router.push('/historic')}
+          c={location.pathname === '/historic' ? colorSelected : ''}
+          onClick={() => navigate({ to: '/historic' })}
         >
           {t('historic')}
         </Text>
-        { isRole(role,[USER_ROLE.MODERATOR,USER_ROLE.ADMIN]) ? 
+        { isRole(role,[USER_ROLE.MODERATOR,USER_ROLE.ADMIN]) ?
           <Text
             size={'xl'}
             fw={700}
             className={classes.link}
-            c={router.pathname === '/admin' ? colorSelected : ''}
-            onClick={() => router.push('/admin')}
+            c={location.pathname === '/admin' ? colorSelected : ''}
+            onClick={() => navigate({ to: '/admin' })}
           >
             {t('titleAdmin')}
           </Text>

@@ -58,8 +58,8 @@ export const PriceComputingPane = ({ offer, form }: PriceComputingPaneProps) => 
                 <Flex direction={'column'} gap={'xs'}>
                     <Input.Label>{t('unit')}</Input.Label>
                     <SegmentedControl 
-                        size="xs" 
-                        radius="md" 
+                        size={"xs"} 
+                        radius={"md"} 
                         fullWidth={true}
                         data={[
                             {label: '$', value: 'dollar'},

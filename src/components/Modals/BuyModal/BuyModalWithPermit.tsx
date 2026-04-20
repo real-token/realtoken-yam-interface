@@ -1,37 +1,44 @@
-import {
-  Dispatch,
-  FC,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { Dispatch, FC, SetStateAction, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Web3Provider } from '@ethersproject/providers';
-import { Button, Divider, Flex, Stack, Text, Tooltip, SegmentedControl } from '@mantine/core';
+
+import {
+  Button,
+  Divider,
+  Flex,
+  SegmentedControl,
+  Skeleton,
+  Stack,
+  Text,
+  Tooltip,
+} from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { ContextModalProps } from '@mantine/modals';
+import { updateNotification } from '@mantine/notifications';
+import { useAA } from '@real-token/aa-core';
+import { useCurrentNetwork } from '@real-token/core';
+import { useIsAA, useSendTransactions } from '@real-token/web3';
+
 import BigNumber from 'bignumber.js';
-import { ContractsID } from 'src/constants';
-import { useActiveChain, useContract } from 'src/hooks';
-import { getContract } from 'src/utils';
-import { NumberInput } from '../../NumberInput';
-import { useWalletERC20Balance } from 'src/hooks/useWalletERC20Balance';
-import { cleanNumber } from 'src/utils/number';
-import { useWeb3React } from '@web3-react/core';
-import { calcRem } from 'src/utils/style';
+import { usePublicClient, useReadContract } from 'wagmi';
+
+import { NOTIFICATIONS, NotificationsID } from 'src/constants';
 import { useERC20TokenInfo } from 'src/hooks/useERC20TokenInfo';
-import { Offer, OFFER_TYPE } from 'src/types/offer';
-import { useAtomValue } from 'jotai';
-import { providerAtom } from 'src/states';
-import { BUY_METHODS, buy } from '../../../utils/tx/buy';
-import { Erc20, Erc20ABI } from '../../../abis';
-import { AvailableConnectors, ConnectorsDatas } from '@realtoken/realt-commons';
-import { useApproveOffer } from '../../../hooks/useApproveOffer';
+import { useWalletERC20Balance } from 'src/hooks/useWalletERC20Balance';
+import { OFFER_TYPE, Offer } from 'src/types/offer';
+import { cleanNumber } from 'src/utils/number';
+import { calcRem } from 'src/utils/style';
+
+import { Erc20ABI } from '../../../abis';
+import { ExtendedChainConfig } from '../../../config/aaConfig';
+import {
+  BUY_METHODS,
+  BuyTransactionContext,
+  buyTransactions,
+} from '../../../utils/tx/buy';
+import { NumberInput } from '../../NumberInput';
 
 type BuyModalWithPermitProps = {
-  offer: Offer,
+  offer: Offer;
   triggerTableRefresh: Dispatch<SetStateAction<boolean>>;
 };
 
@@ -48,63 +55,40 @@ type BuyWithPermitFormValues = {
 
 export const BuyModalWithPermit: FC<
   ContextModalProps<BuyModalWithPermitProps>
-> =  ({
-  context,
-  id,
-  innerProps: {
-    offer,
-    triggerTableRefresh,
-  },
-}) => {
+> = ({ context, id, innerProps: { offer, triggerTableRefresh } }) => {
+  const { walletAddress: account } = useAA();
 
-  const { account, provider } = useWeb3React();
+  const { getInputProps, onSubmit, reset, setFieldValue, values } =
+    useForm<BuyWithPermitFormValues>({
+      initialValues: {
+        offerId: offer.offerId,
+        price: parseFloat(offer.price),
+        amount: 0,
+        offerTokenAddress: offer.offerTokenAddress,
+        offerTokenDecimals: parseFloat(offer.offerTokenDecimals),
+        buyerTokenAddress: offer.buyerTokenAddress,
+        buyerTokenDecimals: parseFloat(offer.buyerTokenDecimals),
+        buyMethod: BUY_METHODS.buyWithApprove,
+      },
+    });
 
-  const { getInputProps, onSubmit, reset, setFieldValue, values } = useForm<BuyWithPermitFormValues>({
-    // eslint-disable-next-line object-shorthand
-    initialValues: {
-      offerId: offer.offerId,
-      price: parseFloat(offer.price),
-      amount: 0,
-      offerTokenAddress: offer.offerTokenAddress,
-      offerTokenDecimals: parseFloat(offer.offerTokenDecimals),
-      buyerTokenAddress: offer.buyerTokenAddress,
-      buyerTokenDecimals: parseFloat(offer.buyerTokenDecimals),
-      buyMethod: BUY_METHODS.buyWithApprove,
-    },
-  });
+  const isAA = useIsAA();
 
-  const [isSubmitting, setSubmitting] = useState<boolean>(false);
-  const activeChain = useActiveChain();
-  
-  const [offerTokenSellerBalance,setOfferTokenSellerBalance] = useState<string|undefined>("");
-  const { name:offerTokenName, symbol:offerTokenSymbol  } = useERC20TokenInfo(offer.offerTokenAddress);
-  const { symbol:buyTokenSymbol, address:buyerTokenAddress } = useERC20TokenInfo(offer.buyerTokenAddress);
-  
-  const realTokenYamUpgradeable = useContract(
-    ContractsID.realTokenYamUpgradeable
+  const { name: offerTokenName, symbol: offerTokenSymbol } = useERC20TokenInfo(
+    offer.offerTokenAddress
   );
-  const offerToken = getContract<Erc20>(
-        offer.offerTokenAddress,
-        Erc20ABI,
-        provider as Web3Provider,
-        account
-  )
+  const {
+    symbol: buyTokenSymbol,
+    address: buyerTokenAddress,
+    isLoading: isBuyTokenLoading,
+  } = useERC20TokenInfo(offer.buyerTokenAddress);
 
-  const getOfferTokenInfos = async () => {
-    if(!offerToken) return;
-    try{
-      // console.log("offerToken: ", offerToken)
-      // console.log("sellerAddress: ", sellerAddress)
-      const balanceSeller = await offerToken.balanceOf(offer.sellerAddress)
-      setOfferTokenSellerBalance((balanceSeller ?? BigNumber(0)).toString())
-    }catch(err){
-      console.log(err)
-    }
-  }
-  useEffect(() => {
-    if(offerToken) getOfferTokenInfos();    
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[offerToken])
+  const { data: offerTokenSellerBalance } = useReadContract({
+    address: offer.offerTokenAddress as `0x${string}`,
+    abi: Erc20ABI,
+    functionName: 'balanceOf',
+    args: [offer.sellerAddress as `0x${string}`],
+  });
 
   const { t } = useTranslation('modals', { keyPrefix: 'buy' });
   const { t: t1 } = useTranslation('modals', { keyPrefix: 'sell' });
@@ -114,99 +98,149 @@ export const BuyModalWithPermit: FC<
     context.closeModal(id);
   }, [context, id, reset]);
 
-  const { balance, WalletERC20Balance } = useWalletERC20Balance(buyerTokenAddress)
+  const { balance, WalletERC20Balance, isLoading } =
+    useWalletERC20Balance(buyerTokenAddress);
 
   const total = values?.amount * values?.price;
 
-  const connector = useAtomValue(providerAtom);
+  const publicClient = usePublicClient();
+  const activeChain = useCurrentNetwork<ExtendedChainConfig>();
 
-  const onHandleSubmit = useCallback(
-    async (formValues: BuyWithPermitFormValues) => {
-
-      const onFinished = () => {
-        onClose();
+  const { sendTransactions, isPending: isSubmitting } =
+    useSendTransactions<BuyTransactionContext>({
+      initialContext: {
+        account: account as `0x${string}`,
+      },
+      onAllComplete: () => {
         triggerTableRefresh(true);
-      }
-      
-      buy(
-        account,
-        provider,
-        activeChain,
-        realTokenYamUpgradeable,
-        offer,
-        formValues.amount,
-        connector,
-        setSubmitting,
-        onFinished,
-        formValues.buyMethod
-      );
-    },
-    [account, provider, activeChain, realTokenYamUpgradeable, offer, connector, onClose, triggerTableRefresh]
-  );
+        onClose();
+      },
+      onError: (error) => {
+        console.error('Transaction error:', error);
+        updateNotification(
+          NOTIFICATIONS[NotificationsID.buyOfferError]({
+            key: 'buy',
+            hash: 'error',
+            href: 'error',
+          })
+        );
+      },
+    });
 
-  const maxTokenBuy: number|undefined = useMemo(() => {
-    if(!balance || !offer.price) return undefined;
+  const maxTokenBuy: number | undefined = useMemo(() => {
+    if (!balance || !offer.price) return undefined;
 
     const b = new BigNumber(balance);
     const max = b.eq(0) ? new BigNumber(0) : b.dividedBy(offer.price);
 
-    return max.isGreaterThanOrEqualTo(new BigNumber(offer.amount)) ? new BigNumber(offer.amount).toNumber() : parseFloat(max.toString());
-  },[balance,offer]);
+    return max.isGreaterThanOrEqualTo(new BigNumber(offer.amount))
+      ? new BigNumber(offer.amount).toNumber()
+      : parseFloat(max.toString());
+  }, [balance, offer]);
 
-  const { approveNeeded, approve, approveLoading } = useApproveOffer(offer, values.amount);
-  console.log('approveNeeded: ', approveNeeded)
+  const priceTranslation: Map<OFFER_TYPE, string> = new Map<OFFER_TYPE, string>(
+    [
+      [OFFER_TYPE.BUY, t('buyOfferTypePrice')],
+      [OFFER_TYPE.SELL, t('sellOfferTypePrice')],
+      [OFFER_TYPE.EXCHANGE, t('exchangeOfferTypePrice')],
+    ]
+  );
 
-  const priceTranslation: Map<OFFER_TYPE,string> = new Map<OFFER_TYPE,string>([
-    [OFFER_TYPE.BUY,t("buyOfferTypePrice")],
-    [OFFER_TYPE.SELL,t("sellOfferTypePrice")],
-    [OFFER_TYPE.EXCHANGE,t("exchangeOfferTypePrice")]
+  const amountTranslation: Map<OFFER_TYPE, string> = new Map<
+    OFFER_TYPE,
+    string
+  >([
+    [OFFER_TYPE.BUY, t('buyOfferTypeAmount')],
+    [OFFER_TYPE.SELL, t('sellOfferTypeAmount')],
+    [OFFER_TYPE.EXCHANGE, t('exchangeOfferTypeAmount')],
   ]);
 
-  const amountTranslation: Map<OFFER_TYPE,string> = new Map<OFFER_TYPE,string>([
-    [OFFER_TYPE.BUY,t("buyOfferTypeAmount")],
-    [OFFER_TYPE.SELL,t("sellOfferTypeAmount")],
-    [OFFER_TYPE.EXCHANGE,t("exchangeOfferTypeAmount")]
-  ]);
+  const handleSubmit = useCallback(
+    (formValues: BuyWithPermitFormValues) => {
+      if (
+        !account ||
+        !formValues.amount ||
+        !publicClient ||
+        !activeChain ||
+        !formValues.buyMethod
+      ) {
+        return;
+      }
+
+      sendTransactions(
+        buyTransactions(
+          publicClient,
+          activeChain,
+          offer,
+          formValues.amount,
+          formValues.buyMethod
+        )
+      );
+    },
+    [account, publicClient, activeChain, offer, sendTransactions]
+  );
 
   return (
-    <form onSubmit={onSubmit(onHandleSubmit)} style={{ paddingBottom: calcRem(40) }}>
+    <form
+      onSubmit={onSubmit(handleSubmit)}
+      style={{ paddingBottom: calcRem(40) }}
+    >
       <Stack justify={'center'} align={'stretch'}>
-        <Flex direction={"column"} gap={"sm"}>
-          <Text size={"xl"}>{t('selectedOffer')}</Text>
-          <Flex direction={"column"} gap={8}>
-              <Flex direction={"column"}>
-                <Text fw={700}>{t("offerId")}</Text>
-                <Text>{offer.offerId}</Text>
-              </Flex>
-              <Flex direction={"column"}>
-                <Text fw={700}>{t("offerTokenName")}</Text>
-                <Text>{offerTokenName}</Text>
-              </Flex>
-              <Flex direction={"column"}>
-                <Text fw={700}>{t("sellerAddress")}</Text>
-                <Text>{offer.sellerAddress}</Text>
-              </Flex>
-              <Flex direction={"column"} >
-                <Text fw={700}>{offer.type ? amountTranslation.get(offer.type) : ""}</Text>
-                <Text>{BigNumber.minimum(offer.amount,offerTokenSellerBalance!).toString()}</Text>
-              </Flex>
-              <Flex direction={"column"}>
-                  <Text fw={700}>{offer.type ? priceTranslation.get(offer.type) : ""}</Text>
-                  <Text>{`${offer.price} ${buyTokenSymbol}`}</Text>
-              </Flex>
+        <Flex direction={'column'} gap={'sm'}>
+          <Text size={'xl'}>{t('selectedOffer')}</Text>
+          <Flex direction={'column'} gap={8}>
+            <Flex direction={'column'}>
+              <Text fw={700}>{t('offerId')}</Text>
+              <Text>{offer.offerId}</Text>
+            </Flex>
+            <Flex direction={'column'}>
+              <Text fw={700}>{t('offerTokenName')}</Text>
+              <Text>{offerTokenName}</Text>
+            </Flex>
+            <Flex direction={'column'}>
+              <Text fw={700}>{t('sellerAddress')}</Text>
+              <Text>{offer.sellerAddress}</Text>
+            </Flex>
+            <Flex direction={'column'}>
+              <Text fw={700}>
+                {offer.type ? amountTranslation.get(offer.type) : ''}
+              </Text>
+              <Text>
+                {BigNumber.minimum(
+                  offer.amount,
+                  offerTokenSellerBalance?.toString() ?? '0'
+                ).toString()}
+              </Text>
+            </Flex>
+            <Flex direction={'column'}>
+              <Text fw={700}>
+                {offer.type && priceTranslation ? (
+                  priceTranslation.get(offer.type)
+                ) : (
+                  <Skeleton width={'100%'} height={20} color={'brand'} />
+                )}
+              </Text>
+              <Text>
+                {isBuyTokenLoading ? (
+                  <Skeleton width={'100%'} height={20} color={'brand'} />
+                ) : (
+                  `${offer.price} ${buyTokenSymbol}`
+                )}
+              </Text>
+            </Flex>
           </Flex>
         </Flex>
 
         <Divider />
 
-        <WalletERC20Balance 
+        <WalletERC20Balance
           tokenAddress={offer.buyerTokenAddress}
           tokenDecimals={offer.buyerTokenDecimals}
         />
 
-        <Flex direction={"column"} gap={"sm"} >
-          <Text size={"xl"}>{t1("sell")}</Text>
-          <Flex direction={"column"} gap={8}>
+        <Flex direction={'column'} gap={'sm'}>
+          <Text size={'xl'}>{t1('sell')}</Text>
+          <Flex direction={'column'} gap={8}>
             <NumberInput
               label={t('amount')}
               required={true}
@@ -221,57 +255,69 @@ export const BuyModalWithPermit: FC<
               {...getInputProps('amount')}
             />
 
-            <Text size={"xl"}>{t("summary")}</Text>
-            <Text size={"md"} mb={10}>
-              {` ${t("summaryText1")} ${values?.amount} ${offerTokenSymbol} ${t("summaryText2")} ${cleanNumber(values?.price)} ${buyTokenSymbol} ${t("summaryText3")} ${total} ${buyTokenSymbol}`}
+            <Text size={'xl'}>{t('summary')}</Text>
+            <Text size={'md'} mb={10}>
+              {` ${t('summaryText1')} ${values?.amount} ${offerTokenSymbol} ${t(
+                'summaryText2'
+              )} ${cleanNumber(values?.price)} ${buyTokenSymbol} ${t(
+                'summaryText3'
+              )} ${total} ${buyTokenSymbol}`}
             </Text>
-            
+
             {values.amount > 0 ? (
-              <Flex direction={'column'} gap={'md'} style={(theme) => ({ marginBottom: theme.spacing.xl })}>
-              {connector !== ConnectorsDatas.get(AvailableConnectors.gnosisSafe)?.connectorKey ? (
-                <Flex direction={'column'} gap={5}>
-                  <Text size="sm" fw={500} mt="md">{'Buy method'}</Text>
-                  <SegmentedControl
-                    data={[
-                      {
-                        value: BUY_METHODS.buyWithApprove,
-                        label: (
-                          <Tooltip label={t('buyButtons.approve.details')} multiline w={200}>
-                            <span>{t('buyButtons.approve.options')}</span>
-                          </Tooltip>
-                        ),
-                      },
-                      {
-                        value: BUY_METHODS.buyWithPermit,
-                        label: (
-                          <Tooltip label={t('buyButtons.permit.details')} multiline w={200}>
-                            <span>{t('buyButtons.permit.options')}</span>
-                          </Tooltip>
-                        ),
-                      },
-                    ]}
-                    {...getInputProps('buyMethod')}
-                  />
-                </Flex>
-              ): undefined}
-              {values.buyMethod == BUY_METHODS.buyWithApprove && approveNeeded ? (
-                <Button
-                  loading={approveLoading}
-                  aria-label={t('confirm')}
-                  onClick={() => approve()}
-                >
-                  {'Approve token'}
-                </Button>
-              ): undefined}
-              <Button
-                type={'submit'}
-                loading={isSubmitting}
-                aria-label={t('confirm')}
-                disabled={values?.amount == 0 || !values.amount || values.buyMethod == BUY_METHODS.buyWithApprove && approveNeeded}
+              <Flex
+                direction={'column'}
+                gap={'md'}
+                style={(theme) => ({ marginBottom: theme.spacing.xl })}
               >
-                {values.buyMethod == BUY_METHODS.buyWithPermit ? t('buyButtons.permit.text') : t('buyButtons.approve.text')}
-              </Button>
-            </Flex>
+                {!isAA ? (
+                  <Flex direction={'column'} gap={5}>
+                    <Text size={"sm"} fw={500} mt={"md"}>
+                      {'Buy method'}
+                    </Text>
+                    <SegmentedControl
+                      data={[
+                        {
+                          value: BUY_METHODS.buyWithApprove,
+                          label: (
+                            <Tooltip
+                              label={t('buyButtons.approve.details')}
+                              multiline={true}
+                              w={200}
+                            >
+                              <span>{t('buyButtons.approve.options')}</span>
+                            </Tooltip>
+                          ),
+                        },
+                        {
+                          value: BUY_METHODS.buyWithPermit,
+                          disabled: isAA,
+                          label: (
+                            <Tooltip
+                              label={t('buyButtons.permit.details')}
+                              multiline={true}
+                              w={200}
+                            >
+                              <span>{t('buyButtons.permit.options')}</span>
+                            </Tooltip>
+                          ),
+                        },
+                      ]}
+                      {...getInputProps('buyMethod')}
+                    />
+                  </Flex>
+                ) : undefined}
+                <Button
+                  type={'submit'}
+                  loading={isSubmitting}
+                  aria-label={t('confirm')}
+                  disabled={values?.amount == 0 || !values.amount}
+                >
+                  {values.buyMethod == BUY_METHODS.buyWithPermit
+                    ? t('buyButtons.permit.text')
+                    : t('buyButtons.approve.text')}
+                </Button>
+              </Flex>
             ) : undefined}
 
             <Flex>
@@ -281,7 +327,6 @@ export const BuyModalWithPermit: FC<
             </Flex>
           </Flex>
         </Flex>
-          
       </Stack>
     </form>
   );

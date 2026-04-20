@@ -1,10 +1,11 @@
-import { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ActionIcon, Group, Popover, Text } from '@mantine/core';
 import { useModals } from '@mantine/modals';
-import { IconShoppingCart } from '@tabler/icons';
-import { useWeb3React } from '@web3-react/core';
+import { IconShoppingCart } from '@tabler/icons-react';
+
+import { useAccount } from 'wagmi';
 
 import { Offer } from 'src/types/offer/Offer';
 
@@ -27,12 +28,12 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
   buttonClassName,
   groupClassName,
 }) => {
-  const { account } = useWeb3React();
+  const { address: account } = useAccount();
   const modals = useModals();
 
   const { properties } = useProperties();
 
-  const { wlProperties } = useWlProperties();
+  const { wlProperties, wlPropertiesAreLoading } = useWlProperties();
 
   const { t } = useTranslation('modals');
   const { t: t1 } = useTranslation('buy', { keyPrefix: 'table' });
@@ -60,17 +61,9 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
     });
   }, [modals, t]);
 
-  const [tokenNotWhitelisted, setTokenNotWhitelisted] = useState<
-    PropertiesToken[]
-  >([]);
-  useEffect(() => {
-    if (!wlProperties || !buyOffer || !properties) return;
-    const notWlTokens = getNotWhitelistedTokens(
-      wlProperties,
-      buyOffer,
-      properties
-    );
-    setTokenNotWhitelisted(notWlTokens);
+  const tokenNotWhitelisted = useMemo(() => {
+    if (!wlProperties || !buyOffer || !properties) return [];
+    return getNotWhitelistedTokens(wlProperties, buyOffer, properties);
   }, [wlProperties, buyOffer, properties]);
 
   const isAccountOffer = useMemo(() => {
@@ -99,9 +92,9 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
           opened={opened}
           onChange={setOpened}
           width={300}
-          position='top'
-          withArrow
-          shadow='md'
+          position={"top"}
+          withArrow={true}
+          shadow={"md"}
         >
           <Popover.Target>
             <Group
@@ -119,7 +112,7 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
                 }
                 className={buttonClassName ?? ''}
                 disabled={
-                  tokenNotWhitelisted.length > 0 || !buyOffer || cannotBuy
+                  wlPropertiesAreLoading || tokenNotWhitelisted.length > 0 || !buyOffer || cannotBuy
                 }
               >
                 <IconShoppingCart size={16} aria-label={'Buy'} />

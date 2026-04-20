@@ -12,11 +12,11 @@ import {
   Text,
   useCombobox,
 } from '@mantine/core';
-import { getContract } from '@realtoken/realt-commons';
-import { IconCheck } from '@tabler/icons';
-import { useWeb3React } from '@web3-react/core';
+import { IconCheck } from '@tabler/icons-react';
+import { multicall } from '@wagmi/core';
 
 import BigNumber from 'bignumber.js';
+import { useAccount, useConfig, usePublicClient } from 'wagmi';
 
 import { Erc20, Erc20ABI } from '../../../../abis';
 import { useUserBalance } from '../../../../hooks/interface/useUserBalance';
@@ -38,12 +38,12 @@ const ComboboxOfferTokenOption = ({ item }: { item: DataWithBalance }) => {
         <Flex justify={'space-between'} w={'100%'} pl={4}>
           <Flex gap={4} align={'center'}>
             {selected ? <IconCheck size={16} /> : undefined}
-            <Text size='sm' c={'brand'} fw={500}>
+            <Text size={"sm"} c={'brand'} fw={500}>
               {label}
             </Text>
           </Flex>
           {!userBalancesAreLoading ? (
-            <Text size='sm' c={'gray'}>
+            <Text size={"sm"} c={'gray'}>
               {balance.toString(10)}
             </Text>
           ) : (
@@ -75,7 +75,9 @@ export const ComboboxOfferToken = ({
   type: 'realtoken' | 'others';
   required?: boolean;
 }) => {
-  const { provider, account } = useWeb3React();
+  const { address: account } = useAccount();
+  const publicClient = usePublicClient();
+  const config = useConfig();
 
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -99,19 +101,34 @@ export const ComboboxOfferToken = ({
 
       const assetsBalance = await Promise.all(
         data.map(async (item) => {
-          if (!provider) return {};
-          const contract = getContract<Erc20>(
-            item.value ?? '',
-            Erc20ABI,
-            provider,
-            account
-          );
-          if (!contract || !account) return {};
+          if (
+            !publicClient ||
+            !publicClient.batch ||
+            !publicClient.batch.multicall ||
+            !item.value
+          )
+            return {};
+          const multicallResult = await multicall(config, {
+            contracts: [
+              {
+                abi: Erc20ABI,
+                address: item.value as `0x${string}`,
+                functionName: 'decimals',
+                args: [],
+              },
+              {
+                abi: Erc20ABI,
+                address: item.value as `0x${string}`,
+                functionName: 'balanceOf',
+                args: [account as `0x${string}`],
+              },
+            ],
+          });
           const decimals = new BigNumber(
-            (await contract.decimals()).toString()
+            multicallResult[0]?.result?.toString() ?? '0'
           );
           const balance = new BigNumber(
-            (await contract.balanceOf(account)).toString()
+            multicallResult[1]?.result?.toString() ?? '0'
           ).shiftedBy(-decimals.toNumber());
           return { [item.value.toLowerCase()]: balance };
         })
@@ -168,7 +185,7 @@ export const ComboboxOfferToken = ({
   const sortedDatas = useMemo(
     () =>
       dataWithAmounts.sort((a, b) => {
-        return b.balance.comparedTo(a.balance);
+        return b.balance.comparedTo(a.balance) ?? 0;
       }),
     [dataWithAmounts]
   );
@@ -203,13 +220,13 @@ export const ComboboxOfferToken = ({
       <Combobox.Target>
         <InputBase
           label={label}
-          component='button'
-          type='button'
+          component={"button"}
+          type={"button"}
           pointer={false}
           rightSection={
             userBalancesAreLoading ? <Loader size={18} /> : <Combobox.Chevron />
           }
-          rightSectionPointerEvents='none'
+          rightSectionPointerEvents={"none"}
           classNames={{ root: classes.root, input: classes.input }}
           onClick={() => combobox.openDropdown()}
           onFocus={() => combobox.openDropdown()}
@@ -230,7 +247,7 @@ export const ComboboxOfferToken = ({
         />
         <Combobox.Options mah={200} style={{ overflowY: 'auto' }}>
           {userBalancesAreLoading ? (
-            <Combobox.Empty>Loading....</Combobox.Empty>
+            <Combobox.Empty>{"Loading...."}</Combobox.Empty>
           ) : (
             options
           )}

@@ -4,8 +4,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { Interface } from '@ethersproject/abi';
 import { RealTokenYamUpgradeable } from 'src/abis/types/RealTokenYamUpgradeable';
 import { Offer } from 'src/types/offer/Offer';
-import { CHAINS, ChainsID } from 'src/constants';
-import { ContractsID } from 'src/constants/contracts';
+import { networks, ExtendedChainConfig } from 'src/config/aaConfig';
 import BigNumberJS from 'bignumber.js';
 
 // Adresses Multicall3 sur différentes chaînes
@@ -15,7 +14,7 @@ const MULTICALL3_ADDRESSES: Record<number, string> = {
   11155111: '0xcA11bde05977b3631167028862bE2a173976CA11', // Sepolia
 };
 
-// ABI simplifié de Multicall3 (juste la fonction aggregate)
+// ABI simplifié de Multicall3 (aggregate + tryAggregate)
 const MULTICALL3_ABI = [
   {
     inputs: [
@@ -32,6 +31,32 @@ const MULTICALL3_ABI = [
     outputs: [
       { name: 'blockNumber', type: 'uint256' },
       { name: 'returnData', type: 'bytes[]' },
+    ],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { name: 'requireSuccess', type: 'bool' },
+      {
+        components: [
+          { name: 'target', type: 'address' },
+          { name: 'callData', type: 'bytes' },
+        ],
+        name: 'calls',
+        type: 'tuple[]',
+      },
+    ],
+    name: 'tryAggregate',
+    outputs: [
+      {
+        components: [
+          { name: 'success', type: 'bool' },
+          { name: 'returnData', type: 'bytes' },
+        ],
+        name: 'returnData',
+        type: 'tuple[]',
+      },
     ],
     stateMutability: 'nonpayable',
     type: 'function',
@@ -82,16 +107,19 @@ export class OfferRPCService {
     }
 
     // Récupérer l'adresse du contrat depuis la configuration de la chaîne
-    const chain = CHAINS[chainId as ChainsID];
-    if (!chain) {
+    const chainIdHex = `0x${chainId.toString(16)}`;
+    const networkConfig = networks.find(
+      (n: ExtendedChainConfig) => n.chainId === chainIdHex
+    );
+    if (!networkConfig) {
       throw new Error(`Chain ${chainId} not supported`);
     }
-    this.yamContractAddress = chain.contracts[ContractsID.realTokenYamUpgradeable].address;
+    this.yamContractAddress = networkConfig.contracts.realTokenYamUpgradeableAddress;
   }
 
   /**
    * Exécute plusieurs appels RPC en un seul appel Multicall3
-   * Utilise callStatic pour éviter d'avoir besoin d'un signer
+   * Utilise tryAggregate pour gérer les échecs individuels sans revert global
    */
   private async aggregate(calls: MulticallCall[]): Promise<string[]> {
     const multicall = new Contract(
@@ -100,9 +128,22 @@ export class OfferRPCService {
       this.provider
     );
 
-    // Utiliser callStatic pour les appels en lecture seule (pas besoin de signer)
-    const [, returnData] = await multicall.callStatic.aggregate(calls);
-    return returnData;
+    // tryAggregate(false, calls) : ne revert pas si un appel individuel échoue
+    const results: { success: boolean; returnData: string }[] =
+      await multicall.callStatic.tryAggregate(false, calls);
+
+    // Vérifier que tous les appels ont réussi
+    const failedIndices = results
+      .map((r, i) => (!r.success ? i : -1))
+      .filter((i) => i !== -1);
+
+    if (failedIndices.length > 0) {
+      throw new Error(
+        `Multicall: ${failedIndices.length}/${calls.length} call(s) failed (indices: ${failedIndices.join(', ')})`
+      );
+    }
+
+    return results.map((r) => r.returnData);
   }
 
   /**
@@ -134,6 +175,7 @@ export class OfferRPCService {
       if (
         errorMessage.includes('execution reverted') ||
         errorMessage.includes('revert') ||
+        errorMessage.includes('multicall') ||
         errorCode === 'CALL_EXCEPTION' ||
         errorReason.includes('revert') ||
         error?.error?.message?.includes('execution reverted')
@@ -179,6 +221,7 @@ export class OfferRPCService {
 
   /**
    * Récupère les informations d'un token ERC20 (name, symbol, decimals)
+   * Utilise tryAggregate pour gérer les tokens qui n'implémentent pas toutes les fonctions
    */
   private async getTokenInfo(tokenAddress: string): Promise<{
     name: string;
@@ -206,13 +249,38 @@ export class OfferRPCService {
       },
     ];
 
-    const results = await this.aggregate(calls);
+    const multicall = new Contract(
+      this.multicallAddress,
+      MULTICALL3_ABI,
+      this.provider
+    );
 
-    return {
-      name: erc20Interface.decodeFunctionResult('name', results[0])[0],
-      symbol: erc20Interface.decodeFunctionResult('symbol', results[1])[0],
-      decimals: erc20Interface.decodeFunctionResult('decimals', results[2])[0],
-    };
+    const results: { success: boolean; returnData: string }[] =
+      await multicall.callStatic.tryAggregate(false, calls);
+
+    let name = 'Unknown';
+    let symbol = '???';
+    let decimals = 18;
+
+    try {
+      if (results[0].success) {
+        name = erc20Interface.decodeFunctionResult('name', results[0].returnData)[0];
+      }
+    } catch { /* fallback to default */ }
+
+    try {
+      if (results[1].success) {
+        symbol = erc20Interface.decodeFunctionResult('symbol', results[1].returnData)[0];
+      }
+    } catch { /* fallback to default */ }
+
+    try {
+      if (results[2].success) {
+        decimals = erc20Interface.decodeFunctionResult('decimals', results[2].returnData)[0];
+      }
+    } catch { /* fallback to default */ }
+
+    return { name, symbol, decimals };
   }
 
   /**
@@ -245,12 +313,10 @@ export class OfferRPCService {
     const yamAddress = this.yamContractAddress;
 
     const calls: MulticallCall[] = [
-      // Balance offerToken
       {
         target: offerTokenAddress,
         callData: erc20Interface.encodeFunctionData('balanceOf', [userAddress]),
       },
-      // Allowance offerToken
       {
         target: offerTokenAddress,
         callData: erc20Interface.encodeFunctionData('allowance', [
@@ -258,29 +324,32 @@ export class OfferRPCService {
           yamAddress,
         ]),
       },
-      // Balance buyerToken
       {
         target: buyerTokenAddress,
         callData: erc20Interface.encodeFunctionData('balanceOf', [userAddress]),
       },
     ];
 
-    const results = await this.aggregate(calls);
+    const multicall = new Contract(
+      this.multicallAddress,
+      MULTICALL3_ABI,
+      this.provider
+    );
 
-    return {
-      offerTokenBalance: erc20Interface.decodeFunctionResult(
-        'balanceOf',
-        results[0]
-      )[0].toString(),
-      offerTokenAllowance: erc20Interface.decodeFunctionResult(
-        'allowance',
-        results[1]
-      )[0].toString(),
-      buyerTokenBalance: erc20Interface.decodeFunctionResult(
-        'balanceOf',
-        results[2]
-      )[0].toString(),
-    };
+    const results: { success: boolean; returnData: string }[] =
+      await multicall.callStatic.tryAggregate(false, calls);
+
+    const offerTokenBalance = results[0].success
+      ? erc20Interface.decodeFunctionResult('balanceOf', results[0].returnData)[0].toString()
+      : '0';
+    const offerTokenAllowance = results[1].success
+      ? erc20Interface.decodeFunctionResult('allowance', results[1].returnData)[0].toString()
+      : '0';
+    const buyerTokenBalance = results[2].success
+      ? erc20Interface.decodeFunctionResult('balanceOf', results[2].returnData)[0].toString()
+      : '0';
+
+    return { offerTokenBalance, offerTokenAllowance, buyerTokenBalance };
   }
 
   /**
@@ -292,7 +361,16 @@ export class OfferRPCService {
     userAddress?: string
   ): Promise<Partial<Offer>> {
     // 1. Récupérer les données de base de l'offre
-    const offerData = await this.getOfferById(offerId);
+    let offerData: OfferRPCData;
+    try {
+      offerData = await this.getOfferById(offerId);
+    } catch {
+      // showOffer a revert : l'offre n'existe pas ou a été supprimée
+      return {
+        offerId: offerId.toString(),
+        removed: true,
+      };
+    }
 
     // 2. Récupérer les infos des tokens en parallèle
     const [offerTokenInfo, buyerTokenInfo, offerTokenType, buyerTokenType] =
@@ -304,7 +382,7 @@ export class OfferRPCService {
       ]);
 
     // 3. Récupérer les données utilisateur si fourni
-    let userTokenData = null;
+    let userTokenData: { offerTokenBalance: string; offerTokenAllowance: string; buyerTokenBalance: string } | null = null;
     if (userAddress) {
       userTokenData = await this.getUserTokenData(
         userAddress,
@@ -338,7 +416,7 @@ export class OfferRPCService {
       balanceWallet: userTokenData?.offerTokenBalance || '0',
       allowanceToken: userTokenData?.offerTokenAllowance || '0',
       removed: false,
-      createdAtTimestamp: 0, // Non disponible via RPC, nécessiterait un événement
+      createdAtTimestamp: 0,
     };
 
     return offer;

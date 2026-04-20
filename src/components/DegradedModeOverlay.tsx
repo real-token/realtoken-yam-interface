@@ -1,7 +1,7 @@
 import { FC, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Text, Stack, Paper, useMantineTheme, useMantineColorScheme } from '@mantine/core';
-import { IconAlertTriangle } from '@tabler/icons';
+import { IconAlertTriangle } from '@tabler/icons-react';
 import { useDegradedMode } from 'src/hooks/interface/useDegradedMode';
 
 interface DegradedModeOverlayProps {

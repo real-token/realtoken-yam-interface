@@ -1,5 +1,5 @@
 import { Divider, Flex, Loader, MantineTheme } from "@mantine/core"
-import { IconSwitchHorizontal } from "@tabler/icons";
+import { IconSwitchHorizontal } from "@tabler/icons-react";
 import { FC } from "react";
 import { useMatchedOffers } from "../../../../hooks/useMatchedOffers";
 import { OFFER_TYPE } from "../../../../types/offer";

@@ -1,330 +1,172 @@
-import { showNotification, updateNotification } from "@mantine/notifications";
-import BigNumber from "bignumber.js";
-import { Chain, ContractsID, NOTIFICATIONS, NotificationsID, TypedContract } from 'src/constants';
-import coinBridgeTokenPermitSignature from "../../hooks/coinBridgeTokenPermitSignature";
-import erc20PermitSignature from "../../hooks/erc20PermitSignature";
-import { Web3Provider } from "@ethersproject/providers";
-import { CoinBridgeToken, coinBridgeTokenABI } from "../../abis";
-import { Offer } from "../../types/offer";
-import { getContract } from "../getContract";
-import { AvailableConnectors, ConnectorsDatas } from "@realtoken/realt-commons";
+import { encodeTransaction } from '@real-token/web3';
+import type { Transaction } from '@real-token/web3';
 
-export enum BUY_METHODS{
-  buyWithApprove = "buyWithApprove",
-  buyWithPermit = "buyWithPermit"
+import BigNumber from 'bignumber.js';
+import { Address, PublicClient } from 'viem';
+import { readContract } from 'viem/actions';
+
+// notifications are handled by callers of useSendTransactions
+import { coinBridgeTokenABI, realTokenYamUpgradeableABI } from '../../abis';
+import { ExtendedChainConfig } from '../../config/aaConfig';
+// signature is produced by useSendTransactions signature step, no direct hook here
+import { Offer } from '../../types/offer';
+
+export enum BUY_METHODS {
+  buyWithApprove = 'buyWithApprove',
+  buyWithPermit = 'buyWithPermit',
 }
 
-export const approve = async (
+export type BuyTransactionContext = {
+  account: Address;
+  transactionDeadline?: number;
+  signature?: {
+    v: number;
+    r: `0x${string}`;
+    s: `0x${string}`;
+    signature: string;
+  };
+};
 
-) => {
-  try{
-
-    
-
-  }catch(err){
-    console.error(err);
+export const buyTransactions = async (
+  publicClient: PublicClient | undefined,
+  activeChain: ExtendedChainConfig | undefined,
+  offer: Offer,
+  amount: number,
+  method?: string
+): Promise<Transaction<BuyTransactionContext>[]> => {
+  if (!publicClient || !amount || !activeChain) {
+    return [];
   }
-}
 
-export const buy = async (
-    account: string|undefined,
-    provider: Web3Provider|undefined,
-    activeChain: Chain|undefined,
-    realTokenYamUpgradeable: TypedContract<ContractsID>|undefined,
-    offer: Offer,
-    amount: number,
-    connector: string,
-    setSubmitting: (state: boolean) => void,
-    onFinished?: () => void,
-    method?: string
-) => {
-      try {
-        if (
-          !account ||
-          !provider ||
-          !amount ||
-          !realTokenYamUpgradeable
-        ){
-          return;
-        }
+  const realTokenYamUpgradeableAddress = activeChain?.contracts
+    .realTokenYamUpgradeableAddress as `0x${string}`;
 
-        const buyMethod = method ?? BUY_METHODS.buyWithApprove;
-        // console.log("buyMethod: ", buyMethod)
+  const buyMethod = method ?? BUY_METHODS.buyWithApprove;
 
-        const price = parseFloat(offer.price);
+  const price = parseFloat(offer.price);
 
-        const amountInWei = new BigNumber(parseInt(new BigNumber(amount.toString()).shiftedBy(Number(offer.offerTokenDecimals)).toString()));
-        const priceInWei = new BigNumber(price.toString()).shiftedBy(Number(offer.buyerTokenDecimals));
+  const amountInWei = new BigNumber(
+    parseInt(
+      new BigNumber(amount)
+        .shiftedBy(Number(offer.offerTokenDecimals))
+        .toString()
+    )
+  );
+  const priceInWei = new BigNumber(price.toString()).shiftedBy(
+    Number(offer.buyerTokenDecimals)
+  );
 
-        // console.log("amountInWei: ", amountInWei.toString())
-        // console.log("priceInWei: ", priceInWei.toString())
+  // account type (EOA/AA) will be checked at execution time if needed
 
-        const buyerToken = getContract<CoinBridgeToken>(
-            offer.buyerTokenAddress,
-            coinBridgeTokenABI,
-            provider as Web3Provider,
-            account
-        );
+  const buyerTokenAmount = new BigNumber(
+    parseInt(
+      amountInWei
+        .multipliedBy(priceInWei)
+        .shiftedBy(-offer.offerTokenDecimals)
+        .toString()
+    )
+  );
+  const transactions: Transaction<BuyTransactionContext>[] = [];
+  const transactionDeadline = Math.floor(Date.now() / 1000) + 3600; // 1h
 
-        if(!buyerToken){
-          console.error("buyerToken is undefined");
-          return;
-        };
+  const buyerTokenType = await readContract(publicClient, {
+    address: realTokenYamUpgradeableAddress,
+    abi: realTokenYamUpgradeableABI,
+    functionName: 'getTokenType',
+    args: [offer.buyerTokenAddress as `0x${string}`],
+  });
 
-        const buyerTokenAmount = new BigNumber(parseInt(amountInWei.multipliedBy(priceInWei).shiftedBy(-offer.offerTokenDecimals).toString()));
-        const transactionDeadline = Math.floor(Date.now() / 1000) + 3600; // permit valable during 1h
+  const unsupportedTokenPermit = buyerTokenType === 3;
 
-        console.log("buyerTokenAmount: ", buyerTokenAmount.toString())
-
-        let approveNeeded = false;
-        if(buyMethod == BUY_METHODS.buyWithApprove){
-          const allowance = await buyerToken.allowance(account, realTokenYamUpgradeable.address);
-          console.log("allowance: ", allowance.toString());
-          if(allowance.lt(buyerTokenAmount.toString(10))){
-            approveNeeded = true;
-          }
-        }
-
-        console.log("approveNeeded: ", approveNeeded)
-
-        const buyerTokenType = await realTokenYamUpgradeable.getTokenType(
-          offer.buyerTokenAddress
-        );
-
-        if(
-          connector == ConnectorsDatas.get(AvailableConnectors.gnosisSafe)?.connectorKey || 
-          connector == ConnectorsDatas.get(AvailableConnectors.walletConnectV2)?.connectorKey || 
-          buyMethod == BUY_METHODS.buyWithApprove
-        ){
-
-          if(approveNeeded){
-            // TokenType = 3: ERC20 Without Permit, do Approve/buy
-            const approveTx = await buyerToken.approve(
-              realTokenYamUpgradeable.address,
-              buyerTokenAmount.toString(10)
-            );
-
-            const notificationApprove = {
-              key: approveTx.hash,
-              href: `${activeChain?.blockExplorerUrl}tx/${approveTx.hash}`,
-              hash: approveTx.hash,
-            };
-
-            showNotification(
-              NOTIFICATIONS[NotificationsID.approveOfferLoading](
-                notificationApprove
-              )
-            );
-
-            approveTx
-              .wait()
-              .then(({ status }) =>
-                updateNotification(
-                  NOTIFICATIONS[
-                    status === 1
-                      ? NotificationsID.approveOfferSuccess
-                      : NotificationsID.approveOfferError
-                  ](notificationApprove)
-                )
-              );
-
-            await approveTx.wait(1);
-          }
-
-          const buyTx = await realTokenYamUpgradeable.buy(
-            offer.offerId,
-            priceInWei.toString(),
-            amountInWei.toString()
-          );
-
-          const notificationBuy = {
-            key: buyTx.hash,
-            href: `${activeChain?.blockExplorerUrl}tx/${buyTx.hash}`,
-            hash: buyTx.hash,
-          };
-
-          showNotification(
-            NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationBuy)
-          );
-
-          buyTx
-            .wait()
-            .then(({ status }) =>
-              updateNotification(
-                NOTIFICATIONS[
-                  status === 1
-                    ? NotificationsID.buyOfferSuccess
-                    : NotificationsID.buyOfferError
-                ](notificationBuy)
-              )
-            );
-            
-
-        }else{
-          if (buyerTokenType === 1) {
-            // TokenType = 1: RealToken
-  
-            const { r, s, v }: any = await coinBridgeTokenPermitSignature(
-              account,
-              realTokenYamUpgradeable.address,
-              buyerTokenAmount.toString(),
-              transactionDeadline,
-              buyerToken,
-              provider
-            );
-  
-            const tx = await realTokenYamUpgradeable.buyWithPermit(
-              offer.offerId,
-              priceInWei.toString(),
-              amountInWei.toString(),
-              transactionDeadline.toString(),
-              v,
-              r,
-              s
-            );
-            
-            const notificationPayload = {
-              key: tx.hash,
-              href: `${activeChain?.blockExplorerUrl}tx/${tx.hash}`,
-              hash: tx.hash,
-            };
-  
-            showNotification(
-              NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationPayload)
-            );
-  
-            tx
-              .wait()
-              .then(({ status }) =>
-                updateNotification(
-                  NOTIFICATIONS[
-                    status === 1
-                      ? NotificationsID.buyOfferSuccess
-                      : NotificationsID.buyOfferError
-                  ](notificationPayload)
-                )
-              );
-          } else if (buyerTokenType === 2) {
-            // TokenType = 2: ERC20 With Permit
-            const { r, s, v }: any = await erc20PermitSignature(
-              account,
-              realTokenYamUpgradeable.address,
-              buyerTokenAmount.toString(),
-              transactionDeadline,
-              buyerToken,
-              provider
-            );
-  
-            const buyWithPermitTx = await realTokenYamUpgradeable.buyWithPermit(
-              offer.offerId,
-              priceInWei.toString(),
-              amountInWei.toString(),
-              transactionDeadline.toString(),
-              v,
-              r,
-              s
-            );
-  
-            const notificationPayload = {
-              key: buyWithPermitTx.hash,
-              href: `${activeChain?.blockExplorerUrl}tx/${buyWithPermitTx.hash}`,
-              hash: buyWithPermitTx.hash,
-            };
-  
-            showNotification(
-              NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationPayload)
-            );
-  
-            buyWithPermitTx
-              .wait()
-              .then(({ status }) =>
-                updateNotification(
-                  NOTIFICATIONS[
-                    status === 1
-                      ? NotificationsID.buyOfferSuccess
-                      : NotificationsID.buyOfferError
-                  ](notificationPayload)
-                )
-              );
-          } else if (buyerTokenType === 3) {
-
-            // TokenType = 3: ERC20 Without Permit, do Approve/buy
-
-          
-            if(approveNeeded){
-
-
-              const approveTx = await buyerToken.approve(
-                realTokenYamUpgradeable.address,
-                buyerTokenAmount.toString()
-              );
-    
-              const notificationApprove = {
-                key: approveTx.hash,
-                href: `${activeChain?.blockExplorerUrl}tx/${approveTx.hash}`,
-                hash: approveTx.hash,
-              };
-    
-              showNotification(
-                NOTIFICATIONS[NotificationsID.approveOfferLoading](
-                  notificationApprove
-                )
-              );
-    
-              approveTx
-                .wait()
-                .then(({ status }) =>
-                  updateNotification(
-                    NOTIFICATIONS[
-                      status === 1
-                        ? NotificationsID.approveOfferSuccess
-                        : NotificationsID.approveOfferError
-                    ](notificationApprove)
-                  )
-                );
-    
-              await approveTx.wait(1);
-
-            }
-  
-            const buyTx = await realTokenYamUpgradeable.buy(
-              offer.offerId,
-              priceInWei.toString(),
-              amountInWei.toString()
-            );
-  
-            const notificationBuy = {
-              key: buyTx.hash,
-              href: `${activeChain?.blockExplorerUrl}tx/${buyTx.hash}`,
-              hash: buyTx.hash,
-            };
-  
-            showNotification(
-              NOTIFICATIONS[NotificationsID.buyOfferLoading](notificationBuy)
-            );
-  
-            buyTx
-              .wait()
-              .then(({ status }) =>
-                updateNotification(
-                  NOTIFICATIONS[
-                    status === 1
-                      ? NotificationsID.buyOfferSuccess
-                      : NotificationsID.buyOfferError
-                  ](notificationBuy)
-                )
-              );
-          } else {
-            console.log('Token is not whitelisted');
-            showNotification(NOTIFICATIONS[NotificationsID.buyOfferInvalid]());
-          }
-        }
-
-        if(onFinished) onFinished();
-
-      } catch (e) {
-        console.error('Error in BuyModalWithPermit', e);
-        showNotification(NOTIFICATIONS[NotificationsID.buyOfferInvalid]());
-        setSubmitting(false);
+  if (
+    buyMethod == BUY_METHODS.buyWithApprove ||
+    (buyMethod == BUY_METHODS.buyWithPermit && unsupportedTokenPermit)
+  ) {
+    // Approve if needed (checked at execution time)
+    transactions.push(
+      {
+        skipCondition: async ({ context }) => {
+          const { account } = context;
+          if (!account) throw new Error('Account is undefined');
+          const allowance = await readContract(publicClient, {
+            address: offer.buyerTokenAddress as `0x${string}`,
+            abi: coinBridgeTokenABI,
+            functionName: 'allowance',
+            args: [account as `0x${string}`, realTokenYamUpgradeableAddress],
+          });
+          const allowanceBN = new BigNumber(allowance.toString());
+          return allowanceBN.gte(buyerTokenAmount.toString(10));
+        },
+        prepareTransaction: async () => ({
+          type: 'erc20-approve',
+          tokenAddress: offer.buyerTokenAddress as `0x${string}`,
+          spenderAddress: realTokenYamUpgradeableAddress,
+          amount: buyerTokenAmount.toString(10),
+        }),
+      },
+      {
+        prepareTransaction: async () => ({
+          type: 'onchain',
+          to: realTokenYamUpgradeableAddress,
+          data: encodeTransaction({
+            abi: realTokenYamUpgradeableABI,
+            functionName: 'buy',
+            args: [
+              BigInt(offer.offerId),
+              BigInt(priceInWei.toString()),
+              BigInt(amountInWei.toString()),
+            ],
+          }),
+        }),
       }
-}
+    );
+  } else {
+    // Permit sign step
+    const signatureType =
+      buyerTokenType === 1 ? 'signMessage-coinBridge' : 'signMessage-erc20';
+
+    transactions.push(
+      {
+        prepareTransaction: async (context) => {
+          const { account } = context;
+          if (!account) throw new Error('Account is undefined');
+          return {
+            type: signatureType,
+            owner: account as `0x${string}`,
+            spender: realTokenYamUpgradeableAddress,
+            amount: buyerTokenAmount.toString(10),
+            deadline: transactionDeadline,
+            contractAddress: offer.buyerTokenAddress as `0x${string}`,
+            signatureKey: 'signature',
+          };
+        },
+      },
+      {
+        prepareTransaction: async (context) => {
+          const { signature } = context;
+          if (!signature) throw new Error('Permit signature is undefined');
+          const { v, r, s } = signature;
+          return {
+            type: 'onchain',
+            to: realTokenYamUpgradeableAddress,
+            data: encodeTransaction({
+              abi: realTokenYamUpgradeableABI,
+              functionName: 'buyWithPermit',
+              args: [
+                BigInt(offer.offerId),
+                BigInt(priceInWei.toString()),
+                BigInt(amountInWei.toString()),
+                BigInt(transactionDeadline),
+                v,
+                r,
+                s,
+              ],
+            }),
+          };
+        },
+      }
+    );
+  }
+
+  return transactions;
+};

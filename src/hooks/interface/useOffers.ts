@@ -1,13 +1,17 @@
 import { useMemo } from 'react';
-import { useQuery } from 'react-query';
 
-import { useWeb3React } from '@web3-react/core';
+import { useAA } from '@real-token/aa-core';
+import { useQuery } from '@tanstack/react-query';
 
-import { ALLOWED_CHAINS_ID } from '../../constants';
+import { useChainId } from 'wagmi';
+
 import { REACT_QUERY_ERRORS } from '../../types/ReactQueryErrors';
 import { OFFER_LOADING, Offer } from '../../types/offer';
+import {
+  ParsedGraphQLError,
+  parseGraphQLError,
+} from '../../utils/errors/parseGraphQLError';
 import { fetchOffersTheGraph } from '../../utils/offers/fetchOffers';
-import { parseGraphQLError, ParsedGraphQLError } from '../../utils/errors/parseGraphQLError';
 import { usePrices } from './usePrices';
 import { useProperties } from './useProperties';
 import { useWlProperties } from './useWlProperties';
@@ -21,7 +25,8 @@ type UseOffers = () => {
   refetch: () => void;
 };
 export const useOffers: UseOffers = () => {
-  const { chainId, account } = useWeb3React();
+  const { walletAddress: account } = useAA();
+  const chainId = useChainId();
 
   const { properties, propertiesAreLoading } = useProperties();
   const { prices, pricesAreLoading } = usePrices();
@@ -35,7 +40,7 @@ export const useOffers: UseOffers = () => {
     error,
     refetch,
   } = useQuery({
-    queryKey: ['offers', chainId],
+    queryKey: ['offers', chainId, account],
     meta: { errCode: REACT_QUERY_ERRORS.FETCH_OFFERS },
     enabled:
       !!chainId && !!account && !!properties && !!prices && !!wlProperties,
@@ -43,27 +48,21 @@ export const useOffers: UseOffers = () => {
       if (!chainId || !account || !properties || !prices || !wlProperties)
         return OFFER_LOADING;
 
-      let offersData = OFFER_LOADING;
-      if (
-        ALLOWED_CHAINS_ID.includes(chainId.toString()) &&
-        wlProperties &&
-        prices
-      ) {
-        offersData = await fetchOffersTheGraph(
-          account,
-          chainId,
-          properties,
-          wlProperties,
-          prices,
-          () => {}
-        );
-      }
+      const offersData = await fetchOffersTheGraph(
+        account,
+        chainId,
+        properties,
+        wlProperties,
+        prices,
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        () => {}
+      );
 
       return offersData;
     },
     // Permettre de garder les données en cache même en cas d'erreur
     // pour permettre un fonctionnement partiel
-    keepPreviousData: true,
+    // keepPreviousData: true,
     // Ne pas invalider automatiquement en cas d'erreur pour permettre un fonctionnement partiel
     retry: false,
   });

@@ -1,6 +1,6 @@
 import { Checkbox, Flex, Menu, NumberInput, Text, Tooltip, Button } from "@mantine/core"
 import { useDisclosure } from "@mantine/hooks";
-import { IconPercentage, IconShieldCheck, IconShieldX } from "@tabler/icons";
+import { IconPercentage, IconShieldCheck, IconShieldX } from "@tabler/icons-react";
 import { useAtom } from "jotai";
 import { useTranslation } from "react-i18next";
 import { shieldDisabledAtom, shieldValueAtom } from "src/states";
