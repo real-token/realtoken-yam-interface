@@ -12,7 +12,6 @@ type UseTokenInfo = (sellerTokenAddress: string, buyerTokenAddress: string) => {
   refreshState: [boolean, Dispatch<SetStateAction<boolean>>];
 };
 export const useTokenInfo: UseTokenInfo = (sellerTokenAddress,buyerTokenAddress) => {
-  // const { api } = useAPIGoerli(tokenAddress);
   const { propertiesToken } = usePropertiesToken();
   const [isRefreshing, triggerRefresh] = useState<boolean>(true);
 
