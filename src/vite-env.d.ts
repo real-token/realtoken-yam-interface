@@ -13,7 +13,6 @@ interface ImportMetaEnv {
   readonly VITE_WC_URL: string
   readonly VITE_ETHERSPOT_KEY: string
   readonly VITE_SHOW_ALL_NETWORKS: string
-  readonly VITE_API_KEY: string
   readonly VITE_API_URL: string
   readonly VITE_ENV: string
 }

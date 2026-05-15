@@ -4,6 +4,7 @@ import { useChainId } from 'wagmi';
 
 import { REACT_QUERY_ERRORS } from '../../types/ReactQueryErrors';
 import { Price } from '../../types/price';
+import { fetchAssetPrices } from '../../utils/fetchAssetPrices';
 
 type UsePrices = () => {
   pricesAreLoading: boolean;
@@ -17,15 +18,9 @@ export const usePrices: UsePrices = () => {
     meta: { errCode: REACT_QUERY_ERRORS.FETCH_PRICES },
     enabled: !!chainId,
     queryFn: async (): Promise<Price> => {
-      const res = await fetch(
-        `${import.meta.env.VITE_ASSETS_API_URL}/prices/${chainId}`,
-        {
-          headers: import.meta.env.VITE_ASSETS_API_KEY ? {
-            "X-API-Key": import.meta.env.VITE_ASSETS_API_KEY
-          } : {}
-        }
-      );
-      return await res.json();
+      if (!chainId) return {};
+
+      return fetchAssetPrices(chainId);
     },
   });
 

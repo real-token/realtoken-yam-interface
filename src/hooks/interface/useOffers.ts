@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
 
-import { useAA } from '@real-token/aa-core';
 import { useQuery } from '@tanstack/react-query';
 
 import { useChainId } from 'wagmi';
 
+import { useConnectedAccount } from '../useConnectedAccount';
 import { REACT_QUERY_ERRORS } from '../../types/ReactQueryErrors';
 import { OFFER_LOADING, Offer } from '../../types/offer';
 import {
@@ -25,7 +25,7 @@ type UseOffers = () => {
   refetch: () => void;
 };
 export const useOffers: UseOffers = () => {
-  const { walletAddress: account } = useAA();
+  const { address: account } = useConnectedAccount();
   const chainId = useChainId();
 
   const { properties, propertiesAreLoading } = useProperties();
@@ -35,7 +35,6 @@ export const useOffers: UseOffers = () => {
   const {
     isLoading: loading,
     data: offers,
-    isSuccess,
     isError,
     error,
     refetch,
@@ -43,13 +42,21 @@ export const useOffers: UseOffers = () => {
     queryKey: ['offers', chainId, account],
     meta: { errCode: REACT_QUERY_ERRORS.FETCH_OFFERS },
     enabled:
-      !!chainId && !!account && !!properties && !!prices && !!wlProperties,
+      !!chainId && !!properties && !!prices && wlProperties !== undefined,
     queryFn: async (): Promise<Offer[]> => {
-      if (!chainId || !account || !properties || !prices || !wlProperties)
+      if (
+        !chainId ||
+        !properties ||
+        !prices ||
+        wlProperties === undefined
+      )
         return OFFER_LOADING;
 
+      const accountForFetch =
+        account ?? '0x0000000000000000000000000000000000000000';
+
       const offersData = await fetchOffersTheGraph(
-        account,
+        accountForFetch,
         chainId,
         properties,
         wlProperties,

@@ -4,6 +4,8 @@ import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { resolveDevApiBearer } from './scripts/resolveDevApiBearer.mjs';
+import { loadAuthEnv } from './scripts/loadAuthEnv.mjs';
 
 const root = __dirname;
 const nobleHashes = path.resolve(root, 'node_modules/@noble/hashes');
@@ -53,12 +55,29 @@ function merkleRpcEsbuildPlugin(ethRpcUrl) {
 }
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig(async ({ command, mode }) => {
     const env = loadEnv(mode, root, '');
+    const authEnv = loadAuthEnv(root, mode);
+    const envForAuth = { ...env, ...authEnv };
     const ethRpcUrl =
         env.VITE_ETH_RPC_URL || 'https://ethereum-rpc.publicnode.com';
 
+    let devApiBearer = '';
+    if (command === 'serve') {
+        devApiBearer = (await resolveDevApiBearer(envForAuth)) ?? '';
+        if (devApiBearer) {
+            console.log(
+                '[dev-api-auth] Bearer JWT configuré pour les requêtes API'
+            );
+        }
+    }
+
     return {
+        define: {
+            __DEV_API_BEARER__: JSON.stringify(devApiBearer),
+            // Ne jamais exposer l’ancienne clé API dans le bundle (migrer vers AUTH_* côté Node)
+            'import.meta.env.VITE_API_KEY': JSON.stringify(''),
+        },
         plugins: [
             replaceViemMerkleRpc(ethRpcUrl),
             tanstackRouter(),

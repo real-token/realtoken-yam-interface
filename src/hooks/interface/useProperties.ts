@@ -6,6 +6,7 @@ import { useChainId } from 'wagmi';
 
 import { getExtendedTokens } from '../../constants/GetPriceToken';
 import { REACT_QUERY_ERRORS } from '../../types/ReactQueryErrors';
+import { apiClient } from '../../utils/offers/getClientURL';
 import { mergeExtendedProperties } from '../../utils/properties';
 
 const GET_PROPERTIES_QUERY = gql`
@@ -35,6 +36,48 @@ const GET_PROPERTIES_QUERY = gql`
   }
 `;
 
+type PrivateApiToken = {
+  fullName: string;
+  shortName: string;
+  tokenIdRules: number;
+  price: number;
+  blockchainAddresses?: Array<{ networkId: number; addressToken: string }>;
+  product?: {
+    currency?: string;
+    marketplaceLink?: string;
+    imageLink?: string[];
+    rentsValue?: { netRentYearlyPerToken?: number };
+  };
+};
+
+function mapPrivateApiTokens(
+  tokens: PrivateApiToken[],
+  chainId: number
+): PropertiesToken[] {
+  return tokens
+    .map((token) => {
+      const contractAddress = token.blockchainAddresses?.find(
+        (a) => a.networkId === chainId
+      )?.addressToken;
+      if (!contractAddress) return null;
+
+      return {
+        uuid: String(token.tokenIdRules),
+        shortName: token.shortName,
+        fullName: token.fullName,
+        contractAddress,
+        officialPrice: token.price,
+        currency: token.product?.currency ?? '',
+        marketplaceLink: token.product?.marketplaceLink ?? '',
+        imageLink: token.product?.imageLink ?? [],
+        tokenIdRules: token.tokenIdRules,
+        netRentYearPerToken:
+          token.product?.rentsValue?.netRentYearlyPerToken ?? 0,
+      };
+    })
+    .filter((t): t is PropertiesToken => t !== null);
+}
+
 type UseProperties = () => {
   propertiesAreLoading: boolean;
   properties: PropertiesToken[] | undefined;
@@ -42,31 +85,33 @@ type UseProperties = () => {
 export const useProperties: UseProperties = () => {
   const chainId = useChainId();
 
-  // Fetch properties
   const {
     isLoading,
     data: properties,
-    isSuccess,
   } = useQuery({
     queryKey: ['properties', chainId],
-    meta: { errCode: REACT_QUERY_ERRORS.FETCH_WL_PROPERTIES },
+    meta: { errCode: REACT_QUERY_ERRORS.FETCH_PROPERTIES },
     enabled: !!chainId,
     queryFn: async (): Promise<PropertiesToken[]> => {
       if (!chainId) return [];
 
-      const tokens = await fetch(
-        `${import.meta.env.VITE_ASSETS_API_URL}/properties/${chainId}`,
-        {
-          headers: import.meta.env.VITE_ASSETS_API_KEY ? {
-            "X-API-Key": import.meta.env.VITE_ASSETS_API_KEY
-          } : {}
-        }
-      );
-      const datasProperties = await tokens.json();
-      return mergeExtendedProperties(
-        datasProperties,
-        getExtendedTokens(chainId)
-      );
+      const { data, errors } = await apiClient.query({
+        query: GET_PROPERTIES_QUERY,
+        fetchPolicy: 'network-only',
+      });
+
+      if (errors?.length) {
+        throw new Error(errors[0]?.message ?? 'GraphQL error');
+      }
+
+      const tokens = data?.privateApi?.tokens as PrivateApiToken[] | undefined;
+      if (!tokens) {
+        throw new Error('No properties found');
+      }
+
+      const mapped = mapPrivateApiTokens(tokens, chainId);
+
+      return mergeExtendedProperties(mapped, getExtendedTokens(chainId));
     },
   });
 

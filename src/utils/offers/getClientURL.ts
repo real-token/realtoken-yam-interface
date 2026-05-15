@@ -6,6 +6,14 @@ import {
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 
+declare const __DEV_API_BEARER__: string;
+
+function getDevApiBearer(): string | undefined {
+  if (!import.meta.env.DEV) return undefined;
+  const bearer = __DEV_API_BEARER__?.trim();
+  return bearer || undefined;
+}
+
 export const getTheGraphUrlYAM = (chainId: number): string => {
   switch (chainId) {
     case 1:
@@ -18,8 +26,6 @@ export const getTheGraphUrlYAM = (chainId: number): string => {
       return '';
   }
 };
-// get the authentication token from local storage if it exists
-const token = import.meta.env.VITE_API_KEY ?? undefined;
 
 export const getYamClient = (
   chainId: number
@@ -27,9 +33,6 @@ export const getYamClient = (
   return new ApolloClient({
     uri: getTheGraphUrlYAM(chainId),
     cache: new InMemoryCache(),
-    headers: {
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
   });
 };
 
@@ -38,16 +41,17 @@ if (!apiUrl) {
   throw new Error('Missing "VITE_API_URL" var env');
 }
 
+const devApiBearer = getDevApiBearer();
+
 const link = createHttpLink({
   uri: apiUrl,
 });
 
 const authLink = setContext((_, { headers }) => {
-  // return the headers to the context so httpLink can read them
   return {
     headers: {
       ...headers,
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(devApiBearer ? { Authorization: `Bearer ${devApiBearer}` } : {}),
     },
   };
 });
