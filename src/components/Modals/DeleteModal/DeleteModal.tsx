@@ -4,15 +4,16 @@ import { useTranslation } from 'react-i18next';
 import { Box, Button, Container, Group, Input, Stack } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { ContextModalProps } from '@mantine/modals';
-import { updateNotification } from '@mantine/notifications';
+import { notifications, updateNotification } from '@mantine/notifications';
 import { useCurrentNetwork } from '@real-token/core';
 import { useSendTransactions } from '@real-token/web3';
 
-import { useAccount, usePublicClient } from 'wagmi';
+import { usePublicClient } from 'wagmi';
 
 import { NOTIFICATIONS, NotificationsID } from 'src/constants';
 
 import { ExtendedChainConfig } from '../../../config/aaConfig';
+import { useCanSignTransactions } from '../../../hooks/useCanSignTransactions';
 import { useOffers } from '../../../hooks/interface/useOffers';
 import {
   DeleteOfferTransactionContext,
@@ -34,7 +35,7 @@ export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
   id,
   innerProps: { offerIds, onSuccess, isAdminDelete = false },
 }) => {
-  const { address: account } = useAccount();
+  const { wagmiAddress: account, canSign } = useCanSignTransactions();
   const publicClient = usePublicClient();
 
   const { onSubmit, reset } = useForm<DeleteFormValues>({
@@ -96,11 +97,19 @@ export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
   const onHandleSubmit = useCallback(
     (formValues: DeleteFormValues) => {
       if (
+        !canSign ||
         !account ||
         !formValues.offerIds ||
         !publicClient ||
         !currentNetwork
       ) {
+        if (!canSign) {
+          notifications.show({
+            color: 'red',
+            title: t('signWalletRequiredTitle'),
+            message: t('signWalletRequiredMessage'),
+          });
+        }
         return;
       }
 
@@ -115,12 +124,11 @@ export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
     },
     [
       account,
+      canSign,
       isAdminDelete,
       currentNetwork,
       publicClient,
-      refreshOffers,
-      onSuccess,
-      onClose,
+      t,
       sendTransactions,
     ]
   );

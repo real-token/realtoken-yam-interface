@@ -5,10 +5,9 @@ import { ActionIcon, Group, Title } from '@mantine/core';
 import { useModals } from '@mantine/modals';
 import { IconTrash } from '@tabler/icons-react';
 
-import { useAccount } from 'wagmi';
-
 import { Offer } from 'src/types/offer/Offer';
 
+import { useCanSignTransactions } from '../../../hooks/useCanSignTransactions';
 import { useOffers } from '../../../hooks/interface/useOffers';
 
 type DeleteActions = {
@@ -16,7 +15,7 @@ type DeleteActions = {
 };
 
 export const DeleteAdminAction: FC<DeleteActions> = ({ deleteOffer }) => {
-  const { address: account } = useAccount();
+  const { canSign } = useCanSignTransactions();
   const modals = useModals();
 
   const { t } = useTranslation('modals');
@@ -52,7 +51,7 @@ export const DeleteAdminAction: FC<DeleteActions> = ({ deleteOffer }) => {
           color={'red'}
           variant={'filled'}
           onClick={() =>
-            account ? onOpenDeleteModal(deleteOffer) : onOpenWalletModal()
+            canSign ? onOpenDeleteModal(deleteOffer) : onOpenWalletModal()
           }
         >
           <IconTrash size={16} />

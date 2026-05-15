@@ -133,7 +133,9 @@
     "price": "Prix",
     "amount": "Quantité",
     "cancel": "Annuler",
-    "confirm": "Confirmer"
+    "confirm": "Confirmer",
+    "signWalletRequiredTitle": "Portefeuille requis",
+    "signWalletRequiredMessage": "Connectez un portefeuille capable de signer (MetaMask, WalletConnect, etc.). Le mode « surveiller une adresse » ne permet pas d’envoyer de transactions."
   },
   "update": {
     "title": "Mettre à jour",

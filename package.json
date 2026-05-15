@@ -11,7 +11,7 @@
     "gql:generate": "npx graphql-code-generator --config ./codegen.ts",
     "compile": "graphql-codegen",
     "yalc:add": "yalc add @real-token/core @real-token/aa-modal @real-token/types @real-token/ui-components @real-token/web3 @real-token/i18n-locales",
-    "postinstall": "yarn run aa-core-fix"
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@apollo/client": "^3.11.10",

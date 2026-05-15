@@ -134,7 +134,9 @@
     "price": "Precio",
     "amount": "Cantidad",
     "cancel": "Cancelar",
-    "confirm": "Confirmar"
+    "confirm": "Confirmar",
+    "signWalletRequiredTitle": "Cartera requerida",
+    "signWalletRequiredMessage": "Conecte una cartera que pueda firmar transacciones (MetaMask, WalletConnect, etc.). El modo de solo lectura no puede enviar transacciones."
   },
   "update": {
     "title": "Actualizar oferta",

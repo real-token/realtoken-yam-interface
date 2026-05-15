@@ -139,7 +139,9 @@
     "price": "Price/token",
     "amount": "Quantity",
     "cancel": "Cancel",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "signWalletRequiredTitle": "Wallet required",
+    "signWalletRequiredMessage": "Connect a wallet that can sign transactions (MetaMask, WalletConnect, etc.). Watch-only mode cannot send transactions."
   },
   "update": {
     "title": "Update Offer",
