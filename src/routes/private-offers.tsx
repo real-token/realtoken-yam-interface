@@ -1,12 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Fragment } from 'react'
 import { MarketTablePrivate } from 'src/components/Market/MarketTable'
+import { ConnectedProvider } from 'src/providers/ConnectProvider'
 
 function PrivateOffersPage() {
   return (
-    <Fragment>
+    <ConnectedProvider>
       <MarketTablePrivate />
-    </Fragment>
+    </ConnectedProvider>
   )
 }
 

@@ -1,5 +1,7 @@
 import { useEffect, useRef, useMemo } from 'react';
 import { useChainId } from 'wagmi';
+
+import { useConnectedAccount } from 'src/hooks/useConnectedAccount';
 import { BigNumber } from '@ethersproject/bignumber';
 import { useQueryClient } from '@tanstack/react-query';
 import { JsonRpcProvider } from '@ethersproject/providers';
@@ -16,12 +18,13 @@ import { Offer } from 'src/types/offer/Offer';
  */
 export function useOfferCacheEvents() {
   const chainId = useChainId();
+  const { address: account } = useConnectedAccount();
   const queryClient = useQueryClient();
   const listenersRef = useRef<Array<() => void>>([]);
 
   // Créer le provider ethers et le contrat à partir de la config réseau
   const { provider, yamContract } = useMemo(() => {
-    if (!chainId) return { provider: null, yamContract: null };
+    if (!chainId || !account) return { provider: null, yamContract: null };
 
     const chainIdHex = `0x${chainId.toString(16)}`;
     const networkConfig = networks.find(
@@ -38,10 +41,10 @@ export function useOfferCacheEvents() {
     ) as unknown as RealTokenYamUpgradeable;
 
     return { provider: ethersProvider, yamContract: contract };
-  }, [chainId]);
+  }, [chainId, account]);
 
   useEffect(() => {
-    if (!yamContract || !chainId || !provider) return;
+    if (!yamContract || !chainId || !provider || !account) return;
 
     const contract = yamContract;
 
@@ -224,5 +227,5 @@ export function useOfferCacheEvents() {
       listenersRef.current = [];
       clearInterval(cleanupInterval);
     };
-  }, [yamContract, chainId, provider, queryClient]);
+  }, [yamContract, chainId, provider, queryClient, account]);
 }

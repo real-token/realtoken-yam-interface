@@ -42,21 +42,23 @@ export const useOffers: UseOffers = () => {
     queryKey: ['offers', chainId, account],
     meta: { errCode: REACT_QUERY_ERRORS.FETCH_OFFERS },
     enabled:
-      !!chainId && !!properties && !!prices && wlProperties !== undefined,
+      !!chainId &&
+      !!account &&
+      !!properties &&
+      !!prices &&
+      wlProperties !== undefined,
     queryFn: async (): Promise<Offer[]> => {
       if (
         !chainId ||
+        !account ||
         !properties ||
         !prices ||
         wlProperties === undefined
       )
         return OFFER_LOADING;
 
-      const accountForFetch =
-        account ?? '0x0000000000000000000000000000000000000000';
-
       const offersData = await fetchOffersTheGraph(
-        accountForFetch,
+        account,
         chainId,
         properties,
         wlProperties,
@@ -79,14 +81,22 @@ export const useOffers: UseOffers = () => {
     return parseGraphQLError(error);
   }, [error]);
 
-  const offersAreLoading = useMemo(
-    () =>
+  const offersAreLoading = useMemo(() => {
+    if (!account) return false;
+
+    return (
       loading ||
       propertiesAreLoading ||
       pricesAreLoading ||
-      wlPropertiesAreLoading,
-    [loading, propertiesAreLoading, pricesAreLoading, wlPropertiesAreLoading]
-  );
+      wlPropertiesAreLoading
+    );
+  }, [
+    account,
+    loading,
+    propertiesAreLoading,
+    pricesAreLoading,
+    wlPropertiesAreLoading,
+  ]);
 
   return useMemo(
     () => ({

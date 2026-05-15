@@ -1,5 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useAccount, useChainId, usePublicClient } from 'wagmi';
+import { useChainId } from 'wagmi';
+
+import { useConnectedAccount } from 'src/hooks/useConnectedAccount';
 import { BigNumber } from '@ethersproject/bignumber';
 import { useMemo, useEffect, useState } from 'react';
 import { JsonRpcProvider } from '@ethersproject/providers';
@@ -19,13 +21,12 @@ import { offerCacheService } from 'src/services/offerCacheService';
  */
 export function useOfferById(offerId: string | number | BigNumber) {
   const chainId = useChainId();
-  const { address: account } = useAccount();
-  const publicClient = usePublicClient();
+  const { address: account } = useConnectedAccount();
   const queryClient = useQueryClient();
 
   // Créer le provider ethers et le contrat à partir de la config réseau
   const { provider, yamContract } = useMemo(() => {
-    if (!chainId) return { provider: null, yamContract: null };
+    if (!chainId || !account) return { provider: null, yamContract: null };
 
     const chainIdHex = `0x${chainId.toString(16)}`;
     const networkConfig = networks.find(
@@ -42,7 +43,7 @@ export function useOfferById(offerId: string | number | BigNumber) {
     ) as unknown as RealTokenYamUpgradeable;
 
     return { provider: ethersProvider, yamContract: contract };
-  }, [chainId]);
+  }, [chainId, account]);
 
   // Note: L'écoute des événements est gérée globalement par OfferCacheProvider
   // Pas besoin de l'activer ici pour éviter les doublons
@@ -150,7 +151,7 @@ export function useOfferById(offerId: string | number | BigNumber) {
 
       return fetchedOffer;
     },
-    enabled: !!offerRPCService && !!offerIdBN && !!chainId,
+    enabled: !!offerRPCService && !!offerIdBN && !!chainId && !!account,
     staleTime: Infinity, // Cache persistant - mise à jour via événements blockchain
     gcTime: Infinity, // Conservé indéfiniment (anciennement cacheTime)
     meta: { errCode: REACT_QUERY_ERRORS.FETCH_OFFER_RPC },
@@ -174,7 +175,7 @@ export function useOfferById(offerId: string | number | BigNumber) {
 
   return {
     offer,
-    isLoading,
+    isLoading: account ? isLoading : false,
     isError,
     error,
     refetch,
