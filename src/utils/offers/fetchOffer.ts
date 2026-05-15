@@ -11,7 +11,7 @@ import { getExtendedTokens } from '../../constants/GetPriceToken';
 import { DataRealtokenType, Offer } from '../../types/offer';
 import { Price } from '../../types/price';
 import { getBigDataGraphRealtoken } from './fetchOffers';
-import { apiClient } from './getClientURL';
+import { apiClient } from './apiClient';
 import { getOfferQuery } from './getOfferQuery';
 import { parseOffer } from './parseOffer';
 

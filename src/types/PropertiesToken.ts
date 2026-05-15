@@ -30,11 +30,6 @@ export type APIPropertiesToken = {
     }
 }
 
-export type ShortProperty = {
-    contractAddress: string;
-    name: string;
-}
-
 // USED IN APP
 export type PropertiesToken = {
     uuid: string

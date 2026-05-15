@@ -7,7 +7,7 @@ import { useChainId } from 'wagmi';
 import { ExtendedChainConfig } from '../../config/aaConfig';
 import { useConnectedAccount } from '../useConnectedAccount';
 import { REACT_QUERY_ERRORS } from '../../types/ReactQueryErrors';
-import { apiClient } from '../../utils/offers/getClientURL';
+import { apiClient } from '../../utils/offers/apiClient';
 
 type UseWlProperties = () => {
   wlPropertiesAreLoading: boolean;

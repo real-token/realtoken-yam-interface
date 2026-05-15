@@ -2,7 +2,7 @@ import { gql } from '@apollo/client';
 
 import { Historic } from '../../types/historic';
 import { OFFER_TYPE } from '../../types/offer';
-import { apiClient } from '../offers/getClientURL';
+import { apiClient } from '../offers/apiClient';
 
 export const parseHistoric = (data: any, type: OFFER_TYPE) => {
   const parsedHistoric: Historic[] = [];

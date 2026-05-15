@@ -6,7 +6,7 @@ import { useChainId } from 'wagmi';
 
 import { getExtendedTokens } from '../../constants/GetPriceToken';
 import { REACT_QUERY_ERRORS } from '../../types/ReactQueryErrors';
-import { apiClient } from '../../utils/offers/getClientURL';
+import { apiClient } from '../../utils/offers/apiClient';
 import { mergeExtendedProperties } from '../../utils/properties';
 
 const GET_PROPERTIES_QUERY = gql`

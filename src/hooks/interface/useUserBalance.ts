@@ -8,7 +8,7 @@ import { useAccount, useChainId } from 'wagmi';
 import { ExtendedChainConfig } from '../../config/aaConfig';
 import { REACT_QUERY_ERRORS } from '../../types/ReactQueryErrors';
 import { UserBalances } from '../../types/UserBalance';
-import { apiClient } from '../../utils/offers/getClientURL';
+import { apiClient } from '../../utils/offers/apiClient';
 
 type UseUserBalance = () => {
   userBalancesAreLoading: boolean;

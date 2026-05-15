@@ -11,7 +11,7 @@ import { Price } from 'src/types/price';
 import { Offer as OfferGraphQl } from '../../../gql/graphql';
 import { networks } from '../../config/aaConfig';
 import { getExtendedTokens } from '../../constants/GetPriceToken';
-import { apiClient } from './getClientURL';
+import { apiClient } from './apiClient';
 import { parseOffer } from './parseOffer';
 
 const nbrFirst = 1000;
