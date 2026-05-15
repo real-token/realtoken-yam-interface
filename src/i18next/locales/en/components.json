@@ -1,4 +1,19 @@
 {
+    "walletFallback": {
+        "fallbackHint": "Connect with an external wallet (development mode without Web3Auth).",
+        "installed": "Installed",
+        "connectErrorTitle": "Connection error",
+        "readOnly": {
+            "title": "Watch an address",
+            "description": "Read-only mode: view assets without sending transactions.",
+            "label": "Address or ENS",
+            "placeholder": "0x... or realteam.eth",
+            "button": "Watch",
+            "required": "Address or ENS name is required",
+            "invalidAddress": "Invalid address",
+            "invalidEns": "Invalid ENS name"
+        }
+    },
     "walletBalance": {
         "title": "Wallet balance"
     },

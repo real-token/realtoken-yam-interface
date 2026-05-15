@@ -3,18 +3,18 @@ import { useTranslation } from 'react-i18next';
 import { Flex, Text } from '@mantine/core';
 import { IconWalletOff } from '@tabler/icons-react';
 
-import { useAccount } from 'wagmi';
+import { useConnectedAccount } from 'src/hooks/useConnectedAccount';
 
 interface ConnectedProviderProps {
   children: React.ReactNode;
 }
 export const ConnectedProvider = ({ children }: ConnectedProviderProps) => {
-  const { address: account } = useAccount();
+  const { address } = useConnectedAccount();
   const { t } = useTranslation('common', { keyPrefix: 'general' });
 
   return (
     <>
-      {account ? (
+      {address ? (
         children
       ) : (
         <Flex

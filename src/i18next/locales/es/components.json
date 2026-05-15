@@ -1,4 +1,19 @@
 {
+    "walletFallback": {
+        "fallbackHint": "Conexión con cartera externa (modo desarrollo sin Web3Auth).",
+        "installed": "Instalado",
+        "connectErrorTitle": "Error de conexión",
+        "readOnly": {
+            "title": "Ver una dirección",
+            "description": "Modo solo lectura: consultar activos sin enviar transacciones.",
+            "label": "Dirección o ENS",
+            "placeholder": "0x... o realteam.eth",
+            "button": "Ver",
+            "required": "Se requiere una dirección o nombre ENS",
+            "invalidAddress": "Dirección inválida",
+            "invalidEns": "Nombre ENS inválido"
+        }
+    },
     "walletBalance": {
         "title": "Saldo de la cartera"
     },

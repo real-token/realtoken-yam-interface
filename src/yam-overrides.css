@@ -1,0 +1,21 @@
+/* Masque la bannière ui-components (switch wagmi incompatible Web3Auth) */
+[class*='UnsuportedNetworkBanner-module'] {
+  display: none !important;
+}
+
+/*
+ * WebsiteSelector (@real-token/ui-components) : min-width 320px + justify center
+ * laissent un vide à gauche du chevron et élargissent le bandeau au survol.
+ */
+[class*='WebsiteSelector-module__currentWebsiteContainer'] {
+  min-width: unset !important;
+  width: auto !important;
+  max-width: fit-content;
+  justify-content: flex-start !important;
+  padding-left: 0 !important;
+}
+
+[class*='WebsiteSelector-module__websiteContainer'] {
+  width: auto !important;
+  min-width: min(100%, 14rem);
+}

@@ -1,7 +1,7 @@
 import { FC } from 'react';
 
 import { ContextModalProps } from '@mantine/modals';
-import { AaModal } from '@real-token/aa-modal';
+import { AaModalRouter } from './AaModalRouter';
 import { modals as uiModals } from '@real-token/ui-components';
 import { modals as web3Modals } from '@real-token/web3';
 
@@ -17,7 +17,8 @@ export const modals: Record<string, FC<ContextModalProps<any>>> = {
   delete: DeleteModal,
   createOffer: CreateOfferModal,
   chooseOfferType: ChooseOfferTypeModal,
-  aaModal: AaModal,
+  aaModal: AaModalRouter,
+  wallet: AaModalRouter,
   ...uiModals,
   ...web3Modals,
 };

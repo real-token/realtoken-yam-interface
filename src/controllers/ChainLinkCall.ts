@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js';
 import { createPublicClient, http } from 'viem';
-import { gnosis, mainnet, sepolia } from 'viem/chains';
+import { gnosis, sepolia } from 'viem/chains';
+import { mainnet } from 'src/config/viemMainnet';
 
 import { oraclePriceFeedABI } from 'src/abis';
 import { OFFER_TYPE, Offer } from 'src/types/offer';

@@ -1,15 +1,30 @@
-import { useEffect, useState } from 'react';
-
 import { useCurrentNetwork } from '@real-token/core';
 import { useQuery } from '@tanstack/react-query';
-import { multicall } from '@wagmi/core';
-
-import { useAccount, useConfig } from 'wagmi';
+import { createPublicClient, http, type Chain } from 'viem';
+import { useAccount } from 'wagmi';
 
 import { ROLE, USER_ROLE } from 'src/types/admin';
+import { parseChainId } from 'src/utils/chainId';
 
 import { realTokenYamUpgradeableABI } from '../abis';
 import { ExtendedChainConfig } from '../config/aaConfig';
+
+const GNOSIS_MULTICALL3 = '0xcA11bde05977b3631167028862bE2a173976CA11' as const;
+
+function chainFromNetworkConfig(network: ExtendedChainConfig): Chain {
+  return {
+    id: parseChainId(network.chainId),
+    name: network.displayName,
+    nativeCurrency: {
+      name: network.tickerName,
+      symbol: network.ticker,
+      decimals: network.decimals,
+    },
+    rpcUrls: {
+      default: { http: [network.rpcTarget] },
+    },
+  } as Chain;
+}
 
 type UseRole = (address?: string) => {
   role: USER_ROLE;
@@ -18,73 +33,57 @@ type UseRole = (address?: string) => {
 
 export const useRole: UseRole = (address) => {
   const { address: account } = useAccount();
-  const config = useConfig();
-
   const addressToCheck = address ?? account;
-
   const networkConfig = useCurrentNetwork<ExtendedChainConfig>();
 
-  const getAddressRole = (): Promise<USER_ROLE> => {
-    return new Promise<USER_ROLE>(async (resolve, reject) => {
-      try {
-        if (!config || !addressToCheck || !networkConfig) {
-          console.error('[UseRole] Missing config or address to check');
-          return;
-        }
+  const getAddressRole = async (): Promise<USER_ROLE> => {
+    if (!addressToCheck || !networkConfig) {
+      throw new Error('[UseRole] Missing address or network config');
+    }
 
-        const realTokenYamUpgradeableAddress =
-          networkConfig.contracts.realTokenYamUpgradeableAddress;
+    const realTokenYamUpgradeableAddress =
+      networkConfig.contracts.realTokenYamUpgradeableAddress;
 
-        const adminRole = ROLE.get(USER_ROLE.ADMIN);
-        const moderatorRole = ROLE.get(USER_ROLE.MODERATOR);
-        if (!adminRole || !moderatorRole) {
-          throw new Error('Admin or moderator role not found');
-        }
+    const adminRole = ROLE.get(USER_ROLE.ADMIN);
+    const moderatorRole = ROLE.get(USER_ROLE.MODERATOR);
+    if (!adminRole || !moderatorRole) {
+      throw new Error('Admin or moderator role not found');
+    }
 
-        const multicallResult = await multicall(config, {
-          contracts: [
-            {
-              abi: realTokenYamUpgradeableABI,
-              address: realTokenYamUpgradeableAddress,
-              functionName: 'hasRole',
-              args: [adminRole, addressToCheck as `0x${string}`],
-            },
-            {
-              abi: realTokenYamUpgradeableABI,
-              address: realTokenYamUpgradeableAddress,
-              functionName: 'hasRole',
-              args: [moderatorRole, addressToCheck as `0x${string}`],
-            },
-          ],
-          multicallAddress: '0xcA11bde05977b3631167028862bE2a173976CA11',
-        });
-
-        const isAdmin = multicallResult[0]?.result;
-        const isModerator = multicallResult[1]?.result;
-
-        if (isAdmin) {
-          resolve(USER_ROLE.ADMIN);
-          return;
-        }
-        if (isModerator) {
-          resolve(USER_ROLE.MODERATOR);
-          return;
-        }
-
-        resolve(USER_ROLE.NO_ROLE);
-      } catch (err) {
-        console.log('Fail to get address role: ', err);
-        reject();
-      }
+    const publicClient = createPublicClient({
+      chain: chainFromNetworkConfig(networkConfig),
+      transport: http(networkConfig.rpcTarget),
     });
+
+    const multicallResult = await publicClient.multicall({
+      contracts: [
+        {
+          abi: realTokenYamUpgradeableABI,
+          address: realTokenYamUpgradeableAddress,
+          functionName: 'hasRole',
+          args: [adminRole, addressToCheck as `0x${string}`],
+        },
+        {
+          abi: realTokenYamUpgradeableABI,
+          address: realTokenYamUpgradeableAddress,
+          functionName: 'hasRole',
+          args: [moderatorRole, addressToCheck as `0x${string}`],
+        },
+      ],
+      multicallAddress: GNOSIS_MULTICALL3,
+    });
+
+    if (multicallResult[0]?.result) return USER_ROLE.ADMIN;
+    if (multicallResult[1]?.result) return USER_ROLE.MODERATOR;
+    return USER_ROLE.NO_ROLE;
   };
 
   const { data, isPending } = useQuery({
-    queryKey: ['role', addressToCheck],
+    queryKey: ['role', addressToCheck, networkConfig?.chainId],
     queryFn: getAddressRole,
-    enabled: !!config && !!addressToCheck && !!networkConfig,
+    enabled: Boolean(addressToCheck && networkConfig),
+    retry: 1,
   });
-  console.log('data', data);
 
   return {
     role: data ?? USER_ROLE.NO_ROLE,

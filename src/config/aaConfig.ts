@@ -56,7 +56,7 @@ export interface ExtendedChainConfig extends RealTokenUiNetworkConfig {
   serverChainId: string;
 }
 
-export const networks: ExtendedChainConfig[] = [
+const networksUnordered: ExtendedChainConfig[] = [
   {
     wsTarget: sepoliaWssUrl,
     rpcTarget: sepoliaRpcUrl,
@@ -361,6 +361,12 @@ export const networks: ExtendedChainConfig[] = [
   },
 ];
 
+/** Gnosis en premier : réseau par défaut Web3Auth / sélecteur réseau */
+export const networks: ExtendedChainConfig[] = [
+  ...networksUnordered.filter((network) => network.chainId === gnosisChainId),
+  ...networksUnordered.filter((network) => network.chainId !== gnosisChainId),
+];
+
 const torusConfig: TorusConfig = {
   mfaLevel: 'optional',
   networks:
@@ -425,8 +431,7 @@ export const aaClient: AAClientConfig = {
         : 'sapphire_mainnet' /* Network of your web3auth project */,
     uxMode: 'redirect',
   },
-  // chainIdHex: env === "local" || env === "testnet" ? "0xaa36a7" : "0x64",
-  chainId: 0x64,
+  chainId: 100, // Gnosis (défaut au premier chargement)
   etherspotApiKey:
     import.meta.env.VITE_ETHERSPOT_KEY ??
     '' /* Etherspot api key - currently not needed */,

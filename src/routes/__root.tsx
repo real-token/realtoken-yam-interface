@@ -27,12 +27,16 @@ import i18next from 'i18next';
 import { Provider as JotaiProvider } from 'jotai';
 
 import { modals } from 'src/components';
+import { DefaultNetworkSync } from 'src/components/DefaultNetworkSync';
+import { WatchedAddressRestore } from 'src/components/WatchedAddressRestore';
 import { HeaderNav } from 'src/components/HeaderNav';
 import { OfferCacheProvider } from 'src/components/OfferCacheProvider';
 import { TheGraphErrorNotification } from 'src/components/TheGraphErrorNotification';
 import { FooterLinks } from 'src/components/footer/FooterLinks';
 import { Banners } from 'src/components/header/Banners';
+import { YamHeaderButtons } from 'src/components/header/YamHeaderButtons';
 import { ExtendedChainConfig, aaClient, networks } from 'src/config/aaConfig';
+import { isAaWalletLoginEnabled } from 'src/config/web3AuthEnv';
 import { resources } from 'src/i18next';
 import { modalStyles, theme } from 'src/theme';
 import {
@@ -44,6 +48,8 @@ const showAllNetworks =
   import.meta.env.VITE_SHOW_ALL_NETWORKS === 'true'
     ? SHOW_NETWORKS.ALL
     : SHOW_NETWORKS.MAINNETS;
+
+const aaWalletLoginEnabled = isAaWalletLoginEnabled();
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -143,7 +149,7 @@ function RootComponent() {
                   },
                 },
                 connectionModeVisibility: {
-                  aa: true,
+                  aa: aaWalletLoginEnabled,
                   external: true,
                   tba: false,
                 },
@@ -159,10 +165,13 @@ function RootComponent() {
               }}
             >
               <OfferCacheProvider>
+                <DefaultNetworkSync />
+                <WatchedAddressRestore />
                 <Layout
                   header={{
                     nav: <HeaderNav />,
                     banner: <Banners />,
+                    buttons: <YamHeaderButtons disableWalletConnect />,
                     currentWebsite: Websites.YAM,
                     disableWalletConnect: true,
                   }}
