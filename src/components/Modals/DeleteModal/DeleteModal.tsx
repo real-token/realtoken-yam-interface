@@ -35,7 +35,7 @@ export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
   id,
   innerProps: { offerIds, onSuccess, isAdminDelete = false },
 }) => {
-  const { wagmiAddress: account, canSign } = useCanSignTransactions();
+  const { wagmiAddress: account, isWalletReady } = useCanSignTransactions();
   const publicClient = usePublicClient();
 
   const { onSubmit, reset } = useForm<DeleteFormValues>({
@@ -97,13 +97,13 @@ export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
   const onHandleSubmit = useCallback(
     (formValues: DeleteFormValues) => {
       if (
-        !canSign ||
+        !isWalletReady ||
         !account ||
         !formValues.offerIds ||
         !publicClient ||
         !currentNetwork
       ) {
-        if (!canSign) {
+        if (!isWalletReady) {
           notifications.show({
             color: 'red',
             title: t('signWalletRequiredTitle'),
@@ -124,7 +124,7 @@ export const DeleteModal: FC<ContextModalProps<DeleteModalProps>> = ({
     },
     [
       account,
-      canSign,
+      isWalletReady,
       isAdminDelete,
       currentNetwork,
       publicClient,

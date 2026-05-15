@@ -16,7 +16,9 @@ import { IconCheck } from '@tabler/icons-react';
 import { multicall } from '@wagmi/core';
 
 import BigNumber from 'bignumber.js';
-import { useAccount, useConfig, usePublicClient } from 'wagmi';
+import { useConfig, usePublicClient } from 'wagmi';
+
+import { useWalletGate } from 'src/wallet/useWalletGate';
 
 import { Erc20, Erc20ABI } from '../../../../abis';
 import { useUserBalance } from '../../../../hooks/interface/useUserBalance';
@@ -75,7 +77,7 @@ export const ComboboxOfferToken = ({
   type: 'realtoken' | 'others';
   required?: boolean;
 }) => {
-  const { address: account } = useAccount();
+  const { address: account, canFetch } = useWalletGate();
   const publicClient = usePublicClient();
   const config = useConfig();
 
@@ -96,6 +98,10 @@ export const ComboboxOfferToken = ({
   const [assetsBalancesAreLoading, setAssetsBalancesAreLoading] =
     useState<boolean>(true);
   const fetchBalances = async () => {
+    if (!canFetch || !account) {
+      setAssetsBalancesAreLoading(false);
+      return;
+    }
     try {
       setAssetsBalancesAreLoading(true);
 
@@ -148,11 +154,10 @@ export const ComboboxOfferToken = ({
     }
   };
   useEffect(() => {
-    console.log(type);
-    if (type == 'others') {
-      fetchBalances();
+    if (type === 'others' && canFetch && account) {
+      void fetchBalances();
     }
-  }, [type]);
+  }, [type, canFetch, account]);
 
   const [userBalances, userBalancesAreLoading] = useMemo(() => {
     if (type == 'realtoken') {

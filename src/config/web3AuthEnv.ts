@@ -82,7 +82,10 @@ export function isAaWalletLoginEnabled(): boolean {
   return isWeb3AuthConfigured();
 }
 
-/** Utiliser la modale @real-token/aa-modal (Web3Auth) plutôt que le fallback wagmi. */
-export function shouldUseAaModal(): boolean {
-  return isWeb3AuthConfigured() && isAaWalletLoginEnabled();
+/**
+ * Onglet par défaut de la modale AA (patch @real-token/aa-modal).
+ * `VITE_ENABLE_AA_WALLET_LOGIN=false` → onglet « Autres portefeuilles ».
+ */
+export function resolveDefaultAaModalConnectionMode(): 'aa' | 'external' {
+  return isAaWalletLoginEnabled() ? 'aa' : 'external';
 }

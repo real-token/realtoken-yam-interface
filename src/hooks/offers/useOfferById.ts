@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useChainId } from 'wagmi';
 
-import { useConnectedAccount } from 'src/hooks/useConnectedAccount';
+import { useWalletGate } from 'src/wallet/useWalletGate';
 import { BigNumber } from '@ethersproject/bignumber';
 import { useMemo, useEffect, useState } from 'react';
 import { getSharedJsonRpcProvider } from 'src/utils/ethersProvider';
@@ -21,12 +21,12 @@ import { offerCacheService } from 'src/services/offerCacheService';
  */
 export function useOfferById(offerId: string | number | BigNumber) {
   const chainId = useChainId();
-  const { address: account } = useConnectedAccount();
+  const { address: account, canFetch } = useWalletGate();
   const queryClient = useQueryClient();
 
   // Créer le provider ethers et le contrat à partir de la config réseau
   const { provider, yamContract } = useMemo(() => {
-    if (!chainId || !account) return { provider: null, yamContract: null };
+    if (!canFetch || !chainId || !account) return { provider: null, yamContract: null };
 
     const chainIdHex = `0x${chainId.toString(16)}`;
     const networkConfig = networks.find(
@@ -46,7 +46,7 @@ export function useOfferById(offerId: string | number | BigNumber) {
     ) as unknown as RealTokenYamUpgradeable;
 
     return { provider: ethersProvider, yamContract: contract };
-  }, [chainId, account]);
+  }, [canFetch, chainId, account]);
 
   // Note: L'écoute des événements est gérée globalement par OfferCacheProvider
   // Pas besoin de l'activer ici pour éviter les doublons
@@ -154,7 +154,7 @@ export function useOfferById(offerId: string | number | BigNumber) {
 
       return fetchedOffer;
     },
-    enabled: !!offerRPCService && !!offerIdBN && !!chainId && !!account,
+    enabled: canFetch && !!offerRPCService && !!offerIdBN && !!chainId && !!account,
     staleTime: Infinity, // Cache persistant - mise à jour via événements blockchain
     gcTime: Infinity, // Conservé indéfiniment (anciennement cacheTime)
     meta: { errCode: REACT_QUERY_ERRORS.FETCH_OFFER_RPC },

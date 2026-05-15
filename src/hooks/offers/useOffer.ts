@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { useAccount, useChainId, usePublicClient } from 'wagmi';
+import { useChainId, usePublicClient } from 'wagmi';
+
+import { useWalletGate } from 'src/wallet/useWalletGate';
 
 import { fetchOffer } from 'src/utils/offers/fetchOffer';
 
@@ -16,7 +18,7 @@ type UseOfferProps = (offerId: number) => {
 };
 
 export const useOffer: UseOfferProps = (offerId: number) => {
-  const { address: account } = useAccount();
+  const { address: account, canFetch } = useWalletGate();
   const chainId = useChainId();
   const publicClient = usePublicClient();
 
@@ -32,6 +34,7 @@ export const useOffer: UseOfferProps = (offerId: number) => {
   } = useQuery({
     queryKey: [offerId],
     enabled:
+      canFetch &&
       !!offerId &&
       !!chainId &&
       !!account &&

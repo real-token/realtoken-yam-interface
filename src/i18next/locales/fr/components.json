@@ -1,19 +1,4 @@
 {
-  "walletFallback": {
-    "fallbackHint": "Connexion via portefeuille externe (mode développement sans Web3Auth).",
-    "installed": "Installé",
-    "connectErrorTitle": "Erreur de connexion",
-    "readOnly": {
-      "title": "Surveiller une adresse",
-      "description": "Mode lecture seule : consultation des actifs sans envoi de transactions.",
-      "label": "Adresse ou ENS",
-      "placeholder": "0x... ou realteam.eth",
-      "button": "Surveiller",
-      "required": "Adresse ou nom ENS requis",
-      "invalidAddress": "Adresse invalide",
-      "invalidEns": "Nom ENS invalide"
-    }
-  },
   "walletBalance": {
     "title": "Solde du portefeuille"
   },

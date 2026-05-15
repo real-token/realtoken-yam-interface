@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useChainId } from 'wagmi';
 
 import { ExtendedChainConfig } from '../../config/aaConfig';
-import { useConnectedAccount } from '../useConnectedAccount';
+import { useWalletGate } from 'src/wallet/useWalletGate';
 import { REACT_QUERY_ERRORS } from '../../types/ReactQueryErrors';
 import { apiClient } from '../../utils/offers/apiClient';
 
@@ -15,14 +15,14 @@ type UseWlProperties = () => {
 };
 export const useWlProperties: UseWlProperties = () => {
   const chainId = useChainId();
-  const { address: account } = useConnectedAccount();
+  const { address: account, canFetch } = useWalletGate();
 
   const networkConfig = useCurrentNetwork<ExtendedChainConfig>();
 
   const { isLoading: wlPropertiesAreLoading, data: wlProperties } = useQuery({
     queryKey: ['wlProperties', chainId, account],
     meta: { errCode: REACT_QUERY_ERRORS.FETCH_WL_PROPERTIES },
-    enabled: !!chainId && !!account && !!networkConfig,
+    enabled: canFetch && !!chainId && !!account && !!networkConfig,
     queryFn: async (): Promise<number[]> => {
       if (!chainId || !account || !networkConfig) return [];
 

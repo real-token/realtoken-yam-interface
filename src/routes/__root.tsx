@@ -28,7 +28,6 @@ import { Provider as JotaiProvider } from 'jotai';
 
 import { modals } from 'src/components';
 import { DefaultNetworkSync } from 'src/components/DefaultNetworkSync';
-import { WalletSessionCleanup } from 'src/components/WalletSessionCleanup';
 import { WalletSessionRestore } from 'src/components/WalletSessionRestore';
 import { WalletRestoreProvider } from 'src/contexts/WalletRestoreContext';
 import { registerWalletRestoreTranslations } from 'src/i18next/walletRestoreTranslations';
@@ -39,7 +38,12 @@ import { FooterLinks } from 'src/components/footer/FooterLinks';
 import { Banners } from 'src/components/header/Banners';
 import { YamHeaderButtons } from 'src/components/header/YamHeaderButtons';
 import { ExtendedChainConfig, aaClient, networks } from 'src/config/aaConfig';
-import { isAaWalletLoginEnabled } from 'src/config/web3AuthEnv';
+import {
+  isAaWalletLoginEnabled,
+  resolveDefaultAaModalConnectionMode,
+} from 'src/config/web3AuthEnv';
+import { YAM_ALLOWED_EXTERNAL_WALLET_IDS } from 'src/config/externalWallets';
+import type { YamAaModalConfig } from 'src/types/aaModalConfig';
 import { resources } from 'src/i18next';
 import { modalStyles, theme } from 'src/theme';
 import {
@@ -144,12 +148,14 @@ function RootComponent() {
               defaultNetworkId: NetworkId.gnosis,
               networksConfig: networks,
               aaModalConfig: {
+                defaultConnectionMode: resolveDefaultAaModalConnectionMode(),
                 connectionModeConfig: {
                   aa: {
                     showEmailPasswordless: true,
                   },
                   external: {
                     showReadOnly: true,
+                    allowedWalletIds: [...YAM_ALLOWED_EXTERNAL_WALLET_IDS],
                   },
                 },
                 connectionModeVisibility: {
@@ -157,22 +163,21 @@ function RootComponent() {
                   external: true,
                   tba: false,
                 },
-              },
+              } as YamAaModalConfig,
             }}
           >
-            <MantineProviders
-              modals={modals}
-              modalStyles={modalStyles}
-              theme={theme}
-              notificationsProps={{
-                position: 'bottom-right',
-              }}
-            >
-              <OfferCacheProvider>
-                <WalletRestoreProvider>
+            <WalletRestoreProvider>
+              <MantineProviders
+                modals={modals}
+                modalStyles={modalStyles}
+                theme={theme}
+                notificationsProps={{
+                  position: 'bottom-right',
+                }}
+              >
+                <OfferCacheProvider>
                   <DefaultNetworkSync />
                   <WalletSessionRestore />
-                  <WalletSessionCleanup />
                   <Layout
                     header={{
                       nav: <HeaderNav />,
@@ -193,9 +198,9 @@ function RootComponent() {
                     <TheGraphErrorNotification />
                     <Outlet />
                   </Layout>
-                </WalletRestoreProvider>
-              </OfferCacheProvider>
-            </MantineProviders>
+                </OfferCacheProvider>
+              </MantineProviders>
+            </WalletRestoreProvider>
           </RealTokenUiProvider>
         </JotaiProvider>
       </I18nextProvider>

@@ -1,0 +1,77 @@
+diff --git a/node_modules/@real-token/aa-modal/dist/index.js b/node_modules/@real-token/aa-modal/dist/index.js
+index d1ddb06..856af4f 100644
+--- a/node_modules/@real-token/aa-modal/dist/index.js
++++ b/node_modules/@real-token/aa-modal/dist/index.js
+@@ -1489,7 +1489,7 @@ var WalletInstallationDrawer = ({
+       title: t("title"),
+       children: /* @__PURE__ */ jsxs11(Flex9, { direction: "column", gap: "md", align: "center", children: [
+         /* @__PURE__ */ jsx16(Avatar2, { src: wallet.logo, size: "xl" }),
+-        Object.keys(wallet.app).map((key) => /* @__PURE__ */ jsx16(
++        Object.keys(wallet.app ?? {}).map((key) => /* @__PURE__ */ jsx16(
+           MobileWalletInstallationButton,
+           {
+             wallet,
+@@ -1613,6 +1613,7 @@ var processWallets = async (web3AuthPrivate) => {
+   }).map(([walletId, wallet]) => ({
+     ...wallet,
+     walletId,
++    app: wallet.app ?? {},
+     logo: `https://images.web3auth.io/login-${walletId}.${wallet.imgExtension}`,
+     isInstalled: availableWalletsId.includes(walletId),
+     hasWalletConnect: wallet.walletConnect?.sdks?.includes("sign_v2") ?? false
+@@ -1620,6 +1621,8 @@ var processWallets = async (web3AuthPrivate) => {
+ };
+ var useExternalWallets = (search) => {
+   const web3AuthPrivate = useWeb3AuthPrivate2();
++  const { config: aaModalConfig } = useAaModalConfig();
++  const allowedWalletIds = aaModalConfig?.connectionModeConfig?.external?.allowedWalletIds ?? [];
+   const {
+     data: allWallets,
+     isLoading,
+@@ -1639,12 +1642,13 @@ var useExternalWallets = (search) => {
+   const aaExternalWallets = useMemo6(() => {
+     if (!allWallets)
+       return void 0;
++    const visibleWallets = allowedWalletIds.length ? allowedWalletIds.map((walletId) => allWallets.find((wallet) => wallet.walletId === walletId)).filter(Boolean) : allWallets;
+     if (!search)
+-      return allWallets;
+-    return allWallets.filter(
++      return visibleWallets;
++    return visibleWallets.filter(
+       (wallet) => wallet.name.toLowerCase().includes(search.toLowerCase())
+     );
+-  }, [allWallets, search]);
++  }, [allWallets, search, allowedWalletIds]);
+   return {
+     isLoading,
+     aaExternalWallets,
+@@ -1880,14 +1884,19 @@ var AaConnectionModePanel = ({
+ // src/components/ConnectionMode.tsx
+ import { useTranslation as useTranslation10 } from "react-i18next";
+ import { Fragment as Fragment6, jsx as jsx21, jsxs as jsxs16 } from "react/jsx-runtime";
++var resolveAaModalDefaultConnectionMode = (config, displayedOptions) => {
++  const preferred = config == null ? void 0 : config.defaultConnectionMode;
++  if (preferred && displayedOptions.includes(preferred)) return preferred;
++  return displayedOptions[0] ?? CONNECTION_MODE.aa;
++};
+ var ConnectionMode = ({ config }) => {
+   const { t } = useTranslation10("main");
+-  const [value, setValue] = useState5(CONNECTION_MODE.aa);
+   const displayedOptions = useMemo7(() => {
+     return Object.keys(config.connectionModeVisibility ?? {}).map((key) => key).filter(
+       (key) => config.connectionModeVisibility?.[key] && config.connectionModeVisibility?.[key]
+     );
+   }, [config]);
++  const [value, setValue] = useState5(resolveAaModalDefaultConnectionMode(config, displayedOptions));
+   const connectionModePanel = useMemo7(() => {
+     return /* @__PURE__ */ new Map([
+       [
+@@ -1911,7 +1920,7 @@ var ConnectionMode = ({ config }) => {
+     {
+       value,
+       onChange: (value2) => setValue(value2),
+-      defaultValue: CONNECTION_MODE.aa,
++      defaultValue: resolveAaModalDefaultConnectionMode(config, displayedOptions),
+       w: "100%",
+       variant: "pills",
+       radius: "md",

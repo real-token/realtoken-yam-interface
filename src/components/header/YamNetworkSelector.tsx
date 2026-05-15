@@ -14,7 +14,9 @@ import type { LogoProps } from '@real-token/types';
 import { IconAlertCircle } from '@tabler/icons-react';
 import { useChainId } from 'wagmi';
 
+import { gnosisChainId } from 'src/config/aaConfig';
 import { useAppSwitchChain } from 'src/hooks/useAppSwitchChain';
+import { useWalletGate } from 'src/wallet/useWalletGate';
 import { parseChainId } from 'src/utils/chainId';
 
 import type { ExtendedChainConfig } from 'src/config/aaConfig';
@@ -55,11 +57,24 @@ function YamNetworkList() {
   const { t } = useTranslation('common', { keyPrefix: 'wallet' });
   const { showNetworks } = useRealTokenUIConfig();
   const networks = useNetworksConfig(showNetworks);
+  const { walletKind } = useWalletGate();
+
+  const gnosisChainIdNum = parseChainId(gnosisChainId);
+  const visibleNetworks =
+    walletKind === 'external'
+      ? networks
+      : networks.filter(
+          (network) => parseChainId(network.chainId) === gnosisChainIdNum
+        );
+
+  if (visibleNetworks.length <= 1) {
+    return null;
+  }
 
   return (
     <>
       <Menu.Label pb={0}>{t('network')}</Menu.Label>
-      {networks.map((network) => (
+      {visibleNetworks.map((network) => (
         <YamNetworkMenuItem key={network.chainId} network={network} />
       ))}
     </>

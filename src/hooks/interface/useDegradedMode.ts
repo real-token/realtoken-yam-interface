@@ -1,7 +1,10 @@
 import { useMemo } from 'react';
-import { useOffers } from './useOffers';
-import { useAccount, useChainId } from 'wagmi';
+import { useChainId } from 'wagmi';
+
+import { useWalletGate } from 'src/wallet/useWalletGate';
 import { ParsedGraphQLError } from '../../utils/errors/parseGraphQLError';
+
+import { useOffers } from './useOffers';
 
 /**
  * Hook pour détecter si l'application est en mode dégradé
@@ -15,20 +18,17 @@ export function useDegradedMode(): {
   parsedError: ParsedGraphQLError | null;
 } {
   const chainId = useChainId();
-  const { address: account } = useAccount();
+  const { address: account, canFetch } = useWalletGate();
   const { offersAreLoading, isError, parsedError } = useOffers();
 
   const degradedMode = useMemo(() => {
-    // Ne pas considérer comme dégradé si on n'a pas encore de connexion
-    if (!chainId || !account) {
+    if (!canFetch || !chainId || !account) {
       return {
         isDegraded: false,
         parsedError: null,
       };
     }
 
-    // Mode dégradé si :
-    // 1. Il y a une erreur lors du chargement des offres
     if (isError && parsedError) {
       return {
         isDegraded: true,
@@ -39,7 +39,6 @@ export function useDegradedMode(): {
       };
     }
 
-    // Si erreur mais pas parsée, on considère quand même comme dégradé
     if (isError) {
       return {
         isDegraded: true,
@@ -52,7 +51,7 @@ export function useDegradedMode(): {
       isDegraded: false,
       parsedError: null,
     };
-  }, [isError, offersAreLoading, parsedError, chainId, account]);
+  }, [account, canFetch, chainId, isError, offersAreLoading, parsedError]);
 
   return degradedMode;
 }

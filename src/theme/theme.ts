@@ -4,15 +4,26 @@ export const modalStyles: ModalProps['styles'] = {
   header: { justifyContent: 'center' },
   body: {
     padding: '1rem',
-    width: "auto",
-    maxWidth: "700px",
+    width: 'auto',
+    maxWidth: 'min(96vw, 36rem)',
+    maxHeight: 'min(95vh, 860px)',
+    overflowY: 'auto',
   },
   root: { zIndex: 10 },
   overlay: { zIndex: 10 },
-  inner: { zIndex: 10 },
+  inner: {
+    zIndex: 10,
+    paddingTop: '1rem',
+    paddingBottom:
+      'max(1.25rem, calc(1rem + env(safe-area-inset-bottom, 0px)))',
+    alignItems: 'center',
+  },
   content: {
-    maxHeight: '95%',
-  }
+    width: 'auto',
+    maxWidth: 'min(96vw, 36rem)',
+    maxHeight: 'min(95vh, 900px)',
+    overflow: 'visible',
+  },
 };
 
 export const theme = createTheme({

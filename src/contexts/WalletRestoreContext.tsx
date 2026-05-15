@@ -7,11 +7,30 @@ import {
   type ReactNode,
 } from 'react';
 
+import {
+  clearExplicitDisconnect as clearExplicitDisconnectStorage,
+  clearUserInitiatedConnect,
+  hasExplicitDisconnect,
+  hasStoredWalletSession,
+  hasUserInitiatedConnect,
+  markUserInitiatedConnect as markUserInitiatedConnectStorage,
+  setExplicitDisconnect as setExplicitDisconnectStorage,
+} from 'src/utils/walletSessionStorage';
+
 type WalletRestoreContextValue = {
   isYamRestoring: boolean;
   setYamRestoring: (value: boolean) => void;
   markRestoreAttempted: () => void;
+  markRestoreSucceeded: () => void;
   hasAttemptedRestore: boolean;
+  isRestoreComplete: boolean;
+  isUserDisconnecting: boolean;
+  beginUserDisconnect: () => void;
+  endUserDisconnect: () => void;
+  markUserInitiatedConnect: () => void;
+  explicitDisconnect: boolean;
+  userInitiatedConnect: boolean;
+  clearExplicitDisconnect: () => void;
 };
 
 const WalletRestoreContext = createContext<WalletRestoreContextValue | null>(
@@ -19,12 +38,52 @@ const WalletRestoreContext = createContext<WalletRestoreContextValue | null>(
 );
 
 export function WalletRestoreProvider({ children }: { children: ReactNode }) {
-  const [isYamRestoring, setYamRestoring] = useState(true);
+  const [isYamRestoring, setYamRestoring] = useState(hasStoredWalletSession);
   const [hasAttemptedRestore, setHasAttemptedRestore] = useState(false);
+  const [isRestoreComplete, setIsRestoreComplete] = useState(
+    () => !hasStoredWalletSession()
+  );
+  const [isUserDisconnecting, setIsUserDisconnecting] = useState(false);
+  const [explicitDisconnect, setExplicitDisconnectState] = useState(
+    () => hasExplicitDisconnect()
+  );
+  const [userInitiatedConnect, setUserInitiatedConnectState] = useState(
+    () => hasUserInitiatedConnect()
+  );
 
   const markRestoreAttempted = useCallback(() => {
     setHasAttemptedRestore(true);
     setYamRestoring(false);
+    setIsRestoreComplete(true);
+  }, []);
+
+  const markRestoreSucceeded = useCallback(() => {
+    setHasAttemptedRestore(true);
+    setYamRestoring(false);
+    setIsRestoreComplete(true);
+  }, []);
+
+  const beginUserDisconnect = useCallback(() => {
+    setIsUserDisconnecting(true);
+    clearUserInitiatedConnect();
+    setUserInitiatedConnectState(false);
+    setExplicitDisconnectStorage();
+    setExplicitDisconnectState(true);
+    setIsRestoreComplete(true);
+  }, []);
+
+  const endUserDisconnect = useCallback(() => {
+    setIsUserDisconnecting(false);
+  }, []);
+
+  const markUserInitiatedConnect = useCallback(() => {
+    markUserInitiatedConnectStorage();
+    setUserInitiatedConnectState(true);
+  }, []);
+
+  const clearExplicitDisconnect = useCallback(() => {
+    clearExplicitDisconnectStorage();
+    setExplicitDisconnectState(false);
   }, []);
 
   const value = useMemo(
@@ -32,9 +91,31 @@ export function WalletRestoreProvider({ children }: { children: ReactNode }) {
       isYamRestoring,
       setYamRestoring,
       markRestoreAttempted,
+      markRestoreSucceeded,
       hasAttemptedRestore,
+      isRestoreComplete,
+      isUserDisconnecting,
+      beginUserDisconnect,
+      endUserDisconnect,
+      markUserInitiatedConnect,
+      explicitDisconnect,
+      userInitiatedConnect,
+      clearExplicitDisconnect,
     }),
-    [hasAttemptedRestore, isYamRestoring, markRestoreAttempted]
+    [
+      beginUserDisconnect,
+      clearExplicitDisconnect,
+      endUserDisconnect,
+      explicitDisconnect,
+      hasAttemptedRestore,
+      isRestoreComplete,
+      isUserDisconnecting,
+      isYamRestoring,
+      markRestoreAttempted,
+      markRestoreSucceeded,
+      markUserInitiatedConnect,
+      userInitiatedConnect,
+    ]
   );
 
   return (

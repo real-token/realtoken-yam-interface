@@ -1,7 +1,7 @@
 import { useIsFetching } from '@tanstack/react-query';
 import { useChainId } from 'wagmi';
 
-import { useConnectedAccount } from '../useConnectedAccount';
+import { useWalletGate } from 'src/wallet/useWalletGate';
 
 /**
  * Indique si les données marché (offres, propriétés, prix, WL) sont en cours de chargement.
@@ -10,7 +10,7 @@ import { useConnectedAccount } from '../useConnectedAccount';
  */
 export function useMarketDataLoading(): boolean {
   const chainId = useChainId();
-  const { address: account } = useConnectedAccount();
+  const { address: account, canFetch } = useWalletGate();
 
   const offersFetching = useIsFetching({
     queryKey: ['offers', chainId, account],
@@ -23,7 +23,7 @@ export function useMarketDataLoading(): boolean {
     queryKey: ['wlProperties', chainId, account],
   });
 
-  if (!account) return false;
+  if (!canFetch || !account) return false;
 
   return (
     offersFetching > 0 ||

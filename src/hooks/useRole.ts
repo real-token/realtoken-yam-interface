@@ -1,7 +1,7 @@
 import { useCurrentNetwork } from '@real-token/core';
 import { useQuery } from '@tanstack/react-query';
 import { createPublicClient, http, type Chain } from 'viem';
-import { useConnectedAccount } from 'src/hooks/useConnectedAccount';
+import { useWalletGate } from 'src/wallet/useWalletGate';
 
 import { ROLE, USER_ROLE } from 'src/types/admin';
 import { parseChainId } from 'src/utils/chainId';
@@ -32,7 +32,7 @@ type UseRole = (address?: string) => {
 };
 
 export const useRole: UseRole = (address) => {
-  const { address: account } = useConnectedAccount();
+  const { address: account, canFetch } = useWalletGate();
   const addressToCheck = address ?? account;
   const networkConfig = useCurrentNetwork<ExtendedChainConfig>();
 
@@ -81,7 +81,7 @@ export const useRole: UseRole = (address) => {
   const { data, isPending } = useQuery({
     queryKey: ['role', addressToCheck, networkConfig?.chainId],
     queryFn: getAddressRole,
-    enabled: Boolean(addressToCheck && networkConfig),
+    enabled: Boolean(canFetch && addressToCheck && networkConfig),
     staleTime: 10 * 60 * 1000,
     retry: 1,
   });

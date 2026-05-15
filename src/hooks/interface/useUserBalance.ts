@@ -3,7 +3,9 @@ import { useCurrentNetwork } from '@real-token/core';
 import { useQuery } from '@tanstack/react-query';
 
 import BigNumber from 'bignumber.js';
-import { useAccount, useChainId } from 'wagmi';
+import { useChainId } from 'wagmi';
+
+import { useWalletGate } from 'src/wallet/useWalletGate';
 
 import { ExtendedChainConfig } from '../../config/aaConfig';
 import { REACT_QUERY_ERRORS } from '../../types/ReactQueryErrors';
@@ -16,7 +18,7 @@ type UseUserBalance = () => {
 };
 export const useUserBalance: UseUserBalance = () => {
   const chainId = useChainId();
-  const { address: account } = useAccount();
+  const { address: account, canFetch } = useWalletGate();
 
   const networkConfig = useCurrentNetwork<ExtendedChainConfig>();
 
@@ -27,7 +29,7 @@ export const useUserBalance: UseUserBalance = () => {
   } = useQuery({
     queryKey: ['userBalances', chainId, account],
     meta: { errCode: REACT_QUERY_ERRORS.FETCH_USER_BALANCES },
-    enabled: !!chainId && !!account && !!networkConfig,
+    enabled: canFetch && !!chainId && !!account && !!networkConfig,
     queryFn: async (): Promise<UserBalances> => {
       if (!chainId || !account || !networkConfig) return {};
 

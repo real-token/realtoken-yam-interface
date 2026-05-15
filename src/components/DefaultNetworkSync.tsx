@@ -5,15 +5,13 @@ import {
   useNetworksConfig,
   useRealTokenUIConfig,
 } from '@real-token/core';
-import { useWeb3Auth } from '@web3auth/modal/react';
 import { useConfig, useChainId } from 'wagmi';
 
 import { gnosisChainId } from 'src/config/aaConfig';
-import {
-  WEB3AUTH_CONNECTOR_ID,
-  useAppSwitchChain,
-} from 'src/hooks/useAppSwitchChain';
+import { WEB3AUTH_CONNECTOR_ID } from 'src/hooks/useAppSwitchChain';
 import { useConnectedAccount } from 'src/hooks/useConnectedAccount';
+import { useWalletRestoreContext } from 'src/contexts/WalletRestoreContext';
+import { useWalletGate } from 'src/wallet/useWalletGate';
 import { parseChainId } from 'src/utils/chainId';
 import {
   getStoredChainId,
@@ -36,19 +34,24 @@ function resolveTargetChainId(
 }
 
 /**
- * Restaure la chaîne mémorisée une seule fois après F5 (pas à chaque changement manuel).
- * Wallet AA : toujours Gnosis. Portefeuilles externes : dernière chaîne choisie (ETH ou Gnosis).
+ * Aligne la chaîne wagmi uniquement pour les wallets AA (Gnosis).
+ * Wallets externes : ne rien toucher au boot — switch via sélecteur / bannière.
  */
 export function DefaultNetworkSync() {
   const { defaultNetworkId, showNetworks } = useRealTokenUIConfig();
   const networks = useNetworksConfig(showNetworks);
   const wagmiConfig = useConfig();
   const chainId = useChainId();
-  const { switchChain } = useAppSwitchChain();
-  const { address, connector, isAaCoreSynced } = useConnectedAccount();
-  const { isInitialized } = useWeb3Auth();
+  const {
+    liveAddress,
+    connector,
+    isAaCoreSynced,
+    isWagmiConnected,
+  } = useConnectedAccount();
+  const { isRestoreComplete } = useWalletRestoreContext();
+  const { walletKind } = useWalletGate();
   const modalsState = useModals();
-  const pendingInitialRestoreRef = useRef(true);
+  const initialChainSyncedRef = useRef(false);
 
   const isConnectModalOpen = modalsState.modals.some(
     (modal) =>
@@ -57,7 +60,9 @@ export function DefaultNetworkSync() {
   );
 
   const isAaWallet =
-    connector?.id === WEB3AUTH_CONNECTOR_ID || isAaCoreSynced;
+    walletKind === 'aa' ||
+    connector?.id === WEB3AUTH_CONNECTOR_ID ||
+    isAaCoreSynced;
   const gnosisChainIdNum = parseChainId(gnosisChainId);
   const targetChainId = isAaWallet
     ? gnosisChainIdNum
@@ -65,65 +70,30 @@ export function DefaultNetworkSync() {
 
   useEffect(() => {
     if (isConnectModalOpen) return;
-
-    if (chainId === targetChainId) {
-      pendingInitialRestoreRef.current = false;
+    if (!isRestoreComplete) return;
+    if (!liveAddress || !isWagmiConnected) return;
+    if (initialChainSyncedRef.current) return;
+    if (!isAaWallet) {
+      initialChainSyncedRef.current = true;
       return;
     }
 
-    if (!pendingInitialRestoreRef.current) return;
-
-    const enforce = () => {
-      void switchChain({ chainId: targetChainId }).catch((error) => {
-        console.warn('[YAM] Restauration du réseau mémorisé :', error);
-      });
-    };
-
-    if (!isInitialized) {
+    if (chainId !== targetChainId) {
+      setStoredChainId(targetChainId);
       wagmiConfig.setState((state) => ({ ...state, chainId: targetChainId }));
     }
 
-    enforce();
-    const retryTimer = window.setTimeout(enforce, 400);
-    const retryAfterWallet = window.setTimeout(() => {
-      enforce();
-      pendingInitialRestoreRef.current = false;
-    }, 1200);
-
-    return () => {
-      window.clearTimeout(retryTimer);
-      window.clearTimeout(retryAfterWallet);
-    };
+    initialChainSyncedRef.current = true;
   }, [
-    address,
     chainId,
     isAaWallet,
     isConnectModalOpen,
-    isInitialized,
-    switchChain,
+    isRestoreComplete,
+    isWagmiConnected,
+    liveAddress,
     targetChainId,
     wagmiConfig,
   ]);
-
-  useEffect(() => {
-    if (!pendingInitialRestoreRef.current) return;
-    if (!address || isConnectModalOpen) return;
-    if (chainId === targetChainId) {
-      pendingInitialRestoreRef.current = false;
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      void switchChain({ chainId: targetChainId }).catch((error) => {
-        console.warn(
-          '[YAM] Ré-alignement réseau après connexion portefeuille :',
-          error
-        );
-      });
-    }, 600);
-
-    return () => window.clearTimeout(timer);
-  }, [address, chainId, isConnectModalOpen, switchChain, targetChainId]);
 
   return null;
 }

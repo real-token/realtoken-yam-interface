@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { useChainId } from 'wagmi';
 
-import { useConnectedAccount } from '../useConnectedAccount';
+import { useWalletGate } from 'src/wallet/useWalletGate';
 import { REACT_QUERY_ERRORS } from '../../types/ReactQueryErrors';
 import { Price } from '../../types/price';
 import { fetchAssetPrices } from '../../utils/fetchAssetPrices';
@@ -13,12 +13,12 @@ type UsePrices = () => {
 };
 export const usePrices: UsePrices = () => {
   const chainId = useChainId();
-  const { address: account } = useConnectedAccount();
+  const { address: account, canFetch } = useWalletGate();
 
   const { isLoading: pricesAreLoading, data: prices } = useQuery({
     queryKey: ['prices', chainId],
     meta: { errCode: REACT_QUERY_ERRORS.FETCH_PRICES },
-    enabled: !!chainId && !!account,
+    enabled: canFetch && !!chainId && !!account,
     staleTime: 5 * 60 * 1000,
     queryFn: async (): Promise<Price> => {
       if (!chainId) return {};

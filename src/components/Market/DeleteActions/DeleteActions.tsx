@@ -9,13 +9,15 @@ import { Offer } from 'src/types/offer/Offer';
 
 import { useCanSignTransactions } from '../../../hooks/useCanSignTransactions';
 import { useOffers } from '../../../hooks/interface/useOffers';
+import { useWalletGate } from 'src/wallet/useWalletGate';
 
 type DeleteActions = {
   deleteOffer: Offer;
 };
 
 export const DeleteActions: FC<DeleteActions> = ({ deleteOffer }) => {
-  const { canSign } = useCanSignTransactions();
+  const { isWalletReady } = useCanSignTransactions();
+  const { isRestoring } = useWalletGate();
   const modals = useModals();
 
   const { refetch: refreshOffers } = useOffers();
@@ -49,8 +51,9 @@ export const DeleteActions: FC<DeleteActions> = ({ deleteOffer }) => {
         <ActionIcon
           color={'red'}
           variant={'filled'}
+          disabled={isRestoring}
           onClick={() =>
-            canSign ? onOpenDeleteModal(deleteOffer) : onOpenWalletModal()
+            isWalletReady ? onOpenDeleteModal(deleteOffer) : onOpenWalletModal()
           }
         >
           <IconTrash size={16} />

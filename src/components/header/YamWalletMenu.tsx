@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { Button, Menu } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
-import { useAA } from '@real-token/aa-core';
 import { useCurrentNetwork } from '@real-token/core';
 import {
   IconChevronDown,
@@ -12,12 +11,10 @@ import {
   IconExternalLink,
   IconLogout,
 } from '@tabler/icons-react';
-import { useConfig } from 'wagmi';
-
 import type { ExtendedChainConfig } from 'src/config/aaConfig';
-import { useConnectedAccount } from 'src/hooks/useConnectedAccount';
+import { useWalletGate } from 'src/wallet/useWalletGate';
+import { useDisconnectWallet } from 'src/hooks/useDisconnectWallet';
 import { shortenString } from 'src/utils';
-import { disconnectWallet } from 'src/utils/disconnectWallet';
 
 /**
  * Menu portefeuille pour connexion wagmi sans walletAddress aa-core synchronisé.
@@ -25,9 +22,8 @@ import { disconnectWallet } from 'src/utils/disconnectWallet';
  */
 export function YamWalletMenu() {
   const { t } = useTranslation('common', { keyPrefix: 'wallet' });
-  const { address } = useConnectedAccount();
-  const { logout } = useAA();
-  const wagmiConfig = useConfig();
+  const { address } = useWalletGate();
+  const disconnect = useDisconnectWallet();
   const networkConfig = useCurrentNetwork<ExtendedChainConfig>();
   const [isOpen, handlers] = useDisclosure(false);
 
@@ -59,13 +55,13 @@ export function YamWalletMenu() {
   };
 
   const handleDisconnect = async () => {
-    await disconnectWallet(wagmiConfig, logout);
+    await disconnect();
     handlers.close();
   };
 
   return (
     <Menu
-      closeOnItemClick
+      closeOnItemClick={false}
       opened={isOpen}
       onOpen={handlers.open}
       onClose={handlers.close}

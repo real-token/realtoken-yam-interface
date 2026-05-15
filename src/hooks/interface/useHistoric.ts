@@ -1,7 +1,9 @@
 import { useCurrentNetwork } from '@real-token/core';
 import { useQuery } from '@tanstack/react-query';
 
-import { useAccount, useChainId } from 'wagmi';
+import { useChainId } from 'wagmi';
+
+import { useWalletGate } from 'src/wallet/useWalletGate';
 
 import { ExtendedChainConfig } from '../../config/aaConfig';
 import { REACT_QUERY_ERRORS } from '../../types/ReactQueryErrors';
@@ -14,7 +16,7 @@ type UseHistoric = () => {
   isError: boolean;
 };
 export const useHistoric: UseHistoric = () => {
-  const { address: account } = useAccount();
+  const { address: account, canFetch } = useWalletGate();
   const chainId = useChainId();
 
   const network = useCurrentNetwork<ExtendedChainConfig>();
@@ -27,7 +29,7 @@ export const useHistoric: UseHistoric = () => {
   } = useQuery({
     queryKey: ['historics', chainId, account],
     meta: { errCode: REACT_QUERY_ERRORS.FETCH_HISTORICS },
-    enabled: !!chainId && !!account && !!network,
+    enabled: canFetch && !!chainId && !!account && !!network,
     queryFn: async () => {
       if (!chainId || !account || !network) return [];
 

@@ -1,1 +1,0 @@
-export { WagmiFallbackWalletModal } from './WagmiFallbackWalletModal';

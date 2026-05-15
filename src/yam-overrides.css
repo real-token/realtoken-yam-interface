@@ -19,3 +19,40 @@
   width: auto !important;
   min-width: min(100%, 14rem);
 }
+
+/*
+ * Drawer QR WalletConnect (@real-token/aa-modal) : panneau centré, sans ascenseur.
+ * Styles YAM uniquement — pas de modification dans node_modules.
+ */
+[class*='CustomDrawer-module__wrapper'][data-state='open'] {
+  justify-content: center !important;
+  align-items: center !important;
+  /* Marge bas : évite découpe footer / safe-area (H1 overflow) */
+  padding: 1rem 1rem max(1.75rem, env(safe-area-inset-bottom, 0px)) !important;
+  overflow: visible !important;
+}
+
+[class*='CustomDrawer-module__wrapper'][data-state='open']
+  [class*='CustomDrawer-module__drawer'] {
+  transform: none !important;
+  border-radius: var(--mantine-radius-md) !important;
+  height: auto !important;
+  max-height: none !important;
+  width: min(100%, 30rem) !important;
+  margin-bottom: max(0.25rem, env(safe-area-inset-bottom, 0px)) !important;
+}
+
+[class*='CustomDrawer-module__content'] {
+  max-height: none !important;
+  overflow: visible !important;
+  padding: 1rem 1.25rem max(1.25rem, env(safe-area-inset-bottom, 0px)) !important;
+}
+
+/*
+ * H2 : overflow:hidden sur le body modale pouvait tronquer le bas du panneau QR.
+ * On laisse le scroll au contenu si besoin plutôt que de clipper (double scroll marginal).
+ */
+body:has([class*='CustomDrawer-module__wrapper'][data-state='open']) .mantine-Modal-body {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}

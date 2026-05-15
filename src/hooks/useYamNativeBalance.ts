@@ -11,7 +11,7 @@ import {
 } from 'viem';
 
 import type { ExtendedChainConfig } from 'src/config/aaConfig';
-import { useConnectedAccount } from 'src/hooks/useConnectedAccount';
+import { useWalletGate } from 'src/wallet/useWalletGate';
 import { parseChainId } from 'src/utils/chainId';
 
 const GNOSIS_FALLBACK_RPC = 'https://gnosis-rpc.publicnode.com';
@@ -86,15 +86,17 @@ export function useYamNativeBalance() {
   const {
     wagmiAddress,
     walletAddress,
+    liveAddress,
     isWagmiConnected,
     isWatching,
-  } = useConnectedAccount();
+    canFetch,
+  } = useWalletGate();
   const currentNetwork = useCurrentNetwork<ExtendedChainConfig>();
 
   const balanceAddress = resolveBalanceAddress({
-    wagmiAddress,
+    wagmiAddress: wagmiAddress ?? liveAddress,
     walletAddress,
-    isWagmiConnected,
+    isWagmiConnected: isWagmiConnected || Boolean(liveAddress),
     isWatching,
   });
 
@@ -116,7 +118,7 @@ export function useYamNativeBalance() {
         symbol: currentNetwork.ticker,
       };
     },
-    enabled: Boolean(balanceAddress && currentNetwork?.rpcTarget),
+    enabled: canFetch && Boolean(balanceAddress && currentNetwork?.rpcTarget),
     refetchInterval: 30_000,
     retry: 1,
   });

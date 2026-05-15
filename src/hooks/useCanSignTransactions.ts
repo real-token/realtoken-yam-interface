@@ -1,45 +1,32 @@
-import { useConnections, useConnectors } from 'wagmi';
-
-import { useConnectedAccount } from 'src/hooks/useConnectedAccount';
+import { useWalletGate } from 'src/wallet/useWalletGate';
 
 /**
- * Indique si l’utilisateur peut envoyer une transaction signée (pas le mode lecture seule).
- * aa-core exige un connecteur wagmi actif ; une adresse « watch » ne suffit pas.
+ * Indique si l'utilisateur peut envoyer une transaction signée (pas le mode lecture seule).
  */
 export function useCanSignTransactions() {
   const {
     address,
     wagmiAddress,
-    isWagmiConnected,
+    canSign,
+    canFetch,
     isWatching,
     connector,
-  } = useConnectedAccount();
-  const connections = useConnections();
-  const connectors = useConnectors();
+    liveAddress,
+  } = useWalletGate();
 
   const isReadOnlyConnector = connector?.id === 'readOnly';
-  const hasSignableConnection = connections.some(
-    (connection) =>
-      connection.connector.id !== 'readOnly' && connection.accounts.length > 0
-  );
-  const hasAaCoreConnector =
-    Boolean(connectors[0]) || Boolean(connections[0]?.connector);
-
-  const canSign = Boolean(
-    wagmiAddress &&
-      isWagmiConnected &&
-      !isWatching &&
-      !isReadOnlyConnector &&
-      hasSignableConnection &&
-      hasAaCoreConnector
-  );
+  const isWalletReady = canSign;
 
   return {
     address,
     wagmiAddress,
+    liveAddress,
     canSign,
+    isWalletReady,
+    isSessionPlaceholder: false,
     isWatching,
     isReadOnlyConnector,
-    hasSignableConnection,
+    hasSignableConnection: canSign,
+    canFetch,
   };
 }

@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { useChainId } from 'wagmi';
 
-import { useConnectedAccount } from '../useConnectedAccount';
+import { useWalletGate } from 'src/wallet/useWalletGate';
 import { getExtendedTokens } from '../../constants/GetPriceToken';
 import { REACT_QUERY_ERRORS } from '../../types/ReactQueryErrors';
 import { apiClient } from '../../utils/offers/apiClient';
@@ -85,7 +85,7 @@ type UseProperties = () => {
 };
 export const useProperties: UseProperties = () => {
   const chainId = useChainId();
-  const { address: account } = useConnectedAccount();
+  const { address: account, canFetch } = useWalletGate();
 
   const {
     isLoading,
@@ -93,7 +93,7 @@ export const useProperties: UseProperties = () => {
   } = useQuery({
     queryKey: ['properties', chainId],
     meta: { errCode: REACT_QUERY_ERRORS.FETCH_PROPERTIES },
-    enabled: !!chainId && !!account,
+    enabled: canFetch && !!chainId && !!account,
     staleTime: 5 * 60 * 1000,
     queryFn: async (): Promise<PropertiesToken[]> => {
       if (!chainId) return [];

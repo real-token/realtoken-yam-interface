@@ -4,6 +4,8 @@ import { switchChain as wagmiCoreSwitchChain } from '@wagmi/core';
 import { useWeb3Auth } from '@web3auth/modal/react';
 import { useAccount, useConfig } from 'wagmi';
 
+import { gnosisChainId } from 'src/config/aaConfig';
+import { useWalletGate } from 'src/wallet/useWalletGate';
 import { parseChainId, toChainIdHex } from 'src/utils/chainId';
 import { setStoredChainId } from 'src/utils/storedChainPreference';
 
@@ -36,16 +38,31 @@ export function useAppSwitchChain() {
   const wagmiConfig = useConfig();
   const { web3Auth } = useWeb3Auth();
   const { connector, isConnected } = useAccount();
+  const { walletKind } = useWalletGate();
 
   const switchChain = useCallback(
-    async ({ chainId: chainIdInput }: { chainId: number | string }) => {
-      const chainId = parseChainId(chainIdInput);
+    async ({
+      chainId: chainIdInput,
+      skipProviderSwitch = false,
+    }: {
+      chainId: number | string;
+      skipProviderSwitch?: boolean;
+    }) => {
+      let chainId = parseChainId(chainIdInput);
+      const gnosisChainIdNum = parseChainId(gnosisChainId);
+
+      if (
+        (walletKind === 'aa' || walletKind === 'watch') &&
+        chainId !== gnosisChainIdNum
+      ) {
+        chainId = gnosisChainIdNum;
+      }
       const chainIdHex = toChainIdHex(chainId);
       const isChainInWagmiConfig = wagmiConfig.chains.some((c) => c.id === chainId);
 
       setStoredChainId(chainId);
 
-      if (isConnected && connector) {
+      if (!skipProviderSwitch && isConnected && connector) {
         try {
           const provider = await connector.getProvider();
           if (provider) {
@@ -54,7 +71,7 @@ export function useAppSwitchChain() {
         } catch {
           // L’extension peut refuser ; wagmi ci-dessous applique quand même le réseau côté app
         }
-      } else if (web3Auth?.provider) {
+      } else if (!skipProviderSwitch && web3Auth?.provider) {
         try {
           await switchChainViaProvider(web3Auth.provider, chainIdHex);
         } catch {
@@ -75,7 +92,7 @@ export function useAppSwitchChain() {
 
       wagmiConfig.setState((state) => ({ ...state, chainId }));
     },
-    [wagmiConfig, web3Auth, isConnected, connector]
+    [wagmiConfig, web3Auth, isConnected, connector, walletKind]
   );
 
   return { switchChain, isPending: false };

@@ -2,7 +2,9 @@ import { useQuery } from '@tanstack/react-query';
 import { readContract } from '@wagmi/core';
 
 import { Address } from 'viem';
-import { useAccount, useConfig } from 'wagmi';
+import { useConfig } from 'wagmi';
+
+import { useWalletGate } from 'src/wallet/useWalletGate';
 
 import { Erc20ABI } from 'src/abis';
 import { PropertiesToken } from 'src/types';
@@ -17,7 +19,7 @@ type UseCreatedOffer = (createdOffer: CreatedOffer | undefined) => {
 
 export const useCreatedOffer: UseCreatedOffer = (createdOffer) => {
   const { propertiesToken } = usePropertiesToken();
-  const { address: account } = useAccount();
+  const { address: account, canFetch } = useWalletGate();
 
   const config = useConfig();
 
@@ -28,6 +30,8 @@ export const useCreatedOffer: UseCreatedOffer = (createdOffer) => {
       createdOffer?.buyerTokenAddress,
     ],
     enabled:
+      canFetch &&
+      !!account &&
       !!createdOffer?.offerTokenAddress &&
       !!createdOffer?.buyerTokenAddress &&
       !!propertiesToken,

@@ -3,22 +3,16 @@ import { useTranslation } from 'react-i18next';
 import { Flex, Loader, Text } from '@mantine/core';
 import { IconWalletOff } from '@tabler/icons-react';
 
-import { useConnectedAccount } from 'src/hooks/useConnectedAccount';
-import { useWalletRestoreState } from 'src/hooks/useWalletRestoreState';
+import { useWalletGate } from 'src/wallet/useWalletGate';
 
 interface ConnectedProviderProps {
   children: React.ReactNode;
 }
 export const ConnectedProvider = ({ children }: ConnectedProviderProps) => {
-  const { address } = useConnectedAccount();
-  const { isRestoring } = useWalletRestoreState();
+  const { status } = useWalletGate();
   const { t } = useTranslation('common', { keyPrefix: 'general' });
 
-  if (address) {
-    return <>{children}</>;
-  }
-
-  if (isRestoring) {
+  if (status === 'restoring' || status === 'disconnecting') {
     return (
       <Flex
         style={{ width: '100%', height: '100%' }}
@@ -28,10 +22,16 @@ export const ConnectedProvider = ({ children }: ConnectedProviderProps) => {
       >
         <Loader size="md" />
         <Text fw={700} fz="xl">
-          {t('reconnecting')}
+          {status === 'disconnecting'
+            ? t('disconnecting', { defaultValue: t('reconnecting') })
+            : t('reconnecting')}
         </Text>
       </Flex>
     );
+  }
+
+  if (status === 'connected') {
+    return <>{children}</>;
   }
 
   return (

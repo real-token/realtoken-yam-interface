@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { useChainId } from 'wagmi';
 
-import { useConnectedAccount } from '../useConnectedAccount';
+import { useWalletGate } from 'src/wallet/useWalletGate';
 import { REACT_QUERY_ERRORS } from '../../types/ReactQueryErrors';
 import { OFFER_LOADING, Offer } from '../../types/offer';
 import {
@@ -25,7 +25,7 @@ type UseOffers = () => {
   refetch: () => void;
 };
 export const useOffers: UseOffers = () => {
-  const { address: account } = useConnectedAccount();
+  const { address: account, canFetch } = useWalletGate();
   const chainId = useChainId();
 
   const { properties, propertiesAreLoading } = useProperties();
@@ -42,6 +42,7 @@ export const useOffers: UseOffers = () => {
     queryKey: ['offers', chainId, account],
     meta: { errCode: REACT_QUERY_ERRORS.FETCH_OFFERS },
     enabled:
+      canFetch &&
       !!chainId &&
       !!account &&
       !!properties &&

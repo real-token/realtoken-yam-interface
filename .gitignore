@@ -51,3 +51,4 @@ api/**/*.js
 
 .cursor/debug-*.log
 scripts/debug-github-packages-auth.mjs
+.claude
