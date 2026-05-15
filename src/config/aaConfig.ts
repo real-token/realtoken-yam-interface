@@ -5,7 +5,10 @@ import { EthereumLogo, GnosisLogo } from '@real-token/ui-components';
 
 import { Address } from 'viem';
 
+import { resolveWeb3AuthNetwork } from 'src/config/web3AuthEnv';
+
 const env = import.meta.env.VITE_NODE_ENV ?? 'production';
+const web3AuthNetwork = resolveWeb3AuthNetwork();
 
 const sepoliaWssUrl = import.meta.env.VITE_SEPOLIA_WSS_URL;
 const sepoliaRpcUrl = import.meta.env.VITE_SEPOLIA_RPC_URL;
@@ -425,10 +428,7 @@ export const aaClient: AAClientConfig = {
   },
   web3auth: {
     apiKey: web3AuthApiKey,
-    network:
-      env === 'development' || env == 'local' || env == 'testnet'
-        ? 'sapphire_devnet'
-        : 'sapphire_mainnet' /* Network of your web3auth project */,
+    network: web3AuthNetwork,
     uxMode: 'redirect',
   },
   chainId: 100, // Gnosis (défaut au premier chargement)

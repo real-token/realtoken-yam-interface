@@ -1,3 +1,10 @@
+export type Web3AuthSapphireNetwork = 'sapphire_devnet' | 'sapphire_mainnet';
+
+const WEB3AUTH_SAPPHIRE_NETWORKS = new Set<Web3AuthSapphireNetwork>([
+  'sapphire_devnet',
+  'sapphire_mainnet',
+]);
+
 const WEB3AUTH_PLACEHOLDER_VALUES = new Set([
   '',
   'your_web3auth_api_key',
@@ -24,6 +31,27 @@ function parseEnvFlag(value: string | undefined): boolean | undefined {
   if (['true', '1', 'yes', 'on'].includes(normalized)) return true;
   if (['false', '0', 'no', 'off'].includes(normalized)) return false;
   return undefined;
+}
+
+/**
+ * Réseau Sapphire Web3Auth.
+ * Priorité : `VITE_WEB3AUTH_NETWORK` → sinon devnet si `VITE_NODE_ENV` est development/local/testnet.
+ */
+export function resolveWeb3AuthNetwork(): Web3AuthSapphireNetwork {
+  const override = import.meta.env.VITE_WEB3AUTH_NETWORK?.trim();
+  if (
+    override &&
+    WEB3AUTH_SAPPHIRE_NETWORKS.has(override as Web3AuthSapphireNetwork)
+  ) {
+    return override as Web3AuthSapphireNetwork;
+  }
+
+  const nodeEnv = import.meta.env.VITE_NODE_ENV ?? 'production';
+  return nodeEnv === 'development' ||
+    nodeEnv === 'local' ||
+    nodeEnv === 'testnet'
+    ? 'sapphire_devnet'
+    : 'sapphire_mainnet';
 }
 
 /** Client ID Web3Auth valide (pas un placeholder du .env.example). */
