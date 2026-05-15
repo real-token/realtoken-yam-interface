@@ -135,7 +135,7 @@ export const createOfferTransactions = async (
       }
     );
   } else {
-    // fake transaction deadline to make tx crash
+    // fake transaction deadline to make tx crash - will be set in prepareTransaction
     const transactionDeadline = Math.floor(Date.now() / 1000) - 3600;
     transactions.push(
       {
@@ -144,6 +144,9 @@ export const createOfferTransactions = async (
           if (!account) {
             throw new Error('Account is undefined');
           }
+
+          const realDeadline = Math.floor(Date.now() / 1000) + 3600; // 1h
+          context.transactionDeadline = realDeadline;
 
           const signatureType =
             offerTokenType == 1
@@ -155,7 +158,7 @@ export const createOfferTransactions = async (
             owner: account as `0x${string}`,
             spender: realTokenYamUpgradeableAddress,
             amount: new BigNumber(amount).toString(10),
-            deadline: transactionDeadline,
+            deadline: realDeadline,
             contractAddress: offer.offerTokenAddress as `0x${string}`,
             signatureKey: 'signature',
           };
@@ -167,9 +170,12 @@ export const createOfferTransactions = async (
             throw new Error('Offer price or amount is undefined');
           }
 
-          const { signature } = context;
+          const { signature, transactionDeadline: deadline } = context;
           if (!signature) {
             throw new Error('Permit signature is undefined');
+          }
+          if (!deadline) {
+            throw new Error('Transaction deadline is undefined');
           }
 
           const { v, r, s } = signature;
@@ -187,7 +193,7 @@ export const createOfferTransactions = async (
                 BigInt(new BigNumber(offer.price).toString(10)),
                 BigInt(new BigNumber(amount).toString(10)),
                 BigInt(new BigNumber(amount).toString(10)),
-                BigInt(transactionDeadline),
+                BigInt(deadline.toString()),
                 v,
                 r,
                 s,

@@ -24,13 +24,14 @@ export const ExchangeRateComputing = ({ form, exchangeOfferTokens, exchangeBuyer
     const exchangeOfferTokenSymbol = exchangeOfferTokens.find(value => value.value == values.offerTokenAddress)?.label;
     const exchangeBuyerTokenSymbol = exchangeBuyerToken.find(value => value.value == values.buyerTokenAddress)?.label;
 
+    // price = buyer tokens received per 1 offer token (same as on-chain `price` for createOffer)
     useEffect(() => {
-      if(price){
-        const p = (1/price).toFixed(6);
-        setFieldValue("price",p)
-        setChoosedPrice(Number(p))
+      if (price && price > 0) {
+        const p = Number(price).toFixed(6);
+        setFieldValue("price", p);
+        setChoosedPrice(Number(p));
       }
-    },[price]);
+    }, [price]);
 
     return (
         <Flex direction={"column"}>

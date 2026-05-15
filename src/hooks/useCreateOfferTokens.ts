@@ -31,24 +31,37 @@ export const useCreateOfferTokens: UseCreateOfferTokens = (offerType) => {
         if(!allowedTokens) return [];
         return allowedTokens.map((allowedBuyToken: AllowedToken) => ({value: allowedBuyToken.contractAddress.toLowerCase(), label: allowedBuyToken.symbol}))
     },[allowedTokens])
+
+    /** RealTokens + jetons autorisés, dédupliqués par adresse (offres EXCHANGE : les deux sens utilisent les deux listes). */
+    const allExchangeTokensForSelect: ComboboxItem[] = useMemo(() => {
+        const byAddress = new Map<string, ComboboxItem>();
+        for (const item of formatedPropetiesTokenForSelect) {
+            byAddress.set(item.value.toLowerCase(), item);
+        }
+        for (const item of formatedAllowTokensForSelect) {
+            const key = item.value.toLowerCase();
+            if (!byAddress.has(key)) {
+                byAddress.set(key, item);
+            }
+        }
+        return Array.from(byAddress.values());
+    }, [formatedPropetiesTokenForSelect, formatedAllowTokensForSelect]);
     
     const allowedBuyerTokensForSelect: ComboboxItem[] = useMemo((): ComboboxItem[] => {
-        if(!formatedAllowTokensForSelect || !formatedPropetiesTokenForSelect) return [];
-
         if(offerType == OFFER_TYPE.SELL) return formatedAllowTokensForSelect;
         if(offerType == OFFER_TYPE.BUY) return formatedPropetiesTokenForSelect;
+        if(offerType == OFFER_TYPE.EXCHANGE) return allExchangeTokensForSelect;
 
         return [];
-    },[formatedAllowTokensForSelect, formatedPropetiesTokenForSelect, offerType])
+    },[formatedAllowTokensForSelect, formatedPropetiesTokenForSelect, offerType, allExchangeTokensForSelect])
 
     const allowedOfferTokensForSelect: ComboboxItem[] = useMemo((): ComboboxItem[] => {
-        if(!formatedAllowTokensForSelect || !formatedPropetiesTokenForSelect) return [];
-
         if(offerType == OFFER_TYPE.SELL) return formatedPropetiesTokenForSelect;
         if(offerType == OFFER_TYPE.BUY) return formatedAllowTokensForSelect;
-        
+        if(offerType == OFFER_TYPE.EXCHANGE) return allExchangeTokensForSelect;
+
         return [];
-    },[formatedAllowTokensForSelect, formatedPropetiesTokenForSelect, offerType])
+    },[formatedAllowTokensForSelect, formatedPropetiesTokenForSelect, offerType, allExchangeTokensForSelect])
 
     return {
         allowedTokens: formatedAllowTokensForSelect,

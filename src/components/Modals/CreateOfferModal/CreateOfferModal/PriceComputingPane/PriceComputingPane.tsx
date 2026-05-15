@@ -7,6 +7,7 @@ import { useChoosenPrice } from '../../../../../hooks/useChoosenPrice';
 import { useEffect, useState } from 'react';
 import { PriceUnit, useCreateOfferContext } from '../CreateOfferContext';
 import BigNumber from 'bignumber.js';
+import { sellPriceInBuyerTokens } from '../../../../../utils/offers/sellPriceInBuyerTokens';
 import classes from './PriceComputingPane.module.css';
 
 function capitalizeFirstLetter(string: string) {
@@ -17,6 +18,7 @@ interface PriceComputingPaneProps{
     offer: CreatedOffer
     form: UseFormReturnType<SellFormValues>
 }
+
 export const PriceComputingPane = ({ offer, form }: PriceComputingPaneProps) => {
     const { values, setFieldValue } = form;
 
@@ -26,12 +28,19 @@ export const PriceComputingPane = ({ offer, form }: PriceComputingPaneProps) => 
     const { t: commonT } = useTranslation('modals', { keyPrefix: 'createOffer.common' });
 
     const {
-        offerTokenPrice, buyerTokenPrice, buyTokenSymbol, offerTokenSymbol, 
-        priceUnit, setPriceUnit, price, setChoosedPrice,
-        shieldError, maxPriceDifference, priceDifference
+        offerTokenPrice, buyerTokenPrice, buyTokenSymbol, offerTokenSymbol,
+        priceUnit, setPriceUnit, price,
+        shieldError, maxPriceDifference, priceDifference, setChoosedPrice
     } = useCreateOfferContext();
 
     const [internalPrice, setInternalPrice] = useState<string|undefined>(price);
+
+    const priceDecimalsSell =
+      offer.buyerTokenDecimal ?? offer.offerTokenDecimal ?? 18;
+    const numberInputDecimals =
+      offer.offerType === OFFER_TYPE.SELL && priceUnit === 'token'
+        ? priceDecimalsSell
+        : (offer.offerTokenDecimal ?? 6);
 
     // Price in $ depending  on "1:1 ratio" and "unitPrice"
     const choosedPriceDollar = useChoosenPrice(
@@ -45,12 +54,54 @@ export const PriceComputingPane = ({ offer, form }: PriceComputingPaneProps) => 
     useEffect(() => {
         setChoosedPrice(choosedPriceDollar);
         if(offer.offerType == OFFER_TYPE.BUY){
+            if (choosedPriceDollar === undefined || choosedPriceDollar === null) {
+              return;
+            }
             const p = choosedPriceDollar ? 1/choosedPriceDollar : 0;
             setFieldValue('price', new BigNumber(p).toFixed(offer.offerTokenDecimal ?? 6))
             return;
         }
-        setFieldValue('price', new BigNumber(choosedPriceDollar ?? 0).toPrecision(offer.offerTokenDecimal ?? 6))
-    },[choosedPriceDollar])
+        const priceBn = sellPriceInBuyerTokens(
+          priceUnit,
+          values.useBuyTokenPrice,
+          internalPrice,
+          choosedPriceDollar,
+          buyerTokenPrice
+        );
+        if (!priceBn) {
+          return;
+        }
+        setFieldValue('price', priceBn.toFixed(priceDecimalsSell));
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- setChoosedPrice / setFieldValue non stables depuis le provider
+    }, [
+        buyerTokenPrice,
+        choosedPriceDollar,
+        internalPrice,
+        offer.offerType,
+        priceDecimalsSell,
+        priceUnit,
+        values.useBuyTokenPrice,
+    ]);
+
+    // SELL: when switching $ <-> token, keep the same economic price in the input
+    useEffect(() => {
+        if (offer.offerType !== OFFER_TYPE.SELL) return;
+        const cp = values.choosedPrice;
+        if (
+          cp === undefined ||
+          cp === null ||
+          buyerTokenPrice === undefined ||
+          buyerTokenPrice <= 0
+        ) {
+          return;
+        }
+        if (priceUnit === 'token') {
+          setInternalPrice((cp / buyerTokenPrice).toString());
+        } else {
+          setInternalPrice(cp.toString());
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- only when unit toggles
+    }, [priceUnit]);
 
     return(
         <>
@@ -74,7 +125,7 @@ export const PriceComputingPane = ({ offer, form }: PriceComputingPaneProps) => 
                       label={t('price', { unit: priceUnit == 'token' ? buyTokenSymbol : '' })}
                       hideControls={true}
                       required={true}
-                      decimalScale={offer.offerTokenDecimal ?? 6}
+                      decimalScale={numberInputDecimals}
                       value={internalPrice}
                       onChange={(value) => setInternalPrice(value as string)}
                       error={form.errors.price}

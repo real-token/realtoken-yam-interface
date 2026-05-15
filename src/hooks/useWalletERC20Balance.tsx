@@ -21,6 +21,8 @@ interface TokenInfos {
 interface UseWalletERC20Balance {
   bigNumberbalance: BigNumber | undefined;
   balance: string | undefined;
+  /** Symbole ERC-20 (multicall), utile en repli si le label n'est pas dans les listes du formulaire */
+  erc20Symbol: string | undefined;
   WalletERC20Balance: any;
   isLoading: boolean;
 }
@@ -119,6 +121,7 @@ export const useWalletERC20Balance = (
     WalletERC20Balance: Component,
     bigNumberbalance: bigNumberbalance,
     balance: balance,
+    erc20Symbol: tokenSymbol,
     isLoading,
   };
 };

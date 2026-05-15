@@ -1,7 +1,10 @@
 .container {
     display: flex;
-    background-color: light-dark(var(--mantine-color-dark-5), var(--mantine-color-gray-1));
-    display: flex;
+    /* light-dark() : 1er = schéma clair, 2e = schéma sombre */
+    background-color: light-dark(
+        var(--mantine-color-gray-1),
+        var(--mantine-color-dark-6)
+    );
     width: 100%;
     gap: var(--mantine-radius-md);
     align-items: center;
@@ -20,9 +23,9 @@
 
 .balance {
     flex-grow: 1;
-    color: light-dark(white,black) !important;
+    color: var(--mantine-color-text);
 }
 
-.text{
-    color: light-dark(white,black) !important;
+.text {
+    color: var(--mantine-color-text);
 }

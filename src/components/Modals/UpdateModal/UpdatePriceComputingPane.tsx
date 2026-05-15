@@ -15,6 +15,7 @@ import BigNumber from 'bignumber.js';
 
 import { useChoosenPrice } from '../../../hooks/useChoosenPrice';
 import { OFFER_TYPE } from '../../../types/offer';
+import { sellPriceInBuyerTokens } from '../../../utils/offers/sellPriceInBuyerTokens';
 import classes from '../CreateOfferModal/CreateOfferModal/PriceComputingPane/PriceComputingPane.module.css';
 import { PriceUnit, useUpdateOfferContext } from './UpdateOfferContext';
 
@@ -86,28 +87,55 @@ export const UpdatePriceComputingPane = ({
     values.useBuyTokenPrice || false
   );
 
-  useEffect(() => {
-    if (choosedPriceDollar === undefined || choosedPriceDollar === null) return;
+  const priceDecimalsSell =
+    values.buyerTokenDecimals ?? values.offerTokenDecimals ?? 18;
+  const numberInputDecimals =
+    offer.type === OFFER_TYPE.SELL && priceUnit === 'token'
+      ? priceDecimalsSell
+      : (values.offerTokenDecimals ?? 18);
 
+  useEffect(() => {
     setChoosedPrice(choosedPriceDollar);
 
-    let newPriceString: string;
-    if (offer.type == OFFER_TYPE.BUY) {
+    if (offer.type === OFFER_TYPE.BUY) {
+      if (choosedPriceDollar === undefined || choosedPriceDollar === null)
+        return;
       const p = choosedPriceDollar ? 1 / choosedPriceDollar : 0;
-      newPriceString = new BigNumber(p).toFixed(values.offerTokenDecimals ?? 6);
-    } else {
-      newPriceString = new BigNumber(choosedPriceDollar ?? 0).toPrecision(
+      const newPriceString = new BigNumber(p).toFixed(
         values.offerTokenDecimals ?? 6
       );
+      const newPrice = parseFloat(newPriceString);
+      if (Math.abs(values.price - newPrice) > 0.000000001) {
+        setFieldValue('price', newPrice);
+      }
+      return;
     }
 
-    const newPrice = parseFloat(newPriceString);
-    // Only update if the value has actually changed to avoid infinite loops
+    const priceBn = sellPriceInBuyerTokens(
+      priceUnit,
+      values.useBuyTokenPrice ?? false,
+      internalPrice,
+      choosedPriceDollar,
+      buyerTokenPrice
+    );
+    if (!priceBn) return;
+
+    const newPrice = parseFloat(priceBn.toFixed(priceDecimalsSell));
     if (Math.abs(values.price - newPrice) > 0.000000001) {
       setFieldValue('price', newPrice);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [choosedPriceDollar]);
+  }, [
+    buyerTokenPrice,
+    choosedPriceDollar,
+    internalPrice,
+    offer.type,
+    priceDecimalsSell,
+    priceUnit,
+    values.offerTokenDecimals,
+    values.useBuyTokenPrice,
+    values.price,
+  ]);
 
   // Initialize internal price if empty
   useEffect(() => {
@@ -117,22 +145,33 @@ export const UpdatePriceComputingPane = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values.price]);
 
-  // Handle priceUnit change: convert internalPrice between dollar and token
+  // SELL: when switching $ <-> token, keep equivalent value in the input
   useEffect(() => {
-    if (!choosedPrice || !buyerTokenPrice || !internalPrice) return;
-
-    // When switching between dollar and token, convert the current value
+    if (offer.type !== OFFER_TYPE.SELL) {
+      if (!choosedPrice || !buyerTokenPrice || !internalPrice) return;
+      if (priceUnit === 'token') {
+        const priceInToken = choosedPrice / buyerTokenPrice;
+        setInternalPrice(priceInToken.toString());
+      } else {
+        setInternalPrice(choosedPrice.toString());
+      }
+      return;
+    }
+    if (
+      choosedPrice === undefined ||
+      choosedPrice === null ||
+      buyerTokenPrice === undefined ||
+      buyerTokenPrice <= 0
+    ) {
+      return;
+    }
     if (priceUnit === 'token') {
-      // Convert from dollar to token
-      const priceInToken = choosedPrice / buyerTokenPrice;
-      setInternalPrice(priceInToken.toString());
+      setInternalPrice((choosedPrice / buyerTokenPrice).toString());
     } else {
-      // priceUnit === 'dollar'
-      // Keep the dollar price
       setInternalPrice(choosedPrice.toString());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [priceUnit]); // Only trigger when priceUnit changes
+  }, [priceUnit]);
 
   return (
     <>
@@ -163,7 +202,7 @@ export const UpdatePriceComputingPane = ({
             }
             hideControls={true}
             required={true}
-            decimalScale={values.offerTokenDecimals ?? 18}
+            decimalScale={numberInputDecimals}
             value={internalPrice}
             onChange={(value) => setInternalPrice(value as string)}
             error={form.errors?.price}

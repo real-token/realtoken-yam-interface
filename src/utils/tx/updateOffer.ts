@@ -26,14 +26,10 @@ const getFormValues = (offer: Offer, rawValues: UpdateFormValues) => {
       ? new BigNumber(rawValues.amount ?? 1).multipliedBy(choosedPriceValue)
       : new BigNumber(rawValues.amount ?? 1);
 
-  // Calculate price from choosedPrice if available
+  // BUY: on-chain price still derived from choosedPrice (inverse). SELL: price is already in buyer-token units.
   let finalPrice = rawValues.price;
-  if (rawValues.choosedPrice !== undefined) {
-    if (offer.type == OFFER_TYPE.BUY) {
-      finalPrice = 1 / rawValues.choosedPrice;
-    } else {
-      finalPrice = rawValues.choosedPrice;
-    }
+  if (offer.type == OFFER_TYPE.BUY && rawValues.choosedPrice !== undefined) {
+    finalPrice = 1 / rawValues.choosedPrice;
   }
 
   const formValues = {

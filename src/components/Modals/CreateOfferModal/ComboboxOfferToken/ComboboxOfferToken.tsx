@@ -94,70 +94,87 @@ export const ComboboxOfferToken = ({
     userBalancesAreLoading: realTokenUserBalancesAreLoading,
   } = useUserBalance();
 
-  const [assetsBalances, setAssetsBalances] = useState<any>([]);
+  const [assetsBalances, setAssetsBalances] = useState<Record<
+    string,
+    BigNumber
+  >>({});
   const [assetsBalancesAreLoading, setAssetsBalancesAreLoading] =
-    useState<boolean>(true);
-  const fetchBalances = async () => {
+    useState(false);
+
+  useEffect(() => {
+    if (type !== 'others') {
+      setAssetsBalancesAreLoading(false);
+      return;
+    }
+
     if (!canFetch || !account) {
       setAssetsBalancesAreLoading(false);
       return;
     }
-    try {
+
+    let cancelled = false;
+
+    (async () => {
       setAssetsBalancesAreLoading(true);
+      try {
+        const assetsBalance = await Promise.all(
+          data.map(async (item) => {
+            if (
+              !publicClient ||
+              !publicClient.batch ||
+              !publicClient.batch.multicall ||
+              !item.value
+            )
+              return {};
+            const multicallResult = await multicall(config, {
+              contracts: [
+                {
+                  abi: Erc20ABI,
+                  address: item.value as `0x${string}`,
+                  functionName: 'decimals',
+                  args: [],
+                },
+                {
+                  abi: Erc20ABI,
+                  address: item.value as `0x${string}`,
+                  functionName: 'balanceOf',
+                  args: [account as `0x${string}`],
+                },
+              ],
+            });
+            const decimals = new BigNumber(
+              multicallResult[0]?.result?.toString() ?? '0'
+            );
+            const balance = new BigNumber(
+              multicallResult[1]?.result?.toString() ?? '0'
+            ).shiftedBy(-decimals.toNumber());
+            return { [item.value.toLowerCase()]: balance };
+          })
+        );
 
-      const assetsBalance = await Promise.all(
-        data.map(async (item) => {
-          if (
-            !publicClient ||
-            !publicClient.batch ||
-            !publicClient.batch.multicall ||
-            !item.value
-          )
-            return {};
-          const multicallResult = await multicall(config, {
-            contracts: [
-              {
-                abi: Erc20ABI,
-                address: item.value as `0x${string}`,
-                functionName: 'decimals',
-                args: [],
-              },
-              {
-                abi: Erc20ABI,
-                address: item.value as `0x${string}`,
-                functionName: 'balanceOf',
-                args: [account as `0x${string}`],
-              },
-            ],
+        if (cancelled) return;
+
+        const assets: { [addr: string]: BigNumber } = {};
+        assetsBalance.forEach((item) => {
+          Object.keys(item).forEach((key) => {
+            assets[key] = item[key];
           });
-          const decimals = new BigNumber(
-            multicallResult[0]?.result?.toString() ?? '0'
-          );
-          const balance = new BigNumber(
-            multicallResult[1]?.result?.toString() ?? '0'
-          ).shiftedBy(-decimals.toNumber());
-          return { [item.value.toLowerCase()]: balance };
-        })
-      );
-
-      const assets: { [addr: string]: BigNumber } = {};
-      assetsBalance.forEach((item) => {
-        Object.keys(item).forEach((key) => {
-          assets[key] = item[key];
         });
-      });
 
-      setAssetsBalances(assets);
-      setAssetsBalancesAreLoading(false);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-  useEffect(() => {
-    if (type === 'others' && canFetch && account) {
-      void fetchBalances();
-    }
-  }, [type, canFetch, account]);
+        setAssetsBalances(assets);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        if (!cancelled) {
+          setAssetsBalancesAreLoading(false);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [type, canFetch, account, data, publicClient, config]);
 
   const [userBalances, userBalancesAreLoading] = useMemo(() => {
     if (type == 'realtoken') {
@@ -167,7 +184,7 @@ export const ComboboxOfferToken = ({
     }
   }, [
     realTokenUserBalances,
-    realTokenUserBalances,
+    realTokenUserBalancesAreLoading,
     type,
     assetsBalances,
     assetsBalancesAreLoading,

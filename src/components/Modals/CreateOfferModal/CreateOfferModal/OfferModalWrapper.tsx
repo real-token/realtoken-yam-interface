@@ -23,7 +23,7 @@ export const OfferModalWrapper: React.FC<ComponentProps> = ({ offer, form, token
     const { t } = useTranslation('modals', { keyPrefix: 'createOffer' });
 
     const { offerTokenSymbol, shieldError, onSubmit, isLoading, isModification } = useCreateOfferContext();
-    const { bigNumberbalance, balance } = useWalletERC20Balance(values.offerTokenAddress);
+    const { bigNumberbalance, balance, erc20Symbol } = useWalletERC20Balance(values.offerTokenAddress);
 
     return (
         <Flex direction={"column"} mx={'auto'} gap={"md"} style={{ padding: '1rem' }}>
@@ -38,7 +38,7 @@ export const OfferModalWrapper: React.FC<ComponentProps> = ({ offer, form, token
                 <Stack justify={'center'} align={'stretch'}>
                     {tokenPrice}
                     <Divider />
-                    <WalletERC20Balance balance={balance} symbol={offerTokenSymbol}/>
+                    <WalletERC20Balance balance={balance} symbol={offerTokenSymbol || erc20Symbol}/>
                     <PrivateOffer form={form} />
                     <NumberInput
                         label={offer.offerType == OFFER_TYPE.EXCHANGE ? t('common.exchangeAmount') : t('common.amount')}

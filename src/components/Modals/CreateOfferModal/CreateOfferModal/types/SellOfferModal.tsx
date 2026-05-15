@@ -18,7 +18,7 @@ export function SellOfferModal({ offer, form }: SellOfferModalProps){
     const { getInputProps, values } = form;
     const { t } = useTranslation('modals', { keyPrefix: 'createOffer' });
 
-    const { offerTokens, buyerTokens, offerTokenSymbol, offerTokenPrice, buyTokenSymbol, buyerTokenPrice, choosedPrice } = useCreateOfferContext();
+    const { offerTokens, buyerTokens, offerTokenSymbol, offerTokenPrice, buyTokenSymbol, buyerTokenPrice } = useCreateOfferContext();
 
     return (
         <OfferModalWrapper 
@@ -69,9 +69,11 @@ export function SellOfferModal({ offer, form }: SellOfferModalProps){
                         {t("sell.txSellSummary", {
                             amount: values?.amount,
                             buyTokenSymbol: buyTokenSymbol,
-                            price: choosedPrice,
+                            price: values.price,
                             offerTokenSymbol: offerTokenSymbol,
-                            total: new BigNumber(values?.amount).multipliedBy(values.price).toFixed(offer.offerTokenDecimal ?? 6)
+                            total: new BigNumber(values?.amount).multipliedBy(values.price).toFixed(
+                              offer.buyerTokenDecimal ?? offer.offerTokenDecimal ?? 6
+                            )
                         })}
                     </Text>
                 ) : undefined}

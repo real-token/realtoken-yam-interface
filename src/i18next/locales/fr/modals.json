@@ -42,7 +42,7 @@
       "txBuySummary": "Vous souhaitez acheter jusqu'à {{amount}} \"{{buyTokenSymbol}}\" avec un prix unitaire de {{price}} \"{{offerTokenSymbol}}\" et pour un total de {{total}} \"{{offerTokenSymbol}}\"."
     },
     "exchange": {
-      "chooseExchangeTokenType": "ChoChoisissez le type de jeton d'échange",
+      "chooseExchangeTokenType": "Choisissez le type de jeton d'échange",
       "priceComputing": "Entrez combien de jeton(s) \"{{exchangeBuyerTokenSymbol}}\" vous souhaitez recevoir en échange de 1 jeton \"{{exchangeOfferTokenSymbol}}\".",
       "priceComputingTitle": "Calcul du taux de change",
       "txExchangeSummary": "Vous souhaitez échanger jusqu'à {{amount}} \"{{buyTokenSymbol}}\" avec un prix unitaire de {{price}} \"{{offerTokenSymbol}}\" et pour un total de {{total}} \"{{offerTokenSymbol}}\"."
