@@ -8,8 +8,7 @@ import { Offer } from "src/types/offer/Offer"
 import { BuyActionsWithPermit } from "../BuyActions";
 import { ShowOfferAction } from "../ShowOfferAction/ShowOfferAction";
 import classes from './GridPane.module.css';
-import { useRootStore } from "../../../zustandStore/store";
-import { useOffers } from "../../../hooks/interface/useOffers";
+import { useMarketDataLoading } from 'src/hooks/interface/useMarketDataLoading';
 
 interface GridPaneProps{
     offer: Offer
@@ -17,7 +16,7 @@ interface GridPaneProps{
 export const GridPane: FC<GridPaneProps> = ({ offer }) => {
 
     const { t } = useTranslation('buy', { keyPrefix: 'table' });
-    const { offersAreLoading } = useOffers();
+    const offersAreLoading = useMarketDataLoading();
 
     return(
         <>

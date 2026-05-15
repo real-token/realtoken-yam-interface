@@ -2,14 +2,13 @@ import { useAtomValue } from "jotai"
 import { useMemo } from "react"
 import { tableOfferTypeAtom } from "src/states"
 import { Offer, OFFER_LOADING, OFFER_TYPE } from "src/types/offer"
-import { useOffers } from "../interface/useOffers"
 
 const getTypedOffers = (type: OFFER_TYPE, offers: Offer[], offersLoading: boolean): Offer[] => {
     if (!offers || offersLoading) return OFFER_LOADING;
     return offers.filter((offer: Offer) => offer.type == type);
 }
 
-type UseTypedOffers = (offers: Offer[]) => {
+type UseTypedOffers = (offers: Offer[], offersAreLoading: boolean) => {
     offers: Offer[];
     sellCount: number|undefined;
     buyCount: number|undefined;
@@ -17,11 +16,11 @@ type UseTypedOffers = (offers: Offer[]) => {
 }
 
 export const useTypedOffers: UseTypedOffers = (
-    offers
+    offers,
+    offersAreLoading
 )  => {
 
     const tableOfferType = useAtomValue(tableOfferTypeAtom);
-    const { offersAreLoading } = useOffers();
     
     return useMemo(() => ({
         offers: [...getTypedOffers(tableOfferType, offers, offersAreLoading)],

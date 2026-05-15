@@ -28,7 +28,10 @@ import { Provider as JotaiProvider } from 'jotai';
 
 import { modals } from 'src/components';
 import { DefaultNetworkSync } from 'src/components/DefaultNetworkSync';
-import { WatchedAddressRestore } from 'src/components/WatchedAddressRestore';
+import { WalletSessionCleanup } from 'src/components/WalletSessionCleanup';
+import { WalletSessionRestore } from 'src/components/WalletSessionRestore';
+import { WalletRestoreProvider } from 'src/contexts/WalletRestoreContext';
+import { registerWalletRestoreTranslations } from 'src/i18next/walletRestoreTranslations';
 import { HeaderNav } from 'src/components/HeaderNav';
 import { OfferCacheProvider } from 'src/components/OfferCacheProvider';
 import { TheGraphErrorNotification } from 'src/components/TheGraphErrorNotification';
@@ -122,6 +125,7 @@ const queryClient = new QueryClient({
 
 function RootComponent() {
   initLanguage({ resources: resources, debug: false });
+  registerWalletRestoreTranslations();
 
   return (
     <RealTokenWeb3Provider
@@ -165,28 +169,31 @@ function RootComponent() {
               }}
             >
               <OfferCacheProvider>
-                <DefaultNetworkSync />
-                <WatchedAddressRestore />
-                <Layout
-                  header={{
-                    nav: <HeaderNav />,
-                    banner: <Banners />,
-                    buttons: <YamHeaderButtons disableWalletConnect />,
-                    currentWebsite: Websites.YAM,
-                    disableWalletConnect: true,
-                  }}
-                  head={
-                    <Head
-                      title={'YAM (You And Me)'}
-                      description={'YAM (You And Me)'}
-                    />
-                  }
-                  footerCustomLinks={<FooterLinks />}
-                >
-                  <LanguageInit i={i18next} />
-                  <TheGraphErrorNotification />
-                  <Outlet />
-                </Layout>
+                <WalletRestoreProvider>
+                  <DefaultNetworkSync />
+                  <WalletSessionRestore />
+                  <WalletSessionCleanup />
+                  <Layout
+                    header={{
+                      nav: <HeaderNav />,
+                      banner: <Banners />,
+                      buttons: <YamHeaderButtons disableWalletConnect />,
+                      currentWebsite: Websites.YAM,
+                      disableWalletConnect: true,
+                    }}
+                    head={
+                      <Head
+                        title={'YAM (You And Me)'}
+                        description={'YAM (You And Me)'}
+                      />
+                    }
+                    footerCustomLinks={<FooterLinks />}
+                  >
+                    <LanguageInit i={i18next} />
+                    <TheGraphErrorNotification />
+                    <Outlet />
+                  </Layout>
+                </WalletRestoreProvider>
               </OfferCacheProvider>
             </MantineProviders>
           </RealTokenUiProvider>

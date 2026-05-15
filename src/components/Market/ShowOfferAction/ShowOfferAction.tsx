@@ -3,14 +3,14 @@ import { IconEye } from "@tabler/icons-react";
 import { FC } from "react";
 import { Offer } from "src/types/offer/Offer";
 import { openInNewTab } from "src/utils/window";
-import { useOffers } from "../../../hooks/interface/useOffers";
+import { useMarketDataLoading } from 'src/hooks/interface/useMarketDataLoading';
 interface ShowOfferActionProps{
     offer: Offer
     className?: string;
 }
 export const ShowOfferAction: FC<ShowOfferActionProps> = ({ offer, className }) => {
 
-    const { offersAreLoading } = useOffers();
+    const offersAreLoading = useMarketDataLoading();
 
     return(
         <>

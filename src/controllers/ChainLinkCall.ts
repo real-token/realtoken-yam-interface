@@ -33,6 +33,8 @@ const getChainFromId = (chainId: number) => {
   }
 };
 
+const GNOSIS_MULTICALL3 = '0xcA11bde05977b3631167028862bE2a173976CA11' as const;
+
 // Batch fetch all chainlink prices in a single multicall
 export const getChainlinkPricesBatch = async (
   chainId: number,
@@ -46,40 +48,73 @@ export const getChainlinkPricesBatch = async (
   const client = createPublicClient({
     chain,
     transport: http(rpcUrl, { timeout: 10000 }),
-    batch: { multicall: true },
   });
 
-  const results = await Promise.all(
-    tokens.map(async (token): Promise<Price> => {
-      const oracleAddress = token.priceFnc.contractAddress;
-      if (!oracleAddress) {
-        return { contractAddress: token.contractAddress, price: '1' };
-      }
+  const tokensWithOracle = tokens.filter((t) => t.priceFnc.contractAddress);
+  const tokensWithoutOracle = tokens.filter((t) => !t.priceFnc.contractAddress);
 
-      try {
-        const assetPrice = await client.readContract({
-          address: oracleAddress as `0x${string}`,
-          abi: oraclePriceFeedABI,
-          functionName: 'latestAnswer',
-        });
+  const resultsWithoutOracle: Price[] = tokensWithoutOracle.map((token) => ({
+    contractAddress: token.contractAddress,
+    price: '1',
+  }));
 
-        const tokenPrice = new BigNumber((assetPrice as bigint).toString()).shiftedBy(
+  if (tokensWithOracle.length === 0) {
+    return resultsWithoutOracle;
+  }
+
+  // Un seul appel RPC par oracle (ex. USDC et armmv3USDC partagent le même feed)
+  const uniqueOracleAddresses = [
+    ...new Set(
+      tokensWithOracle.map((t) => t.priceFnc.contractAddress.toLowerCase())
+    ),
+  ];
+
+  const oraclePriceByAddress = new Map<string, string>();
+
+  try {
+    const multicallResult = await client.multicall({
+      contracts: uniqueOracleAddresses.map((oracleAddress) => ({
+        address: oracleAddress as `0x${string}`,
+        abi: oraclePriceFeedABI,
+        functionName: 'latestAnswer' as const,
+      })),
+      multicallAddress: GNOSIS_MULTICALL3,
+    });
+
+    uniqueOracleAddresses.forEach((oracleAddress, index) => {
+      const entry = multicallResult[index];
+      if (entry?.status === 'success' && entry.result !== undefined) {
+        const tokenPrice = new BigNumber(entry.result.toString()).shiftedBy(
           -CHAINLINK_USD_DECIMALS
         );
-
-        return {
-          contractAddress: token.contractAddress,
-          price: tokenPrice.toString(),
-        };
-      } catch (err) {
-        console.error(`[chainlink] Error for ${token.contractAddress.slice(0, 10)}:`, err);
-        return { contractAddress: token.contractAddress, price: '1' };
+        oraclePriceByAddress.set(oracleAddress, tokenPrice.toString());
+      } else {
+        console.error(
+          `[chainlink] Multicall failed for oracle ${oracleAddress.slice(0, 10)}`
+        );
+        oraclePriceByAddress.set(oracleAddress, '1');
       }
-    })
+    });
+  } catch (err) {
+    console.error('[chainlink] Multicall batch failed:', err);
+    uniqueOracleAddresses.forEach((oracleAddress) => {
+      oraclePriceByAddress.set(oracleAddress, '1');
+    });
+  }
+
+  const resultsWithOracle: Price[] = tokensWithOracle.map((token) => {
+    const oracleKey = token.priceFnc.contractAddress.toLowerCase();
+    return {
+      contractAddress: token.contractAddress,
+      price: oraclePriceByAddress.get(oracleKey) ?? '1',
+    };
+  });
+
+  console.log(
+    `[chainlink] Batch completed in ${Date.now() - startTime}ms (${uniqueOracleAddresses.length} oracle(s), ${tokens.length} token(s))`
   );
 
-  console.log(`[chainlink] Batch completed in ${Date.now() - startTime}ms`);
-  return results;
+  return [...resultsWithoutOracle, ...resultsWithOracle];
 };
 
 // Single price fetch (legacy, for compatibility)

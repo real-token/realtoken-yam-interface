@@ -17,7 +17,6 @@ import { MarketSubRow } from '../MarketSubRow';
 import { useTypedOffers } from 'src/hooks/offers/useTypedOffers';
 import { OFFERS_TYPE, useRightTableColumn } from 'src/hooks/useRightTableColumns';
 import { MarketSort } from '../MarketSort/MarketSort';
-import { useOffers } from '../../../hooks/interface/useOffers';
 import { usePrivateOffers } from '../../../hooks/offers/usePrivateOffers';
 import { DegradedModeOverlay } from '../../DegradedModeOverlay';
 
@@ -33,7 +32,10 @@ export const MarketTablePrivate: FC = () => {
   const [expanded, setExpanded] = useState<ExpandedState>({});
 
   const { offers: privateOffers, offersAreLoading, refetch } = usePrivateOffers();
-  const { offers, sellCount, buyCount, exchangeCount } = useTypedOffers(privateOffers)
+  const { offers, sellCount, buyCount, exchangeCount } = useTypedOffers(
+    privateOffers,
+    offersAreLoading
+  );
   const columns = useRightTableColumn(OFFERS_TYPE.PRIVATE);
 
   const table = useReactTable({

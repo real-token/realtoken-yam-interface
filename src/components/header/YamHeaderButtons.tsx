@@ -1,4 +1,5 @@
-import { Group } from '@mantine/core';
+import { Button, Group } from '@mantine/core';
+import { useTranslation } from 'react-i18next';
 import { useRealTokenUIConfig } from '@real-token/core';
 import { SettingsMenu, WalletMenu } from '@real-token/ui-components';
 import {
@@ -11,6 +12,7 @@ import { YamNativeBalanceButton } from 'src/components/header/YamNativeBalanceBu
 import { YamNetworkSelector } from 'src/components/header/YamNetworkSelector';
 import { YamWalletMenu } from 'src/components/header/YamWalletMenu';
 import { useConnectedAccount } from 'src/hooks/useConnectedAccount';
+import { useWalletRestoreState } from 'src/hooks/useWalletRestoreState';
 
 type YamHeaderButtonsProps = {
   disableWalletConnect?: boolean;
@@ -19,7 +21,9 @@ type YamHeaderButtonsProps = {
 export function YamHeaderButtons({
   disableWalletConnect = false,
 }: YamHeaderButtonsProps) {
+  const { t } = useTranslation('common', { keyPrefix: 'wallet' });
   const { address, walletAddress } = useConnectedAccount();
+  const { isRestoring } = useWalletRestoreState();
   const isAA = useIsAA();
   const { aaModalConfig } = useRealTokenUIConfig();
 
@@ -33,7 +37,13 @@ export function YamHeaderButtons({
       {address ? (
         walletAddress ? <WalletMenu /> : <YamWalletMenu />
       ) : (
-        <AaConnectButton config={aaModalConfig} />
+        isRestoring ? (
+          <Button aria-label={t('title')} loading>
+            {t('title')}
+          </Button>
+        ) : (
+          <AaConnectButton config={aaModalConfig} />
+        )
       )}
       <SettingsMenu />
     </Group>

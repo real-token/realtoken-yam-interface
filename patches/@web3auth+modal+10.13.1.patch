@@ -1,0 +1,88 @@
+diff --git a/node_modules/@web3auth/modal/dist/lib.cjs/node_modules/style-inject/dist/package.json b/node_modules/@web3auth/modal/dist/lib.cjs/node_modules/style-inject/dist/package.json
+new file mode 100644
+index 0000000..a3c15a7
+--- /dev/null
++++ b/node_modules/@web3auth/modal/dist/lib.cjs/node_modules/style-inject/dist/package.json
+@@ -0,0 +1 @@
++{ "type": "commonjs" }
+diff --git a/node_modules/@web3auth/modal/dist/lib.cjs/packages/modal/src/package.json b/node_modules/@web3auth/modal/dist/lib.cjs/packages/modal/src/package.json
+new file mode 100644
+index 0000000..a3c15a7
+--- /dev/null
++++ b/node_modules/@web3auth/modal/dist/lib.cjs/packages/modal/src/package.json
+@@ -0,0 +1 @@
++{ "type": "commonjs" }
+diff --git a/node_modules/@web3auth/modal/dist/lib.cjs/packages/modal/src/react/wagmi/provider.js b/node_modules/@web3auth/modal/dist/lib.cjs/packages/modal/src/react/wagmi/provider.js
+index c63da5e..9e4fb7d 100644
+--- a/node_modules/@web3auth/modal/dist/lib.cjs/packages/modal/src/react/wagmi/provider.js
++++ b/node_modules/@web3auth/modal/dist/lib.cjs/packages/modal/src/react/wagmi/provider.js
+@@ -94,7 +94,8 @@ function Web3AuthWagmiProvider({
+ }) {
+   const {
+     isConnected,
+-    provider
++    provider,
++    isInitialized
+   } = useWeb3Auth.useWeb3Auth();
+   const {
+     disconnect
+@@ -125,13 +126,13 @@ function Web3AuthWagmiProvider({
+         }
+         await connectWeb3AuthWithWagmi(connector, wagmiConfig);
+         reconnect();
+-      } else if (!isConnected) {
++      } else if (!isConnected && isInitialized) {
+         if (wagmiConfig.state.status === "connected") {
+           await disconnectWeb3AuthFromWagmi(wagmiConfig);
+         }
+       }
+     })();
+-  }, [isConnected, wagmiConfig, provider, reconnect]);
++  }, [isConnected, isInitialized, wagmiConfig, provider, reconnect]);
+   return /*#__PURE__*/react.createElement(react.Fragment, null, children);
+ }
+ function WagmiProvider(_ref) {
+diff --git a/node_modules/@web3auth/modal/dist/lib.esm/node_modules/style-inject/dist/package.json b/node_modules/@web3auth/modal/dist/lib.esm/node_modules/style-inject/dist/package.json
+new file mode 100644
+index 0000000..5ffd980
+--- /dev/null
++++ b/node_modules/@web3auth/modal/dist/lib.esm/node_modules/style-inject/dist/package.json
+@@ -0,0 +1 @@
++{ "type": "module" }
+diff --git a/node_modules/@web3auth/modal/dist/lib.esm/packages/modal/src/package.json b/node_modules/@web3auth/modal/dist/lib.esm/packages/modal/src/package.json
+new file mode 100644
+index 0000000..5ffd980
+--- /dev/null
++++ b/node_modules/@web3auth/modal/dist/lib.esm/packages/modal/src/package.json
+@@ -0,0 +1 @@
++{ "type": "module" }
+diff --git a/node_modules/@web3auth/modal/dist/lib.esm/packages/modal/src/react/wagmi/provider.js b/node_modules/@web3auth/modal/dist/lib.esm/packages/modal/src/react/wagmi/provider.js
+index 6fe155d..54b04d0 100644
+--- a/node_modules/@web3auth/modal/dist/lib.esm/packages/modal/src/react/wagmi/provider.js
++++ b/node_modules/@web3auth/modal/dist/lib.esm/packages/modal/src/react/wagmi/provider.js
+@@ -93,7 +93,8 @@ function Web3AuthWagmiProvider({
+ }) {
+   const {
+     isConnected,
+-    provider
++    provider,
++    isInitialized
+   } = useWeb3Auth();
+   const {
+     disconnect
+@@ -124,13 +125,13 @@ function Web3AuthWagmiProvider({
+         }
+         await connectWeb3AuthWithWagmi(connector, wagmiConfig);
+         reconnect();
+-      } else if (!isConnected) {
++      } else if (!isConnected && isInitialized) {
+         if (wagmiConfig.state.status === "connected") {
+           await disconnectWeb3AuthFromWagmi(wagmiConfig);
+         }
+       }
+     })();
+-  }, [isConnected, wagmiConfig, provider, reconnect]);
++  }, [isConnected, isInitialized, wagmiConfig, provider, reconnect]);
+   return /*#__PURE__*/createElement(Fragment, null, children);
+ }
+ function WagmiProvider(_ref) {

@@ -35,7 +35,10 @@ export const MarketTableUser: FC = () => {
 
   const { offers: addressOffers, offersAreLoading, refetch } = useUserOffers();
 
-  const { offers, sellCount, buyCount, exchangeCount } = useTypedOffers(addressOffers);
+  const { offers, sellCount, buyCount, exchangeCount } = useTypedOffers(
+    addressOffers,
+    offersAreLoading
+  );
 
   const columns = useRightTableColumn(OFFERS_TYPE.ADDRESS);
 

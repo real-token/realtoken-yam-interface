@@ -21,7 +21,7 @@ import {
 import { useDegradedMode } from 'src/hooks/interface/useDegradedMode';
 import { useChainId } from 'wagmi';
 import { BigNumber } from '@ethersproject/bignumber';
-import { JsonRpcProvider } from '@ethersproject/providers';
+import { getSharedJsonRpcProvider } from 'src/utils/ethersProvider';
 import { Contract } from '@ethersproject/contracts';
 import { OfferRPCService } from 'src/services/offerRPCService';
 import { realTokenYamUpgradeableABI } from 'src/abis';
@@ -61,7 +61,10 @@ export const OfferIdInput: FC = () => {
     if (!networkConfig) return null;
 
     try {
-      const provider = new JsonRpcProvider(networkConfig.rpcTarget);
+      const provider = getSharedJsonRpcProvider(
+        chainId,
+        networkConfig.rpcTarget
+      );
       const yamContract = new Contract(
         networkConfig.contracts.realTokenYamUpgradeableAddress,
         realTokenYamUpgradeableABI,

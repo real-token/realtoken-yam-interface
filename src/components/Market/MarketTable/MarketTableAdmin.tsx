@@ -95,7 +95,7 @@ export const MarketTableAdmin: FC = () => {
     };
   }, [allOffers, offersAreLoading]);
 
-  const { offers } = useTypedOffers(allOffers);
+  const { offers } = useTypedOffers(allOffers, offersAreLoading);
   console.log('admin offers by offer type', offers.length);
 
   const modals = useModals();

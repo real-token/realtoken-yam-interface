@@ -26,8 +26,8 @@ import { DegradedModeOverlay } from '../../DegradedModeOverlay';
 import { GridPane } from './GridPane';
 
 export const MarketGrid: FC = () => {
-  const { offers: publicOffers } = usePublicOffers();
-  const { offers } = useTypedOffers(publicOffers);
+  const { offers: publicOffers, offersAreLoading } = usePublicOffers();
+  const { offers } = useTypedOffers(publicOffers, offersAreLoading);
 
   const [data, setData] = useState<string[]>(['9', '18', '36', '72']);
 

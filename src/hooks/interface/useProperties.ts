@@ -94,6 +94,7 @@ export const useProperties: UseProperties = () => {
     queryKey: ['properties', chainId],
     meta: { errCode: REACT_QUERY_ERRORS.FETCH_PROPERTIES },
     enabled: !!chainId && !!account,
+    staleTime: 5 * 60 * 1000,
     queryFn: async (): Promise<PropertiesToken[]> => {
       if (!chainId) return [];
 

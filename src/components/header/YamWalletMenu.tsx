@@ -12,13 +12,12 @@ import {
   IconExternalLink,
   IconLogout,
 } from '@tabler/icons-react';
-import { disconnect } from '@wagmi/core';
 import { useConfig } from 'wagmi';
 
 import type { ExtendedChainConfig } from 'src/config/aaConfig';
 import { useConnectedAccount } from 'src/hooks/useConnectedAccount';
 import { shortenString } from 'src/utils';
-import { clearWatchedAddress } from 'src/utils/watchedAddressStorage';
+import { disconnectWallet } from 'src/utils/disconnectWallet';
 
 /**
  * Menu portefeuille pour connexion wagmi sans walletAddress aa-core synchronisé.
@@ -60,13 +59,7 @@ export function YamWalletMenu() {
   };
 
   const handleDisconnect = async () => {
-    clearWatchedAddress();
-    try {
-      await disconnect(wagmiConfig);
-    } catch {
-      // déjà déconnecté
-    }
-    await logout();
+    await disconnectWallet(wagmiConfig, logout);
     handlers.close();
   };
 

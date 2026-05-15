@@ -74,6 +74,7 @@ export const useOffers: UseOffers = () => {
     // keepPreviousData: true,
     // Ne pas invalider automatiquement en cas d'erreur pour permettre un fonctionnement partiel
     retry: false,
+    staleTime: 60 * 1000,
   });
 
   const parsedError = useMemo(() => {

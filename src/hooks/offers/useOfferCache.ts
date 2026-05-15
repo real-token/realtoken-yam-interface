@@ -4,7 +4,7 @@ import { useChainId } from 'wagmi';
 import { useConnectedAccount } from 'src/hooks/useConnectedAccount';
 import { BigNumber } from '@ethersproject/bignumber';
 import { useQueryClient } from '@tanstack/react-query';
-import { JsonRpcProvider } from '@ethersproject/providers';
+import { getSharedJsonRpcProvider } from 'src/utils/ethersProvider';
 import { Contract } from '@ethersproject/contracts';
 import { realTokenYamUpgradeableABI } from 'src/abis';
 import { RealTokenYamUpgradeable } from 'src/abis/types/RealTokenYamUpgradeable';
@@ -33,7 +33,10 @@ export function useOfferCacheEvents() {
 
     if (!networkConfig) return { provider: null, yamContract: null };
 
-    const ethersProvider = new JsonRpcProvider(networkConfig.rpcTarget);
+    const ethersProvider = getSharedJsonRpcProvider(
+      chainId,
+      networkConfig.rpcTarget
+    );
     const contract = new Contract(
       networkConfig.contracts.realTokenYamUpgradeableAddress,
       realTokenYamUpgradeableABI,
