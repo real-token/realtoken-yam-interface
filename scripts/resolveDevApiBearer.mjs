@@ -1,5 +1,8 @@
 const LOG_PREFIX = '[dev-api-auth]';
 
+/** Nombre max de rafraîchissements JWT par requête Apollo (côté client). */
+export const DEV_JWT_REFRESH_MAX_ATTEMPTS = 3;
+
 const LOGIN_MUTATION = `
   mutation DevApiLogin($email: String!, $password: String!) {
     auth {
@@ -22,7 +25,7 @@ function trimEnv(value) {
   return trimmed || undefined;
 }
 
-async function loginForToken(apiUrl, email, password) {
+export async function loginForToken(apiUrl, email, password) {
   const response = await fetch(apiUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

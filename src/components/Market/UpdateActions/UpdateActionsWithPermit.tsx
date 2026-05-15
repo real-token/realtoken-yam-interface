@@ -27,7 +27,8 @@ export const UpdateActionsWithPermit: FC<UpdateActions> = ({ updateOffer }) => {
     (offer: Offer) => {
       modals.openContextModal('updatePermit', {
         title: <Title order={3}>{t('update.title')}</Title>,
-        size: 'lg',
+        size: 'xl',
+        centered: true,
         innerProps: {
           offer: offer,
           triggerTableRefresh: refreshOffers,

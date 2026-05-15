@@ -44,7 +44,8 @@ export const BuyActionsWithPermit: FC<BuyActions> = ({
     (offer: Offer) => {
       modals.openContextModal('buyPermit', {
         title: <Text>{t('buy.title')}</Text>,
-        size: 'lg',
+        size: 'xl',
+        centered: true,
         innerProps: {
           offer: offer,
           triggerTableRefresh: refreshOffers,

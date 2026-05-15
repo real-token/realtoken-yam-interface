@@ -5,8 +5,9 @@ export const modalStyles: ModalProps['styles'] = {
   body: {
     padding: '1rem',
     width: 'auto',
-    maxWidth: 'min(96vw, 36rem)',
-    maxHeight: 'min(95vh, 860px)',
+    /* La largeur suit `size` (openContextModal) ; éviter maxWidth fixe trop étroit. */
+    maxHeight:
+      'min(calc(100dvh - 5.5rem), calc(100vh - 5.5rem))',
     overflowY: 'auto',
   },
   root: { zIndex: 10 },
@@ -20,8 +21,8 @@ export const modalStyles: ModalProps['styles'] = {
   },
   content: {
     width: 'auto',
-    maxWidth: 'min(96vw, 36rem)',
-    maxHeight: 'min(95vh, 900px)',
+    maxHeight:
+      'min(calc(100dvh - 4.5rem), calc(100vh - 4.5rem))',
     overflow: 'visible',
   },
 };

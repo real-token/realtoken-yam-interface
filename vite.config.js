@@ -5,6 +5,7 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { resolveDevApiBearer } from './scripts/resolveDevApiBearer.mjs';
+import { devApiAuthVitePlugin } from './scripts/devApiAuthVitePlugin.mjs';
 import { loadAuthEnv } from './scripts/loadAuthEnv.mjs';
 
 const root = __dirname;
@@ -79,6 +80,7 @@ export default defineConfig(async ({ command, mode }) => {
             'import.meta.env.VITE_API_KEY': JSON.stringify(''),
         },
         plugins: [
+            ...(command === 'serve' ? [devApiAuthVitePlugin(envForAuth)] : []),
             replaceViemMerkleRpc(ethRpcUrl),
             tanstackRouter(),
             react(),

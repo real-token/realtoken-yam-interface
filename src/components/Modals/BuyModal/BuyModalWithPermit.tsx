@@ -268,7 +268,7 @@ export const BuyModalWithPermit: FC<
               <Flex
                 direction={'column'}
                 gap={'md'}
-                style={(theme) => ({ marginBottom: theme.spacing.xl })}
+                style={(theme) => ({ marginBottom: theme.spacing.sm })}
               >
                 {!isAA ? (
                   <Flex direction={'column'} gap={5}>
@@ -307,21 +307,33 @@ export const BuyModalWithPermit: FC<
                     />
                   </Flex>
                 ) : undefined}
+              </Flex>
+            ) : null}
+
+            <Flex gap={'sm'} mt={'xs'} wrap={'nowrap'} align={'stretch'} w={'100%'}>
+              {values.amount > 0 ? (
                 <Button
                   type={'submit'}
                   loading={isSubmitting}
                   aria-label={t('confirm')}
                   disabled={values?.amount == 0 || !values.amount}
+                  style={{ flex: '2 1 0%', minWidth: 0 }}
                 >
                   {values.buyMethod == BUY_METHODS.buyWithPermit
                     ? t('buyButtons.permit.text')
                     : t('buyButtons.approve.text')}
                 </Button>
-              </Flex>
-            ) : undefined}
-
-            <Flex>
-              <Button color={'red'} onClick={onClose} aria-label={t('cancel')}>
+              ) : null}
+              <Button
+                color={'red'}
+                onClick={onClose}
+                aria-label={t('cancel')}
+                style={
+                  values.amount > 0
+                    ? { flex: '1 1 0%', minWidth: 0 }
+                    : { width: '100%' }
+                }
+              >
                 {t('cancel')}
               </Button>
             </Flex>
