@@ -141,6 +141,7 @@ export const ComboboxOfferToken = ({
                   args: [account as `0x${string}`],
                 },
               ],
+              multicallAddress: '0xcA11bde05977b3631167028862bE2a173976CA11',
             });
             const decimals = new BigNumber(
               multicallResult[0]?.result?.toString() ?? '0'

@@ -131,6 +131,7 @@ export const MultiPath = ({
 
       const multiCallResult = await multicall(config, {
         contracts: calls,
+        multicallAddress: '0xcA11bde05977b3631167028862bE2a173976CA11',
       });
 
       const balances = multiCallResult.map((result) => result.result);

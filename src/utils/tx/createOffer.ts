@@ -6,6 +6,7 @@ import { Address, PublicClient } from 'viem';
 
 import { coinBridgeTokenABI, realTokenYamUpgradeableABI } from '../../abis';
 import { ExtendedChainConfig } from '../../config/aaConfig';
+import { isRmmV3TokenAddress } from '../../constants/rmmV3Tokens';
 import { CreatedOffer } from '../../types/offer';
 
 export type CreateOfferTransactionContext = {
@@ -40,33 +41,34 @@ export const createOfferTransactions = async (
     functionName: 'getTokenType',
     args: [offer.offerTokenAddress as `0x${string}`],
   });
-  const unsupportedPermitToken = offerTokenType == 3;
+  const offerTokenIsRmmV3 = isRmmV3TokenAddress(offer.offerTokenAddress);
+  const unsupportedPermitToken = offerTokenType == 3 || offerTokenIsRmmV3;
 
   const transactions: Transaction<CreateOfferTransactionContext>[] = [];
 
   if (unsupportedPermitToken || isAA) {
-    // Approve offer token
-    // We are additionning allowance because of how YAM is working (virtual allowance)
+    // Approve offer token (montant déjà en wei, comme createBatchOffersTransactions / permit)
+    const newAmountInWei = new BigNumber(amount.toString());
+
     transactions.push(
       {
+        skipCondition: async ({ context }) => {
+          const { account } = context;
+          if (!account) throw new Error('Account is undefined');
+          const allowance = await publicClient.readContract({
+            address: offer.offerTokenAddress as `0x${string}`,
+            abi: coinBridgeTokenABI,
+            functionName: 'allowance',
+            args: [account as `0x${string}`, realTokenYamUpgradeableAddress],
+          });
+          return new BigNumber(allowance.toString()).gte(newAmountInWei);
+        },
         prepareTransaction: async (context) => {
           const { account } = context;
           if (!account) {
             throw new Error('Account is undefined');
           }
 
-          const amountToApprove = new BigNumber(amount.toString());
-
-          const oldAllowance = await publicClient.readContract({
-            address: offer.offerTokenAddress as `0x${string}`,
-            abi: coinBridgeTokenABI,
-            functionName: 'allowance',
-            args: [account as `0x${string}`, realTokenYamUpgradeableAddress],
-          });
-
-          const amountInWeiToPermit = amountToApprove
-            .plus(new BigNumber(oldAllowance.toString()))
-            .toString(10);
           return {
             type: 'onchain',
             to: offer.offerTokenAddress as `0x${string}`,
@@ -75,7 +77,7 @@ export const createOfferTransactions = async (
               functionName: 'approve',
               args: [
                 realTokenYamUpgradeableAddress,
-                BigInt(amountInWeiToPermit),
+                BigInt(newAmountInWei.toString(10)),
               ],
             }),
           };
