@@ -16,7 +16,7 @@ import {
   IconCopy,
   IconTrash,
 } from '@tabler/icons-react';
-import { ColumnDef, RowSelectionState, Table } from '@tanstack/react-table';
+import { ColumnDef, Row, RowSelectionState, Table } from '@tanstack/react-table';
 
 import BigNumber from 'bignumber.js';
 import moment from 'moment';
@@ -40,6 +40,9 @@ type ColumnFn<T> = (
   t: TFunction<'buy', 'table'>,
   span: number
 ) => ColumnDef<Offer, T>;
+
+const sortOffersByPrice = (rowA: Row<Offer>, rowB: Row<Offer>) =>
+  parseFloat(rowA.original.price) - parseFloat(rowB.original.price);
 
 export const header = ({ title }: { title: string }) => {
   return (
@@ -276,6 +279,7 @@ export const priceColumn: ColumnFn<number> = (t, span) => {
     header: t('price'),
     cell: ({ row }) => <OfferPrice offer={row.original} />,
     enableSorting: true,
+    sortingFn: sortOffersByPrice,
     enableGlobalFilter: true,
     meta: { colSpan: span },
   };
@@ -299,6 +303,7 @@ export const simplePriceColumn: ColumnFn<number> = (t, span) => {
       </Text>
     ),
     enableSorting: true,
+    sortingFn: sortOffersByPrice,
     enableGlobalFilter: true,
     meta: { colSpan: span },
   };
