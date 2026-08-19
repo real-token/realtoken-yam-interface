@@ -45,27 +45,24 @@ export const buyTransactions = async (
 
   const price = parseFloat(offer.price);
 
-  const amountInWei = new BigNumber(
-    parseInt(
-      new BigNumber(amount)
-        .shiftedBy(Number(offer.offerTokenDecimals))
-        .toString()
-    )
-  );
-  const priceInWei = new BigNumber(price.toString()).shiftedBy(
-    Number(offer.buyerTokenDecimals)
-  );
+  const offerDecimals = Number(offer.offerTokenDecimals);
+  const buyerDecimals = Number(offer.buyerTokenDecimals);
+
+  // Rester en BigNumber tout au long pour éviter la perte de précision JS.
+  // parseInt() tronque les entiers > 2^53 en notation scientifique (ex: 3.88e+21)
+  // ce qui rend BigInt() incompatible — utiliser .integerValue() à la place.
+  const amountInWei = new BigNumber(amount)
+    .shiftedBy(offerDecimals)
+    .integerValue(BigNumber.ROUND_DOWN);
+
+  const priceInWei = new BigNumber(price.toString()).shiftedBy(buyerDecimals);
 
   // account type (EOA/AA) will be checked at execution time if needed
 
-  const buyerTokenAmount = new BigNumber(
-    parseInt(
-      amountInWei
-        .multipliedBy(priceInWei)
-        .shiftedBy(-offer.offerTokenDecimals)
-        .toString()
-    )
-  );
+  const buyerTokenAmount = amountInWei
+    .multipliedBy(priceInWei)
+    .shiftedBy(-offerDecimals)
+    .integerValue(BigNumber.ROUND_DOWN);
   const transactions: Transaction<BuyTransactionContext>[] = [];
   const transactionDeadline = Math.floor(Date.now() / 1000) + 3600; // 1h
 
@@ -95,17 +92,17 @@ export const buyTransactions = async (
             args: [account as `0x${string}`, realTokenYamUpgradeableAddress],
           });
           const allowanceBN = new BigNumber(allowance.toString());
-          return allowanceBN.gte(buyerTokenAmount.toString(10));
+          return allowanceBN.gte(buyerTokenAmount.toFixed(0));
         },
         prepareTransaction: async () => ({
           type: 'erc20-approve',
           tokenAddress: offer.buyerTokenAddress as `0x${string}`,
           spenderAddress: realTokenYamUpgradeableAddress,
-          amount: buyerTokenAmount.toString(10),
+          amount: buyerTokenAmount.toFixed(0),
         }),
       },
       {
-        prepareTransaction: async () => ({
+          prepareTransaction: async () => ({
           type: 'onchain',
           to: realTokenYamUpgradeableAddress,
           data: encodeTransaction({
@@ -113,8 +110,8 @@ export const buyTransactions = async (
             functionName: 'buy',
             args: [
               BigInt(offer.offerId),
-              BigInt(priceInWei.toString()),
-              BigInt(amountInWei.toString()),
+              BigInt(priceInWei.toFixed(0)),
+              BigInt(amountInWei.toFixed(0)),
             ],
           }),
         }),
@@ -134,7 +131,7 @@ export const buyTransactions = async (
             type: signatureType,
             owner: account as `0x${string}`,
             spender: realTokenYamUpgradeableAddress,
-            amount: buyerTokenAmount.toString(10),
+            amount: buyerTokenAmount.toFixed(0),
             deadline: transactionDeadline,
             contractAddress: offer.buyerTokenAddress as `0x${string}`,
             signatureKey: 'signature',
@@ -146,6 +143,7 @@ export const buyTransactions = async (
           const { signature } = context;
           if (!signature) throw new Error('Permit signature is undefined');
           const { v, r, s } = signature;
+
           return {
             type: 'onchain',
             to: realTokenYamUpgradeableAddress,
@@ -154,8 +152,8 @@ export const buyTransactions = async (
               functionName: 'buyWithPermit',
               args: [
                 BigInt(offer.offerId),
-                BigInt(priceInWei.toString()),
-                BigInt(amountInWei.toString()),
+                BigInt(priceInWei.toFixed(0)),
+                BigInt(amountInWei.toFixed(0)),
                 BigInt(transactionDeadline),
                 v,
                 r,
